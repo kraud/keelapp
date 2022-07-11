@@ -1,12 +1,13 @@
 const asyncHandler = require('express-async-handler')
 
 const Word = require('../models/wordModel')
+const User = require('../models/userModel')
 
 // @desc    Get Words
 // @route   GET /api/words
 // @access  Private
 const getWords = asyncHandler(async (req, res) => {
-    const words = await Word.find()
+    const words = await Word.find({ user: req.user.id})
     res.status(200).json(words)
 })
 
@@ -19,7 +20,8 @@ const setWord = asyncHandler(async (req, res) => {
         throw new Error("Please add text field")
     }
     const word = await Word.create({
-        text: req.body.text
+        text: req.body.text,
+        user: req.user.id
     })
     res.status(200).json(word)
 })
@@ -33,6 +35,20 @@ const updateWord = asyncHandler(async (req, res) => {
     if(!word){
         res.status(400)
         throw new Error("Word not found")
+    }
+
+    const user = await User.findById(req.user.id)
+
+    // Check for user
+    if(!user){
+        res.status(401)
+        throw new Error('User not found')
+    }
+
+    // Make sure the logged in user matches the goal user
+    if(word.user.toString() !== user.id){
+        res.status(401)
+        throw new Error('User not authorized')
     }
 
     const updatedWord = await Word.findByIdAndUpdate(req.params.id, req.body, {new: true})
@@ -50,8 +66,21 @@ const deleteWords = asyncHandler(async (req, res) => {
         throw new Error("Word not found")
     }
 
-    await word.deleteOne()
+    const user = await User.findById(req.user.id)
 
+    // Check for user
+    if(!user){
+        res.status(401)
+        throw new Error('User not found')
+    }
+
+    // Make sure the logged in user matches the goal user
+    if(word.user.toString() !== user.id){
+        res.status(401)
+        throw new Error('User not authorized')
+    }
+
+    await word.deleteOne()
     res.status(200).json(word)
 })
 module.exports = {

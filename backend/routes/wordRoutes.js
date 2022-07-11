@@ -1,13 +1,14 @@
 const express = require('express')
 const router = express.Router()
 const { getWords, setWord, updateWord, deleteWords } = require('../controllers/wordController')
+const {protect} = require('../middleware/authMiddleware')
 
-router.get('/', getWords)
+router.get('/', protect, getWords)
 
-router.post('/', setWord)
+router.post('/', protect,  setWord)
 
-router.put('/:id', updateWord)
+router.put('/:id', protect,  updateWord)
 
-router.delete('/:id', deleteWords)
+router.delete('/:id', protect,  deleteWords)
 
 module.exports = router
