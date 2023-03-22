@@ -37,16 +37,14 @@ const updateWord = asyncHandler(async (req, res) => {
         throw new Error("Word not found")
     }
 
-    const user = await User.findById(req.user.id)
-
     // Check for user
-    if(!user){
+    if(!req.user){
         res.status(401)
         throw new Error('User not found')
     }
 
-    // Make sure the logged in user matches the goal user
-    if(word.user.toString() !== user.id){
+    // Make sure the logged-in user matches the goal user
+    if(word.user.toString() !== req.user.id){
         res.status(401)
         throw new Error('User not authorized')
     }
@@ -66,16 +64,15 @@ const deleteWords = asyncHandler(async (req, res) => {
         throw new Error("Word not found")
     }
 
-    const user = await User.findById(req.user.id)
 
     // Check for user
-    if(!user){
+    if(!req.user){
         res.status(401)
         throw new Error('User not found')
     }
 
     // Make sure the logged in user matches the goal user
-    if(word.user.toString() !== user.id){
+    if(word.user.toString() !== req.user.id){
         res.status(401)
         throw new Error('User not authorized')
     }
@@ -83,6 +80,7 @@ const deleteWords = asyncHandler(async (req, res) => {
     await word.deleteOne()
     res.status(200).json(word)
 })
+
 module.exports = {
     getWords,
     setWord,

@@ -1,7 +1,9 @@
 import { createTheme } from "@mui/material"
 import { orange, red } from "@mui/material/colors";
 
-const globalTheme = createTheme({
+let globalTheme = createTheme({})
+
+globalTheme = createTheme(globalTheme, {
     palette: {
         /*primary: {
             main: "#ccc",
@@ -21,6 +23,17 @@ const globalTheme = createTheme({
             color: orange[500]
         }*/
     },
+    components: {
+        MuiContainer: {
+            styleOverrides: {
+                maxWidthLg: {
+                    [globalTheme.breakpoints.up('lg')]: {
+                        maxWidth: "100%"
+                    },
+                }
+            }
+        }
+    }
 })
 
 declare module '@mui/material/styles' {
