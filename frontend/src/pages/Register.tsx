@@ -17,8 +17,9 @@ export interface IFormInput {
     email: string;
     password: string;
     password2?: string;
-    // iceCreamType: { label: string; value: string };
+    // exampleType: { label: string; value: string };
 }
+
 
 export function Register() {
 

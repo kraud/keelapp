@@ -19,7 +19,7 @@ export function Login() {
     const {user, isLoading, isError, isSuccess, message} = useSelector((state: any) => state.auth)
 
     const validationSchema = Yup.object().shape({
-        email: Yup.string().required("Valid E-mail is required").email(),
+        email: Yup.string().required("Valid e-mail is required").email("Valid e-mail is required"),
         password: Yup.string().required("Password is required"),
     })
 

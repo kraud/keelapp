@@ -17,7 +17,7 @@ import {useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
 
-const pages = ['Products', 'Pricing', 'Blog'];
+const pages = ['Add word', 'Practice', 'Review'];
 const settings = ['Dashboard', 'Logout'];
 
 
@@ -28,9 +28,12 @@ function ResponsiveAppBar() {
     const {user} = useSelector((state: any) => state.auth)
 
     const componentStyles = {
-        headerContainerStyle: {
-            width: "100%",
-            maxWidth: "100%",
+        appBar: {
+            borderBottomRightRadius: 20,
+            borderBottomLeftRadius: 20,
+        },
+        toolBar: {
+            overflow: 'auto',
         },
         adbIcon: {
             display: {
@@ -78,11 +81,15 @@ function ResponsiveAppBar() {
     return (
         <AppBar
             position="static"
+            sx={componentStyles.appBar}
         >
             <Container
                 maxWidth={false}
             >
-                <Toolbar disableGutters>
+                <Toolbar
+                    disableGutters
+                    sx={componentStyles.toolBar}
+                >
                     {/* LOGO BIG */}
                     <LanguageOutlined
                         sx={componentStyles.adbIcon}
@@ -160,7 +167,8 @@ function ResponsiveAppBar() {
                         href=""
                         sx={{
                             mr: 2,
-                            display: { xs: 'flex', md: 'none' },
+                            // NB! 'inline-block' needed for nowrap ellipsis and 'none' is to avoid double text while on bigger screen
+                            display: { xs: 'inline-block', md: 'none' },
                             fontFamily: 'monospace',
                             fontWeight: 700,
                             letterSpacing: '.3rem',

@@ -24,7 +24,9 @@ export const register = createAsyncThunk('auth/register', async (user: IFormInpu
     }
 
 })
+
 //TODO: give proper type to user
+
 // Login user
 export const login = createAsyncThunk('auth/login', async (user: any, thunkAPI) => {
     try {
