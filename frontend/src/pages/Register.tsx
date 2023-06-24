@@ -1,8 +1,8 @@
 import React from "react";
 import {Button, Grid, Typography} from "@mui/material";
-import {useState, useEffect} from "react";
+import {useEffect} from "react";
 import {TextInputFormWithHook} from "../components/TextInputFormHook";
-import {SubmitHandler, useForm} from "react-hook-form";
+import {useForm} from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import globalTheme from "../theme/theme";
@@ -17,7 +17,6 @@ export interface IFormInput {
     email: string;
     password: string;
     password2?: string;
-    // exampleType: { label: string; value: string };
 }
 
 
@@ -48,13 +47,6 @@ export function Register() {
         //@ts-ignore
         dispatch(register(userData))
     }
-
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        password: '',
-        password2: '',
-    })
 
     const navigate = useNavigate()
     const dispatch = useDispatch()

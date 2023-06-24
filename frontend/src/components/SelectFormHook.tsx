@@ -1,5 +1,5 @@
-import {Control, Controller, FieldValues, useForm} from "react-hook-form";
-import {FormHelperText, Select, TextField} from "@mui/material";
+import {Control, Controller} from "react-hook-form";
+import {FormHelperText, Select} from "@mui/material";
 import React from "react";
 import MenuItem from "@mui/material/MenuItem";
 
@@ -35,7 +35,6 @@ export const SelectFormWithHook = (props: SelectFormWithHookProps) => {
                         onBlur={field.onBlur}
                         value={field.value}
                         label={props.label}
-                        // helperText={fieldState.error?.message}
                         error={!!props.errors}
                         type={props.type}
                         fullWidth={props.fullWidth}

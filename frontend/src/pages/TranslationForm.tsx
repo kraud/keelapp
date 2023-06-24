@@ -3,14 +3,17 @@ import globalTheme from "../theme/theme";
 import React, {useEffect, useState} from "react";
 import {Lang, TranslationItem, WordData, WordFormGeneric} from "../components/WordFormGeneric";
 
+interface TranslationFormProps {
+    onSave: (wordData: WordData) => void
+}
 
-export function TranslationForm() {
+export function TranslationForm(props: TranslationFormProps) {
 
     // Languages currently in use for this word
     const [selectedLanguages, setSelectedLanguages] = useState<
         {
             language: Lang,
-            formComplete: boolean
+            isValidFormStatus: boolean
         }[]
     >([])
     // Languages currently NOT in use for this word
@@ -20,49 +23,43 @@ export function TranslationForm() {
     const [completeWordData, setCompleteWordData] = useState<WordData[]>([])
 
     // Save changes to the list of the current word's translation
-    const editTranslationData = (
-        langData: {
-            lang: Lang,
-            isComplete: boolean, // calculated by the specific language form
-            // index: number // -1 represents new entry, other number mean index to replace
+    const editTranslationsStatusData = (
+        newLanguageData: {
+            language: Lang,
+            isValidFormStatus: boolean, // calculated by the specific language form
         }
     ) => {
-        // Check if langData.lang is already included - if so edit
-        let updated: boolean = false // to check if the current language is already one of the stored translations
+        // Check if newLanguageData.language is already included - if so edit
+        let updated: boolean = false // will be used to check if the current language is already one of the stored translations
         if(selectedLanguages.length > 0){
             const updatedSelectedLanguages = selectedLanguages.map((selectedLang) => {
                 // we found the current language, and we update the entry on the list
-                if(selectedLang.language === langData.lang) {
+                if(selectedLang.language === newLanguageData.language) {
                     updated = true // we trigger the flag to know that the language was found and updated
                     return({
                         language: selectedLang.language,
-                        formComplete: langData.isComplete
+                        isValidFormStatus: newLanguageData.isValidFormStatus
                     })
                 } else { // if it doesn't match, we leave the translation data as is
-                    console.log("ELSE SMALL 1")
                     return(selectedLang)
                 }
             })
-            console.log("updated VALUE:")
-            console.log(updated)
             if(updated) {
                 setSelectedLanguages(updatedSelectedLanguages) // if the list now has the updated info about of translation, we simply save it
             } else { // assuming it's a new entry we append to the end of the existing list of translations
-                console.log("ELSE SMALL 2")
                 setSelectedLanguages([
                     ...selectedLanguages,
                     {
-                        language: langData.lang,
-                        formComplete: langData.isComplete
+                        language: newLanguageData.language,
+                        isValidFormStatus: newLanguageData.isValidFormStatus
                     }
                 ])
             }
         } else {
-            console.log("ELSE BIG")
             // If there is no languages yet selected, we simply add it to the list as the first item
             setSelectedLanguages([{
-                language: langData.lang,
-                formComplete: langData.isComplete
+                language: newLanguageData.language,
+                isValidFormStatus: newLanguageData.isValidFormStatus
             }])
         }
     }
@@ -80,11 +77,7 @@ export function TranslationForm() {
     }
 
     useEffect(() => {
-        console.log("selectedLanguages")
-        console.log(selectedLanguages)
         setAvailableLanguagesList()
-        // console.log("getAvailableLanguages()")
-        // console.log(getAvailableLanguages())
     }, [selectedLanguages])
 
     const setAvailableLanguagesList = () => {
@@ -94,24 +87,18 @@ export function TranslationForm() {
             const selectedLangs: string[] = selectedLanguages.map((alreadySelectedLanguage) => {
                 return((alreadySelectedLanguage.language).toString())
             })
-            console.log("selectedLangs (inside)")
-            console.log(selectedLangs)
-            console.log("allLangs (inside)")
-            console.log(allLangs)
             const availableLangs: string[] = allLangs.filter((currentLang: string) => {
                 return(!selectedLangs.includes(currentLang))
             })
             // We return the data with the expected format
             filteredLangs = availableLangs.map(lang => {
-                return (lang as unknown as Lang) // TODO: double check if this won't cause trouble later on
+                return (lang as unknown as Lang)
             })
         } else {
             filteredLangs = allLangs.map(lang => {
-                return (lang as unknown as Lang) // TODO: double check if this won't cause trouble later on
+                return (lang as unknown as Lang)
             })
         }
-        console.log("filteredLangs")
-        console.log(filteredLangs)
         setAvailableLanguages(filteredLangs)
     }
 
@@ -140,29 +127,27 @@ export function TranslationForm() {
                     Please fill all required fields (*) before saving
                 </Typography>
             </Grid>
-            {/* TODO: find a way to express this without repeating so much code*/}
+            {/* TODO: rewrite this - without repeating so much code*/}
             {/* REQUIRED, FIRST LANGUAGE */}
             <WordFormGeneric
-                availableLangs={availableLanguages}
-                setTranslation={(translationData) => {
-                    editTranslationData(translationData)
+                availableLanguages={availableLanguages}
+                setTranslationStatus={(translationData) => {
+                    editTranslationsStatusData(translationData)
                 }}
-                removeLangFromUse={(langNowAvailable: Lang)=> removeLanguageFromSelected(langNowAvailable)}
-                giveTranslation={(translation: TranslationItem) => {
-                    console.log("translation to save (1)")
-                    console.log(translation)
+                updateCurrentLang={(langNowAvailable: Lang)=> removeLanguageFromSelected(langNowAvailable)}
+                updateTranslationData={(translation: TranslationItem) => {
+
                 }}
             />
             {/* REQUIRED, SECOND LANGUAGE */}
             <WordFormGeneric
-                availableLangs={availableLanguages}
-                setTranslation={(translationData) => {
-                    editTranslationData(translationData)
+                availableLanguages={availableLanguages}
+                setTranslationStatus={(translationData) => {
+                    editTranslationsStatusData(translationData)
                 }}
-                removeLangFromUse={(langNowAvailable: Lang)=> removeLanguageFromSelected(langNowAvailable)}
-                giveTranslation={(translation: TranslationItem) => {
-                    console.log("translation to save (2)")
-                    console.log(translation)
+                updateCurrentLang={(langNowAvailable: Lang)=> removeLanguageFromSelected(langNowAvailable)}
+                updateTranslationData={(translation: TranslationItem) => {
+
                 }}
             />
             {/* TODO: include dynamic addition of more WordFormGeneric for other languages */}
@@ -177,13 +162,15 @@ export function TranslationForm() {
                     item={true}
                 >
                     <Button
-                        onClick={() => console.log("SUBMIT!")}
+                        onClick={() => {
+                            // props.onSave({})
+                        }}
                         variant={"outlined"}
                         disabled={
                             (selectedLanguages.length < 1)
                             ||
                             ((selectedLanguages.filter((selectedLang) => {
-                                return (!selectedLang.formComplete)
+                                return (!selectedLang.isValidFormStatus)
                             })).length > 0)
                         }
                     >

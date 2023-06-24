@@ -3,8 +3,8 @@ import {Grid, Typography} from "@mui/material";
 import ResponsiveAppBar from "../components/Header";
 import {useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
-import {WordFormGeneric} from "../components/WordFormGeneric";
 import {TranslationForm} from "./TranslationForm";
+import {WordData} from "../components/WordFormGeneric";
 
 export function Dashboard() {
     const navigate = useNavigate()
@@ -43,7 +43,11 @@ export function Dashboard() {
                         Ready to learn something today?
                     </Typography>
                 </Grid>
-                <TranslationForm/>
+                <TranslationForm
+                    onSave={(wordData: WordData) => {
+                        // save to database
+                    }}
+                />
             </Grid>
         </>
     )
