@@ -1,4 +1,4 @@
-import {Button, Grid, Typography} from "@mui/material";
+import {Button, Grid, TextField, Typography} from "@mui/material";
 import globalTheme from "../theme/theme";
 import React, {useEffect, useState} from "react";
 import {Lang, TranslationItem, WordData, WordFormGeneric} from "../components/WordFormGeneric";
@@ -13,53 +13,54 @@ export function TranslationForm(props: TranslationFormProps) {
     const [selectedLanguages, setSelectedLanguages] = useState<
         {
             language: Lang,
-            isValidFormStatus: boolean
+            isValidFormStatus?: boolean
         }[]
     >([])
     // Languages currently NOT in use for this word
     const [availableLanguages, setAvailableLanguages] = useState<Lang[]>([])
 
     // object containing all the translations and extra info about the word
-    const [completeWordData, setCompleteWordData] = useState<WordData[]>([])
+    const [completeWordData, setCompleteWordData] = useState<WordData | null>(null)
 
-    // Save changes to the list of the current word's translation
-    const editTranslationsStatusData = (
+    // This function is used to update the list of currently selected languages and their status
+    // It is also used to update the list of nouns+language combo, with the latest changes from the form
+    // It basically checks if the new data received corresponds to a language already stored.
+    // If so, it updates the info. If not, it appends it to the list.
+    const editTranslationsData = (
         newLanguageData: {
-            language: Lang,
-            isValidFormStatus: boolean, // calculated by the specific language form
-        }
+            language: Lang
+        },
+        existingLanguageList: { language: Lang }[],
+        setUpdatedList: (updatedList: any[]) => void
     ) => {
         // Check if newLanguageData.language is already included - if so edit
         let updated: boolean = false // will be used to check if the current language is already one of the stored translations
-        if(selectedLanguages.length > 0){
-            const updatedSelectedLanguages = selectedLanguages.map((selectedLang) => {
+        if(existingLanguageList.length > 0){
+            const updatedSelectedLanguages = existingLanguageList.map((selectedLang) => {
                 // we found the current language, and we update the entry on the list
                 if(selectedLang.language === newLanguageData.language) {
                     updated = true // we trigger the flag to know that the language was found and updated
                     return({
-                        language: selectedLang.language,
-                        isValidFormStatus: newLanguageData.isValidFormStatus
+                        ...newLanguageData
                     })
                 } else { // if it doesn't match, we leave the translation data as is
                     return(selectedLang)
                 }
             })
             if(updated) {
-                setSelectedLanguages(updatedSelectedLanguages) // if the list now has the updated info about of translation, we simply save it
+                setUpdatedList(updatedSelectedLanguages) // if the list now has the updated info about of translation, we simply save it
             } else { // assuming it's a new entry we append to the end of the existing list of translations
-                setSelectedLanguages([
-                    ...selectedLanguages,
+                setUpdatedList([
+                    ...existingLanguageList,
                     {
-                        language: newLanguageData.language,
-                        isValidFormStatus: newLanguageData.isValidFormStatus
+                        ...newLanguageData
                     }
                 ])
             }
         } else {
             // If there is no languages yet selected, we simply add it to the list as the first item
-            setSelectedLanguages([{
-                language: newLanguageData.language,
-                isValidFormStatus: newLanguageData.isValidFormStatus
+            setUpdatedList([{
+                ...newLanguageData
             }])
         }
     }
@@ -79,6 +80,7 @@ export function TranslationForm(props: TranslationFormProps) {
     useEffect(() => {
         setAvailableLanguagesList()
     }, [selectedLanguages])
+
 
     const setAvailableLanguagesList = () => {
         const allLangs: string[] = (Object.values(Lang).filter((v) => isNaN(Number(v))) as unknown as Array<keyof typeof Lang>)
@@ -132,24 +134,68 @@ export function TranslationForm(props: TranslationFormProps) {
             <WordFormGeneric
                 availableLanguages={availableLanguages}
                 setTranslationStatus={(translationData) => {
-                    editTranslationsStatusData(translationData)
+                    editTranslationsData(
+                        translationData,
+                        selectedLanguages,
+                        (updatedList) => setSelectedLanguages(updatedList)
+                    )
                 }}
                 updateCurrentLang={(langNowAvailable: Lang)=> removeLanguageFromSelected(langNowAvailable)}
                 updateTranslationData={(translation: TranslationItem) => {
-
+                    editTranslationsData(
+                        translation,
+                        (completeWordData!)
+                            ? completeWordData.translations
+                            : [],
+                        (updatedList) => setCompleteWordData({
+                            ...completeWordData,
+                            translations: updatedList
+                        })
+                    )
                 }}
             />
             {/* REQUIRED, SECOND LANGUAGE */}
             <WordFormGeneric
                 availableLanguages={availableLanguages}
                 setTranslationStatus={(translationData) => {
-                    editTranslationsStatusData(translationData)
+                    editTranslationsData(
+                        translationData,
+                        selectedLanguages,
+                        (updatedList) => setSelectedLanguages(updatedList)
+                    )
                 }}
                 updateCurrentLang={(langNowAvailable: Lang)=> removeLanguageFromSelected(langNowAvailable)}
                 updateTranslationData={(translation: TranslationItem) => {
-
+                    editTranslationsData(
+                        translation,
+                        (completeWordData!)
+                            ? completeWordData.translations
+                            : [],
+                        (updatedList) => setCompleteWordData({
+                            ...completeWordData,
+                            translations: updatedList
+                        })
+                    )
                 }}
             />
+            {
+                (selectedLanguages.length > 1) &&
+                    <Grid
+                        item={true}
+                    >
+                        <TextField
+                            label={"Clue"}
+                            value={(completeWordData?.clue) ? completeWordData?.clue : "" }
+                            onChange={(e: any) => {
+                                setCompleteWordData({
+                                    ...completeWordData!,
+                                    clue: e.target.value
+                                })
+                            }}
+                            fullWidth={true}
+                        />
+                    </Grid>
+            }
             {/* TODO: include dynamic addition of more WordFormGeneric for other languages */}
             {/* FORM BUTTONS */}
             <Grid
@@ -163,11 +209,13 @@ export function TranslationForm(props: TranslationFormProps) {
                 >
                     <Button
                         onClick={() => {
-                            // props.onSave({})
+                            if(completeWordData!){
+                                props.onSave(completeWordData)
+                            }
                         }}
                         variant={"outlined"}
                         disabled={
-                            (selectedLanguages.length < 1)
+                            (selectedLanguages.length < 2)
                             ||
                             ((selectedLanguages.filter((selectedLang) => {
                                 return (!selectedLang.isValidFormStatus)

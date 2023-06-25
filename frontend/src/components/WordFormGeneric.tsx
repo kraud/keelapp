@@ -26,6 +26,11 @@ export interface TranslationItem {
     nounCases: NounItem[]
 }
 
+// A word (string) and the type of noun that it is
+export interface NounItem {
+    word: string,
+    caseName: NounCases, // the type on noun stored in "word" property
+}
 // TODO: later add all other cases for all languages
 export enum NounCases {
     singularEN = "singularEN" ,
@@ -45,11 +50,6 @@ interface WordFormGenericProps {
     updateTranslationData: (translation: TranslationItem) => void
 }
 
-// A word (string) and the type of noun that it is
-export interface NounItem {
-    word: string,
-    caseName: NounCases, // the type on noun stored in "word" property
-}
 
 // Displays available language options, and once selected it displays the correct fields to input
 // This form will only display buttons/textfields/selects for A SINGLE language+word combo
@@ -77,8 +77,6 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                 return(
                     <WordFormES
                         setCases={(casesList: NounItem[]) => {
-                            console.log("casesList ES")
-                            console.log(casesList)
                             // generic function to append language, list of NounItems and update parent
                             updateTranslationList(Lang.ES, casesList)
                         }}
@@ -96,8 +94,6 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                     <WordFormEN
                         setCases={(casesList: NounItem[]) => {
                             // generic function to append language, list of NounItems and update parent
-                            console.log("casesList EN")
-                            console.log(casesList)
                             updateTranslationList(Lang.EN, casesList)
                         }}
                         setComplete = {(completionState) => {
