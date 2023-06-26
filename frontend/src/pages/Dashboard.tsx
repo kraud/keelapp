@@ -1,13 +1,15 @@
 import React, {useEffect} from "react";
 import {Grid, Typography} from "@mui/material";
 import ResponsiveAppBar from "../components/Header";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {TranslationForm} from "./TranslationForm";
-import {WordData} from "../components/WordFormGeneric";
+import {createWord} from "../features/words/wordSlice";
+import {WordData} from "../ts/interfaces";
 
 export function Dashboard() {
     const navigate = useNavigate()
+    const dispatch = useDispatch()
     const {user} = useSelector((state: any) => state.auth)
 
     useEffect(() => {
@@ -45,7 +47,12 @@ export function Dashboard() {
                 </Grid>
                 <TranslationForm
                     onSave={(wordData: WordData) => {
-                        // save to database
+                        const completeData = {
+                            ...wordData,
+                            partOfSpeech: "Noun",
+                        }
+                        //@ts-ignore
+                        dispatch(createWord(completeData))
                     }}
                 />
             </Grid>

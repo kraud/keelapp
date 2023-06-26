@@ -1,6 +1,6 @@
 import {createSlice, createAsyncThunk} from "@reduxjs/toolkit"
 import wordService from "./wordService"
-import {WordData} from "../../components/WordFormGeneric";
+import {WordData} from "../../ts/interfaces";
 
 interface worldSliceState {
     words: WordData[],
@@ -18,14 +18,20 @@ const initialState: worldSliceState = {
     message: "",
 }
 
-export const createWord = createAsyncThunk('word/create', async (word: WordData, thunkAPI) => {
+// Create a new word
+export const createWord = createAsyncThunk('words/create', async (word: WordData, thunkAPI) => {
     try {
         // @ts-ignore
         const token = thunkAPI.getState().auth.user.token
         return await wordService.createWord(word, token)
     } catch(error: any) {
-        const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
-
+        const message = (
+            error.response &&
+            error.response.data &&
+            error.response.data.message
+        )
+            || error.message
+            || error.toString()
         return thunkAPI.rejectWithValue(message)
     }
 })

@@ -1,10 +1,11 @@
 import * as Yup from "yup";
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup/dist/yup";
-import {NounItem, NounCases} from "./WordFormGeneric";
 import {Grid} from "@mui/material";
 import React, {useEffect, useState} from "react";
-import {TextInputFormWithHook} from "./TextInputFormHook";
+import {TextInputFormWithHook} from "../TextInputFormHook";
+import {NounItem} from "../../ts/interfaces";
+import {NounCases} from "../../ts/enums";
 
 interface WordFormENProps {
     setComplete: (completionState: boolean) => void // used to enable/disable submit button of parent form
@@ -22,7 +23,7 @@ export function WordFormEN(props: WordFormENProps) {
     })
 
     const {
-        getValues, handleSubmit, reset, control, formState: { errors, isValid }
+        control, formState: { errors, isValid }
     } = useForm<
         {
             singular: string,

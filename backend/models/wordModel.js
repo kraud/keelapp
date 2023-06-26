@@ -7,9 +7,23 @@ const wordSchema = mongoose.Schema(
             required: true,
             ref: 'User',
         },
-        text: {
+        partOfSpeech:{
             type: String,
-            required: [true, 'Please add a text value']
+            required: true,
+        },
+        translations:{
+            type: [{
+                language: String,
+                nounCases: [{ // TODO: later on we should have this renamed to fit nouns-verbs-adverbs-etc
+                    word: String,
+                    caseName: String,
+                    _id: false
+                }]
+            }],
+            required: true,
+        },
+        clue: {
+            type: String,
         }
     },
     {

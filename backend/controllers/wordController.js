@@ -15,12 +15,18 @@ const getWords = asyncHandler(async (req, res) => {
 // @route   POST /api/words
 // @access  Private
 const setWord = asyncHandler(async (req, res) => {
-    if(!req.body.text){
+    if(!req.body.partOfSpeech){
         res.status(400)
-        throw new Error("Please add text field")
+        throw new Error("Please add part of speech")
+    }
+    if(!req.body.translations | req.body.translations.length < 2){
+        res.status(400)
+        throw new Error("Please add 2 or more translations")
     }
     const word = await Word.create({
-        text: req.body.text,
+        partOfSpeech: req.body.partOfSpeech,
+        translations: req.body.translations, // TranslationItem array
+        clue: req.body.clue,
         user: req.user.id
     })
     res.status(200).json(word)

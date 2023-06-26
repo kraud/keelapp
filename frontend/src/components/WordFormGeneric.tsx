@@ -1,46 +1,15 @@
 import {Button, Grid, Typography} from "@mui/material";
 import React, {useEffect, useState} from "react";
-import {WordFormEN} from "./WordFormEN";
-import {WordFormES} from "./WordFormES";
+import {WordFormEN} from "./forms/WordFormEN";
+import {WordFormES} from "./forms/WordFormES";
+import {NounItem, TranslationItem} from "../ts/interfaces";
+import {Lang, PartOfSpeech} from "../ts/enums";
+import {FormSelector} from "./forms/FormSelector";
 
-// TODO: find a better place to define all this:
-export interface WordData {
-    translations: TranslationItem[],
-    clue?: string,
-}
-
-export enum Lang {
-    ES= "Spanish",
-    EN = "English",
-    DE = "German",
-    EE= "Estonian"
-}
-export enum WordGender {
-    M = "male", // MALE
-    F = "female", // FEMALE
-    N = "neutral" // NEUTRAL
-}
-
-export interface TranslationItem {
-    language: Lang,
-    nounCases: NounItem[]
-}
-
-// A word (string) and the type of noun that it is
-export interface NounItem {
-    word: string,
-    caseName: NounCases, // the type on noun stored in "word" property
-}
 // TODO: later add all other cases for all languages
-export enum NounCases {
-    singularEN = "singularEN" ,
-    pluralEN = "pluralEN",
-    genderES = "genderES",
-    singularES = "singularES",
-    pluralES = "pluralES",
-}
 
 interface WordFormGenericProps {
+    partOfSpeech?: PartOfSpeech,
     availableLanguages: Lang[] // list provided by parent component, so we know which languages can be displayed as options to choose from
     setTranslationStatus: (translationData: {
             language: Lang,
@@ -64,53 +33,12 @@ export function WordFormGeneric(props: WordFormGenericProps) {
     }, [wordCases])
 
     const updateTranslationList = (language: Lang, nounCases: NounItem[]) => {
-        // TODO: check if it's ok to eliminate *here* the nounCases where the "word" property is empty ("")?
         setWordCases({
             language: language,
-            nounCases: nounCases.filter((nounCase) => (nounCase.word !== ""))
+            nounCases: nounCases.filter((nounCase) => (nounCase.word !== "")) // To avoid saving empty cases
         })
     }
 
-    const getLanguageForm = (lang: Lang) => {
-        switch (lang){
-            case (Lang.ES): {
-                return(
-                    <WordFormES
-                        setCases={(casesList: NounItem[]) => {
-                            // generic function to append language, list of NounItems and update parent
-                            updateTranslationList(Lang.ES, casesList)
-                        }}
-                        setComplete = {(completionState) => {
-                            props.setTranslationStatus({
-                                language: Lang.ES,
-                                isValidFormStatus:completionState
-                            })
-                        }}
-                    />
-                )
-            }
-            case (Lang.EN): {
-                return(
-                    <WordFormEN
-                        setCases={(casesList: NounItem[]) => {
-                            // generic function to append language, list of NounItems and update parent
-                            updateTranslationList(Lang.EN, casesList)
-                        }}
-                        setComplete = {(completionState) => {
-                            props.setTranslationStatus({
-                                language: Lang.EN,
-                                isValidFormStatus:completionState
-                            })
-                        }}
-                    />
-                )
-            }
-            /* TODO: add Forms for German and Estonian */
-            default: {
-                return(<p>That language is not available yet</p>)
-            }
-        }
-    }
     const [availableLanguages, setAvailableLanguages] = useState<Lang[]>([])
     useEffect(() => {
         setAvailableLanguages(props.availableLanguages)
@@ -143,8 +71,8 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                                     key={index}
                                 >
                                     <Button
-                                        variant={(currentLang == lang) ?"contained" :"outlined"}
-                                        color={(currentLang == lang) ?"primary" :"error"}
+                                        variant={(currentLang === lang) ?"contained" :"outlined"}
+                                        color={(currentLang === lang) ?"primary" :"error"}
                                         onClick={() => {
                                             if(currentLang !== null){
                                                 // inform parent that old lang is now available
@@ -179,7 +107,17 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                                 Pick a language for the new word
                             </Typography>
                             :
-                            getLanguageForm(currentLang)
+                            // getLanguageForm(currentLang)
+                            <FormSelector
+                                currentLang={currentLang}
+                                partOfSpeech={props.partOfSpeech}
+                                setTranslationStatus={(translationData) => {
+                                    props.setTranslationStatus(translationData)
+                                }}
+                                updateTranslationList={(language: Lang, nounCases: NounItem[] ) => {
+                                    updateTranslationList(language, nounCases)
+                                }}
+                            />
                         }
                     </Grid>
                 </Grid>

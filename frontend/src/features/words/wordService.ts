@@ -1,5 +1,5 @@
-import {WordData} from "../../components/WordFormGeneric";
 import axios from "axios";
+import {WordData} from "../../ts/interfaces";
 
 const API_URL = '/api/words/'
 

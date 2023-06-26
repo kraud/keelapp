@@ -1,7 +1,9 @@
 import {Button, Grid, TextField, Typography} from "@mui/material";
 import globalTheme from "../theme/theme";
 import React, {useEffect, useState} from "react";
-import {Lang, TranslationItem, WordData, WordFormGeneric} from "../components/WordFormGeneric";
+import {WordFormGeneric} from "../components/WordFormGeneric";
+import {TranslationItem, WordData} from "../ts/interfaces";
+import {Lang, PartOfSpeech} from "../ts/enums";
 
 interface TranslationFormProps {
     onSave: (wordData: WordData) => void
@@ -81,6 +83,13 @@ export function TranslationForm(props: TranslationFormProps) {
         setAvailableLanguagesList()
     }, [selectedLanguages])
 
+    // Languages currently NOT in use for this word
+    const [partOfSpeech, setPartOfSpeech] = useState<PartOfSpeech | undefined>(undefined)
+
+    const getAllPartsOfSpeech = () => {
+        const partsOfSpeech: string[] = (Object.values(PartOfSpeech).filter((v) => isNaN(Number(v))) as unknown as Array<keyof typeof Lang>)
+        return(partsOfSpeech)
+    }
 
     const setAvailableLanguagesList = () => {
         const allLangs: string[] = (Object.values(Lang).filter((v) => isNaN(Number(v))) as unknown as Array<keyof typeof Lang>)
@@ -103,129 +112,157 @@ export function TranslationForm(props: TranslationFormProps) {
         }
         setAvailableLanguages(filteredLangs)
     }
-
+    // TODO: before displaying language-options buttons, we should ask what part of speech will be added.
     return(
-        <Grid
-            container={true}
-            spacing={4}
-            direction={"column"}
-            alignItems={"center"}
-        >
-            <Grid
-                item={true}
-                sx={{
-                    marginTop: globalTheme.spacing(6),
-                }}
-            >
-                <Typography
-                    variant={"h2"}
+        <>
+            {!(partOfSpeech!)
+                ?
+                <Grid
+                    container={true}
+                    spacing={3}
                 >
-                    Add a new word
-                </Typography>
-                <Typography
-                    variant={"subtitle2"}
-                    align={"center" }
+                    {(getAllPartsOfSpeech()).map((part: string, index: number) => {
+                        return(
+                            <Grid
+                                item={true}
+                                key={index}
+                            >
+                                <Button
+                                    variant={"contained"}
+                                    onClick={() => setPartOfSpeech((part as PartOfSpeech))}
+                                    disabled={part !== "Noun"} // TODO: make this depend on a list of implemented forms
+                                >
+                                    {part}
+                                </Button>
+                            </Grid>
+                            )
+                    })}
+                </Grid>
+                :
+                <Grid
+                    container={true}
+                    spacing={4}
+                    direction={"column"}
+                    alignItems={"center"}
                 >
-                    Please fill all required fields (*) before saving
-                </Typography>
-            </Grid>
-            {/* TODO: rewrite this - without repeating so much code*/}
-            {/* REQUIRED, FIRST LANGUAGE */}
-            <WordFormGeneric
-                availableLanguages={availableLanguages}
-                setTranslationStatus={(translationData) => {
-                    editTranslationsData(
-                        translationData,
-                        selectedLanguages,
-                        (updatedList) => setSelectedLanguages(updatedList)
-                    )
-                }}
-                updateCurrentLang={(langNowAvailable: Lang)=> removeLanguageFromSelected(langNowAvailable)}
-                updateTranslationData={(translation: TranslationItem) => {
-                    editTranslationsData(
-                        translation,
-                        (completeWordData!)
-                            ? completeWordData.translations
-                            : [],
-                        (updatedList) => setCompleteWordData({
-                            ...completeWordData,
-                            translations: updatedList
-                        })
-                    )
-                }}
-            />
-            {/* REQUIRED, SECOND LANGUAGE */}
-            <WordFormGeneric
-                availableLanguages={availableLanguages}
-                setTranslationStatus={(translationData) => {
-                    editTranslationsData(
-                        translationData,
-                        selectedLanguages,
-                        (updatedList) => setSelectedLanguages(updatedList)
-                    )
-                }}
-                updateCurrentLang={(langNowAvailable: Lang)=> removeLanguageFromSelected(langNowAvailable)}
-                updateTranslationData={(translation: TranslationItem) => {
-                    editTranslationsData(
-                        translation,
-                        (completeWordData!)
-                            ? completeWordData.translations
-                            : [],
-                        (updatedList) => setCompleteWordData({
-                            ...completeWordData,
-                            translations: updatedList
-                        })
-                    )
-                }}
-            />
-            {
-                (selectedLanguages.length > 1) &&
                     <Grid
                         item={true}
-                    >
-                        <TextField
-                            label={"Clue"}
-                            value={(completeWordData?.clue) ? completeWordData?.clue : "" }
-                            onChange={(e: any) => {
-                                setCompleteWordData({
-                                    ...completeWordData!,
-                                    clue: e.target.value
-                                })
-                            }}
-                            fullWidth={true}
-                        />
-                    </Grid>
-            }
-            {/* TODO: include dynamic addition of more WordFormGeneric for other languages */}
-            {/* FORM BUTTONS */}
-            <Grid
-                item={true}
-                container={true}
-                spacing={2}
-                justifyContent={"center"}
-            >
-                <Grid
-                    item={true}
-                >
-                    <Button
-                        onClick={() => {
-                            if(completeWordData!){
-                                props.onSave(completeWordData)
-                            }
+                        sx={{
+                            marginTop: globalTheme.spacing(6),
                         }}
-                        variant={"outlined"}
-                        disabled={
-                            (selectedLanguages.length < 2)
-                            ||
-                            ((selectedLanguages.filter((selectedLang) => {
-                                return (!selectedLang.isValidFormStatus)
-                            })).length > 0)
-                        }
                     >
-                        Submit
-                    </Button>
-                </Grid>
-            </Grid>
-        </Grid>
+                        <Typography
+                            variant={"h2"}
+                        >
+                            Add a new word
+                        </Typography>
+                        <Typography
+                            variant={"subtitle2"}
+                            align={"center"}
+                        >
+                            Please fill all required fields (*) before saving
+                        </Typography>
+                    </Grid>
+                    {/* TODO: rewrite this - without repeating so much code*/}
+                    {/* REQUIRED, FIRST LANGUAGE */}
+                    <WordFormGeneric
+                        partOfSpeech={partOfSpeech}
+                        availableLanguages={availableLanguages}
+                        setTranslationStatus={(translationData) => {
+                            editTranslationsData(
+                                translationData,
+                                selectedLanguages,
+                                (updatedList) => setSelectedLanguages(updatedList)
+                            )
+                        }}
+                        updateCurrentLang={(langNowAvailable: Lang) => removeLanguageFromSelected(langNowAvailable)}
+                        updateTranslationData={(translation: TranslationItem) => {
+                            editTranslationsData(
+                                translation,
+                                (completeWordData!)
+                                    ? completeWordData.translations
+                                    : [],
+                                (updatedList) => setCompleteWordData({
+                                    ...completeWordData!,
+                                    translations: updatedList
+                                })
+                            )
+                        }}
+                    />
+                    {/* REQUIRED, SECOND LANGUAGE */}
+                    <WordFormGeneric
+                        partOfSpeech={partOfSpeech}
+                        availableLanguages={availableLanguages}
+                        setTranslationStatus={(translationData) => {
+                            editTranslationsData(
+                                translationData,
+                                selectedLanguages,
+                                (updatedList) => setSelectedLanguages(updatedList)
+                            )
+                        }}
+                        updateCurrentLang={(langNowAvailable: Lang) => removeLanguageFromSelected(langNowAvailable)}
+                        updateTranslationData={(translation: TranslationItem) => {
+                            editTranslationsData(
+                                translation,
+                                (completeWordData!)
+                                    ? completeWordData.translations
+                                    : [],
+                                (updatedList) => setCompleteWordData({
+                                    ...completeWordData!,
+                                    translations: updatedList
+                                })
+                            )
+                        }}
+                    />
+                    {
+                        (selectedLanguages.length > 1) &&
+                        <Grid
+                            item={true}
+                        >
+                            <TextField
+                                label={"Clue"}
+                                value={(completeWordData?.clue) ? completeWordData?.clue : ""}
+                                onChange={(e: any) => {
+                                    setCompleteWordData({
+                                        ...completeWordData!,
+                                        clue: e.target.value
+                                    })
+                                }}
+                                fullWidth={true}
+                            />
+                        </Grid>
+                    }
+                    {/* TODO: include dynamic addition of more WordFormGeneric for other languages */}
+                    {/* FORM BUTTONS */}
+                    <Grid
+                        item={true}
+                        container={true}
+                        spacing={2}
+                        justifyContent={"center"}
+                    >
+                        <Grid
+                            item={true}
+                        >
+                            <Button
+                                onClick={() => {
+                                    if (completeWordData!) {
+                                        props.onSave(completeWordData)
+                                    }
+                                }}
+                                variant={"outlined"}
+                                disabled={
+                                    (selectedLanguages.length < 2)
+                                    ||
+                                    ((selectedLanguages.filter((selectedLang) => {
+                                        return (!selectedLang.isValidFormStatus)
+                                    })).length > 0)
+                                }
+                            >
+                                Submit
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Grid>}
+        </>
     )
 }
