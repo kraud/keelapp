@@ -16,13 +16,13 @@ interface WordFormENProps {
 export function WordFormES(props: WordFormENProps) {
 
     const validationSchema = Yup.object().shape({
+        gender: Yup.string().required("The gender is required")
+            .oneOf(["el", "la", "el/la"], "Pick a valid gender option"),
         singular: Yup.string()
             .required("Word is required")
             .matches(/^[^0-9]+$/, 'Must not include numbers'),
         plural: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
-        gender: Yup.string().required("The gender is required")
-            .oneOf(["el", "la"], "Pick a valid gender option")
+            .matches(/^[^0-9]+$|^$/, 'Must not include numbers')
     })
 
     const {
@@ -80,7 +80,7 @@ export function WordFormES(props: WordFormENProps) {
                             control={control}
                             label={"Gender"}
                             name={"gender"}
-                            options={["el", "la"]}
+                            options={["el", "la", "el/la"]}
                             defaultValue={""}
                             errors={errors.gender}
                             onChange={(value: any) => {

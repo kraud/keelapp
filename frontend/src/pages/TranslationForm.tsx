@@ -18,7 +18,11 @@ export function TranslationForm(props: TranslationFormProps) {
             isValidFormStatus?: boolean
         }[]
     >([])
-    // Languages currently NOT in use for this word
+
+    // Type of word to be added (noun/verb/adjective/etc.)
+    const [partOfSpeech, setPartOfSpeech] = useState<PartOfSpeech | undefined>(undefined)
+
+    // Languages currently NOT in use for this word - NB! This is calculated automatically, never set directly.
     const [availableLanguages, setAvailableLanguages] = useState<Lang[]>([])
 
     // object containing all the translations and extra info about the word
@@ -83,9 +87,6 @@ export function TranslationForm(props: TranslationFormProps) {
         setAvailableLanguagesList()
     }, [selectedLanguages])
 
-    // Languages currently NOT in use for this word
-    const [partOfSpeech, setPartOfSpeech] = useState<PartOfSpeech | undefined>(undefined)
-
     const getAllPartsOfSpeech = () => {
         const partsOfSpeech: string[] = (Object.values(PartOfSpeech).filter((v) => isNaN(Number(v))) as unknown as Array<keyof typeof Lang>)
         return(partsOfSpeech)
@@ -112,7 +113,12 @@ export function TranslationForm(props: TranslationFormProps) {
         }
         setAvailableLanguages(filteredLangs)
     }
-    // TODO: before displaying language-options buttons, we should ask what part of speech will be added.
+
+    const resetAll = () => {
+        setPartOfSpeech(undefined)
+        setSelectedLanguages([])
+    }
+
     return(
         <>
             {!(partOfSpeech!)
@@ -162,6 +168,17 @@ export function TranslationForm(props: TranslationFormProps) {
                         >
                             Please fill all required fields (*) before saving
                         </Typography>
+                    </Grid>
+                    <Grid
+                        item={true}
+                    >
+                        <Button
+                            variant={"outlined"}
+                            color={"error"}
+                            onClick={() => resetAll()}
+                        >
+                            Reset
+                        </Button>
                     </Grid>
                     {/* TODO: rewrite this - without repeating so much code*/}
                     {/* REQUIRED, FIRST LANGUAGE */}

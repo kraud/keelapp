@@ -5,6 +5,19 @@ export enum NounCases {
     genderES = "genderES",
     singularES = "singularES",
     pluralES = "pluralES",
+
+    genderDE = "genderDE",
+    singularNominativDE = "singularNominativDE",
+    pluralNominativDE = "pluralNominativES",
+
+    singularAkkusativDE = "singularAkkusativDE",
+    pluralAkkusativDE = "pluralAkkusativES",
+
+    singularGenitivDE = "singularGenitivDE",
+    pluralGenitivDE = "pluralGenitivES",
+
+    singularDativDE = "singularDativDE",
+    pluralDativDE = "pluralDativES",
 }
 
 export enum Lang {
@@ -14,10 +27,10 @@ export enum Lang {
     EE= "Estonian"
 }
 
-export enum WordGender {
-    M = "male", // MALE
-    F = "female", // FEMALE
-    N = "neutral" // NEUTRAL
+export enum GenderDE {
+    M = "der", // MALE
+    F = "die", // FEMALE
+    N = "das" // NEUTRAL
 }
 
 export enum PartOfSpeech {
