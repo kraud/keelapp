@@ -47,12 +47,8 @@ export function Dashboard() {
                 </Grid>
                 <TranslationForm
                     onSave={(wordData: WordData) => {
-                        const completeData = {
-                            ...wordData,
-                            partOfSpeech: "Noun",
-                        }
                         //@ts-ignore
-                        dispatch(createWord(completeData))
+                        dispatch(createWord(wordData))
                     }}
                 />
             </Grid>

@@ -1,23 +1,39 @@
 
 export enum NounCases {
+    // ENGLISH
     singularEN = "singularEN" ,
     pluralEN = "pluralEN",
+
+    // SPANISH
     genderES = "genderES",
     singularES = "singularES",
     pluralES = "pluralES",
 
+    // GERMAN
     genderDE = "genderDE",
     singularNominativDE = "singularNominativDE",
-    pluralNominativDE = "pluralNominativES",
+    pluralNominativDE = "pluralNominativDE",
 
     singularAkkusativDE = "singularAkkusativDE",
-    pluralAkkusativDE = "pluralAkkusativES",
+    pluralAkkusativDE = "pluralAkkusativDE",
 
     singularGenitivDE = "singularGenitivDE",
-    pluralGenitivDE = "pluralGenitivES",
+    pluralGenitivDE = "pluralGenitivDE",
 
     singularDativDE = "singularDativDE",
-    pluralDativDE = "pluralDativES",
+    pluralDativDE = "pluralDativDE",
+
+    // ESTONIAN
+    singularNimetavEE = "singularNimetavEE",
+    pluralNimetavEE = "pluralNimetavEE",
+
+    singularOmastavEE = "singularOmastavEE",
+    pluralOmastavEE = "pluralOmastavEE",
+
+    singularOsastavEE = "singularOsastavEE",
+    pluralOsastavEE = "pluralOsastavEE",
+
+    shortFormEE = "shortFormEE",
 }
 
 export enum Lang {

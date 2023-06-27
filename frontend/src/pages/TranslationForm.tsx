@@ -263,7 +263,10 @@ export function TranslationForm(props: TranslationFormProps) {
                             <Button
                                 onClick={() => {
                                     if (completeWordData!) {
-                                        props.onSave(completeWordData)
+                                        props.onSave({
+                                            ...completeWordData,
+                                            partOfSpeech: partOfSpeech
+                                        })
                                     }
                                 }}
                                 variant={"outlined"}

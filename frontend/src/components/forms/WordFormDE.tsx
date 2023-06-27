@@ -8,12 +8,12 @@ import {SelectFormWithHook} from "../SelectFormHook";
 import {NounItem} from "../../ts/interfaces";
 import {GenderDE, NounCases} from "../../ts/enums";
 
-interface WordFormENProps {
+interface WordFormDEProps {
     setComplete: (completionState: boolean) => void // used to enable/disable submit button of parent form
     setCases: (cases: NounItem[]) => void // once submit button of parent form is pressed, we send all data from this form
 }
 // Displays the fields required to add the english translation of a word (and handles the validations)
-export function WordFormDE(props: WordFormENProps) {
+export function WordFormDE(props: WordFormDEProps) {
 
     const validationSchema = Yup.object().shape({
         gender: Yup.string().required("The gender is required")

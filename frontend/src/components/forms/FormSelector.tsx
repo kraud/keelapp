@@ -4,6 +4,7 @@ import {NounItem} from "../../ts/interfaces";
 import React from "react";
 import {WordFormEN} from "./WordFormEN";
 import {WordFormDE} from "./WordFormDE";
+import {WordFormEE} from "./WordFormEE";
 
 interface FormSelectorProps {
     currentLang?: Lang,
@@ -74,6 +75,22 @@ export function FormSelector(props: FormSelectorProps) {
                         setComplete = {(completionState) => {
                             props.setTranslationStatus({
                                 language: Lang.DE,
+                                isValidFormStatus:completionState
+                            })
+                        }}
+                    />
+                )
+            }
+            case (Lang.EE): {
+                return(
+                    <WordFormEE
+                        setCases={(casesList: NounItem[]) => {
+                            // generic function to append language, list of NounItems and update parent
+                            props.updateTranslationList(Lang.EE, casesList)
+                        }}
+                        setComplete = {(completionState) => {
+                            props.setTranslationStatus({
+                                language: Lang.EE,
                                 isValidFormStatus:completionState
                             })
                         }}
