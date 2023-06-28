@@ -4,12 +4,17 @@ import React, {useEffect, useState} from "react";
 import {WordFormGeneric} from "../components/WordFormGeneric";
 import {TranslationItem, WordData} from "../ts/interfaces";
 import {Lang, PartOfSpeech} from "../ts/enums";
+import {useSelector} from "react-redux";
+import LinearIndeterminate from "../components/Spinner";
+import {toast, Flip} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface TranslationFormProps {
     onSave: (wordData: WordData) => void
 }
 
 export function TranslationForm(props: TranslationFormProps) {
+    const {isSuccess, isLoading} = useSelector((state: any) => state.words)
 
     // Languages currently in use for this word
     const [selectedLanguages, setSelectedLanguages] = useState<
@@ -87,6 +92,49 @@ export function TranslationForm(props: TranslationFormProps) {
         setAvailableLanguagesList()
     }, [selectedLanguages])
 
+
+    const toastId = React.useRef(null);
+    // @ts-ignore
+    const notify = () => toastId.current = toast.info('Saving...', {
+        position: "bottom-right",
+        autoClose: false,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+    });
+    // @ts-ignore
+    const update = () => toast.update(toastId.current, {
+        render: "The word was saved successfully!",
+        type: toast.TYPE.SUCCESS,
+        autoClose: 5000,
+        transition: Flip,
+        delay: 500
+    });
+
+    useEffect(() => {
+        if(isLoading){
+            notify()
+        }
+    }, [isLoading])
+
+    useEffect(() => {
+        if(isSuccess){
+            update()
+            // once the word has been saved, the form must be reset
+            resetAll()
+        }
+    }, [isSuccess])
+
+    useEffect(() => {
+        console.log("completeWordData")
+        console.log(completeWordData)
+    }, [completeWordData])
+
+    const [amountFormsOnScreen, setAmountFormsOnScreen] = useState(2)
+
     const getAllPartsOfSpeech = () => {
         const partsOfSpeech: string[] = (Object.values(PartOfSpeech).filter((v) => isNaN(Number(v))) as unknown as Array<keyof typeof Lang>)
         return(partsOfSpeech)
@@ -117,6 +165,8 @@ export function TranslationForm(props: TranslationFormProps) {
     const resetAll = () => {
         setPartOfSpeech(undefined)
         setSelectedLanguages([])
+        setCompleteWordData(null)
+        setAmountFormsOnScreen(2)
     }
 
     return(
@@ -180,57 +230,56 @@ export function TranslationForm(props: TranslationFormProps) {
                             Reset
                         </Button>
                     </Grid>
-                    {/* TODO: rewrite this - without repeating so much code*/}
-                    {/* REQUIRED, FIRST LANGUAGE */}
-                    <WordFormGeneric
-                        partOfSpeech={partOfSpeech}
-                        availableLanguages={availableLanguages}
-                        setTranslationStatus={(translationData) => {
-                            editTranslationsData(
-                                translationData,
-                                selectedLanguages,
-                                (updatedList) => setSelectedLanguages(updatedList)
+                    {(isLoading) &&
+                        <Grid
+                            item={true}
+                            container={true}
+                            justifyContent={"center"}
+                        >
+                            <Grid
+                                item={true}
+                                xs={4}
+                            >
+                                <LinearIndeterminate/>
+                            </Grid>
+                        </Grid>
+                    }
+                    {
+                        Array(amountFormsOnScreen).fill(0).map((_, index) => {
+                            return(
+                                <WordFormGeneric
+                                    removeForm={() => {
+                                        if(amountFormsOnScreen > 2){
+                                            setAmountFormsOnScreen(amountFormsOnScreen - 1)
+                                        }
+                                    }}
+                                    key={index}
+                                    partOfSpeech={partOfSpeech}
+                                    availableLanguages={availableLanguages}
+                                    setTranslationStatus={(translationData) => {
+                                        editTranslationsData(
+                                            translationData,
+                                            selectedLanguages,
+                                            (updatedList) => setSelectedLanguages(updatedList)
+                                        )
+                                    }}
+                                    updateCurrentLang={(langNowAvailable: Lang) => removeLanguageFromSelected(langNowAvailable)}
+                                    updateTranslationData={(translation: TranslationItem) => {
+                                        editTranslationsData(
+                                            translation,
+                                            (completeWordData!)
+                                                ? completeWordData.translations
+                                                : [],
+                                            (updatedList) => setCompleteWordData({
+                                                ...completeWordData!,
+                                                translations: updatedList
+                                            })
+                                        )
+                                    }}
+                                />
                             )
-                        }}
-                        updateCurrentLang={(langNowAvailable: Lang) => removeLanguageFromSelected(langNowAvailable)}
-                        updateTranslationData={(translation: TranslationItem) => {
-                            editTranslationsData(
-                                translation,
-                                (completeWordData!)
-                                    ? completeWordData.translations
-                                    : [],
-                                (updatedList) => setCompleteWordData({
-                                    ...completeWordData!,
-                                    translations: updatedList
-                                })
-                            )
-                        }}
-                    />
-                    {/* REQUIRED, SECOND LANGUAGE */}
-                    <WordFormGeneric
-                        partOfSpeech={partOfSpeech}
-                        availableLanguages={availableLanguages}
-                        setTranslationStatus={(translationData) => {
-                            editTranslationsData(
-                                translationData,
-                                selectedLanguages,
-                                (updatedList) => setSelectedLanguages(updatedList)
-                            )
-                        }}
-                        updateCurrentLang={(langNowAvailable: Lang) => removeLanguageFromSelected(langNowAvailable)}
-                        updateTranslationData={(translation: TranslationItem) => {
-                            editTranslationsData(
-                                translation,
-                                (completeWordData!)
-                                    ? completeWordData.translations
-                                    : [],
-                                (updatedList) => setCompleteWordData({
-                                    ...completeWordData!,
-                                    translations: updatedList
-                                })
-                            )
-                        }}
-                    />
+                        })
+                    }
                     {
                         (selectedLanguages.length > 1) &&
                         <Grid
@@ -249,14 +298,28 @@ export function TranslationForm(props: TranslationFormProps) {
                             />
                         </Grid>
                     }
-                    {/* TODO: include dynamic addition of more WordFormGeneric for other languages */}
-                    {/* FORM BUTTONS */}
+                    {/* BUTTONS */}
                     <Grid
                         item={true}
                         container={true}
                         spacing={2}
                         justifyContent={"center"}
                     >
+                        <Grid
+                            item={true}
+                        >
+                            <Button
+                                onClick={() => setAmountFormsOnScreen((amountFormsOnScreen + 1))}
+                                variant={"outlined"}
+                                disabled={( // only true when all the languages are being used
+                                    (Object.values(Lang).filter((v) => isNaN(Number(v))) as unknown as Array<keyof typeof Lang>).length
+                                    <=
+                                    selectedLanguages.length
+                                )}
+                            >
+                                Add another translation
+                            </Button>
+                        </Grid>
                         <Grid
                             item={true}
                         >

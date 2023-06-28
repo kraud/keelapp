@@ -17,6 +17,7 @@ interface WordFormGenericProps {
         }) => void // to inform parent component which language we are currently surveying and the status of the form
     updateCurrentLang: (langNowAvailable: Lang) => void // when changing the language we inform parent component that previous one is now available
     updateTranslationData: (translation: TranslationItem) => void
+    removeForm: () => void // temp workaround - removes the last form on display
 }
 
 
@@ -54,7 +55,6 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                 spacing={2}
                 alignItems={"center"}
             >
-                {/* SELECT LANGUAGE FOR ORIGINAL WORD */}
                 <Grid
                     item={true}
                     container={true}
@@ -88,7 +88,6 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                         })
                     }
                 </Grid>
-                {/* INPUT ORIGINAL WORD */}
                 <Grid
                     item={true}
                     xs={"auto"}
@@ -107,7 +106,6 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                                 Pick a language for the new word
                             </Typography>
                             :
-                            // getLanguageForm(currentLang)
                             <FormSelector
                                 currentLang={currentLang}
                                 partOfSpeech={props.partOfSpeech}
@@ -120,6 +118,32 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                             />
                         }
                     </Grid>
+                </Grid>
+                <Grid
+                    item={true}
+                    container={true}
+                >
+                    <Button
+                        variant={"outlined"}
+                        disabled={( // only true when only 2 languages are being used
+                            (
+                                (Object.values(Lang).filter((v) => isNaN(Number(v))) as unknown as Array<keyof typeof Lang>).length
+                                - 2
+                            )
+                            <
+                            props.availableLanguages.length
+                        )}
+                        onClick={() => {
+                            if(currentLang !== null){
+                                // inform parent that old lang is now available
+                                props.updateCurrentLang(currentLang)
+                            }
+                            setCurrentLang(null)
+                            props.removeForm()
+                        }}
+                    >
+                        REMOVE
+                    </Button>
                 </Grid>
                 {/* SELECT LANGUAGE FOR TRANSLATION */}
                 {/* INPUT DATA FOR TRANSLATION */}
