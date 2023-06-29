@@ -73,12 +73,6 @@ export function WordFormDE(props: WordFormDEProps) {
     const [pluralDativ, setPluralDativ] = useState("")
 
     useEffect(() => {
-        props.updateFormData({
-            completionState: isValid
-        })
-    }, [isValid])
-
-    useEffect(() => {
         const currentCases: NounItem[] = [
             {
                 caseName: NounCases.genderDE,
@@ -118,11 +112,12 @@ export function WordFormDE(props: WordFormDEProps) {
             }
         ]
         props.updateFormData({
-            cases: currentCases
+            cases: currentCases,
+            completionState: isValid
         })
     }, [
         genderWord, singularNominativ, pluralNominativ, singularAkkusativ, pluralAkkusativ, singularGenitiv,
-        pluralGenitiv, singularDativ, pluralDativ
+        pluralGenitiv, singularDativ, pluralDativ, isValid
     ])
 
     return(

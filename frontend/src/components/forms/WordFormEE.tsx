@@ -63,12 +63,6 @@ export function WordFormEE(props: WordFormEEProps) {
     const [pluralOsastav, setPluralOsastav] = useState("")
 
     useEffect(() => {
-        props.updateFormData({
-            completionState: isValid
-        })
-    }, [isValid])
-
-    useEffect(() => {
         const currentCases: NounItem[] = [
             {
                 caseName: NounCases.singularNimetavEE,
@@ -100,11 +94,12 @@ export function WordFormEE(props: WordFormEEProps) {
             },
         ]
         props.updateFormData({
-            cases: currentCases
+            cases: currentCases,
+            completionState: isValid
         })
     }, [
         singularNimetav, pluralNimetav, singularOmastav, pluralOmastav, singularOsastav,
-        pluralOsastav, shortForm
+        pluralOsastav, shortForm, isValid
     ])
 
     return(

@@ -42,12 +42,6 @@ export function WordFormEN(props: WordFormENProps) {
     const [pluralWord, setPluralWord] = useState("")
 
     useEffect(() => {
-        props.updateFormData({
-            completionState: isValid
-        })
-    }, [isValid])
-
-    useEffect(() => {
         const currentCases: NounItem[] = [
             {
                 caseName: NounCases.singularEN,
@@ -59,9 +53,10 @@ export function WordFormEN(props: WordFormENProps) {
             }
         ]
         props.updateFormData({
-            cases: currentCases
+            cases: currentCases,
+            completionState: isValid
         })
-    }, [singularWord, pluralWord])
+    }, [singularWord, pluralWord, isValid])
 
     return(
         <Grid
