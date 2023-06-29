@@ -9,8 +9,14 @@ import {NounItem} from "../../ts/interfaces";
 import {GenderDE, NounCases} from "../../ts/enums";
 
 interface WordFormDEProps {
-    setComplete: (completionState: boolean) => void // used to enable/disable submit button of parent form
-    setCases: (cases: NounItem[]) => void // once submit button of parent form is pressed, we send all data from this form
+    updateFormData: (
+        formData: {
+            cases?: NounItem[],
+            completionState?: boolean
+        }
+    ) => void
+    // setComplete: (completionState: boolean) => void // used to enable/disable submit button of parent form
+    // setCases: (cases: NounItem[]) => void // once submit button of parent form is pressed, we send all data from this form
 }
 // Displays the fields required to add the english translation of a word (and handles the validations)
 export function WordFormDE(props: WordFormDEProps) {
@@ -69,7 +75,10 @@ export function WordFormDE(props: WordFormDEProps) {
     const [pluralDativ, setPluralDativ] = useState("")
 
     useEffect(() => {
-        props.setComplete(isValid)
+        // props.setComplete(isValid)
+        props.updateFormData({
+            completionState: isValid
+        })
     }, [isValid])
 
     useEffect(() => {
@@ -111,7 +120,10 @@ export function WordFormDE(props: WordFormDEProps) {
                 word: pluralDativ
             }
         ]
-        props.setCases(currentCases)
+        // props.setCases(currentCases)
+        props.updateFormData({
+            cases: currentCases
+        })
     }, [
         genderWord, singularNominativ, pluralNominativ, singularAkkusativ, pluralAkkusativ, singularGenitiv,
         pluralGenitiv, singularDativ, pluralDativ

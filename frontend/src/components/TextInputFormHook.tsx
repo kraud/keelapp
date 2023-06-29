@@ -1,6 +1,6 @@
 import {Control, Controller} from "react-hook-form";
 import {TextField} from "@mui/material";
-import React from "react";
+import React, {useEffect} from "react";
 
 interface TextInputFormWithHookProps {
     control: Control<any, any>, // Comes from the useForm() hook in React-Hook-Form
@@ -14,6 +14,17 @@ interface TextInputFormWithHookProps {
 }
 
 export const TextInputFormWithHook = (props: TextInputFormWithHookProps) => {
+
+    // WILL BE USED NEXT, ONCE REFACTOR IS COMPLETED
+    // this is needed when updating the amount of forms on screen for adding/editing words
+    // we re-populate the list with data from completeWordData
+    // useEffect(() => {
+    //     if(props.defaultValue !== ""){
+    //         if (props.onChange!) { // if added, we share with parent the new value
+    //             props.onChange(props.defaultValue)
+    //         }
+    //     }
+    // }, [])
 
     return (
         <Controller

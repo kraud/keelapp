@@ -8,8 +8,14 @@ import {NounItem} from "../../ts/interfaces";
 import {NounCases} from "../../ts/enums";
 
 interface WordFormENProps {
-    setComplete: (completionState: boolean) => void // used to enable/disable submit button of parent form
-    setCases?: (cases: NounItem[]) => void // once submit button of parent form is pressed, we send all data from this form
+    updateFormData: (
+        formData: {
+            cases?: NounItem[],
+            completionState?: boolean
+        }
+    ) => void
+    // setComplete: (completionState: boolean) => void // used to enable/disable submit button of parent form
+    // setCases: (cases: NounItem[]) => void // once submit button of parent form is pressed, we send all data from this form
 }
 // Displays the fields required to add the english translation of a word (and handles the validations)
 export function WordFormEN(props: WordFormENProps) {
@@ -38,7 +44,10 @@ export function WordFormEN(props: WordFormENProps) {
     const [pluralWord, setPluralWord] = useState("")
 
     useEffect(() => {
-        props.setComplete(isValid)
+        // props.setComplete(isValid)
+        props.updateFormData({
+            completionState: isValid
+        })
     }, [isValid])
 
     useEffect(() => {
@@ -52,7 +61,10 @@ export function WordFormEN(props: WordFormENProps) {
                 word: pluralWord
             }
         ]
-        props.setCases!(currentCases)
+        // props.setCases(currentCases)
+        props.updateFormData({
+            cases: currentCases
+        })
     }, [singularWord, pluralWord])
 
     return(

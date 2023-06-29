@@ -8,8 +8,14 @@ import {NounItem} from "../../ts/interfaces";
 import {NounCases} from "../../ts/enums";
 
 interface WordFormEEProps {
-    setComplete: (completionState: boolean) => void // used to enable/disable submit button of parent form
-    setCases: (cases: NounItem[]) => void // once submit button of parent form is pressed, we send all data from this form
+    updateFormData: (
+        formData: {
+            cases?: NounItem[],
+            completionState?: boolean
+        }
+    ) => void
+    // setComplete: (completionState: boolean) => void // used to enable/disable submit button of parent form
+    // setCases: (cases: NounItem[]) => void // once submit button of parent form is pressed, we send all data from this form
 }
 // Displays the fields required to add the english translation of a word (and handles the validations)
 export function WordFormEE(props: WordFormEEProps) {
@@ -59,7 +65,10 @@ export function WordFormEE(props: WordFormEEProps) {
     const [pluralOsastav, setPluralOsastav] = useState("")
 
     useEffect(() => {
-        props.setComplete(isValid)
+        // props.setComplete(isValid)
+        props.updateFormData({
+            completionState: isValid
+        })
     }, [isValid])
 
     useEffect(() => {
@@ -93,7 +102,10 @@ export function WordFormEE(props: WordFormEEProps) {
                 word: shortForm
             },
         ]
-        props.setCases(currentCases)
+        // props.setCases(currentCases)
+        props.updateFormData({
+            cases: currentCases
+        })
     }, [
         singularNimetav, pluralNimetav, singularOmastav, pluralOmastav, singularOsastav,
         pluralOsastav, shortForm

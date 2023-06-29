@@ -9,11 +9,16 @@ import {WordFormEE} from "./WordFormEE";
 interface FormSelectorProps {
     currentLang?: Lang,
     partOfSpeech?: PartOfSpeech,
-    setTranslationStatus: (translationData: {
+    // setTranslationStatus: (translationData: {
+    //     language: Lang,
+    //     isValidFormStatus: boolean
+    // }) => void // to inform parent component which language we are currently surveying and the status of the form
+    // updateTranslationList: (language: Lang, nounCases: NounItem[]) => void
+    updateFormData: (formData: {
         language: Lang,
-        isValidFormStatus: boolean
-    }) => void // to inform parent component which language we are currently surveying and the status of the form
-    updateTranslationList: (language: Lang, nounCases: NounItem[]) => void
+        cases?: NounItem[],
+        completionState?: boolean
+    }) => void
 }
 
 export function FormSelector(props: FormSelectorProps) {
@@ -36,14 +41,24 @@ export function FormSelector(props: FormSelectorProps) {
             case (Lang.EN): {
                 return(
                     <WordFormEN
-                        setCases={(casesList: NounItem[]) => {
-                            // generic function to append language, list of NounItems and update parent
-                            props.updateTranslationList(Lang.EN, casesList)
-                        }}
-                        setComplete = {(completionState) => {
-                            props.setTranslationStatus({
+                        // setCases={(casesList: NounItem[]) => {
+                        //     // generic function to append language, list of NounItems and update parent
+                        //     props.updateTranslationList(Lang.EN, casesList)
+                        // }}
+                        // setComplete = {(completionState) => {
+                        //     props.setTranslationStatus({
+                        //         language: Lang.EN,
+                        //         isValidFormStatus:completionState
+                        //     })
+                        // }}
+                        updateFormData={(formData: {
+                            cases?: NounItem[],
+                            completionState?: boolean
+                        }) => {
+                            props.updateFormData({
                                 language: Lang.EN,
-                                isValidFormStatus:completionState
+                                cases: formData.cases,
+                                completionState: formData.completionState
                             })
                         }}
                     />
@@ -52,14 +67,24 @@ export function FormSelector(props: FormSelectorProps) {
             case (Lang.ES): {
                 return(
                     <WordFormES
-                        setCases={(casesList: NounItem[]) => {
-                            // generic function to append language, list of NounItems and update parent
-                            props.updateTranslationList(Lang.ES, casesList)
-                        }}
-                        setComplete = {(completionState) => {
-                            props.setTranslationStatus({
+                        // setCases={(casesList: NounItem[]) => {
+                        //     // generic function to append language, list of NounItems and update parent
+                        //     props.updateTranslationList(Lang.ES, casesList)
+                        // }}
+                        // setComplete = {(completionState) => {
+                        //     props.setTranslationStatus({
+                        //         language: Lang.ES,
+                        //         isValidFormStatus:completionState
+                        //     })
+                        // }}
+                        updateFormData={(formData: {
+                            cases?: NounItem[],
+                            completionState?: boolean
+                        }) => {
+                            props.updateFormData({
                                 language: Lang.ES,
-                                isValidFormStatus:completionState
+                                cases: formData.cases,
+                                completionState: formData.completionState
                             })
                         }}
                     />
@@ -68,14 +93,24 @@ export function FormSelector(props: FormSelectorProps) {
             case (Lang.DE): {
                 return(
                     <WordFormDE
-                        setCases={(casesList: NounItem[]) => {
-                            // generic function to append language, list of NounItems and update parent
-                            props.updateTranslationList(Lang.DE, casesList)
-                        }}
-                        setComplete = {(completionState) => {
-                            props.setTranslationStatus({
+                        // setCases={(casesList: NounItem[]) => {
+                        //     // generic function to append language, list of NounItems and update parent
+                        //     props.updateTranslationList(Lang.DE, casesList)
+                        // }}
+                        // setComplete = {(completionState) => {
+                        //     props.setTranslationStatus({
+                        //         language: Lang.DE,
+                        //         isValidFormStatus:completionState
+                        //     })
+                        // }}
+                        updateFormData={(formData: {
+                            cases?: NounItem[],
+                            completionState?: boolean
+                        }) => {
+                            props.updateFormData({
                                 language: Lang.DE,
-                                isValidFormStatus:completionState
+                                cases: formData.cases,
+                                completionState: formData.completionState
                             })
                         }}
                     />
@@ -84,14 +119,24 @@ export function FormSelector(props: FormSelectorProps) {
             case (Lang.EE): {
                 return(
                     <WordFormEE
-                        setCases={(casesList: NounItem[]) => {
-                            // generic function to append language, list of NounItems and update parent
-                            props.updateTranslationList(Lang.EE, casesList)
-                        }}
-                        setComplete = {(completionState) => {
-                            props.setTranslationStatus({
+                        // setCases={(casesList: NounItem[]) => {
+                        //     // generic function to append language, list of NounItems and update parent
+                        //     props.updateTranslationList(Lang.EE, casesList)
+                        // }}
+                        // setComplete = {(completionState) => {
+                        //     props.setTranslationStatus({
+                        //         language: Lang.EE,
+                        //         isValidFormStatus:completionState
+                        //     })
+                        // }}
+                        updateFormData={(formData: {
+                            cases?: NounItem[],
+                            completionState?: boolean
+                        }) => {
+                            props.updateFormData({
                                 language: Lang.EE,
-                                isValidFormStatus:completionState
+                                cases: formData.cases,
+                                completionState: formData.completionState
                             })
                         }}
                     />

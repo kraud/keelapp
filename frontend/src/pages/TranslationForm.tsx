@@ -2,7 +2,7 @@ import {Button, Grid, TextField, Typography} from "@mui/material";
 import globalTheme from "../theme/theme";
 import React, {useEffect, useState} from "react";
 import {WordFormGeneric} from "../components/WordFormGeneric";
-import {TranslationItem, WordData} from "../ts/interfaces";
+import {NounItem, TranslationItem, WordData} from "../ts/interfaces";
 import {Lang, PartOfSpeech} from "../ts/enums";
 import {useSelector} from "react-redux";
 import LinearIndeterminate from "../components/Spinner";
@@ -31,7 +31,7 @@ export function TranslationForm(props: TranslationFormProps) {
     const [availableLanguages, setAvailableLanguages] = useState<Lang[]>([])
 
     // object containing all the translations and extra info about the word
-    const [completeWordData, setCompleteWordData] = useState<WordData | null>(null)
+    const [completeWordData, setCompleteWordData] = useState<WordData>({translations: []})
 
     // This function is used to update the list of currently selected languages and their status
     // It is also used to update the list of nouns+language combo, with the latest changes from the form
@@ -41,13 +41,12 @@ export function TranslationForm(props: TranslationFormProps) {
         newLanguageData: {
             language: Lang
         },
-        existingLanguageList: { language: Lang }[],
+        selectedLanguagesList: { language: Lang }[],
         setUpdatedList: (updatedList: any[]) => void
     ) => {
-        // Check if newLanguageData.language is already included - if so edit
         let updated: boolean = false // will be used to check if the current language is already one of the stored translations
-        if(existingLanguageList.length > 0){
-            const updatedSelectedLanguages = existingLanguageList.map((selectedLang) => {
+        if(selectedLanguagesList.length > 0){
+            const updatedSelectedLanguages = selectedLanguagesList.map((selectedLang) => {
                 // we found the current language, and we update the entry on the list
                 if(selectedLang.language === newLanguageData.language) {
                     updated = true // we trigger the flag to know that the language was found and updated
@@ -61,8 +60,9 @@ export function TranslationForm(props: TranslationFormProps) {
             if(updated) {
                 setUpdatedList(updatedSelectedLanguages) // if the list now has the updated info about of translation, we simply save it
             } else { // assuming it's a new entry we append to the end of the existing list of translations
+                // TODO: if it's a new entry, and *there's only one other*, we must replace the Object at the 2nd index
                 setUpdatedList([
-                    ...existingLanguageList,
+                    ...selectedLanguagesList,
                     {
                         ...newLanguageData
                     }
@@ -72,24 +72,33 @@ export function TranslationForm(props: TranslationFormProps) {
             // If there is no languages yet selected, we simply add it to the list as the first item
             setUpdatedList([{
                 ...newLanguageData
+                // TODO: language data goes in first one - second one should still be an Object
             }])
         }
     }
 
-    const removeLanguageFromSelected = (langToRemove: Lang) => {
+    const removeLanguageFromSelected = (langToRemoveFromList: Lang) => {
         let newSelected: any[] = []
         selectedLanguages.forEach((alreadySelectedLang) => {
-            if(alreadySelectedLang.language === langToRemove){
+            if(alreadySelectedLang.language === langToRemoveFromList){
                 return
             } else {
                 newSelected.push(alreadySelectedLang)
             }
         })
+        // we update the list specific to this
         setSelectedLanguages(newSelected)
+        // we update the whole data that will be stored on the BE
+        setCompleteWordData({
+            ...completeWordData,
+            translations: getFilteredTranslations(completeWordData.translations, newSelected)
+        })
     }
 
     useEffect(() => {
         setAvailableLanguagesList()
+        console.log("selectedLanguages")
+        console.log(selectedLanguages)
     }, [selectedLanguages])
 
 
@@ -165,8 +174,39 @@ export function TranslationForm(props: TranslationFormProps) {
     const resetAll = () => {
         setPartOfSpeech(undefined)
         setSelectedLanguages([])
-        setCompleteWordData(null)
+        setCompleteWordData({translations: []})
+        // TODO: will use this when implementing new changes for dynamically updating amount of forms on screen
+        /*
+        setCompleteWordData(
+            {
+                translations: [
+                    Object as unknown as TranslationItem,
+                    Object as unknown as TranslationItem,
+                ]
+            })
+            */
         setAmountFormsOnScreen(2)
+    }
+
+    // When switching languages on an open form, the WordFomGeneric child component will try to update
+    // the completeWordData state here, but since we already deleted
+    function getFilteredTranslations(
+        outdatedTranslations: TranslationItem[],
+        upToDateList: {
+            language: Lang,
+            isValidFormStatus?: boolean
+        }[]
+    ) {
+        const selectedLangs = upToDateList.map((selectedLang) => selectedLang.language)
+        const filteredTranslations: TranslationItem[] = []
+        outdatedTranslations.forEach((unverifiedTranslation) => {
+                if(selectedLangs.includes(unverifiedTranslation.language)){
+                    filteredTranslations.push(unverifiedTranslation)
+                } else {
+                    return
+                }
+            })
+        return(filteredTranslations)
     }
 
     return(
@@ -245,6 +285,8 @@ export function TranslationForm(props: TranslationFormProps) {
                         </Grid>
                     }
                     {
+                        // TODO: will use this when implementing new changes for dynamically updating amount of forms on screen
+                        // (completeWordData.translations).map((_, index) => {
                         Array(amountFormsOnScreen).fill(0).map((_, index) => {
                             return(
                                 <WordFormGeneric
@@ -256,24 +298,53 @@ export function TranslationForm(props: TranslationFormProps) {
                                     key={index}
                                     partOfSpeech={partOfSpeech}
                                     availableLanguages={availableLanguages}
-                                    setTranslationStatus={(translationData) => {
+                                    removeLanguageFromSelected={(langToRemoveFromList: Lang) => removeLanguageFromSelected(langToRemoveFromList)}
+                                    // setTranslationStatus={(translationData) => {
+                                    //     editTranslationsData(
+                                    //         translationData,
+                                    //         selectedLanguages,
+                                    //         (updatedList) => setSelectedLanguages(updatedList)
+                                    //     )
+                                    // }}
+                                    // updateTranslationData={(translation: TranslationItem) => {
+                                    //     editTranslationsData(
+                                    //         translation,
+                                    //         (completeWordData)
+                                    //             ? completeWordData.translations
+                                    //             : [],
+                                    //         (updatedList) => setCompleteWordData({
+                                    //             ...completeWordData,
+                                    //             translations: updatedList
+                                    //         })
+                                    //     )
+                                    // }}
+
+                                    updateFormData={(formData: {
+                                        language: Lang,
+                                        cases?: NounItem[],
+                                        completionState?: boolean
+                                    }) => {
+                                        // this should save *ALL* the new data in completeWorldData,
+                                        // and from there should useEffect update the other states like selected languages
                                         editTranslationsData(
-                                            translationData,
-                                            selectedLanguages,
-                                            (updatedList) => setSelectedLanguages(updatedList)
-                                        )
-                                    }}
-                                    updateCurrentLang={(langNowAvailable: Lang) => removeLanguageFromSelected(langNowAvailable)}
-                                    updateTranslationData={(translation: TranslationItem) => {
-                                        editTranslationsData(
-                                            translation,
-                                            (completeWordData!)
-                                                ? completeWordData.translations
-                                                : [],
-                                            (updatedList) => setCompleteWordData({
-                                                ...completeWordData!,
-                                                translations: updatedList
-                                            })
+                                            formData,
+                                                completeWordData.translations,
+                                                (updatedList) => {
+                                                    // we update the data to be saved
+                                                    setCompleteWordData({
+                                                        ...completeWordData,
+                                                        translations: updatedList
+                                                    })
+                                                    // we update the data we use to manage the form
+                                                    setSelectedLanguages(
+                                                        updatedList.map((translation) => {
+                                                            return({
+                                                                language: translation.language,
+                                                                isValidFormStatus: translation.completionState
+                                                            })
+                                                        })
+                                                    )
+                                                }
                                         )
                                     }}
                                 />
@@ -287,10 +358,10 @@ export function TranslationForm(props: TranslationFormProps) {
                         >
                             <TextField
                                 label={"Clue"}
-                                value={(completeWordData?.clue) ? completeWordData?.clue : ""}
+                                value={(completeWordData.clue) ? completeWordData.clue : ""}
                                 onChange={(e: any) => {
                                     setCompleteWordData({
-                                        ...completeWordData!,
+                                        ...completeWordData,
                                         clue: e.target.value
                                     })
                                 }}
@@ -325,12 +396,10 @@ export function TranslationForm(props: TranslationFormProps) {
                         >
                             <Button
                                 onClick={() => {
-                                    if (completeWordData!) {
-                                        props.onSave({
-                                            ...completeWordData,
-                                            partOfSpeech: partOfSpeech
-                                        })
-                                    }
+                                    props.onSave({
+                                        ...completeWordData,
+                                        partOfSpeech: partOfSpeech
+                                    })
                                 }}
                                 variant={"outlined"}
                                 disabled={
