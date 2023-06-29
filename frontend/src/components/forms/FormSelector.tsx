@@ -9,11 +9,6 @@ import {WordFormEE} from "./WordFormEE";
 interface FormSelectorProps {
     currentLang?: Lang,
     partOfSpeech?: PartOfSpeech,
-    // setTranslationStatus: (translationData: {
-    //     language: Lang,
-    //     isValidFormStatus: boolean
-    // }) => void // to inform parent component which language we are currently surveying and the status of the form
-    // updateTranslationList: (language: Lang, nounCases: NounItem[]) => void
     updateFormData: (formData: {
         language: Lang,
         cases?: NounItem[],
@@ -25,7 +20,7 @@ export function FormSelector(props: FormSelectorProps) {
 
 
     const getLanguageForm = () => {
-        switch (props.partOfSpeech){ // TODO: make this switch depend on the "PartOfSpeech", instead of language.
+        switch (props.partOfSpeech){
             case (PartOfSpeech.noun): {
                 return(getNounForm())
             }
@@ -41,16 +36,6 @@ export function FormSelector(props: FormSelectorProps) {
             case (Lang.EN): {
                 return(
                     <WordFormEN
-                        // setCases={(casesList: NounItem[]) => {
-                        //     // generic function to append language, list of NounItems and update parent
-                        //     props.updateTranslationList(Lang.EN, casesList)
-                        // }}
-                        // setComplete = {(completionState) => {
-                        //     props.setTranslationStatus({
-                        //         language: Lang.EN,
-                        //         isValidFormStatus:completionState
-                        //     })
-                        // }}
                         updateFormData={(formData: {
                             cases?: NounItem[],
                             completionState?: boolean
@@ -67,16 +52,6 @@ export function FormSelector(props: FormSelectorProps) {
             case (Lang.ES): {
                 return(
                     <WordFormES
-                        // setCases={(casesList: NounItem[]) => {
-                        //     // generic function to append language, list of NounItems and update parent
-                        //     props.updateTranslationList(Lang.ES, casesList)
-                        // }}
-                        // setComplete = {(completionState) => {
-                        //     props.setTranslationStatus({
-                        //         language: Lang.ES,
-                        //         isValidFormStatus:completionState
-                        //     })
-                        // }}
                         updateFormData={(formData: {
                             cases?: NounItem[],
                             completionState?: boolean
@@ -93,16 +68,6 @@ export function FormSelector(props: FormSelectorProps) {
             case (Lang.DE): {
                 return(
                     <WordFormDE
-                        // setCases={(casesList: NounItem[]) => {
-                        //     // generic function to append language, list of NounItems and update parent
-                        //     props.updateTranslationList(Lang.DE, casesList)
-                        // }}
-                        // setComplete = {(completionState) => {
-                        //     props.setTranslationStatus({
-                        //         language: Lang.DE,
-                        //         isValidFormStatus:completionState
-                        //     })
-                        // }}
                         updateFormData={(formData: {
                             cases?: NounItem[],
                             completionState?: boolean
@@ -119,16 +84,6 @@ export function FormSelector(props: FormSelectorProps) {
             case (Lang.EE): {
                 return(
                     <WordFormEE
-                        // setCases={(casesList: NounItem[]) => {
-                        //     // generic function to append language, list of NounItems and update parent
-                        //     props.updateTranslationList(Lang.EE, casesList)
-                        // }}
-                        // setComplete = {(completionState) => {
-                        //     props.setTranslationStatus({
-                        //         language: Lang.EE,
-                        //         isValidFormStatus:completionState
-                        //     })
-                        // }}
                         updateFormData={(formData: {
                             cases?: NounItem[],
                             completionState?: boolean
@@ -142,7 +97,6 @@ export function FormSelector(props: FormSelectorProps) {
                     />
                 )
             }
-            /* TODO: add Forms for German and Estonian */
             default: {
                 return(<p>That language is not available yet</p>)
             }

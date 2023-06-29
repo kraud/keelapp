@@ -14,8 +14,6 @@ interface WordFormENProps {
             completionState?: boolean
         }
     ) => void
-    // setComplete: (completionState: boolean) => void // used to enable/disable submit button of parent form
-    // setCases: (cases: NounItem[]) => void // once submit button of parent form is pressed, we send all data from this form
 }
 // Displays the fields required to add the english translation of a word (and handles the validations)
 export function WordFormEN(props: WordFormENProps) {
@@ -44,7 +42,6 @@ export function WordFormEN(props: WordFormENProps) {
     const [pluralWord, setPluralWord] = useState("")
 
     useEffect(() => {
-        // props.setComplete(isValid)
         props.updateFormData({
             completionState: isValid
         })
@@ -61,7 +58,6 @@ export function WordFormEN(props: WordFormENProps) {
                 word: pluralWord
             }
         ]
-        // props.setCases(currentCases)
         props.updateFormData({
             cases: currentCases
         })

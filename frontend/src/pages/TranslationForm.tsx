@@ -16,25 +16,17 @@ interface TranslationFormProps {
 export function TranslationForm(props: TranslationFormProps) {
     const {isSuccess, isLoading} = useSelector((state: any) => state.words)
 
-    // Languages currently in use for this word
-    const [selectedLanguages, setSelectedLanguages] = useState<
-        {
-            language: Lang,
-            isValidFormStatus?: boolean
-        }[]
-    >([])
-
     // Type of word to be added (noun/verb/adjective/etc.)
     const [partOfSpeech, setPartOfSpeech] = useState<PartOfSpeech | undefined>(undefined)
 
     // Languages currently NOT in use for this word - NB! This is calculated automatically, never set directly.
+    // It is used by WordFormGeneric to display the correct button-list of available languages
     const [availableLanguages, setAvailableLanguages] = useState<Lang[]>([])
 
     // object containing all the translations and extra info about the word
     const [completeWordData, setCompleteWordData] = useState<WordData>({translations: []})
 
     // This function is used to update the list of currently selected languages and their status
-    // It is also used to update the list of nouns+language combo, with the latest changes from the form
     // It basically checks if the new data received corresponds to a language already stored.
     // If so, it updates the info. If not, it appends it to the list.
     const editTranslationsData = (
@@ -78,17 +70,14 @@ export function TranslationForm(props: TranslationFormProps) {
     }
 
     const removeLanguageFromSelected = (langToRemoveFromList: Lang) => {
-        let newSelected: any[] = []
-        selectedLanguages.forEach((alreadySelectedLang) => {
+        let newSelected: TranslationItem[] = []
+        completeWordData.translations.forEach((alreadySelectedLang: TranslationItem) => {
             if(alreadySelectedLang.language === langToRemoveFromList){
                 return
             } else {
                 newSelected.push(alreadySelectedLang)
             }
         })
-        // we update the list specific to this
-        setSelectedLanguages(newSelected)
-        // we update the whole data that will be stored on the BE
         setCompleteWordData({
             ...completeWordData,
             translations: getFilteredTranslations(completeWordData.translations, newSelected)
@@ -97,9 +86,7 @@ export function TranslationForm(props: TranslationFormProps) {
 
     useEffect(() => {
         setAvailableLanguagesList()
-        console.log("selectedLanguages")
-        console.log(selectedLanguages)
-    }, [selectedLanguages])
+    }, [(completeWordData.translations)])
 
 
     const toastId = React.useRef(null);
@@ -137,11 +124,6 @@ export function TranslationForm(props: TranslationFormProps) {
         }
     }, [isSuccess])
 
-    useEffect(() => {
-        console.log("completeWordData")
-        console.log(completeWordData)
-    }, [completeWordData])
-
     const [amountFormsOnScreen, setAmountFormsOnScreen] = useState(2)
 
     const getAllPartsOfSpeech = () => {
@@ -152,8 +134,8 @@ export function TranslationForm(props: TranslationFormProps) {
     const setAvailableLanguagesList = () => {
         const allLangs: string[] = (Object.values(Lang).filter((v) => isNaN(Number(v))) as unknown as Array<keyof typeof Lang>)
         let filteredLangs: Lang[] = []
-        if(selectedLanguages.length > 0){
-            const selectedLangs: string[] = selectedLanguages.map((alreadySelectedLanguage) => {
+        if((completeWordData.translations).length > 0){
+            const selectedLangs: string[] = (completeWordData.translations).map((alreadySelectedLanguage) => {
                 return((alreadySelectedLanguage.language).toString())
             })
             const availableLangs: string[] = allLangs.filter((currentLang: string) => {
@@ -173,7 +155,6 @@ export function TranslationForm(props: TranslationFormProps) {
 
     const resetAll = () => {
         setPartOfSpeech(undefined)
-        setSelectedLanguages([])
         setCompleteWordData({translations: []})
         // TODO: will use this when implementing new changes for dynamically updating amount of forms on screen
         /*
@@ -285,8 +266,6 @@ export function TranslationForm(props: TranslationFormProps) {
                         </Grid>
                     }
                     {
-                        // TODO: will use this when implementing new changes for dynamically updating amount of forms on screen
-                        // (completeWordData.translations).map((_, index) => {
                         Array(amountFormsOnScreen).fill(0).map((_, index) => {
                             return(
                                 <WordFormGeneric
@@ -299,51 +278,20 @@ export function TranslationForm(props: TranslationFormProps) {
                                     partOfSpeech={partOfSpeech}
                                     availableLanguages={availableLanguages}
                                     removeLanguageFromSelected={(langToRemoveFromList: Lang) => removeLanguageFromSelected(langToRemoveFromList)}
-                                    // setTranslationStatus={(translationData) => {
-                                    //     editTranslationsData(
-                                    //         translationData,
-                                    //         selectedLanguages,
-                                    //         (updatedList) => setSelectedLanguages(updatedList)
-                                    //     )
-                                    // }}
-                                    // updateTranslationData={(translation: TranslationItem) => {
-                                    //     editTranslationsData(
-                                    //         translation,
-                                    //         (completeWordData)
-                                    //             ? completeWordData.translations
-                                    //             : [],
-                                    //         (updatedList) => setCompleteWordData({
-                                    //             ...completeWordData,
-                                    //             translations: updatedList
-                                    //         })
-                                    //     )
-                                    // }}
 
                                     updateFormData={(formData: {
                                         language: Lang,
                                         cases?: NounItem[],
                                         completionState?: boolean
                                     }) => {
-                                        // this should save *ALL* the new data in completeWorldData,
-                                        // and from there should useEffect update the other states like selected languages
                                         editTranslationsData(
                                             formData,
                                                 completeWordData.translations,
                                                 (updatedList) => {
-                                                    // we update the data to be saved
                                                     setCompleteWordData({
                                                         ...completeWordData,
                                                         translations: updatedList
                                                     })
-                                                    // we update the data we use to manage the form
-                                                    setSelectedLanguages(
-                                                        updatedList.map((translation) => {
-                                                            return({
-                                                                language: translation.language,
-                                                                isValidFormStatus: translation.completionState
-                                                            })
-                                                        })
-                                                    )
                                                 }
                                         )
                                     }}
@@ -352,7 +300,7 @@ export function TranslationForm(props: TranslationFormProps) {
                         })
                     }
                     {
-                        (selectedLanguages.length > 1) &&
+                        ((completeWordData.translations).length > 1) &&
                         <Grid
                             item={true}
                         >
@@ -385,7 +333,7 @@ export function TranslationForm(props: TranslationFormProps) {
                                 disabled={( // only true when all the languages are being used
                                     (Object.values(Lang).filter((v) => isNaN(Number(v))) as unknown as Array<keyof typeof Lang>).length
                                     <=
-                                    selectedLanguages.length
+                                    (completeWordData.translations).length
                                 )}
                             >
                                 Add another translation
@@ -403,10 +351,10 @@ export function TranslationForm(props: TranslationFormProps) {
                                 }}
                                 variant={"outlined"}
                                 disabled={
-                                    (selectedLanguages.length < 2)
+                                    ((completeWordData.translations).length < 2)
                                     ||
-                                    ((selectedLanguages.filter((selectedLang) => {
-                                        return (!selectedLang.isValidFormStatus)
+                                    (((completeWordData.translations).filter((selectedLang) => {
+                                        return (!selectedLang.completionState)
                                     })).length > 0)
                                 }
                             >

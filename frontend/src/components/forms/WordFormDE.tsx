@@ -15,10 +15,8 @@ interface WordFormDEProps {
             completionState?: boolean
         }
     ) => void
-    // setComplete: (completionState: boolean) => void // used to enable/disable submit button of parent form
-    // setCases: (cases: NounItem[]) => void // once submit button of parent form is pressed, we send all data from this form
 }
-// Displays the fields required to add the english translation of a word (and handles the validations)
+// Displays the fields required to add the german translation of a word (and handles the validations)
 export function WordFormDE(props: WordFormDEProps) {
 
     const validationSchema = Yup.object().shape({
@@ -75,7 +73,6 @@ export function WordFormDE(props: WordFormDEProps) {
     const [pluralDativ, setPluralDativ] = useState("")
 
     useEffect(() => {
-        // props.setComplete(isValid)
         props.updateFormData({
             completionState: isValid
         })
@@ -120,7 +117,6 @@ export function WordFormDE(props: WordFormDEProps) {
                 word: pluralDativ
             }
         ]
-        // props.setCases(currentCases)
         props.updateFormData({
             cases: currentCases
         })

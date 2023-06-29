@@ -1,8 +1,6 @@
 import {Button, Grid, Typography} from "@mui/material";
-import React, {useEffect, useState} from "react";
-import {WordFormEN} from "./forms/WordFormEN";
-import {WordFormES} from "./forms/WordFormES";
-import {NounItem, TranslationItem} from "../ts/interfaces";
+import React, {useState} from "react";
+import {NounItem} from "../ts/interfaces";
 import {Lang, PartOfSpeech} from "../ts/enums";
 import {FormSelector} from "./forms/FormSelector";
 
@@ -11,14 +9,7 @@ import {FormSelector} from "./forms/FormSelector";
 interface WordFormGenericProps {
     partOfSpeech?: PartOfSpeech,
     availableLanguages: Lang[] // list provided by parent component, so we know which languages can be displayed as options to choose from
-    // used to update the selectedLanguages list and their isValid state
-    // setTranslationStatus: (translationData: {
-    //         language: Lang,
-    //         isValidFormStatus: boolean
-    //     }) => void // to inform parent component which language we are currently surveying and the status of the form
     removeLanguageFromSelected: (langNowAvailable: Lang) => void // when changing the language we inform parent component that previous one is now available
-    // used to update the completeWordData state
-    // updateTranslationData: (translation: TranslationItem) => void
     removeForm: () => void // temp workaround - removes the last form on display - this should remove an item from a specific index
 
     updateFormData: (formData: {
@@ -33,25 +24,6 @@ interface WordFormGenericProps {
 // This form will only display buttons/textfields/selects for A SINGLE language+word combo
 export function WordFormGeneric(props: WordFormGenericProps) {
     const [currentLang, setCurrentLang] = useState<Lang | null>(null)
-    const [wordCases, setWordCases] = useState<TranslationItem | null >() // each item represents a language that has a translation
-
-    // useEffect(() => {
-    //     if(wordCases){
-    //         props.updateTranslationData(wordCases)
-    //     }
-    // }, [wordCases])
-    //
-    // const updateTranslationList = (language: Lang, nounCases: NounItem[]) => {
-    //     setWordCases({
-    //         language: language,
-    //         nounCases: nounCases.filter((nounCase) => (nounCase.word !== "")) // To avoid saving empty cases
-    //     })
-    // }
-
-    const [availableLanguages, setAvailableLanguages] = useState<Lang[]>([])
-    useEffect(() => {
-        setAvailableLanguages(props.availableLanguages)
-    }, [props.availableLanguages])
 
     return(
         <Grid
@@ -72,7 +44,7 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                     spacing={2}
                 >
                     {
-                        availableLanguages.map((lang: Lang, index: number) => {
+                        props.availableLanguages.map((lang: Lang, index: number) => {
                             return(
                                 <Grid
                                     item={true}
@@ -121,12 +93,6 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                             <FormSelector
                                 currentLang={currentLang}
                                 partOfSpeech={props.partOfSpeech}
-                                // setTranslationStatus={(translationData) => {
-                                //     props.setTranslationStatus(translationData)
-                                // }}
-                                // updateTranslationList={(language: Lang, nounCases: NounItem[] ) => {
-                                //     updateTranslationList(language, nounCases)
-                                // }}
                                 updateFormData={(formData: {
                                     language: Lang,
                                     cases?: NounItem[],
@@ -154,7 +120,7 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                         disabled={( // only true when only 2 languages are being used
                             (
                                 (Object.values(Lang).filter((v) => isNaN(Number(v))) as unknown as Array<keyof typeof Lang>).length
-                                - 2
+                                - 2 // amount of minimum forms to be displayed
                             )
                             <
                             props.availableLanguages.length
@@ -171,9 +137,6 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                         REMOVE
                     </Button>
                 </Grid>
-                {/* SELECT LANGUAGE FOR TRANSLATION */}
-                {/* INPUT DATA FOR TRANSLATION */}
-
             </Grid>
         </Grid>
     )

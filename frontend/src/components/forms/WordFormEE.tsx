@@ -14,10 +14,8 @@ interface WordFormEEProps {
             completionState?: boolean
         }
     ) => void
-    // setComplete: (completionState: boolean) => void // used to enable/disable submit button of parent form
-    // setCases: (cases: NounItem[]) => void // once submit button of parent form is pressed, we send all data from this form
 }
-// Displays the fields required to add the english translation of a word (and handles the validations)
+// Displays the fields required to add the estonian translation of a word (and handles the validations)
 export function WordFormEE(props: WordFormEEProps) {
 
     const validationSchema = Yup.object().shape({
@@ -65,7 +63,6 @@ export function WordFormEE(props: WordFormEEProps) {
     const [pluralOsastav, setPluralOsastav] = useState("")
 
     useEffect(() => {
-        // props.setComplete(isValid)
         props.updateFormData({
             completionState: isValid
         })
@@ -102,7 +99,6 @@ export function WordFormEE(props: WordFormEEProps) {
                 word: shortForm
             },
         ]
-        // props.setCases(currentCases)
         props.updateFormData({
             cases: currentCases
         })
