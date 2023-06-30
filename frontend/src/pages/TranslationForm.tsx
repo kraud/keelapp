@@ -24,10 +24,9 @@ export function TranslationForm(props: TranslationFormProps) {
     const [availableLanguages, setAvailableLanguages] = useState<Lang[]>([])
 
     // object containing all the translations and extra info about the word
-    // const [completeWordData, setCompleteWordData] = useState<WordData>({translations: []})
     const [completeWordData, setCompleteWordData] = useState<WordData>(
         {
-            translations: [
+            translations: [ // TODO: check if this could be replaced by some sort of empty TranslationItem instead of Object?
                 Object as unknown as TranslationItem,
                 Object as unknown as TranslationItem
             ]
@@ -49,35 +48,55 @@ export function TranslationForm(props: TranslationFormProps) {
             ...selectedLanguagesList[index], // TODO: is this needed? Maybe we have already everything in 'newLanguageData"?
             ...newLanguageData
         }
-        const updatedTranslations = [
-            ...selectedLanguagesList.slice(0, index),
-            updatedTranslation,
-            ...selectedLanguagesList.slice(index + 1),
-        ]
-        setUpdatedList(updatedTranslations)
+        // we check for the language in all locations, except at the index (since we know it's there)
+        const languageAlreadyListed: boolean = (
+            selectedLanguagesList.some((translation: any, indexList) => {
+                if(translation.language!){
+                    return(
+                        (translation.language === updatedTranslation.language)
+                        &&
+                        (indexList !== index)
+                    )
+                } else {
+                    return false
+                }
+            })
+        )
+
+        if(languageAlreadyListed){
+            setUpdatedList(selectedLanguagesList)
+        } else {
+            const updatedTranslations = [
+                ...selectedLanguagesList.slice(0, index),
+                updatedTranslation,
+                ...selectedLanguagesList.slice(index + 1),
+            ]
+            setUpdatedList(updatedTranslations)
+        }
     }
 
     // This simply creates the new list of selected languages, by removing the language that used to be selected on the form
     const removeLanguageFromSelected = (index: number, willUpdateLanguage: boolean) => {
-        const updatedTranslationsToBeUpdated = [
-            ...completeWordData.translations.slice(0, index),
-            // this needed as a placeholder while we get the new selected language, so index is the same
-            Object as unknown as TranslationItem, // not needed when full removing?
-            ...completeWordData.translations.slice(index + 1),
-        ]
-        const updatedTranslationsFinal = [
-            ...completeWordData.translations.slice(0, index),
-            ...completeWordData.translations.slice(index + 1),
-        ]
+        let updatedTranslations: TranslationItem[] = []
+        if(willUpdateLanguage){
+            // If we're simply switching languages for the form, we need to save the index place with an empty object
+            // which will be replaced with the data from the newly selected language's form
+            updatedTranslations = [
+                ...completeWordData.translations.slice(0, index),
+                Object as unknown as TranslationItem,
+                ...completeWordData.translations.slice(index + 1),
+            ]
+        } else {
+            // this way we don't "save" the place at index,
+            // because we're not updating the language
+            updatedTranslations = [
+                ...completeWordData.translations.slice(0, index),
+                ...completeWordData.translations.slice(index + 1),
+            ]
+        }
         setCompleteWordData({
             ...completeWordData,
-            translations: (willUpdateLanguage)
-                // If we're simply switching languages for the form, we need to save the index place with an empty object
-                // which will be replaced with the data from the newly selected language's form
-                ? updatedTranslationsToBeUpdated
-                // this way we don't "save" the place at index,
-                // because we're not updating the language
-                : updatedTranslationsFinal
+            translations: (updatedTranslations)
         })
     }
 
@@ -221,7 +240,7 @@ export function TranslationForm(props: TranslationFormProps) {
                     container={true}
                     spacing={4}
                     direction={"column"}
-                    alignItems={"center"}
+                    alignItems={"flex-start"}
                 >
                     <Grid
                         item={true}
@@ -267,13 +286,14 @@ export function TranslationForm(props: TranslationFormProps) {
                         </Grid>
                     }
                     {
-                        completeWordData.translations.map((_, index) => {
+                        completeWordData.translations.map((translation: TranslationItem, index) => {
                             return(
                                 <WordFormGeneric
                                     key={index}
                                     index={index}
                                     partOfSpeech={partOfSpeech}
                                     availableLanguages={availableLanguages}
+                                    currentTranslationData={translation}
 
                                     removeLanguageFromSelected={(index: number, willUpdateLanguage: boolean) => {
                                         removeLanguageFromSelected(index, willUpdateLanguage)

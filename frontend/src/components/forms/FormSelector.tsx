@@ -1,6 +1,6 @@
 import {Lang, PartOfSpeech} from "../../ts/enums";
 import {WordFormES} from "./WordFormES";
-import {NounItem} from "../../ts/interfaces";
+import {NounItem, TranslationItem} from "../../ts/interfaces";
 import React from "react";
 import {WordFormEN} from "./WordFormEN";
 import {WordFormDE} from "./WordFormDE";
@@ -8,6 +8,7 @@ import {WordFormEE} from "./WordFormEE";
 
 interface FormSelectorProps {
     currentLang?: Lang,
+    currentTranslationData: TranslationItem,
     partOfSpeech?: PartOfSpeech,
     updateFormData: (formData: {
         language: Lang,
@@ -24,7 +25,7 @@ export function FormSelector(props: FormSelectorProps) {
             case (PartOfSpeech.noun): {
                 return(getNounForm())
             }
-            /* TODO: add remaining cases as the forms are made */
+            /* TODO: add remaining part of speech, as the forms are made */
             default: {
                 return(<p>That part of speech is not available yet</p>)
             }
@@ -36,6 +37,7 @@ export function FormSelector(props: FormSelectorProps) {
             case (Lang.EN): {
                 return(
                     <WordFormEN
+                        currentTranslationData={props.currentTranslationData}
                         updateFormData={(formData: {
                             cases?: NounItem[],
                             completionState?: boolean
@@ -52,6 +54,7 @@ export function FormSelector(props: FormSelectorProps) {
             case (Lang.ES): {
                 return(
                     <WordFormES
+                        currentTranslationData={props.currentTranslationData}
                         updateFormData={(formData: {
                             cases?: NounItem[],
                             completionState?: boolean
@@ -68,6 +71,7 @@ export function FormSelector(props: FormSelectorProps) {
             case (Lang.DE): {
                 return(
                     <WordFormDE
+                        currentTranslationData={props.currentTranslationData}
                         updateFormData={(formData: {
                             cases?: NounItem[],
                             completionState?: boolean
@@ -84,6 +88,7 @@ export function FormSelector(props: FormSelectorProps) {
             case (Lang.EE): {
                 return(
                     <WordFormEE
+                        currentTranslationData={props.currentTranslationData}
                         updateFormData={(formData: {
                             cases?: NounItem[],
                             completionState?: boolean

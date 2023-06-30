@@ -4,10 +4,12 @@ import {yupResolver} from "@hookform/resolvers/yup/dist/yup";
 import {Grid} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {TextInputFormWithHook} from "../TextInputFormHook";
-import {NounItem} from "../../ts/interfaces";
+import {NounItem, TranslationItem} from "../../ts/interfaces";
 import {NounCases} from "../../ts/enums";
+import {getWordByCase} from "./commonFunctions";
 
 interface WordFormEEProps {
+    currentTranslationData: TranslationItem,
     updateFormData: (
         formData: {
             cases?: NounItem[],
@@ -17,6 +19,8 @@ interface WordFormEEProps {
 }
 // Displays the fields required to add the estonian translation of a word (and handles the validations)
 export function WordFormEE(props: WordFormEEProps) {
+
+    const { currentTranslationData } = props
 
     const validationSchema = Yup.object().shape({
         singularNimetav: Yup.string()
@@ -37,7 +41,7 @@ export function WordFormEE(props: WordFormEEProps) {
     })
 
     const {
-        control, formState: { errors, isValid }
+        control, formState: { errors, isValid }, setValue
     } = useForm<
         {
             singularNimetav: string,
@@ -102,6 +106,83 @@ export function WordFormEE(props: WordFormEEProps) {
         pluralOsastav, shortForm, isValid
     ])
 
+    // This will only be run on first render
+    // we use it to populate the form fields with the previously added information
+    useEffect(() => {
+        if(currentTranslationData.cases!){
+            const singularNimetavValue: string = getWordByCase(NounCases.singularNimetavEE, currentTranslationData)
+            const pluralNimetavValue: string = getWordByCase(NounCases.pluralNimetavEE, currentTranslationData)
+            const singularOmastavValue: string = getWordByCase(NounCases.singularOmastavEE, currentTranslationData)
+            const pluralOmastavValue: string = getWordByCase(NounCases.pluralOmastavEE, currentTranslationData)
+            const singularOsastavValue: string = getWordByCase(NounCases.singularOsastavEE, currentTranslationData)
+            const pluralOsastavValue: string = getWordByCase(NounCases.pluralOsastavEE, currentTranslationData)
+            const shortFormValue: string = getWordByCase(NounCases.shortFormEE, currentTranslationData)
+            setValue(
+                'singularNimetav',
+                singularNimetavValue,
+                {
+                    shouldValidate: true,
+                    shouldTouch: true
+                }
+            )
+            setSingularNimetav(singularNimetavValue)
+            setValue(
+                'pluralNimetav',
+                pluralNimetavValue,
+                {
+                    shouldValidate: true,
+                    shouldTouch: true
+                }
+            )
+            setPluralNimetav(pluralNimetavValue)
+            setValue(
+                'singularOmastav',
+                singularOmastavValue,
+                {
+                    shouldValidate: true,
+                    shouldTouch: true
+                }
+            )
+            setSingularOmastav(singularOmastavValue)
+            setValue(
+                'pluralOmastav',
+                pluralOmastavValue,
+                {
+                    shouldValidate: true,
+                    shouldTouch: true
+                }
+            )
+            setPluralOmastav(pluralOmastavValue)
+            setValue(
+                'singularOsastav',
+                singularOsastavValue,
+                {
+                    shouldValidate: true,
+                    shouldTouch: true
+                }
+            )
+            setSingularOsastav(singularOsastavValue)
+            setValue(
+                'pluralOsastav',
+                pluralOsastavValue,
+                {
+                    shouldValidate: true,
+                    shouldTouch: true
+                }
+            )
+            setPluralOsastav(pluralOsastavValue)
+            setValue(
+                'shortForm',
+                shortFormValue,
+                {
+                    shouldValidate: true,
+                    shouldTouch: true
+                }
+            )
+            setShortForm(shortFormValue)
+        }
+    },[])
+
     return(
         <Grid
             item={true}
@@ -110,7 +191,7 @@ export function WordFormEE(props: WordFormEEProps) {
                 <Grid
                     container={true}
                     xs={10}
-                    justifyContent={"center"}
+                    justifyContent={"left"}
                     item={true}
                 >
                     <Grid

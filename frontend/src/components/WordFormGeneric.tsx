@@ -1,18 +1,19 @@
 import {Button, Grid, Typography} from "@mui/material";
-import React, {useState} from "react";
-import {NounItem} from "../ts/interfaces";
+import React, {useEffect, useState} from "react";
+import {NounItem, TranslationItem} from "../ts/interfaces";
 import {Lang, PartOfSpeech} from "../ts/enums";
 import {FormSelector} from "./forms/FormSelector";
 
 interface WordFormGenericProps {
     index: number, // needed to know on which item in completeWordData.translations list this form data is stored
     partOfSpeech?: PartOfSpeech,
-    availableLanguages: Lang[] // list provided by parent component, so we know which languages can be displayed as options to choose from
+    availableLanguages: Lang[], // list provided by parent component, so we know which languages can be displayed as options to choose from
+    currentTranslationData: TranslationItem,
+
     removeLanguageFromSelected: (
         index: number,
         willUpdateLanguage: boolean // true when selecting switching between languages - false when removing form from screen
     ) => void // when changing the language we inform parent component that previous one is now available
-
     updateFormData: (
         formData: {
             language: Lang,
@@ -28,6 +29,13 @@ interface WordFormGenericProps {
 // This form will only display buttons/textfields/selects for A SINGLE language+word combo
 export function WordFormGeneric(props: WordFormGenericProps) {
     const [currentLang, setCurrentLang] = useState<Lang | null>(null)
+
+    const { currentTranslationData } = props
+    useEffect(() => {
+        if(currentTranslationData.language!){
+            setCurrentLang(currentTranslationData.language)
+        } // if it's another empty Object, the language here should remain null
+    }, [currentTranslationData])
 
     return(
         <Grid
@@ -96,6 +104,7 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                             :
                             <FormSelector
                                 currentLang={currentLang}
+                                currentTranslationData={props.currentTranslationData}
                                 partOfSpeech={props.partOfSpeech}
                                 updateFormData={(formData: {
                                     language: Lang,
@@ -129,7 +138,7 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                                 -
                                 (props.availableLanguages.length)
                             ) // this first part is (total-available) which is the same as 'amount of selected'
-                            <
+                            <=
                             2 // minimum amount of forms to be displayed
                         )}
                         onClick={() => {

@@ -5,10 +5,12 @@ import {Grid} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {TextInputFormWithHook} from "../TextInputFormHook";
 import {SelectFormWithHook} from "../SelectFormHook";
-import {NounItem} from "../../ts/interfaces";
+import {NounItem, TranslationItem} from "../../ts/interfaces";
 import {GenderDE, NounCases} from "../../ts/enums";
+import {getWordByCase} from "./commonFunctions";
 
 interface WordFormDEProps {
+    currentTranslationData: TranslationItem,
     updateFormData: (
         formData: {
             cases?: NounItem[],
@@ -18,6 +20,8 @@ interface WordFormDEProps {
 }
 // Displays the fields required to add the german translation of a word (and handles the validations)
 export function WordFormDE(props: WordFormDEProps) {
+
+    const { currentTranslationData } = props
 
     const validationSchema = Yup.object().shape({
         gender: Yup.string().required("The gender is required")
@@ -42,7 +46,7 @@ export function WordFormDE(props: WordFormDEProps) {
     })
 
     const {
-        control, formState: { errors, isValid }
+        control, formState: { errors, isValid }, setValue
     } = useForm<
         {
             gender: string,
@@ -60,7 +64,7 @@ export function WordFormDE(props: WordFormDEProps) {
         mode: "all", // Triggers validation/errors without having to submit
     })
 
-    const [genderWord, setGenderWord] = useState<"el"|"la"|"">("")
+    const [genderWord, setGenderWord] = useState<"der"|"die"|"das"|"">("")
 
     const [singularNominativ, setSingularNominativ] = useState("")
     const [singularAkkusativ, setSingularAkkusativ] = useState("")
@@ -120,6 +124,103 @@ export function WordFormDE(props: WordFormDEProps) {
         pluralGenitiv, singularDativ, pluralDativ, isValid
     ])
 
+    // This will only be run on first render
+    // we use it to populate the form fields with the previously added information
+    useEffect(() => {
+        if(currentTranslationData.cases!){
+            const genderValue: string = getWordByCase(NounCases.genderDE, currentTranslationData)
+            const singularNominativValue: string = getWordByCase(NounCases.singularNominativDE, currentTranslationData)
+            const pluralNominativValue: string = getWordByCase(NounCases.pluralNominativDE, currentTranslationData)
+            const singularAkkusativValue: string = getWordByCase(NounCases.singularAkkusativDE, currentTranslationData)
+            const pluralAkkusativValue: string = getWordByCase(NounCases.pluralAkkusativDE, currentTranslationData)
+            const singularGenitivValue: string = getWordByCase(NounCases.singularGenitivDE, currentTranslationData)
+            const pluralGenitivValue: string = getWordByCase(NounCases.pluralGenitivDE, currentTranslationData)
+            const singularDativValue: string = getWordByCase(NounCases.singularDativDE, currentTranslationData)
+            const pluralDativValue: string = getWordByCase(NounCases.pluralDativDE, currentTranslationData)
+            setValue(
+                'gender',
+                genderValue,
+                {
+                    shouldValidate: true,
+                    shouldTouch: true
+                }
+            )
+            setGenderWord(genderValue as "der"|"die"|"das"|"")
+            setValue(
+                'singularNominativ',
+                singularNominativValue,
+                {
+                    shouldValidate: true,
+                    shouldTouch: true
+                }
+            )
+            setSingularNominativ(singularNominativValue)
+            setValue(
+                'pluralNominativ',
+                pluralNominativValue,
+                {
+                    shouldValidate: true,
+                    shouldTouch: true
+                }
+            )
+            setPluralNominativ(pluralNominativValue)
+            setValue(
+                'singularAkkusativ',
+                singularAkkusativValue,
+                {
+                    shouldValidate: true,
+                    shouldTouch: true
+                }
+            )
+            setSingularAkkusativ(singularAkkusativValue)
+            setValue(
+                'pluralAkkusativ',
+                pluralAkkusativValue,
+                {
+                    shouldValidate: true,
+                    shouldTouch: true
+                }
+            )
+            setPluralAkkusativ(pluralAkkusativValue)
+            setValue(
+                'singularGenitiv',
+                singularGenitivValue,
+                {
+                    shouldValidate: true,
+                    shouldTouch: true
+                }
+            )
+            setSingularGenitiv(singularGenitivValue)
+            setValue(
+                'pluralGenitiv',
+                pluralGenitivValue,
+                {
+                    shouldValidate: true,
+                    shouldTouch: true
+                }
+            )
+            setPluralGenitiv(pluralGenitivValue)
+            setValue(
+                'singularDativ',
+                singularDativValue,
+                {
+                    shouldValidate: true,
+                    shouldTouch: true
+                }
+            )
+            setSingularDativ(singularDativValue)
+            setValue(
+                'pluralDativ',
+                pluralDativValue,
+                {
+                    shouldValidate: true,
+                    shouldTouch: true
+                }
+            )
+            setPluralDativ(pluralDativValue)
+        }
+    },[])
+
     return(
         <Grid
             item={true}
@@ -128,7 +229,7 @@ export function WordFormDE(props: WordFormDEProps) {
                 <Grid
                     container={true}
                     xs={10}
-                    justifyContent={"center"}
+                    justifyContent={"left"}
                     item={true}
                 >
                     <Grid
