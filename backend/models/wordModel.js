@@ -14,7 +14,7 @@ const wordSchema = mongoose.Schema(
         translations:{
             type: [{
                 language: String,
-                nounCases: [{ // TODO: later on we should have this renamed to fit nouns-verbs-adverbs-etc
+                cases: [{
                     word: String,
                     caseName: String,
                     _id: false

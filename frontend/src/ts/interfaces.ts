@@ -7,7 +7,7 @@ export interface WordData {
 }
 export interface TranslationItem {
     language: Lang,
-    nounCases: NounItem[]
+    cases: NounItem[]
     completionState?: boolean // used while completing forms, not saved on BE
 }
 export interface NounItem {

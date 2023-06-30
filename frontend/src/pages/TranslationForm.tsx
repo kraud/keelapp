@@ -176,6 +176,21 @@ export function TranslationForm(props: TranslationFormProps) {
         })
     }
 
+    const sanitizeDataForStorage = () => {
+        const cleanData: TranslationItem[] = completeWordData.translations.map((translation: TranslationItem) => {
+            // This removes the completionState attribute, used during word-input, but that it should not be saved on BE
+            return({
+                cases: translation.cases,
+                language: translation.language,
+            })
+        })
+        props.onSave({
+            ...completeWordData, // optional fields like: clue, askedToReviseSoon, etc.
+            translations: cleanData,
+            partOfSpeech: partOfSpeech,
+        })
+    }
+
     return(
         <>
             {!(partOfSpeech!)
@@ -259,10 +274,10 @@ export function TranslationForm(props: TranslationFormProps) {
                                     index={index}
                                     partOfSpeech={partOfSpeech}
                                     availableLanguages={availableLanguages}
+
                                     removeLanguageFromSelected={(index: number, willUpdateLanguage: boolean) => {
                                         removeLanguageFromSelected(index, willUpdateLanguage)
                                     }}
-
                                     updateFormData={(
                                         formData: {
                                             language: Lang,
@@ -332,12 +347,7 @@ export function TranslationForm(props: TranslationFormProps) {
                             item={true}
                         >
                             <Button
-                                onClick={() => {
-                                    props.onSave({
-                                        ...completeWordData,
-                                        partOfSpeech: partOfSpeech
-                                    })
-                                }}
+                                onClick={() => sanitizeDataForStorage()}
                                 variant={"outlined"}
                                 disabled={
                                     ((completeWordData.translations).length < 2)
