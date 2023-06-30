@@ -4,19 +4,23 @@ import {NounItem} from "../ts/interfaces";
 import {Lang, PartOfSpeech} from "../ts/enums";
 import {FormSelector} from "./forms/FormSelector";
 
-// TODO: later add all other cases for all languages
-
 interface WordFormGenericProps {
+    index: number, // needed to know on which item in completeWordData.translations list this form data is stored
     partOfSpeech?: PartOfSpeech,
     availableLanguages: Lang[] // list provided by parent component, so we know which languages can be displayed as options to choose from
-    removeLanguageFromSelected: (langNowAvailable: Lang) => void // when changing the language we inform parent component that previous one is now available
-    removeForm: () => void // temp workaround - removes the last form on display - this should remove an item from a specific index
+    removeLanguageFromSelected: (
+        index: number,
+        willUpdateLanguage: boolean // true when selecting switching between languages - false when removing form from screen
+    ) => void // when changing the language we inform parent component that previous one is now available
 
-    updateFormData: (formData: {
-        language: Lang,
-        cases?: NounItem[],
-        completionState?: boolean
-    }) => void
+    updateFormData: (
+        formData: {
+            language: Lang,
+            cases?: NounItem[],
+            completionState?: boolean
+        },
+        index: number
+    ) => void
 }
 
 
@@ -60,7 +64,7 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                                             }
                                             if(currentLang !== null){
                                                 // inform parent that old lang is now available
-                                                props.removeLanguageFromSelected(currentLang)
+                                                props.removeLanguageFromSelected(props.index, true)
                                             }
                                             setCurrentLang(lang)
                                         }}
@@ -98,14 +102,16 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                                     cases?: NounItem[],
                                     completionState?: boolean
                                 }) => {
-                                    // TODO: recreate functions of setTranslationStatus and updateTranslationList into 1 prop
-                                    props.updateFormData({
-                                        ...formData,
-                                        cases: (formData.cases!)
-                                            // To avoid saving empty cases,
-                                            ? formData.cases.filter((nounCase) => (nounCase.word !== ""))
-                                            : formData.cases
-                                    })
+                                    props.updateFormData(
+                                        {
+                                            ...formData,
+                                            cases: (formData.cases!)
+                                                // To avoid saving empty cases,
+                                                ? formData.cases.filter((nounCase) => (nounCase.word !== ""))
+                                                : formData.cases
+                                        },
+                                        props.index
+                                    )
                                 }}
                             />
                         }
@@ -120,18 +126,18 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                         disabled={( // only true when only 2 languages are being used
                             (
                                 (Object.values(Lang).filter((v) => isNaN(Number(v))) as unknown as Array<keyof typeof Lang>).length
-                                - 2 // amount of minimum forms to be displayed
-                            )
+                                -
+                                (props.availableLanguages.length)
+                            ) // this first part is (total-available) which is the same as 'amount of selected'
                             <
-                            props.availableLanguages.length
+                            2 // minimum amount of forms to be displayed
                         )}
                         onClick={() => {
-                            if(currentLang !== null){
-                                // inform parent that old lang is now available
-                                props.removeLanguageFromSelected(currentLang)
-                            }
+                            // inform parent that old lang is now available
+                            // this should run even if no language is selected
+                            // because there's an empty Object at this index holding its place
+                            props.removeLanguageFromSelected(props.index, false)
                             setCurrentLang(null)
-                            props.removeForm()
                         }}
                     >
                         REMOVE

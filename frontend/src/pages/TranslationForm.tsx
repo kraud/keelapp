@@ -24,7 +24,15 @@ export function TranslationForm(props: TranslationFormProps) {
     const [availableLanguages, setAvailableLanguages] = useState<Lang[]>([])
 
     // object containing all the translations and extra info about the word
-    const [completeWordData, setCompleteWordData] = useState<WordData>({translations: []})
+    // const [completeWordData, setCompleteWordData] = useState<WordData>({translations: []})
+    const [completeWordData, setCompleteWordData] = useState<WordData>(
+        {
+            translations: [
+                Object as unknown as TranslationItem,
+                Object as unknown as TranslationItem
+            ]
+        }
+    )
 
     // This function is used to update the list of currently selected languages and their status
     // It basically checks if the new data received corresponds to a language already stored.
@@ -34,53 +42,42 @@ export function TranslationForm(props: TranslationFormProps) {
             language: Lang
         },
         selectedLanguagesList: { language: Lang }[],
-        setUpdatedList: (updatedList: any[]) => void
+        setUpdatedList: (updatedList: any[]) => void,
+        index: number // with this number we know exactly where in selectedLanguageList to input the newLanguageData
     ) => {
-        let updated: boolean = false // will be used to check if the current language is already one of the stored translations
-        if(selectedLanguagesList.length > 0){
-            const updatedSelectedLanguages = selectedLanguagesList.map((selectedLang) => {
-                // we found the current language, and we update the entry on the list
-                if(selectedLang.language === newLanguageData.language) {
-                    updated = true // we trigger the flag to know that the language was found and updated
-                    return({
-                        ...newLanguageData
-                    })
-                } else { // if it doesn't match, we leave the translation data as is
-                    return(selectedLang)
-                }
-            })
-            if(updated) {
-                setUpdatedList(updatedSelectedLanguages) // if the list now has the updated info about of translation, we simply save it
-            } else { // assuming it's a new entry we append to the end of the existing list of translations
-                // TODO: if it's a new entry, and *there's only one other*, we must replace the Object at the 2nd index
-                setUpdatedList([
-                    ...selectedLanguagesList,
-                    {
-                        ...newLanguageData
-                    }
-                ])
-            }
-        } else {
-            // If there is no languages yet selected, we simply add it to the list as the first item
-            setUpdatedList([{
-                ...newLanguageData
-                // TODO: language data goes in first one - second one should still be an Object
-            }])
+        const updatedTranslation = {
+            ...selectedLanguagesList[index], // TODO: is this needed? Maybe we have already everything in 'newLanguageData"?
+            ...newLanguageData
         }
+        const updatedTranslations = [
+            ...selectedLanguagesList.slice(0, index),
+            updatedTranslation,
+            ...selectedLanguagesList.slice(index + 1),
+        ]
+        setUpdatedList(updatedTranslations)
     }
 
-    const removeLanguageFromSelected = (langToRemoveFromList: Lang) => {
-        let newSelected: TranslationItem[] = []
-        completeWordData.translations.forEach((alreadySelectedLang: TranslationItem) => {
-            if(alreadySelectedLang.language === langToRemoveFromList){
-                return
-            } else {
-                newSelected.push(alreadySelectedLang)
-            }
-        })
+    // This simply creates the new list of selected languages, by removing the language that used to be selected on the form
+    const removeLanguageFromSelected = (index: number, willUpdateLanguage: boolean) => {
+        const updatedTranslationsToBeUpdated = [
+            ...completeWordData.translations.slice(0, index),
+            // this needed as a placeholder while we get the new selected language, so index is the same
+            Object as unknown as TranslationItem, // not needed when full removing?
+            ...completeWordData.translations.slice(index + 1),
+        ]
+        const updatedTranslationsFinal = [
+            ...completeWordData.translations.slice(0, index),
+            ...completeWordData.translations.slice(index + 1),
+        ]
         setCompleteWordData({
             ...completeWordData,
-            translations: getFilteredTranslations(completeWordData.translations, newSelected)
+            translations: (willUpdateLanguage)
+                // If we're simply switching languages for the form, we need to save the index place with an empty object
+                // which will be replaced with the data from the newly selected language's form
+                ? updatedTranslationsToBeUpdated
+                // this way we don't "save" the place at index,
+                // because we're not updating the language
+                : updatedTranslationsFinal
         })
     }
 
@@ -124,8 +121,6 @@ export function TranslationForm(props: TranslationFormProps) {
         }
     }, [isSuccess])
 
-    const [amountFormsOnScreen, setAmountFormsOnScreen] = useState(2)
-
     const getAllPartsOfSpeech = () => {
         const partsOfSpeech: string[] = (Object.values(PartOfSpeech).filter((v) => isNaN(Number(v))) as unknown as Array<keyof typeof Lang>)
         return(partsOfSpeech)
@@ -135,8 +130,13 @@ export function TranslationForm(props: TranslationFormProps) {
         const allLangs: string[] = (Object.values(Lang).filter((v) => isNaN(Number(v))) as unknown as Array<keyof typeof Lang>)
         let filteredLangs: Lang[] = []
         if((completeWordData.translations).length > 0){
-            const selectedLangs: string[] = (completeWordData.translations).map((alreadySelectedLanguage) => {
-                return((alreadySelectedLanguage.language).toString())
+            let selectedLangs: string[] = [];
+            (completeWordData.translations).forEach((alreadySelectedLanguage: TranslationItem) => {
+                if(alreadySelectedLanguage.language!){ // to avoid reading an empty Object Item used to display an empty form
+                    selectedLangs.push((alreadySelectedLanguage.language).toString())
+                } else {
+                    return
+                }
             })
             const availableLangs: string[] = allLangs.filter((currentLang: string) => {
                 return(!selectedLangs.includes(currentLang))
@@ -156,38 +156,24 @@ export function TranslationForm(props: TranslationFormProps) {
     const resetAll = () => {
         setPartOfSpeech(undefined)
         setCompleteWordData({translations: []})
-        // TODO: will use this when implementing new changes for dynamically updating amount of forms on screen
-        /*
         setCompleteWordData(
             {
                 translations: [
                     Object as unknown as TranslationItem,
                     Object as unknown as TranslationItem,
                 ]
-            })
-            */
-        setAmountFormsOnScreen(2)
+            }
+        )
     }
 
-    // When switching languages on an open form, the WordFomGeneric child component will try to update
-    // the completeWordData state here, but since we already deleted
-    function getFilteredTranslations(
-        outdatedTranslations: TranslationItem[],
-        upToDateList: {
-            language: Lang,
-            isValidFormStatus?: boolean
-        }[]
-    ) {
-        const selectedLangs = upToDateList.map((selectedLang) => selectedLang.language)
-        const filteredTranslations: TranslationItem[] = []
-        outdatedTranslations.forEach((unverifiedTranslation) => {
-                if(selectedLangs.includes(unverifiedTranslation.language)){
-                    filteredTranslations.push(unverifiedTranslation)
-                } else {
-                    return
-                }
-            })
-        return(filteredTranslations)
+    // This will only be accessible if there are at least 2 other forms on screen already
+    const addEmptyLanguageForm = () => {
+        let oldLanguageList: TranslationItem[] = completeWordData.translations
+        oldLanguageList.push(Object as unknown as TranslationItem)
+        setCompleteWordData({
+            ...completeWordData,
+            translations: oldLanguageList
+        })
     }
 
     return(
@@ -266,33 +252,35 @@ export function TranslationForm(props: TranslationFormProps) {
                         </Grid>
                     }
                     {
-                        Array(amountFormsOnScreen).fill(0).map((_, index) => {
+                        completeWordData.translations.map((_, index) => {
                             return(
                                 <WordFormGeneric
-                                    removeForm={() => {
-                                        if(amountFormsOnScreen > 2){
-                                            setAmountFormsOnScreen(amountFormsOnScreen - 1)
-                                        }
-                                    }}
                                     key={index}
+                                    index={index}
                                     partOfSpeech={partOfSpeech}
                                     availableLanguages={availableLanguages}
-                                    removeLanguageFromSelected={(langToRemoveFromList: Lang) => removeLanguageFromSelected(langToRemoveFromList)}
+                                    removeLanguageFromSelected={(index: number, willUpdateLanguage: boolean) => {
+                                        removeLanguageFromSelected(index, willUpdateLanguage)
+                                    }}
 
-                                    updateFormData={(formData: {
-                                        language: Lang,
-                                        cases?: NounItem[],
-                                        completionState?: boolean
-                                    }) => {
+                                    updateFormData={(
+                                        formData: {
+                                            language: Lang,
+                                            cases?: NounItem[],
+                                            completionState?: boolean
+                                        },
+                                        index: number
+                                    ) => {
                                         editTranslationsData(
                                             formData,
-                                                completeWordData.translations,
-                                                (updatedList) => {
-                                                    setCompleteWordData({
-                                                        ...completeWordData,
-                                                        translations: updatedList
-                                                    })
-                                                }
+                                            completeWordData.translations,
+                                            (updatedList) => {
+                                                setCompleteWordData({
+                                                    ...completeWordData,
+                                                    translations: updatedList
+                                                })
+                                            },
+                                            index
                                         )
                                     }}
                                 />
@@ -328,12 +316,13 @@ export function TranslationForm(props: TranslationFormProps) {
                             item={true}
                         >
                             <Button
-                                onClick={() => setAmountFormsOnScreen((amountFormsOnScreen + 1))}
+                                onClick={() => {
+                                    addEmptyLanguageForm()
+                                }}
                                 variant={"outlined"}
-                                disabled={( // only true when all the languages are being used
-                                    (Object.values(Lang).filter((v) => isNaN(Number(v))) as unknown as Array<keyof typeof Lang>).length
-                                    <=
-                                    (completeWordData.translations).length
+                                disabled={(
+                                    // only true when all the languages are being used
+                                    availableLanguages.length === 0
                                 )}
                             >
                                 Add another translation
