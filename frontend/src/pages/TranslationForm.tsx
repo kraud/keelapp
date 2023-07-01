@@ -294,6 +294,7 @@ export function TranslationForm(props: TranslationFormProps) {
                                     partOfSpeech={partOfSpeech}
                                     availableLanguages={availableLanguages}
                                     currentTranslationData={translation}
+                                    amountOfFormsOnScreen={completeWordData.translations.length}
 
                                     removeLanguageFromSelected={(index: number, willUpdateLanguage: boolean) => {
                                         removeLanguageFromSelected(index, willUpdateLanguage)

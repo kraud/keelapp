@@ -9,6 +9,7 @@ interface WordFormGenericProps {
     partOfSpeech?: PartOfSpeech,
     availableLanguages: Lang[], // list provided by parent component, so we know which languages can be displayed as options to choose from
     currentTranslationData: TranslationItem,
+    amountOfFormsOnScreen: number,
 
     removeLanguageFromSelected: (
         index: number,
@@ -129,28 +130,38 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                 <Grid
                     item={true}
                     container={true}
+                    spacing={1}
                 >
-                    <Button
-                        variant={"outlined"}
-                        disabled={( // only true when only 2 languages are being used
-                            (
-                                (Object.values(Lang).filter((v) => isNaN(Number(v))) as unknown as Array<keyof typeof Lang>).length
-                                -
-                                (props.availableLanguages.length)
-                            ) // this first part is (total-available) which is the same as 'amount of selected'
-                            <=
-                            2 // minimum amount of forms to be displayed
-                        )}
-                        onClick={() => {
-                            // inform parent that old lang is now available
-                            // this should run even if no language is selected
-                            // because there's an empty Object at this index holding its place
-                            props.removeLanguageFromSelected(props.index, false)
-                            setCurrentLang(null)
-                        }}
+                    <Grid
+                        item={true}
                     >
-                        REMOVE
-                    </Button>
+                        <Button
+                            variant={"outlined"}
+                            disabled={(props.amountOfFormsOnScreen < 3)}
+                            onClick={() => {
+                                // this should run even if no language is selected
+                                // because there's an empty Object at this index holding its place
+                                props.removeLanguageFromSelected(props.index, false)
+                                setCurrentLang(null)
+                            }}
+                        >
+                            REMOVE
+                        </Button>
+                    </Grid>
+                    <Grid
+                        item={true}
+                    >
+                        <Button
+                            variant={"outlined"}
+                            disabled={(currentLang === null)}
+                            onClick={() => {
+                                props.removeLanguageFromSelected(props.index, true)
+                                setCurrentLang(null)
+                            }}
+                        >
+                            CLEAR
+                        </Button>
+                    </Grid>
                 </Grid>
             </Grid>
         </Grid>
