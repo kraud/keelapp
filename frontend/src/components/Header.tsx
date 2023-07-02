@@ -54,7 +54,16 @@ function ResponsiveAppBar() {
         setAnchorElUser(event.currentTarget);
     };
 
-    const handleCloseNavMenu = () => {
+    const handleCloseNavMenu = (option: any) => {
+        switch (option){
+            case "Add word": {
+                navigate('/addWord')
+                break
+            }
+            default: {
+                toast.error("This function is not ready yet, we're sorry!")
+            }
+        }
         setAnchorElNav(null);
     };
 
@@ -151,7 +160,7 @@ function ResponsiveAppBar() {
                             }}
                         >
                             {pages.map((page) => (
-                                <MenuItem key={page} onClick={handleCloseNavMenu}>
+                                <MenuItem key={page} onClick={() => handleCloseNavMenu(page)}>
                                     <Typography textAlign="center">{page}</Typography>
                                 </MenuItem>
                             ))}
@@ -165,6 +174,7 @@ function ResponsiveAppBar() {
                         noWrap
                         component="a"
                         href=""
+                        onClick={() => navigate('/')}
                         sx={{
                             mr: 2,
                             // NB! 'inline-block' needed for nowrap ellipsis and 'none' is to avoid double text while on bigger screen
@@ -186,7 +196,7 @@ function ResponsiveAppBar() {
                         {pages.map((page) => (
                             <Button
                                 key={page}
-                                onClick={handleCloseNavMenu}
+                                onClick={() => handleCloseNavMenu(page)}
                                 sx={{ my: 2, color: 'white', display: 'block' }}
                             >
                                 {page}

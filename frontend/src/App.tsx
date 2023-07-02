@@ -1,10 +1,8 @@
 import React from 'react'
-import {Button, Container, CssBaseline, Typography} from '@mui/material'
-import { BrowserRouter as Router, Routes, Route} from 'react-router-dom'
-import Dashboard from './pages/Dashboard'
-import Login from './pages/Login'
-import Register from './pages/Register'
+import {Container, CssBaseline} from '@mui/material'
+import { BrowserRouter as Router} from 'react-router-dom'
 import {ToastContainer} from "react-toastify";
+import {MainView} from "./pages/management/MainView";
 
 function App() {
     return (
@@ -12,20 +10,7 @@ function App() {
             <CssBaseline />
             <Router>
                 <Container>
-                    <Routes>
-                        <Route
-                            path='/'
-                            element={<Dashboard/>}
-                        />
-                        <Route
-                            path='/login'
-                            element={<Login/>}
-                        />
-                        <Route
-                            path='/register'
-                            element={<Register/>}
-                        />
-                    </Routes>
+                    <MainView/>
                 </Container>
             </Router>
             <ToastContainer/>

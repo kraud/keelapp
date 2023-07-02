@@ -1,11 +1,10 @@
 import {Button, Grid, TextField, Typography} from "@mui/material";
-import globalTheme from "../theme/theme";
 import React, {useEffect, useState} from "react";
-import {WordFormGeneric} from "../components/WordFormGeneric";
+import {WordFormGeneric} from "./WordFormGeneric";
 import {NounItem, TranslationItem, WordData} from "../ts/interfaces";
 import {Lang, PartOfSpeech} from "../ts/enums";
 import {useSelector} from "react-redux";
-import LinearIndeterminate from "../components/Spinner";
+import LinearIndeterminate from "./Spinner";
 import {toast, Flip} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -238,38 +237,69 @@ export function TranslationForm(props: TranslationFormProps) {
                 :
                 <Grid
                     container={true}
-                    spacing={4}
+                    rowSpacing={2}
                     direction={"column"}
-                    alignItems={"flex-start"}
                 >
                     <Grid
                         item={true}
-                        sx={{
-                            marginTop: globalTheme.spacing(6),
-                        }}
+                        container={true}
+                        justifyContent={"center"}
+                        rowSpacing={2}
                     >
-                        <Typography
-                            variant={"h2"}
+                        <Grid
+                            item={true}
                         >
-                            Add a new word
-                        </Typography>
-                        <Typography
-                            variant={"subtitle2"}
-                            align={"center"}
+                            <Typography
+                                variant={"h3"}
+                            >
+                                Add a new word
+                            </Typography>
+                            <Typography
+                                variant={"subtitle2"}
+                                align={"center"}
+                            >
+                                All the required fields must be completed before saving
+                            </Typography>
+                        </Grid>
+                        <Grid
+                            item={true}
+                            container={true}
+                            justifyContent={"center"}
+                            spacing={2}
                         >
-                            Please fill all required fields (*) before saving
-                        </Typography>
-                    </Grid>
-                    <Grid
-                        item={true}
-                    >
-                        <Button
-                            variant={"outlined"}
-                            color={"error"}
-                            onClick={() => resetAll()}
-                        >
-                            Reset
-                        </Button>
+                            <Grid
+                                item={true}
+                                xs={4}
+                            >
+                                <Button
+                                    variant={"outlined"}
+                                    color={"error"}
+                                    onClick={() => resetAll()}
+                                    fullWidth={true}
+                                >
+                                    Reset
+                                </Button>
+                            </Grid>
+                            <Grid
+                                item={true}
+                                xs={4}
+                            >
+                                <Button
+                                    onClick={() => sanitizeDataForStorage()}
+                                    variant={"outlined"}
+                                    fullWidth={true}
+                                    disabled={
+                                        ((completeWordData.translations).length < 2)
+                                        ||
+                                        (((completeWordData.translations).filter((selectedLang) => {
+                                            return (!selectedLang.completionState)
+                                        })).length > 0)
+                                    }
+                                >
+                                    Submit
+                                </Button>
+                            </Grid>
+                        </Grid>
                     </Grid>
                     {(isLoading) &&
                         <Grid
@@ -285,51 +315,65 @@ export function TranslationForm(props: TranslationFormProps) {
                             </Grid>
                         </Grid>
                     }
-                    {
-                        completeWordData.translations.map((translation: TranslationItem, index) => {
-                            return(
-                                <WordFormGeneric
-                                    key={index}
-                                    index={index}
-                                    partOfSpeech={partOfSpeech}
-                                    availableLanguages={availableLanguages}
-                                    currentTranslationData={translation}
-                                    amountOfFormsOnScreen={completeWordData.translations.length}
+                    <Grid
+                        item={true}
+                        container={true}
+                        justifyContent={"center"}
+                    >
+                        {
+                            completeWordData.translations.map((translation: TranslationItem, index) => {
+                                return(
+                                    <WordFormGeneric
+                                        key={index}
+                                        index={index}
+                                        partOfSpeech={partOfSpeech}
+                                        availableLanguages={availableLanguages}
+                                        currentTranslationData={translation}
+                                        amountOfFormsOnScreen={completeWordData.translations.length}
 
-                                    removeLanguageFromSelected={(index: number, willUpdateLanguage: boolean) => {
-                                        removeLanguageFromSelected(index, willUpdateLanguage)
-                                    }}
-                                    updateFormData={(
-                                        formData: {
-                                            language: Lang,
-                                            cases?: NounItem[],
-                                            completionState?: boolean
-                                        },
-                                        index: number
-                                    ) => {
-                                        editTranslationsData(
-                                            formData,
-                                            completeWordData.translations,
-                                            (updatedList) => {
-                                                setCompleteWordData({
-                                                    ...completeWordData,
-                                                    translations: updatedList
-                                                })
+                                        removeLanguageFromSelected={(index: number, willUpdateLanguage: boolean) => {
+                                            removeLanguageFromSelected(index, willUpdateLanguage)
+                                        }}
+                                        updateFormData={(
+                                            formData: {
+                                                language: Lang,
+                                                cases?: NounItem[],
+                                                completionState?: boolean
                                             },
-                                            index
-                                        )
-                                    }}
-                                />
-                            )
-                        })
-                    }
-                    {
-                        ((completeWordData.translations).length > 1) &&
+                                            index: number
+                                        ) => {
+                                            editTranslationsData(
+                                                formData,
+                                                completeWordData.translations,
+                                                (updatedList) => {
+                                                    setCompleteWordData({
+                                                        ...completeWordData,
+                                                        translations: updatedList
+                                                    })
+                                                },
+                                                index
+                                            )
+                                        }}
+                                    />
+                                )
+                            })
+                        }
+                    </Grid>
+                    {/* CLUE */}
+                    <Grid
+                        item={true}
+                        container={true}
+                        justifyContent={"center"}
+                    >
                         <Grid
                             item={true}
+                            xs={12}
+                            md={4}
                         >
                             <TextField
                                 label={"Clue"}
+                                multiline
+                                rows={3}
                                 value={(completeWordData.clue) ? completeWordData.clue : ""}
                                 onChange={(e: any) => {
                                     setCompleteWordData({
@@ -340,8 +384,8 @@ export function TranslationForm(props: TranslationFormProps) {
                                 fullWidth={true}
                             />
                         </Grid>
-                    }
-                    {/* BUTTONS */}
+                    </Grid>
+                    {/* FORM BUTTONS */}
                     <Grid
                         item={true}
                         container={true}
@@ -362,23 +406,6 @@ export function TranslationForm(props: TranslationFormProps) {
                                 )}
                             >
                                 Add another translation
-                            </Button>
-                        </Grid>
-                        <Grid
-                            item={true}
-                        >
-                            <Button
-                                onClick={() => sanitizeDataForStorage()}
-                                variant={"outlined"}
-                                disabled={
-                                    ((completeWordData.translations).length < 2)
-                                    ||
-                                    (((completeWordData.translations).filter((selectedLang) => {
-                                        return (!selectedLang.completionState)
-                                    })).length > 0)
-                                }
-                            >
-                                Submit
                             </Button>
                         </Grid>
                     </Grid>

@@ -91,21 +91,29 @@ export function WordFormEN(props: WordFormENProps) {
 
     return(
         <Grid
-            item={true}
+            container={true}
+            justifyContent={"center"}
         >
-            <form>
+            <form
+                style={{
+                    width: '100%'
+                }}
+            >
                 <Grid
                     container={true}
                     item={true}
+                    spacing={2}
                 >
                     <Grid
                         item={true}
+                        xs={6}
                     >
                         <TextInputFormWithHook
                             control={control}
                             label={"Singular"}
                             name={"singular"}
                             defaultValue={""}
+                            fullWidth={true}
                             errors={errors.singular}
                             onChange={(value: any) => {
                                 setSingularWord(value)
@@ -114,12 +122,14 @@ export function WordFormEN(props: WordFormENProps) {
                     </Grid>
                     <Grid
                         item={true}
+                        xs={6}
                     >
                         <TextInputFormWithHook
                             control={control}
                             label={"Plural"}
                             name={"plural"}
                             defaultValue={""}
+                            fullWidth={true}
                             errors={errors.plural}
                             onChange={(value: any) => {
                                 setPluralWord(value)

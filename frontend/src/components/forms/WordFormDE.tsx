@@ -24,8 +24,8 @@ export function WordFormDE(props: WordFormDEProps) {
     const { currentTranslationData } = props
 
     const validationSchema = Yup.object().shape({
-        gender: Yup.string().required("The gender is required")
-            .oneOf([GenderDE.M, GenderDE.F, GenderDE.N], "Pick a valid gender option"),
+        gender: Yup.string().required("Required")
+            .oneOf([GenderDE.M, GenderDE.F, GenderDE.N], "Required"),
         singularNominativ: Yup.string()
             .required("Singular nominativ is required")
             .matches(/^[^0-9]+$/, 'Must not include numbers'),
@@ -228,12 +228,13 @@ export function WordFormDE(props: WordFormDEProps) {
             <form>
                 <Grid
                     container={true}
-                    xs={10}
                     justifyContent={"left"}
                     item={true}
+                    spacing={2}
                 >
                     <Grid
                         item={true}
+                        container={true}
                     >
                         <SelectFormWithHook
                             control={control}
@@ -245,10 +246,12 @@ export function WordFormDE(props: WordFormDEProps) {
                             onChange={(value: any) => {
                                 setGenderWord(value)
                             }}
+                            fullWidth={true}
                         />
                     </Grid>
                     <Grid
                         item={true}
+                        xs={6}
                     >
                         <TextInputFormWithHook
                             control={control}
@@ -259,10 +262,12 @@ export function WordFormDE(props: WordFormDEProps) {
                             onChange={(value: any) => {
                                 setSingularNominativ(value)
                             }}
+                            fullWidth={true}
                         />
                     </Grid>
                     <Grid
                         item={true}
+                        xs={6}
                     >
                         <TextInputFormWithHook
                             control={control}
@@ -273,10 +278,12 @@ export function WordFormDE(props: WordFormDEProps) {
                             onChange={(value: any) => {
                                 setPluralNominativ(value)
                             }}
+                            fullWidth={true}
                         />
                     </Grid>
                     <Grid
                         item={true}
+                        xs={6}
                     >
                         <TextInputFormWithHook
                             control={control}
@@ -287,10 +294,12 @@ export function WordFormDE(props: WordFormDEProps) {
                             onChange={(value: any) => {
                                 setSingularAkkusativ(value)
                             }}
+                            fullWidth={true}
                         />
                     </Grid>
                     <Grid
                         item={true}
+                        xs={6}
                     >
                         <TextInputFormWithHook
                             control={control}
@@ -301,10 +310,12 @@ export function WordFormDE(props: WordFormDEProps) {
                             onChange={(value: any) => {
                                 setPluralAkkusativ(value)
                             }}
+                            fullWidth={true}
                         />
                     </Grid>
                     <Grid
                         item={true}
+                        xs={6}
                     >
                         <TextInputFormWithHook
                             control={control}
@@ -315,10 +326,12 @@ export function WordFormDE(props: WordFormDEProps) {
                             onChange={(value: any) => {
                                 setSingularGenitiv(value)
                             }}
+                            fullWidth={true}
                         />
                     </Grid>
                     <Grid
                         item={true}
+                        xs={6}
                     >
                         <TextInputFormWithHook
                             control={control}
@@ -329,10 +342,12 @@ export function WordFormDE(props: WordFormDEProps) {
                             onChange={(value: any) => {
                                 setPluralGenitiv(value)
                             }}
+                            fullWidth={true}
                         />
                     </Grid>
                     <Grid
                         item={true}
+                        xs={6}
                     >
                         <TextInputFormWithHook
                             control={control}
@@ -343,10 +358,12 @@ export function WordFormDE(props: WordFormDEProps) {
                             onChange={(value: any) => {
                                 setSingularDativ(value)
                             }}
+                            fullWidth={true}
                         />
                     </Grid>
                     <Grid
                         item={true}
+                        xs={6}
                     >
                         <TextInputFormWithHook
                             control={control}
@@ -357,6 +374,7 @@ export function WordFormDE(props: WordFormDEProps) {
                             onChange={(value: any) => {
                                 setPluralDativ(value)
                             }}
+                            fullWidth={true}
                         />
                     </Grid>
                 </Grid>

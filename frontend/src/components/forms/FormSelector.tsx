@@ -108,9 +108,5 @@ export function FormSelector(props: FormSelectorProps) {
         }
     }
 
-    return(
-        <>
-            {getLanguageForm()}
-        </>
-    )
+    return(getLanguageForm())
 }

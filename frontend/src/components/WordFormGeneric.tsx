@@ -3,6 +3,7 @@ import React, {useEffect, useState} from "react";
 import {NounItem, TranslationItem} from "../ts/interfaces";
 import {Lang, PartOfSpeech} from "../ts/enums";
 import {FormSelector} from "./forms/FormSelector";
+import globalTheme from "../theme/theme";
 
 interface WordFormGenericProps {
     index: number, // needed to know on which item in completeWordData.translations list this form data is stored
@@ -30,6 +31,32 @@ interface WordFormGenericProps {
 // This form will only display buttons/textfields/selects for A SINGLE language+word combo
 export function WordFormGeneric(props: WordFormGenericProps) {
     const [currentLang, setCurrentLang] = useState<Lang | null>(null)
+    const componentStyles = {
+        translationForm: {
+            marginTop: globalTheme.spacing(4),
+            padding: globalTheme.spacing(2),
+            borderStyle: "solid",
+            borderWidth: "5px",
+            background: `linear-gradient(#fff, #fff) padding-box, ${
+                (currentLang === Lang.EE)
+                    ? 'linear-gradient(180deg, rgb(0, 144, 206), rgb(0, 0, 0), rgb(210, 210, 210), rgb(210, 210, 210))'
+                    : (currentLang === Lang.ES)
+                        ?
+                        'linear-gradient(0deg, rgb(170, 21, 27), rgb(241, 191, 0),  rgb(241, 191, 0), rgb(170, 21, 27))'
+                        : (currentLang === Lang.DE)
+                            ?
+                            'linear-gradient(0deg, rgb(255, 204, 0), rgb(221, 0, 0), rgb(221, 0, 0), rgb(0, 0, 0), rgb(0, 0, 0))'
+                            : (currentLang === Lang.EN)
+                                ?
+                                // manually made
+                                // 'radial-gradient(circle at center, rgb(1, 33, 105), rgb(1, 33, 105), rgb(200, 16, 46), rgb(200, 16, 46), rgb(220, 220, 220))'
+                                "linear-gradient(#fff, #fff) padding-box,radial-gradient(circle at center, rgba(220,220,220,1) 0%, #d32f2f 12%, #d32f2f 15%, rgba(84,109,169,1) 30%, rgba(0,31,126,1) 10%, rgba(0,31,126,1) 70%, rgb(220 220 220) 88%, rgba(222,227,239,1) 91%,rgba(207,12,39,1) 100%) border-box"
+                                : "rgb(0, 144, 206)"
+            } border-box`,
+            border: '5px solid transparent',
+            borderRadius: '45px'
+        },
+    }
 
     const { currentTranslationData } = props
     useEffect(() => {
@@ -41,127 +68,119 @@ export function WordFormGeneric(props: WordFormGenericProps) {
     return(
         <Grid
             item={true}
+            container={true}
+            rowSpacing={1}
+            alignItems={"center"}
+            sx={componentStyles.translationForm}
         >
+            {/* List of language buttons */}
             <Grid
                 item={true}
                 container={true}
+                justifyContent={"center"}
                 spacing={2}
-                alignItems={"center"}
+            >
+                {
+                    props.availableLanguages.map((lang: Lang, index: number) => {
+                        return(
+                            <Grid
+                                item={true}
+                                key={index}
+                            >
+                                <Button
+                                    variant={"contained"}
+                                    color={"primary"}
+                                    onClick={() => {
+                                        // if we click on the button for the selected language nothing happens
+                                        if(currentLang === lang){
+                                            return
+                                        }
+                                        if(currentLang !== null){
+                                            // inform parent that old lang is now available
+                                            props.removeLanguageFromSelected(props.index, true)
+                                        }
+                                        setCurrentLang(lang)
+                                    }}
+                                >
+                                    {lang}
+                                </Button>
+                            </Grid>
+                        )
+                    })
+                }
+            </Grid>
+            {/* Language form */}
+            <Grid
+                item={true}
+                container={true}
+                justifyContent={"center"}
+            >
+                {(currentLang == null)
+                    ?
+                    <Typography
+                        variant={"subtitle2"}
+                    >
+                        Pick a language for the new word
+                    </Typography>
+                    :
+                    <FormSelector
+                        currentLang={currentLang}
+                        currentTranslationData={props.currentTranslationData}
+                        partOfSpeech={props.partOfSpeech}
+                        updateFormData={(formData: {
+                            language: Lang,
+                            cases?: NounItem[],
+                            completionState?: boolean
+                        }) => {
+                            props.updateFormData(
+                                {
+                                    ...formData,
+                                    cases: (formData.cases!)
+                                        // To avoid saving empty cases,
+                                        ? formData.cases.filter((nounCase) => (nounCase.word !== ""))
+                                        : formData.cases
+                                },
+                                props.index
+                            )
+                        }}
+                    />
+                }
+            </Grid>
+            {/* Additional buttons */}
+            <Grid
+                item={true}
+                container={true}
+                spacing={1}
             >
                 <Grid
                     item={true}
-                    container={true}
-                    xs={12}
-                    sm={6}
-                    justifyContent={"center"}
-                    spacing={2}
                 >
-                    {
-                        props.availableLanguages.map((lang: Lang, index: number) => {
-                            return(
-                                <Grid
-                                    item={true}
-                                    key={index}
-                                >
-                                    <Button
-                                        variant={(currentLang === lang) ?"contained" :"outlined"}
-                                        color={(currentLang === lang) ?"primary" :"error"}
-                                        onClick={() => {
-                                            // if we click on the button for the selected language nothing happens
-                                            if(currentLang === lang){
-                                                return
-                                            }
-                                            if(currentLang !== null){
-                                                // inform parent that old lang is now available
-                                                props.removeLanguageFromSelected(props.index, true)
-                                            }
-                                            setCurrentLang(lang)
-                                        }}
-                                    >
-                                        {lang}
-                                    </Button>
-                                </Grid>
-                            )
-                        })
-                    }
+                    <Button
+                        variant={"outlined"}
+                        disabled={(props.amountOfFormsOnScreen < 3)}
+                        onClick={() => {
+                            // this should run even if no language is selected
+                            // because there's an empty Object at this index holding its place
+                            props.removeLanguageFromSelected(props.index, false)
+                            setCurrentLang(null)
+                        }}
+                    >
+                        REMOVE
+                    </Button>
                 </Grid>
                 <Grid
                     item={true}
-                    xs={"auto"}
-                    container={true}
-                    alignItems={"flex-start"}
                 >
-                    <Grid
-                        item={true}
+                    <Button
+                        variant={"outlined"}
+                        disabled={(currentLang === null)}
+                        onClick={() => {
+                            props.removeLanguageFromSelected(props.index, true)
+                            setCurrentLang(null)
+                        }}
                     >
-                        {(currentLang == null)
-                            ?
-                            <Typography
-                                variant={"subtitle2"}
-                                // align={"center"}
-                            >
-                                Pick a language for the new word
-                            </Typography>
-                            :
-                            <FormSelector
-                                currentLang={currentLang}
-                                currentTranslationData={props.currentTranslationData}
-                                partOfSpeech={props.partOfSpeech}
-                                updateFormData={(formData: {
-                                    language: Lang,
-                                    cases?: NounItem[],
-                                    completionState?: boolean
-                                }) => {
-                                    props.updateFormData(
-                                        {
-                                            ...formData,
-                                            cases: (formData.cases!)
-                                                // To avoid saving empty cases,
-                                                ? formData.cases.filter((nounCase) => (nounCase.word !== ""))
-                                                : formData.cases
-                                        },
-                                        props.index
-                                    )
-                                }}
-                            />
-                        }
-                    </Grid>
-                </Grid>
-                <Grid
-                    item={true}
-                    container={true}
-                    spacing={1}
-                >
-                    <Grid
-                        item={true}
-                    >
-                        <Button
-                            variant={"outlined"}
-                            disabled={(props.amountOfFormsOnScreen < 3)}
-                            onClick={() => {
-                                // this should run even if no language is selected
-                                // because there's an empty Object at this index holding its place
-                                props.removeLanguageFromSelected(props.index, false)
-                                setCurrentLang(null)
-                            }}
-                        >
-                            REMOVE
-                        </Button>
-                    </Grid>
-                    <Grid
-                        item={true}
-                    >
-                        <Button
-                            variant={"outlined"}
-                            disabled={(currentLang === null)}
-                            onClick={() => {
-                                props.removeLanguageFromSelected(props.index, true)
-                                setCurrentLang(null)
-                            }}
-                        >
-                            CLEAR
-                        </Button>
-                    </Grid>
+                        CLEAR
+                    </Button>
                 </Grid>
             </Grid>
         </Grid>

@@ -24,8 +24,8 @@ export function WordFormES(props: WordFormESProps) {
     const { currentTranslationData } = props
 
     const validationSchema = Yup.object().shape({
-        gender: Yup.string().required("The gender is required")
-            .oneOf(["el", "la", "el/la"], "Pick a valid gender option"),
+        gender: Yup.string().required("Required")
+            .oneOf(["el", "la", "el/la"], "Required"),
         singular: Yup.string()
             .required("Word is required")
             .matches(/^[^0-9]+$/, 'Must not include numbers'),
@@ -110,15 +110,22 @@ export function WordFormES(props: WordFormESProps) {
 
     return(
         <Grid
-            item={true}
+            container={true}
+            justifyContent={"center"}
         >
-            <form>
+            <form
+                style={{
+                    width: '100%'
+                }}
+            >
                 <Grid
-                    container={true}
                     item={true}
+                    container={true}
+                    spacing={2}
                 >
                     <Grid
                         item={true}
+                        container={true}
                     >
                         <SelectFormWithHook
                             control={control}
@@ -130,10 +137,12 @@ export function WordFormES(props: WordFormESProps) {
                             onChange={(value: any) => {
                                 setGenderWord(value)
                             }}
+                            fullWidth={true}
                         />
                     </Grid>
                     <Grid
                         item={true}
+                        xs={6}
                     >
                         <TextInputFormWithHook
                             control={control}
@@ -144,10 +153,12 @@ export function WordFormES(props: WordFormESProps) {
                             onChange={(value: any) => {
                                 setSingularWord(value)
                             }}
+                            fullWidth={true}
                         />
                     </Grid>
                     <Grid
                         item={true}
+                        xs={6}
                     >
                         <TextInputFormWithHook
                             control={control}
@@ -158,6 +169,7 @@ export function WordFormES(props: WordFormESProps) {
                             onChange={(value: any) => {
                                 setPluralWord(value)
                             }}
+                            fullWidth={true}
                         />
                     </Grid>
                 </Grid>

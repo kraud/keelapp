@@ -190,12 +190,13 @@ export function WordFormEE(props: WordFormEEProps) {
             <form>
                 <Grid
                     container={true}
-                    xs={10}
                     justifyContent={"left"}
                     item={true}
+                    spacing={2}
                 >
                     <Grid
                         item={true}
+                        xs={6}
                     >
                         <TextInputFormWithHook
                             control={control}
@@ -206,10 +207,12 @@ export function WordFormEE(props: WordFormEEProps) {
                             onChange={(value: any) => {
                                 setSingularNimetav(value)
                             }}
+                            fullWidth={true}
                         />
                     </Grid>
                     <Grid
                         item={true}
+                        xs={6}
                     >
                         <TextInputFormWithHook
                             control={control}
@@ -220,10 +223,12 @@ export function WordFormEE(props: WordFormEEProps) {
                             onChange={(value: any) => {
                                 setPluralNimetav(value)
                             }}
+                            fullWidth={true}
                         />
                     </Grid>
                     <Grid
                         item={true}
+                        xs={6}
                     >
                         <TextInputFormWithHook
                             control={control}
@@ -234,10 +239,12 @@ export function WordFormEE(props: WordFormEEProps) {
                             onChange={(value: any) => {
                                 setSingularOmastav(value)
                             }}
+                            fullWidth={true}
                         />
                     </Grid>
                     <Grid
                         item={true}
+                        xs={6}
                     >
                         <TextInputFormWithHook
                             control={control}
@@ -248,10 +255,12 @@ export function WordFormEE(props: WordFormEEProps) {
                             onChange={(value: any) => {
                                 setPluralOmastav(value)
                             }}
+                            fullWidth={true}
                         />
                     </Grid>
                     <Grid
                         item={true}
+                        xs={6}
                     >
                         <TextInputFormWithHook
                             control={control}
@@ -262,10 +271,12 @@ export function WordFormEE(props: WordFormEEProps) {
                             onChange={(value: any) => {
                                 setSingularOsastav(value)
                             }}
+                            fullWidth={true}
                         />
                     </Grid>
                     <Grid
                         item={true}
+                        xs={6}
                     >
                         <TextInputFormWithHook
                             control={control}
@@ -276,10 +287,12 @@ export function WordFormEE(props: WordFormEEProps) {
                             onChange={(value: any) => {
                                 setPluralOsastav(value)
                             }}
+                            fullWidth={true}
                         />
                     </Grid>
                     <Grid
                         item={true}
+                        xs={6}
                     >
                         <TextInputFormWithHook
                             control={control}
@@ -290,6 +303,7 @@ export function WordFormEE(props: WordFormEEProps) {
                             onChange={(value: any) => {
                                 setShortForm(value)
                             }}
+                            fullWidth={true}
                         />
                     </Grid>
                 </Grid>
