@@ -1,8 +1,10 @@
-import { createTheme } from "@mui/material"
-import { orange, red } from "@mui/material/colors";
+import {createTheme, PaletteColor, PaletteColorOptions} from "@mui/material"
+import {grey, orange, pink, red} from "@mui/material/colors";
+import {white} from "colors";
 
 let globalTheme = createTheme({})
 
+const { palette } = createTheme();
 globalTheme = createTheme(globalTheme, {
     palette: {
         /*primary: {
@@ -16,6 +18,12 @@ globalTheme = createTheme(globalTheme, {
             dark: orange[800],
             light: orange[100],
         }*/
+        //@ts-ignore
+        allWhite: palette.augmentColor({ color: {
+                main: 'rgba(255,255,255,1)',
+                dark: 'rgba(255,255,255,1)',
+                light: 'rgba(255,255,255,1)',
+            } }),
     },
     typography: {
         /*newVariant: {
@@ -45,6 +53,12 @@ declare module '@mui/material/styles' {
     interface TypographyVariantsOptions {
         newVariant?: React.CSSProperties;
     }
+    interface Palette {
+        allWhite: string;
+    }
+    interface PaletteOptions {
+        allWhite: string;
+    }
 }
 
 // Update the Typography's variant prop options
@@ -66,6 +80,11 @@ declare module "@mui/material/styles/createPalette" {
 declare module "@mui/material" {
     interface ButtonPropsColorOverrides {
         customColor: any;
+    }
+}
+declare module "@mui/material/Radio" {
+    interface ButtonPropsColorOverrides {
+        allWhite: true;
     }
 }
 

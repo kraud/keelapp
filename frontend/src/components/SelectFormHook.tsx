@@ -12,7 +12,7 @@ interface SelectFormWithHookProps {
     errors?: any,
     type?: "password"|"text"|"email",
     fullWidth?: boolean
-    onChange?: (value: any) => void // Needed to inform parent component about the Textfield current value
+    onChange?: (value: any) => void // Needed to inform parent component about the Select current value
 }
 
 export const SelectFormWithHook = (props: SelectFormWithHookProps) => {

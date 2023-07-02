@@ -8,6 +8,7 @@ import {SelectFormWithHook} from "../SelectFormHook";
 import {NounItem, TranslationItem} from "../../ts/interfaces";
 import {GenderDE, NounCases} from "../../ts/enums";
 import {getWordByCase} from "./commonFunctions";
+import {RadioGroupWithHook} from "../RadioGroupFormHook";
 
 interface WordFormDEProps {
     currentTranslationData: TranslationItem,
@@ -236,7 +237,7 @@ export function WordFormDE(props: WordFormDEProps) {
                         item={true}
                         container={true}
                     >
-                        <SelectFormWithHook
+                        <RadioGroupWithHook
                             control={control}
                             label={"Gender"}
                             name={"gender"}
