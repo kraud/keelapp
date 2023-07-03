@@ -39,7 +39,7 @@ export function WordFormGeneric(props: WordFormGenericProps) {
             borderWidth: "5px",
             background: `linear-gradient(#fff, #fff) padding-box, ${
                 (currentLang === Lang.EE)
-                    ? 'linear-gradient(180deg, rgb(0, 144, 206), rgb(0, 0, 0), rgb(210, 210, 210), rgb(210, 210, 210))'
+                    ? 'linear-gradient(180deg, rgb(0, 144, 206),  rgb(0, 144, 206), rgb(0, 0, 0), rgb(210, 210, 210), rgb(210, 210, 210))'
                     : (currentLang === Lang.ES)
                         ?
                         'linear-gradient(0deg, rgb(170, 21, 27), rgb(241, 191, 0),  rgb(241, 191, 0), rgb(170, 21, 27))'
@@ -48,14 +48,15 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                             'linear-gradient(0deg, rgb(255, 204, 0), rgb(221, 0, 0), rgb(221, 0, 0), rgb(0, 0, 0), rgb(0, 0, 0))'
                             : (currentLang === Lang.EN)
                                 ?
-                                // manually made
-                                // 'radial-gradient(circle at center, rgb(1, 33, 105), rgb(1, 33, 105), rgb(200, 16, 46), rgb(200, 16, 46), rgb(220, 220, 220))'
                                 "linear-gradient(#fff, #fff) padding-box,radial-gradient(circle at center, rgba(220,220,220,1) 0%, #d32f2f 12%, #d32f2f 15%, rgba(84,109,169,1) 30%, rgba(0,31,126,1) 10%, rgba(0,31,126,1) 70%, rgb(220 220 220) 88%, rgba(222,227,239,1) 91%,rgba(207,12,39,1) 100%) border-box"
                                 : "rgb(0, 144, 206)"
             } border-box`,
             border: '5px solid transparent',
             borderRadius: '45px'
         },
+        languageTitle: {
+            textDecoration: 'underline'
+        }
     }
 
     const { currentTranslationData } = props
@@ -64,6 +65,73 @@ export function WordFormGeneric(props: WordFormGenericProps) {
             setCurrentLang(currentTranslationData.language)
         } // if it's another empty Object, the language here should remain null
     }, [currentTranslationData])
+
+    const languageButtonList = () => {
+        return(
+            <>
+                {(currentLang !== null) &&
+                <Grid
+                    item={true}
+                    sx={{
+                        alignSelf: 'self-end',
+                    }}
+                >
+                    <Typography
+                        variant={"subtitle2"}
+                        sx={{
+                            display: {xs: 'none', sm: 'initial'},
+                        }}
+                    >
+                        switch language:
+                    </Typography>
+                </Grid>}
+                {props.availableLanguages.map((lang: Lang, index: number) => {
+                    return(
+                        <Grid
+                            item={true}
+                            key={index}
+                        >
+                            <Button
+                                variant={"contained"}
+                                color={"primary"}
+                                onClick={() => {
+                                    // if we click on the button for the selected language nothing happens
+                                    if(currentLang === lang){
+                                        return
+                                    }
+                                    if(currentLang !== null){
+                                        // inform parent that old lang is now available
+                                        props.removeLanguageFromSelected(props.index, true)
+                                    }
+                                    setCurrentLang(lang)
+                                }}
+                            >
+                                {lang}
+                            </Button>
+                        </Grid>
+                    )
+                })}
+            </>
+        )
+    }
+
+    const getCurrentLangTranslated = () => {
+        switch(currentLang) {
+            case Lang.DE: {
+                return ("Deutsch")
+            }
+            case Lang.EE: {
+                return ("Eesti")
+            }
+            case Lang.EN: {
+                return ("English")
+            }
+            case Lang.ES: {
+                return ("Español")
+            }
+            default: return("Not Found")
+        }
+    }
 
     return(
         <Grid
@@ -80,33 +148,16 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                 justifyContent={"center"}
                 spacing={2}
             >
-                {
-                    props.availableLanguages.map((lang: Lang, index: number) => {
-                        return(
-                            <Grid
-                                item={true}
-                                key={index}
-                            >
-                                <Button
-                                    variant={"contained"}
-                                    color={"primary"}
-                                    onClick={() => {
-                                        // if we click on the button for the selected language nothing happens
-                                        if(currentLang === lang){
-                                            return
-                                        }
-                                        if(currentLang !== null){
-                                            // inform parent that old lang is now available
-                                            props.removeLanguageFromSelected(props.index, true)
-                                        }
-                                        setCurrentLang(lang)
-                                    }}
-                                >
-                                    {lang}
-                                </Button>
-                            </Grid>
-                        )
-                    })
+                {(currentLang == null)
+                    ?
+                        languageButtonList()
+                    :
+                        <Typography
+                            variant={"h3"}
+                            sx={componentStyles.languageTitle}
+                        >
+                            {getCurrentLangTranslated()}
+                        </Typography>
                 }
             </Grid>
             {/* Language form */}
@@ -150,37 +201,58 @@ export function WordFormGeneric(props: WordFormGenericProps) {
             <Grid
                 item={true}
                 container={true}
-                spacing={1}
+                justifyContent={"space-between"}
+                sx={{
+                    marginTop: globalTheme.spacing(2)
+                }}
             >
                 <Grid
                     item={true}
+                    container={true}
+                    spacing={1}
+                    justifyContent={"flex-start"}
+                    xs={"auto"} // so it grows to use only the necessary width to render the buttons
                 >
-                    <Button
-                        variant={"outlined"}
-                        disabled={(props.amountOfFormsOnScreen < 3)}
-                        onClick={() => {
-                            // this should run even if no language is selected
-                            // because there's an empty Object at this index holding its place
-                            props.removeLanguageFromSelected(props.index, false)
-                            setCurrentLang(null)
-                        }}
+                    <Grid
+                        item={true}
                     >
-                        REMOVE
-                    </Button>
+                        <Button
+                            variant={"outlined"}
+                            color={"error"}
+                            disabled={(props.amountOfFormsOnScreen < 3)}
+                            onClick={() => {
+                                // this should run even if no language is selected
+                                // because there's an empty Object at this index holding its place
+                                props.removeLanguageFromSelected(props.index, false)
+                                setCurrentLang(null)
+                            }}
+                        >
+                            REMOVE
+                        </Button>
+                    </Grid>
+                    <Grid
+                        item={true}
+                    >
+                        <Button
+                            variant={"outlined"}
+                            disabled={(currentLang === null)}
+                            onClick={() => {
+                                props.removeLanguageFromSelected(props.index, true)
+                                setCurrentLang(null)
+                            }}
+                        >
+                            CLEAR
+                        </Button>
+                    </Grid>
                 </Grid>
                 <Grid
                     item={true}
+                    container={true}
+                    justifyContent={"flex-end"}
+                    xs // so it grows to take all the space left available on this row
+                    spacing={1}
                 >
-                    <Button
-                        variant={"outlined"}
-                        disabled={(currentLang === null)}
-                        onClick={() => {
-                            props.removeLanguageFromSelected(props.index, true)
-                            setCurrentLang(null)
-                        }}
-                    >
-                        CLEAR
-                    </Button>
+                    {(currentLang !== null) && languageButtonList()}
                 </Grid>
             </Grid>
         </Grid>

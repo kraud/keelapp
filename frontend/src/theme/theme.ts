@@ -18,7 +18,6 @@ globalTheme = createTheme(globalTheme, {
             dark: orange[800],
             light: orange[100],
         }*/
-        //@ts-ignore
         allWhite: palette.augmentColor({ color: {
                 main: 'rgba(255,255,255,1)',
                 dark: 'rgba(255,255,255,1)',
