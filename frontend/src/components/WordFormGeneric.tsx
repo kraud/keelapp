@@ -45,7 +45,7 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                         'linear-gradient(0deg, rgb(170, 21, 27), rgb(241, 191, 0),  rgb(241, 191, 0), rgb(170, 21, 27))'
                         : (currentLang === Lang.DE)
                             ?
-                            'linear-gradient(0deg, rgb(255, 204, 0), rgb(221, 0, 0), rgb(221, 0, 0), rgb(0, 0, 0), rgb(0, 0, 0))'
+                            'linear-gradient(0deg, rgb(255, 204, 0), rgb(255, 204, 0), rgb(221, 0, 0), rgb(221, 0, 0), rgb(0, 0, 0), rgb(0, 0, 0))'
                             : (currentLang === Lang.EN)
                                 ?
                                 "linear-gradient(#fff, #fff) padding-box,radial-gradient(circle at center, rgba(220,220,220,1) 0%, #d32f2f 12%, #d32f2f 15%, rgba(84,109,169,1) 30%, rgba(0,31,126,1) 10%, rgba(0,31,126,1) 70%, rgb(220 220 220) 88%, rgba(222,227,239,1) 91%,rgba(207,12,39,1) 100%) border-box"
@@ -69,7 +69,7 @@ export function WordFormGeneric(props: WordFormGenericProps) {
     const languageButtonList = () => {
         return(
             <>
-                {(currentLang !== null) &&
+                {((currentLang !== null) && (props.availableLanguages.length > 0)) &&
                 <Grid
                     item={true}
                     sx={{

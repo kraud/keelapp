@@ -7,6 +7,7 @@ import {useSelector} from "react-redux";
 import LinearIndeterminate from "./Spinner";
 import {toast, Flip} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {PartOfSpeechSelector} from "./PartOfSpeechSelector";
 
 interface TranslationFormProps {
     onSave: (wordData: WordData) => void
@@ -139,10 +140,6 @@ export function TranslationForm(props: TranslationFormProps) {
         }
     }, [isSuccess])
 
-    const getAllPartsOfSpeech = () => {
-        const partsOfSpeech: string[] = (Object.values(PartOfSpeech).filter((v) => isNaN(Number(v))) as unknown as Array<keyof typeof Lang>)
-        return(partsOfSpeech)
-    }
 
     const setAvailableLanguagesList = () => {
         const allLangs: string[] = (Object.values(Lang).filter((v) => isNaN(Number(v))) as unknown as Array<keyof typeof Lang>)
@@ -209,31 +206,15 @@ export function TranslationForm(props: TranslationFormProps) {
         })
     }
 
+
+
     return(
         <>
             {!(partOfSpeech!)
                 ?
-                <Grid
-                    container={true}
-                    spacing={3}
-                >
-                    {(getAllPartsOfSpeech()).map((part: string, index: number) => {
-                        return(
-                            <Grid
-                                item={true}
-                                key={index}
-                            >
-                                <Button
-                                    variant={"contained"}
-                                    onClick={() => setPartOfSpeech((part as PartOfSpeech))}
-                                    disabled={part !== "Noun"} // TODO: make this depend on a list of implemented forms
-                                >
-                                    {part}
-                                </Button>
-                            </Grid>
-                            )
-                    })}
-                </Grid>
+                <PartOfSpeechSelector
+                    setPartOfSpeech={(part: PartOfSpeech) => setPartOfSpeech(part)}
+                />
                 :
                 <Grid
                     container={true}
