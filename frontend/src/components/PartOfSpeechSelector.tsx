@@ -3,6 +3,7 @@ import {Lang, PartOfSpeech} from "../ts/enums";
 import {Button, Grid, Typography} from "@mui/material";
 import {toast} from "react-toastify";
 import globalTheme from "../theme/theme";
+import Box from "@mui/material/Box";
 
 interface partOfSpeechSelectorProps{
     setPartOfSpeech: (pos: PartOfSpeech) => void
@@ -18,6 +19,12 @@ export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
             borderRadius: '25px',
             borderColor: "rgb(0, 144, 206)",
         },
+        exampleHighlight: {
+            fontWeight: "bold",
+            textDecoration: "underline",
+            color: "rgb(0, 144, 206)",
+            fontSize: "1.05rem"
+        }
     }
     const getAllPartsOfSpeech = () => {
         const partsOfSpeech: string[] = (Object.values(PartOfSpeech).filter((v) => isNaN(Number(v))) as unknown as Array<keyof typeof Lang>)
@@ -37,20 +44,102 @@ export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
 
     // These should be more elaborate (yet still short and simple). Should also include examples. Maybe.
     function getDescription(option: any | null){
-        let description: {info: string, examples: string[]} = {info: "none", examples: ["mic", "check"]}
+        let description: {info: string, examples: { text: string, highlight: string }[]} = {info: "none", examples: [{text: "mic", highlight: "mic"}, {text: "check", highlight: "check"}]}
         if(option!){
             switch(option){
                 case PartOfSpeech.noun: {
                     description = {
-                        info: "Nouns are stuff. Simple, right?",
-                        examples: ["Boy, I sure like this *description*.", "stuff."]
+                        info: "Nouns are essential words in language that give names to people, places, things, or ideas. They help us identify and talk about the world around us.",
+                        examples: [
+                            {
+                                text: "Pizza is a popular Italian dish.",
+                                highlight: "Pizza"
+                            },
+                            {
+                                text: "A dog is a loyal pet.",
+                                highlight: "dog"
+                            },
+                            {
+                                text: "A city is a large urban area with buildings, roads, and a bustling population.",
+                                highlight: "city"
+                            }
+                        ]
                     }
                     break
                 }
                 case PartOfSpeech.pronoun: {
                     description = {
-                        info: "It's like a noun, but it gets paid.",
-                        examples: ["Can *someone* come up with real examples?"]
+                        info: "Pronouns are words that replace specific nouns to make our sentences less repetitive. They help us refer to people, places, things, or ideas without constantly repeating the same noun.",
+                        examples: [
+                            {
+                                text: "She is reading a book.",
+                                highlight: "She"
+                            },
+                            {
+                                text: "We are going to the park.",
+                                highlight: "We"
+                            },
+                        ]
+                    }
+                    break
+                }
+                case PartOfSpeech.verb: {
+                    description = {
+                        info: "Verbs are action words that describe what someone or something does. They express actions, states, or occurrences. Verbs bring life and movement to our sentences.",
+                        examples: [
+                            {
+                                text: "I eat pizza on weekends because it's my favorite food.",
+                                highlight: "eat"
+                            },
+                            {
+                                text: "The cat jumps onto the table to explore its surroundings.",
+                                highlight: "jumps"
+                            },
+                        ]
+                    }
+                    break
+                }
+                case PartOfSpeech.adjective: {
+                    description = {
+                        info: "Adjectives are words that describe or modify nouns, giving us more information about them. They help us express characteristics, qualities, or attributes of the things we talk about.",
+                        examples: [
+                            {
+                                text: "The weather is sunny today, with clear skies and plenty of sunshine.",
+                                highlight: "sunny"
+                            },
+                            {
+                                text: "She has a friendly personality and always greets everyone with a smile.",
+                                highlight: "friendly"
+                            },
+                        ]
+                    }
+                    break
+                }
+                case PartOfSpeech.adverb: {
+                    description = {
+                        info: " Adverbs are words that are used to provide more information about verbs, adjectives and other adverbs used in a sentence. There are five main types of adverbs namely, adverbs of manner, adverbs of degree, adverbs of frequency, adverbs of time and adverbs of place.",
+                        examples: [
+                            {
+                                text: "Did you come here to buy an umbrella? (Adverb of place)",
+                                highlight: "here"
+                            },
+                            {
+                                text: "I did not go to school yesterday as I was sick. (Adverb of time)",
+                                highlight: "yesterday"
+                            },
+                            {
+                                text: "Savio reads the newspaper everyday. (Adverb of frequency)",
+                                highlight: "everyday"
+                            },
+                            {
+                                text: "Can you please come quickly? (Adverb of manner)",
+                                highlight: "quickly"
+                            },
+                            {
+                                text: "Tony was so sleepy that he could hardly keep his eyes open during the meeting. (Adverb of degree)",
+                                highlight: "hardly"
+                            },
+                        ]
                     }
                     break
                 }
@@ -62,6 +151,7 @@ export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
                     container={true}
                     item={true}
                 >
+                    {/* PART OF SPEECH NAME*/}
                     <Grid
                         item={true}
                         xs={12}
@@ -75,27 +165,40 @@ export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
                             {option}
                         </Typography>
                     </Grid>
+                    {/* DESCRIPTION */}
                     <Grid
                         item={true}
                         xs={12}
                     >
                         <Typography
                             variant={"subtitle1"}
+                            gutterBottom={false}
                         >
                             {description.info}
                         </Typography>
                     </Grid>
+                    {/* EXAMPLES */}
                     <Grid
                         item={true}
                         sx={{ marginTop: globalTheme.spacing(1)}}
                     >
-                        {(description.examples).map(((example: string, index: number) => {
+                        {(description.examples).map(((example: { text: string, highlight: string }, index: number) => {
+                            // This way, we make it obvious what word (the highlight) we're exemplifying
+                            const exampleParts: string[] = (example.text).split(example.highlight)
                             return(
                                 < Typography
                                     variant={"subtitle2"}
                                     key={index}
                                 >
-                                    ✔ {example}
+                                    ✔ {exampleParts[0]}
+                                    <Box
+                                        component="span"
+                                        fontWeight='fontWeightBold'
+                                        sx={componentStyles.exampleHighlight}
+                                    >
+                                        {example.highlight}
+                                    </Box>
+                                    {exampleParts[1]}
                                 </Typography>
                             )
                         }))}
@@ -155,7 +258,9 @@ export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
             <Grid
                 item={true}
                 container={true}
-                justifyContent={"center"}
+                sx={{
+                    justifyContent: {xs: "space-around", sm: "center"}
+                }}
                 spacing={3}
             >
                 {(partsOfSpeech).map((part: string, index: number) => {
