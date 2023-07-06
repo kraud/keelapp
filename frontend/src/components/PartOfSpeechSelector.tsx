@@ -44,25 +44,16 @@ export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
 
     // These should be more elaborate (yet still short and simple). Should also include examples. Maybe.
     function getDescription(option: any | null){
-        let description: {info: string, examples: { text: string, highlight: string }[]} = {info: "none", examples: [{text: "mic", highlight: "mic"}, {text: "check", highlight: "check"}]}
+        let description: {info: string, examples: string[]} = {info: "none", examples: ["*mic*" , "*check*"]}
         if(option!){
             switch(option){
                 case PartOfSpeech.noun: {
                     description = {
                         info: "Nouns are essential words in language that give names to people, places, things, or ideas. They help us identify and talk about the world around us.",
                         examples: [
-                            {
-                                text: "Pizza is a popular Italian dish.",
-                                highlight: "Pizza"
-                            },
-                            {
-                                text: "A dog is a loyal pet.",
-                                highlight: "dog"
-                            },
-                            {
-                                text: "A city is a large urban area with buildings, roads, and a bustling population.",
-                                highlight: "city"
-                            }
+                                "*Pizza* is a popular Italian dish.",
+                                "A *dog* is a loyal pet.",
+                                "A *city* is a large urban area with buildings, roads, and a bustling population."
                         ]
                     }
                     break
@@ -71,14 +62,8 @@ export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
                     description = {
                         info: "Pronouns are words that replace specific nouns to make our sentences less repetitive. They help us refer to people, places, things, or ideas without constantly repeating the same noun.",
                         examples: [
-                            {
-                                text: "She is reading a book.",
-                                highlight: "She"
-                            },
-                            {
-                                text: "We are going to the park.",
-                                highlight: "We"
-                            },
+                            "*She* is reading a book.",
+                            "*We* are going to the park.",
                         ]
                     }
                     break
@@ -87,14 +72,8 @@ export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
                     description = {
                         info: "Verbs are action words that describe what someone or something does. They express actions, states, or occurrences. Verbs bring life and movement to our sentences.",
                         examples: [
-                            {
-                                text: "I eat pizza on weekends because it's my favorite food.",
-                                highlight: "eat"
-                            },
-                            {
-                                text: "The cat jumps onto the table to explore its surroundings.",
-                                highlight: "jumps"
-                            },
+                            "I *eat* pizza on weekends because it's my favorite food.",
+                            "The cat *jumps* onto the table to explore its surroundings."
                         ]
                     }
                     break
@@ -103,14 +82,8 @@ export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
                     description = {
                         info: "Adjectives are words that describe or modify nouns, giving us more information about them. They help us express characteristics, qualities, or attributes of the things we talk about.",
                         examples: [
-                            {
-                                text: "The weather is sunny today, with clear skies and plenty of sunshine.",
-                                highlight: "sunny"
-                            },
-                            {
-                                text: "She has a friendly personality and always greets everyone with a smile.",
-                                highlight: "friendly"
-                            },
+                            "The weather is *sunny* today, with clear skies and plenty of sunshine.",
+                            "She has a *friendly* personality and always greets everyone with a smile."
                         ]
                     }
                     break
@@ -119,26 +92,11 @@ export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
                     description = {
                         info: " Adverbs are words that are used to provide more information about verbs, adjectives and other adverbs used in a sentence. There are five main types of adverbs namely, adverbs of manner, adverbs of degree, adverbs of frequency, adverbs of time and adverbs of place.",
                         examples: [
-                            {
-                                text: "Did you come here to buy an umbrella? (Adverb of place)",
-                                highlight: "here"
-                            },
-                            {
-                                text: "I did not go to school yesterday as I was sick. (Adverb of time)",
-                                highlight: "yesterday"
-                            },
-                            {
-                                text: "Savio reads the newspaper everyday. (Adverb of frequency)",
-                                highlight: "everyday"
-                            },
-                            {
-                                text: "Can you please come quickly? (Adverb of manner)",
-                                highlight: "quickly"
-                            },
-                            {
-                                text: "Tony was so sleepy that he could hardly keep his eyes open during the meeting. (Adverb of degree)",
-                                highlight: "hardly"
-                            },
+                            "Did you come *here* to buy an umbrella? (Adverb of place)",
+                            "I did not go to school *yesterday* as I was sick. (Adverb of time)",
+                            "Savio reads the newspaper *everyday*. (Adverb of frequency)",
+                            "Can you please come *quickly*? (Adverb of manner)",
+                            "Tony was so sleepy that he could *hardly* keep his eyes open during the meeting. (Adverb of degree)"
                         ]
                     }
                     break
@@ -182,9 +140,9 @@ export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
                         item={true}
                         sx={{ marginTop: globalTheme.spacing(1)}}
                     >
-                        {(description.examples).map(((example: { text: string, highlight: string }, index: number) => {
+                        {(description.examples).map(((example: string, index: number) => {
                             // This way, we make it obvious what word (the highlight) we're exemplifying
-                            const exampleParts: string[] = (example.text).split(example.highlight)
+                            const exampleParts: string[] = (example).split("*")
                             return(
                                 < Typography
                                     variant={"subtitle2"}
@@ -196,9 +154,9 @@ export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
                                         fontWeight='fontWeightBold'
                                         sx={componentStyles.exampleHighlight}
                                     >
-                                        {example.highlight}
+                                        {exampleParts[1]}
                                     </Box>
-                                    {exampleParts[1]}
+                                    {exampleParts[2]}
                                 </Typography>
                             )
                         }))}
