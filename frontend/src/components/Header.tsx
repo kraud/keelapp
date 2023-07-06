@@ -60,6 +60,10 @@ function ResponsiveAppBar() {
                 navigate('/addWord')
                 break
             }
+            case "Review": {
+                navigate('/review')
+                break
+            }
             default: {
                 toast.error("This function is not ready yet, we're sorry!")
             }

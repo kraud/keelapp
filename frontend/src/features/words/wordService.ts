@@ -13,8 +13,18 @@ const createWord = async (word: WordData, token: any) => {
     return(response.data)
 }
 
+const getWords = async (token: any) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+    const response = await axios.get(API_URL, config)
+    return(response.data)
+}
+
 const wordService = {
-    createWord
+    createWord, getWords
 }
 
 export default wordService

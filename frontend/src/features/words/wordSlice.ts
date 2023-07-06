@@ -35,6 +35,23 @@ export const createWord = createAsyncThunk('words/create', async (word: WordData
         return thunkAPI.rejectWithValue(message)
     }
 })
+// Get user words
+export const getWords = createAsyncThunk('words/getAll', async (_, thunkAPI) => {
+    try {
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await wordService.getWords(token)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
 
 export const wordSlice = createSlice({
     name: 'word',
@@ -46,6 +63,7 @@ export const wordSlice = createSlice({
         builder
             .addCase(createWord.pending, (state) => {
                 state.isLoading = true
+                state.isSuccess = false
             })
             .addCase(createWord.fulfilled, (state, action) => {
                 state.isLoading = false
@@ -53,6 +71,19 @@ export const wordSlice = createSlice({
                 state.words.push(action.payload)
             })
             .addCase(createWord.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload as string
+            })
+            .addCase(getWords.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(getWords.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.words = (action.payload)
+            })
+            .addCase(getWords.rejected, (state, action) => {
                 state.isLoading = false
                 state.isError = true
                 state.message = action.payload as string

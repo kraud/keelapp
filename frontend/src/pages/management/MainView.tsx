@@ -6,6 +6,7 @@ import Register from "../Register";
 import React, {useEffect, useState} from "react";
 import ResponsiveAppBar from "../../components/Header";
 import {Grid} from "@mui/material";
+import {Review} from "../Review";
 
 export function MainView(){
     const componentStyles = {
@@ -46,6 +47,10 @@ export function MainView(){
                     <Route
                         path='/addWord'
                         element={<AddWord/>}
+                    />
+                    <Route
+                        path='/review'
+                        element={<Review/>}
                     />
                     <Route
                         path='/login'
