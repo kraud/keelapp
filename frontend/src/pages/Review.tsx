@@ -71,11 +71,34 @@ export function Review(){
                             You can review and edit them from here.
                         </Typography>
                     </Grid>
-                    <DnDLanguageOrderSelector/>
+                    <Grid
+                        container={true}
+                        item={true}
+                        sx={{
+                            marginTop: globalTheme.spacing(4)
+                        }}
+                    >
+                        <Typography
+                            variant={'h6'}
+                            sx={{
+                                textDecoration: 'underline'
+                            }}
+                        >
+                            Sort list by:
+                        </Typography>
+                    </Grid>
+                    <DnDLanguageOrderSelector
+                        allItems={allLanguages}
+                        setAllItems={(languages: string[]) => setAllLanguages(languages)}
+                        direction={"horizontal"}
+                    />
                     {/* WORD LIST*/}
                     <Grid
                         container={true}
                         item={true}
+                        sx={{
+                            marginTop: globalTheme.spacing(2)
+                        }}
                     >
                         {
                             (words.map((word: WordData, index: number) => {

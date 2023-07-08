@@ -1,35 +1,33 @@
-import {Lang} from "../ts/enums";
-import {useState} from "react";
 import {closestCenter, DndContext} from "@dnd-kit/core";
 import {
     arrayMove,
     SortableContext,
-    verticalListSortingStrategy
+    horizontalListSortingStrategy, verticalListSortingStrategy
 } from "@dnd-kit/sortable";
 import React from "react";
 import {DnDSortableItem} from "./DnDSortableItem";
 import {Grid} from "@mui/material";
 
 interface DnDLanguageOrderSelectorProps{
-
+    allItems: string[],
+    setAllItems: (items: string[]) => void
+    direction: "vertical" | "horizontal"
+    justifyContent?: "center" | "flex-end" | "flex-start"
 }
 
 export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
-    const [allLanguages, setAllLanguages] = useState<string[]>((Object.values(Lang).filter((v) => isNaN(Number(v))) as unknown as Array<keyof typeof Lang>))
 
     function handleDragEnd(event: any) {
         const {active, over } = event
 
         if(active.id !== over.id){
-            setAllLanguages( (items: string[]) => {
-                const activeIndex = items.indexOf(active.id)
-                const overIndex = items.indexOf(over.id)
+            const activeIndex = props.allItems.indexOf(active.id)
+            const overIndex = props.allItems.indexOf(over.id)
 
-                return(
-                    arrayMove(items, activeIndex, overIndex)
-                )
-            })
-        }
+            props.setAllItems(
+                arrayMove(props.allItems, activeIndex, overIndex)
+            )
+            }
     }
 
     return(
@@ -38,15 +36,25 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
             onDragEnd={handleDragEnd}
         >
             <SortableContext
-                items={allLanguages}
-                strategy={verticalListSortingStrategy}
+                items={props.allItems}
+                strategy={props.direction === "horizontal" ? horizontalListSortingStrategy :verticalListSortingStrategy}
             >
                 <Grid
                     item={true}
                     container={true}
                     spacing={2}
+                    justifyContent={props.justifyContent}
                 >
-                    {(allLanguages.map((language: string, index: number) => <DnDSortableItem key={index} id={language}/>))}
+                    {props.allItems.map((item: string, index: number) => {
+                        return (
+                            <DnDSortableItem
+                                key={item}
+                                id={item}
+                                direction={props.direction}
+                                index={index}
+                            />
+                        )
+                    })}
                 </Grid>
             </SortableContext>
 

@@ -4,7 +4,9 @@ import {Button, Grid} from "@mui/material";
 import React from "react";
 
 interface DnDSortableItemProps{
-    id: string
+    id: string,
+    direction: "vertical" | "horizontal",
+    index: number
 }
 
 export function DnDSortableItem(props: DnDSortableItemProps){
@@ -19,15 +21,15 @@ export function DnDSortableItem(props: DnDSortableItemProps){
 
     const style = {
         transform: CSS.Transform.toString(transform),
-        transition
+        transition: transition
     }
 
     return(
         <Grid
             item={true}
-            container={true}
+            container={props.direction === "vertical"}
             ref={setNodeRef}
-            style={{...style, width: '100%'}}
+            style={style}
             {...attributes}
             {...listeners}
         >
@@ -36,7 +38,7 @@ export function DnDSortableItem(props: DnDSortableItemProps){
                 color={"secondary"}
                 onClick={() => null}
             >
-                {props.id}
+                #{props.index + 1}: {props.id}
             </Button>
         </Grid>
     )
