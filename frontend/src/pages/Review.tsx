@@ -52,9 +52,11 @@ export function Review(){
                         textDecoration: 'underline'
                     }}
                 >
-                    {(words.length >0)
-                        ? `You have saved ${words.length} translations`
-                        : "You haven't saved any words yet."
+                    {(isLoading)
+                        ? "Fetching word data"
+                        : (words.length >0)
+                            ? `You have saved ${words.length} translations`
+                            : "You haven't saved any words yet."
                     }
 
                 </Typography>
@@ -68,7 +70,7 @@ export function Review(){
                         <Typography
                             variant={'subtitle1'}
                         >
-                            You can review and edit them from here.
+                            Review and edit them from here.
                         </Typography>
                     </Grid>
                     <Grid

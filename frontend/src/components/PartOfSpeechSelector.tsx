@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {Lang, PartOfSpeech} from "../ts/enums";
-import {Button, Grid, Typography} from "@mui/material";
+import {Button, Grid, Slide, Typography} from "@mui/material";
 import {toast} from "react-toastify";
 import globalTheme from "../theme/theme";
 import Box from "@mui/material/Box";
@@ -10,6 +10,8 @@ interface partOfSpeechSelectorProps{
 }
 
 export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
+    const containerRef = React.useRef(null)
+
     const componentStyles = {
         descriptionContainer: {
             marginTop: globalTheme.spacing(4),
@@ -241,17 +243,28 @@ export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
                 })}
             </Grid>
             {/* DESCRIPTIONS */}
-            {(option!) &&
-                <Grid
-                    item={true}
-                    container={true}
-                    alignItems={"center"}
-                    justifyContent={"center"}
-                    sx={componentStyles.descriptionContainer}
+            <Grid
+                ref={containerRef}
+                sx={{
+                    overflow: 'hidden',
+                }}
+            >
+                <Slide
+                    direction="down"
+                    in={option!}
+                    container={containerRef.current}
                 >
-                    {getDescription(option)}
-                </Grid>
-            }
+                    <Grid
+                        item={true}
+                        container={true}
+                        alignItems={"center"}
+                        justifyContent={"center"}
+                        sx={componentStyles.descriptionContainer}
+                    >
+                        {getDescription(option)}
+                    </Grid>
+                </Slide>
+            </Grid>
         </Grid>
     )
 }

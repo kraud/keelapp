@@ -38,6 +38,15 @@ export const RadioGroupWithHook = (props: RadioGroupHookProps) => {
         optionGroup: {
             paddingLeft: globalTheme.spacing(1),
         },
+        firstOption: {
+            borderRadius: '15px 4px 4px 15px'
+        },
+        middleOption: {
+            borderRadius: '4px'
+        },
+        lastOption: {
+            borderRadius: '4px 15px 15px 4px'
+        }
     }
 
     return (
@@ -57,7 +66,17 @@ export const RadioGroupWithHook = (props: RadioGroupHookProps) => {
                             (props.options).map((option: string, index: number) => {
                                 return(
                                     <FormControlLabel
-                                        sx={componentStyles.optionPill}
+                                        sx={{
+                                            ...componentStyles.optionPill,
+                                            ...
+                                                (index === 0)
+                                                    ? componentStyles.firstOption
+                                                    : (index === (props.options.length -1))
+                                                        ? componentStyles.lastOption
+                                                        : componentStyles.middleOption
+
+
+                                        }}
                                         key={index}
                                         value={option}
                                         label={option}

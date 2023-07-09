@@ -56,6 +56,12 @@ export function WordFormGeneric(props: WordFormGenericProps) {
         },
         languageTitle: {
             textDecoration: 'underline'
+        },
+        removeButton: {
+            borderRadius: '5px 5px 5px 22px'
+        },
+        lastLanguageButton: {
+            borderRadius: '5px 5px 22px 5px'
         }
     }
 
@@ -94,6 +100,11 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                             <Button
                                 variant={"contained"}
                                 color={"primary"}
+                                sx={
+                                    (index === (props.availableLanguages.length -1))
+                                        ? componentStyles.lastLanguageButton
+                                        : undefined
+                                }
                                 onClick={() => {
                                     // if we click on the button for the selected language nothing happens
                                     if(currentLang === lang){
@@ -226,6 +237,7 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                                 props.removeLanguageFromSelected(props.index, false)
                                 setCurrentLang(null)
                             }}
+                            sx={componentStyles.removeButton}
                         >
                             REMOVE
                         </Button>
