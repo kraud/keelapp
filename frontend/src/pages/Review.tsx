@@ -9,6 +9,7 @@ import LinearIndeterminate from "../components/Spinner";
 import {WordData} from "../ts/interfaces";
 import {DnDLanguageOrderSelector} from "../components/DnDLanguageOrderSelector";
 import {Lang} from "../ts/enums";
+import {TranslationsTable} from "../components/TranslationsTable";
 
 export function Review(){
     const navigate = useNavigate()
@@ -25,6 +26,10 @@ export function Review(){
         if(!user){
             navigate('/login')
         }
+        // TODO: this returns ALL the stored data. Not necessary, and it will be too much later on.
+        //  We should create a new endpoint where we can get only the data that will be displayed.
+        //  Then when we go to the detailed view of the translation, we fetch all the data for that specific word.
+        //  We'll filter here for now, in order to "fake" the lighter-data until the endpoint is up and running.
         //@ts-ignore
         dispatch(getWords())
 
@@ -120,6 +125,7 @@ export function Review(){
                             }))
                         }
                     </Grid>
+                    <TranslationsTable/>
                 </>
             }
         </Grid>

@@ -383,7 +383,10 @@ export function TranslationForm(props: TranslationFormProps) {
                                 variant={"outlined"}
                                 disabled={(
                                     // only true when all the languages are being used
-                                    availableLanguages.length === 0
+                                    (availableLanguages.length === 0)
+                                    ||
+                                    // or when the maximum amount of translations is reached
+                                    (completeWordData.translations.length === 4)
                                 )}
                             >
                                 Add another translation

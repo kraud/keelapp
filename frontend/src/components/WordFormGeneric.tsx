@@ -4,6 +4,7 @@ import {NounItem, TranslationItem} from "../ts/interfaces";
 import {Lang, PartOfSpeech} from "../ts/enums";
 import {FormSelector} from "./forms/FormSelector";
 import globalTheme from "../theme/theme";
+import Tooltip from "@mui/material/Tooltip";
 
 interface WordFormGenericProps {
     index: number, // needed to know on which item in completeWordData.translations list this form data is stored
@@ -100,11 +101,20 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                             <Button
                                 variant={"contained"}
                                 color={"primary"}
-                                sx={
-                                    (index === (props.availableLanguages.length -1))
+                                sx={{
+                                    ...(currentLang !== null)
+                                        ?
+                                            {
+                                                padding: '4px 10px 4px 10px',
+                                                fontSize: '0.75rem',
+                                                fontWeight: 'normal',
+                                                marginBottom: '0px',
+                                            }
+                                        : undefined,
+                                    ...((index === (props.availableLanguages.length -1)) && (currentLang !== null))
                                         ? componentStyles.lastLanguageButton
                                         : undefined
-                                }
+                                }}
                                 onClick={() => {
                                     // if we click on the button for the selected language nothing happens
                                     if(currentLang === lang){
@@ -227,40 +237,48 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                     <Grid
                         item={true}
                     >
-                        <Button
-                            variant={"outlined"}
-                            color={"error"}
-                            disabled={(props.amountOfFormsOnScreen < 3)}
-                            onClick={() => {
-                                // this should run even if no language is selected
-                                // because there's an empty Object at this index holding its place
-                                props.removeLanguageFromSelected(props.index, false)
-                                setCurrentLang(null)
-                            }}
-                            sx={componentStyles.removeButton}
+                        <Tooltip
+                            title={(props.amountOfFormsOnScreen < 3) ? "You need at least 2 translations" : ""}
                         >
-                            REMOVE
-                        </Button>
+                            <span>
+                                <Button
+                                    variant={"outlined"}
+                                    color={"error"}
+                                    disabled={(props.amountOfFormsOnScreen < 3)}
+                                    onClick={() => {
+                                        // this should run even if no language is selected
+                                        // because there's an empty Object at this index holding its place
+                                        props.removeLanguageFromSelected(props.index, false)
+                                        setCurrentLang(null)
+                                    }}
+                                    sx={componentStyles.removeButton}
+                                >
+                                    REMOVE
+                                </Button>
+                            </span>
+                        </Tooltip>
                     </Grid>
-                    <Grid
-                        item={true}
-                    >
-                        <Button
-                            variant={"outlined"}
-                            disabled={(currentLang === null)}
-                            onClick={() => {
-                                props.removeLanguageFromSelected(props.index, true)
-                                setCurrentLang(null)
-                            }}
+                    {(currentLang !== null) &&
+                        <Grid
+                            item={true}
                         >
-                            CLEAR
-                        </Button>
-                    </Grid>
+                            <Button
+                                variant={"outlined"}
+                                onClick={() => {
+                                    props.removeLanguageFromSelected(props.index, true)
+                                    setCurrentLang(null)
+                                }}
+                            >
+                                CLEAR
+                            </Button>
+                        </Grid>
+                    }
                 </Grid>
                 <Grid
                     item={true}
                     container={true}
                     justifyContent={"flex-end"}
+                    alignItems={"flex-end"}
                     xs // so it grows to take all the space left available on this row
                     spacing={1}
                 >
