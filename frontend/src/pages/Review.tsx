@@ -9,7 +9,7 @@ import LinearIndeterminate from "../components/Spinner";
 import {WordData} from "../ts/interfaces";
 import {DnDLanguageOrderSelector} from "../components/DnDLanguageOrderSelector";
 import {Lang} from "../ts/enums";
-import {TranslationsTable} from "../components/TranslationsTable";
+import {TranslationsTable} from "../components/table/TranslationsTable";
 
 export function Review(){
     const navigate = useNavigate()
