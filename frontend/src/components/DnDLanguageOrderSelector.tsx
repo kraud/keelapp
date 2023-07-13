@@ -7,45 +7,103 @@ import {
 import React from "react";
 import {DnDSortableItem} from "./DnDSortableItem";
 import {Grid} from "@mui/material";
+import {toast} from "react-toastify";
+import globalTheme from "../theme/theme";
 
 interface DnDLanguageOrderSelectorProps{
-    allItems: string[],
-    setAllItems: (items: string[]) => void
+    allSelectedItems: string[],
+    otherItems: string[],
+    setAllSelectedItems: (items: string[]) => void
+    setOtherItems: (items: string[]) => void
     direction: "vertical" | "horizontal"
     justifyContent?: "center" | "flex-end" | "flex-start"
 }
 
 export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
+    const componentStyles = {
+        sortableContextInnerContainer: {
+            background: '#e1e1e1',
+            padding: globalTheme.spacing(1),
+            border: '2px solid black',
+            borderRadius: '10px',
+            margin: globalTheme.spacing(2)
+        },
+    }
 
     function handleDragEnd(event: any) {
         const {active, over } = event
 
         if(active.id !== over.id){
-            const activeIndex = props.allItems.indexOf(active.id)
-            const overIndex = props.allItems.indexOf(over.id)
+            if(active.data.current.sortable.containerId !== over.data.current.sortable.containerId){  // BETWEEN DIFFERENT CONTAINERS
+                if(over.data.current.sortable.containerId == "other"){ // destination is "other" container
+                    if(props.allSelectedItems.length > 2) {
+                        const activeIndex = props.allSelectedItems.indexOf(active.id) // original index of the item - we use it to remove it from the selected list
+                        props.setOtherItems([...props.otherItems, (props.allSelectedItems[activeIndex])]) // order not important (yet)
+                        let newSelected = [...props.allSelectedItems] // NB! Spreading this prop is NECESSARY for it to re-render the table.
+                        newSelected.splice(activeIndex, 1) // remove 1 item at activeIndex from newSelected
+                        props.setAllSelectedItems(newSelected)
+                    } else {
+                        toast.error("You can't have less than 2 languages displayed.", {
+                            toastId: "always-2-lang",
+                            autoClose: 2500,
+                        })
+                    }
+                } else { // destination is "selected" container
+                    const overIndex = props.allSelectedItems.indexOf(over.id) // index at which it's hovering at the selected container
 
-            props.setAllItems(
-                arrayMove(props.allItems, activeIndex, overIndex)
-            )
+                    const activeIndex = props.otherItems.indexOf(active.id) // index which the item used to be at inside "others"
+                    let newOthers = props.otherItems
+                    newOthers.splice(activeIndex, 1) // remove 1 item at activeIndex
+                    props.setOtherItems(newOthers)
+
+                    // NB! This will only run once, when item first comes into container. Any other movement afterwards
+                    // is recognized as a "within-same-container-movement"
+                    let updatedSelectedLanguages = [
+                        ...props.allSelectedItems.slice(0, overIndex+1), // all items up to overIndex
+                        active.id,
+                        ...props.allSelectedItems.slice(overIndex + 1), // all the items after overIndex
+                    ]
+                    props.setAllSelectedItems(updatedSelectedLanguages)
+                }
+            } else { // WITHIN SAME CONTAINER MOVEMENT
+                if(active.data.current.sortable.containerId == "selected"){ // inside movement at the "selected" container
+                    const activeIndex = props.allSelectedItems.indexOf(active.id)
+                    const overIndex = props.allSelectedItems.indexOf(over.id)
+                    props.setAllSelectedItems(
+                        arrayMove(props.allSelectedItems, activeIndex, overIndex)
+                    )
+                } else { // inside movement at the "other" container
+                    const activeIndex = props.otherItems.indexOf(active.id)
+                    const overIndex = props.otherItems.indexOf(over.id)
+                    props.setOtherItems(
+                        arrayMove(props.otherItems, activeIndex, overIndex)
+                    )
+                }
             }
+        }
     }
 
     return(
         <DndContext
             collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
+            // onDragEnd={handleDragEnd} // Works better to avoid too much re-rendering while dragging - but animations are not working
+            onDragOver={handleDragEnd}
         >
             <SortableContext
-                items={props.allItems}
+                id={"selected"}
+                items={props.allSelectedItems}
                 strategy={props.direction === "horizontal" ? horizontalListSortingStrategy :verticalListSortingStrategy}
             >
                 <Grid
                     item={true}
                     container={true}
-                    spacing={2}
+                    xs={4}
                     justifyContent={props.justifyContent}
+                    sx={
+                        componentStyles.sortableContextInnerContainer
+                    }
                 >
-                    {props.allItems.map((item: string, index: number) => {
+                    {props.allSelectedItems.map((item: string, index: number) => {
                         return (
                             <DnDSortableItem
                                 key={item}
@@ -57,7 +115,41 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                     })}
                 </Grid>
             </SortableContext>
-
+            <SortableContext
+                id={"other"}
+                items={props.otherItems}
+                strategy={props.direction === "horizontal" ? horizontalListSortingStrategy :verticalListSortingStrategy}
+            >
+                <Grid
+                    item={true}
+                    container={true}
+                    xs={4}
+                    justifyContent={props.justifyContent}
+                    sx={
+                        componentStyles.sortableContextInnerContainer
+                    }
+                >
+                    {(props.otherItems.length === 0)
+                        ?
+                            <DnDSortableItem
+                                invisible={true} // not be displayed - only to make SortableContext work properly
+                                id={'do-not-display'}
+                                direction={props.direction}
+                            />
+                        :
+                            props.otherItems.map((item: string, index: number) => {
+                                return (
+                                    <DnDSortableItem
+                                        disableAll={true}
+                                        key={index}
+                                        id={item}
+                                        direction={props.direction}
+                                    />
+                                )
+                            })
+                    }
+                </Grid>
+            </SortableContext>
         </DndContext>
     )
 }

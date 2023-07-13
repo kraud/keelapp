@@ -1,14 +1,14 @@
 import {createColumnHelper, flexRender, getCoreRowModel, useReactTable,} from '@tanstack/react-table'
-import React, {useState} from "react";
-import {PartOfSpeech} from "../../ts/enums";
-import {Grid, Typography} from "@mui/material";
+import React, {useEffect, useState} from "react";
+import {Lang, PartOfSpeech} from "../../ts/enums";
+import {Grid} from "@mui/material";
 import globalTheme from "../../theme/theme";
 import {TableHeaderCell} from "./ExtraTableComponents";
 
 type TableWordData = {
     id: string,
-    // creationDate?: string,
-    // lastUpdate?: string,
+    creationDate?: string,
+    lastUpdate?: string,
     partOfSpeech: PartOfSpeech,
 
     singularNimetavEE?: string, // only required field for Estonian
@@ -80,8 +80,11 @@ const defaultData: TableWordData[] = [
     },
 ]
 
+interface TranslationsTableProps {
+    sortedAndSelectedLanguages: string[]
+}
 
-export function TranslationsTable() {
+export function TranslationsTable(props: TranslationsTableProps) {
     const componentStyles = {
         mainGridContainer: {
             padding: '0',
@@ -93,46 +96,55 @@ export function TranslationsTable() {
                 fontFamily: 'Roboto',
                 // fontFamily: 'Open Sans',
 
+                // "& tr": {
+                //     // height: '40px !important',
+                //     maxHeight: '40px',
+                //     minHeight: '40px',
+                //     // height: '45px',
+                //     borderBottom: '2px solid black',
+                //     '&:last-child': {
+                //         "& td": {
+                //             // borderBottom: '2px solid black',
+                //         },
+                //     },
+                // },
                 "& tr": {
-                    // height: '40px !important',
-                    maxHeight: '40px',
-                    minHeight: '40px',
-                    // height: '45px',
-                    borderBottom: '2px solid black',
-                    '&:last-child': {
-                        "& td": {
-                            // borderBottom: '2px solid black',
-                        },
+                    fontWeight: 'normal',
+                    "& th": {
+                        fontWeight: 'bold',
                     },
                 },
 
-                "& th td": {
-                    margin: '0',
-
-                    "&:last-child": {
-                        borderRight: '0',
-                    },
-                    "&:first-child": {
-                        padding: '0',
-                        margin: '0',
-                        textAlign: 'center',
-                    },
-                },
+                // "& th td": {
+                //     margin: '0',
+                //
+                //     "&:last-child": {
+                //         borderRight: '0',
+                //     },
+                //     "&:first-child": {
+                //         padding: '0',
+                //         margin: '0',
+                //         textAlign: 'center',
+                //     },
+                // },
+                // THIS WORKS
                 "& th": {
                     padding: '0.7em 0em 0.3em 0em', // 0 padding on the sides to allow full-width for component inside?
                     borderBottom: `1px solid black`,
                     borderRight: '1px solid black',
 
-                    fontWeight: 'bold',
+                    // fontWeight: 'bold',
                     // fontSize: theme.typography.fontSize,
-                    fontFamily: 'Roboto',
-
+                    // fontFamily: 'Roboto',
+                    "&:last-child": {
+                        borderRight: 'none',
+                    },
                     "& svg": {
                         marginBottom: '3px',
                     }
                 },
                 "& td": {
-                    fontWeight: 'bold',
+                    // fontWeight: 'bold',
                     fontSize: globalTheme.typography.fontSize,
                     fontFamily: 'Roboto',
                     overflow: 'hidden',
@@ -154,128 +166,159 @@ export function TranslationsTable() {
 
     const newColumnHelper = createColumnHelper<TableWordData>()
 
-    const columns = [
-        newColumnHelper.accessor('partOfSpeech', {
-            header: () => {
-                return(
-                    <TableHeaderCell
-                        content={
-                            <>
-                                Part of <br/>
-                                Speech
-                            </>
-                        }
-                    />
-                )
-            },
-        }),
-        newColumnHelper.group({
-            header: 'English',
-            columns: [
-                newColumnHelper.accessor('singularEN', {
-                    header: () => <TableHeaderCell content={'Singular'}/>,
-                    cell: (info) => info.getValue()
-                }),
-                newColumnHelper.accessor('registeredCasesEN', {
-                    header: () => <TableHeaderCell content={'Cases'}/>,
-                    cell: (info) => {
-                        if(info! && info.getValue()!){
-                            return(`(${info.getValue()})`)
-                        } else {
-                            return("")
-                        }
-                    }
-                })
-            ]
-        }),
-        newColumnHelper.group({
-            header: 'Eesti',
-            columns: [
-                newColumnHelper.accessor('singularNimetavEE', {
+    const [columns, setColumns] = useState<any[]>([])
+    // As the order of selected languages changes, so should the order they are displayed on the table
+    const createColumns = (selectedLanguagesList: string[]) => {
+        const newlySortedColumns = selectedLanguagesList.map((language: string) => {
+            switch (language){
+                case Lang.DE: {
+                    return(
+                        newColumnHelper.group({
+                            header: 'Deutsch',
+                            columns: [
+                                newColumnHelper.accessor('genderDE', {
+                                    header: () => <TableHeaderCell content={'Gender'}/>,
+                                    cell: (info) => info.getValue()
+                                }),
+                                newColumnHelper.accessor('singularNominativDE', {
+                                    header: () => {
+                                        return(
+                                            <TableHeaderCell
+                                                content={
+                                                    <>
+                                                        Singular <br/>
+                                                        Nominativ
+                                                    </>
+                                                }
+                                            />
+                                        )
+                                    },
+                                    cell: (info) => info.getValue()
+                                }),
+                                newColumnHelper.accessor('registeredCasesDE', {
+                                    header: () => <TableHeaderCell content={'Cases'}/>,
+                                    cell: (info) => {
+                                        if(info! && info.getValue()!){
+                                            return(`(${info.getValue()})`)
+                                        } else {
+                                            return("")
+                                        }
+                                    }
+                                })
+                            ]
+                        })
+                    )
+                }
+                case Lang.EE: {
+                    return(
+                        newColumnHelper.group({
+                            header: 'Eesti',
+                            columns: [
+                                newColumnHelper.accessor('singularNimetavEE', {
+                                    header: () => {
+                                        return(
+                                            <TableHeaderCell
+                                                content={
+                                                    <>
+                                                        Ainsus <br/>
+                                                        Nimetav
+                                                    </>
+                                                }
+                                            />
+                                        )
+                                    },
+                                    cell: (info) => info.getValue()
+                                }),
+                                newColumnHelper.accessor('registeredCasesEE', {
+                                    header: () => <TableHeaderCell content={'Cases'}/>,
+                                    cell: (info) => {
+                                        if(info! && info.getValue()!){
+                                            return(`(${info.getValue()})`)
+                                        } else {
+                                            return("")
+                                        }
+                                    }
+                                })
+                            ]
+                        })
+                    )
+                }
+                case Lang.EN: {
+                    return(
+                        newColumnHelper.group({
+                            header: 'English',
+                            columns: [
+                                newColumnHelper.accessor('singularEN', {
+                                    header: () => <TableHeaderCell content={'Singular'}/>,
+                                    cell: (info) => info.getValue()
+                                }),
+                                newColumnHelper.accessor('registeredCasesEN', {
+                                    header: () => <TableHeaderCell content={'Cases'}/>,
+                                    cell: (info) => {
+                                        if(info! && info.getValue()!){
+                                            return(`(${info.getValue()})`)
+                                        } else {
+                                            return("")
+                                        }
+                                    }
+                                })
+                            ]
+                        })
+                    )
+                }
+                case Lang.ES: {
+                    return(
+                        newColumnHelper.group({
+                            header: 'Español',
+                            columns: [
+                                newColumnHelper.accessor('genderES', {
+                                    header: () => <TableHeaderCell content={'Género'}/>,
+                                    cell: (info) => info.getValue()
+                                }),
+                                newColumnHelper.accessor('singularES', {
+                                    header: () => <TableHeaderCell content={'Singular'}/>,
+                                    cell: (info) => info.getValue()
+                                }),
+                                newColumnHelper.accessor('registeredCasesES', {
+                                    header: () => <TableHeaderCell content={'Cases'}/>,
+                                    cell: (info) => {
+                                        if(info! && info.getValue()!){
+                                            return(`(${info.getValue()})`)
+                                        } else {
+                                            return("")
+                                        }
+                                    }
+                                })
+                            ]
+                        })
+                    )
+                }
+            }
+        })
+        return (
+            [
+                newColumnHelper.accessor('partOfSpeech', {
                     header: () => {
                         return(
                             <TableHeaderCell
                                 content={
                                     <>
-                                        Ainsus <br/>
-                                        Nimetav
+                                        Part of <br/>
+                                        Speech
                                     </>
                                 }
                             />
                         )
                     },
-                    cell: (info) => info.getValue()
                 }),
-                newColumnHelper.accessor('registeredCasesEE', {
-                    header: () => <TableHeaderCell content={'Cases'}/>,
-                    cell: (info) => {
-                        if(info! && info.getValue()!){
-                            return(`(${info.getValue()})`)
-                        } else {
-                            return("")
-                        }
-                    }
-                })
+                ...newlySortedColumns
             ]
-        }),
-        newColumnHelper.group({
-            header: 'Deutsch',
-            columns: [
-                newColumnHelper.accessor('genderDE', {
-                    header: () => <TableHeaderCell content={'Gender'}/>,
-                    cell: (info) => info.getValue()
-                }),
-                newColumnHelper.accessor('singularNominativDE', {
-                    header: () => {
-                        return(
-                            <TableHeaderCell
-                                content={
-                                    <>
-                                        Singular <br/>
-                                        Nominativ
-                                    </>
-                                }
-                            />
-                        )
-                    },
-                    cell: (info) => info.getValue()
-                }),
-                newColumnHelper.accessor('registeredCasesDE', {
-                    header: () => <TableHeaderCell content={'Cases'}/>,
-                    cell: (info) => {
-                        if(info! && info.getValue()!){
-                            return(`(${info.getValue()})`)
-                        } else {
-                            return("")
-                        }
-                    }
-                })
-            ]
-        }),
-        newColumnHelper.group({
-            header: 'Español',
-            columns: [
-                newColumnHelper.accessor('genderES', {
-                    header: () => <TableHeaderCell content={'Género'}/>,
-                    cell: (info) => info.getValue()
-                }),
-                newColumnHelper.accessor('singularES', {
-                    header: () => <TableHeaderCell content={'Singular'}/>,
-                    cell: (info) => info.getValue()
-                }),
-                newColumnHelper.accessor('registeredCasesDE', {
-                    header: () => <TableHeaderCell content={'Cases'}/>,
-                    cell: (info) => {
-                        if(info! && info.getValue()!){
-                            return(`(${info.getValue()})`)
-                        } else {
-                            return("")
-                        }
-                    }
-                })
-            ]
-        }),
-    ]
+        )
+    }
+
+    useEffect(() => {
+        setColumns(createColumns(props.sortedAndSelectedLanguages))
+    },[props.sortedAndSelectedLanguages])
 
     const table = useReactTable({
         data,
@@ -309,18 +352,11 @@ export function TranslationsTable() {
                     {table.getHeaderGroups().map(headerGroup => (
                         <tr
                             key={headerGroup.id}
-                            style={{
-                                // background: 'blue',
-                            }}
                         >
                             {headerGroup.headers.map(header => (
                                 <th
                                     colSpan={header.colSpan}
                                     key={header.id}
-                                    style={{
-                                        // border: '1px solid red',
-                                        // margin: 0,
-                                    }}
                                 >
                                     {header.isPlaceholder
                                         ? null
@@ -334,8 +370,13 @@ export function TranslationsTable() {
                     ))}
                     </thead>
                     <tbody>
-                    {table.getRowModel().rows.map(row => (
-                        <tr key={row.id}>
+                    {table.getRowModel().rows.map((row, index) => (
+                        <tr
+                            key={row.id}
+                            style={{
+                                background: (index%2 === 1) ? '#f9f9f9' :'none'
+                            }}
+                        >
                             {row.getVisibleCells().map(cell => (
                                 <td key={cell.id}>
                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -344,22 +385,6 @@ export function TranslationsTable() {
                         </tr>
                     ))}
                     </tbody>
-                    {/*<tfoot>*/}
-                    {/*{table.getFooterGroups().map(footerGroup => (*/}
-                    {/*    <tr key={footerGroup.id}>*/}
-                    {/*        {footerGroup.headers.map(header => (*/}
-                    {/*            <th key={header.id}>*/}
-                    {/*                {header.isPlaceholder*/}
-                    {/*                    ? null*/}
-                    {/*                    : flexRender(*/}
-                    {/*                        header.column.columnDef.footer,*/}
-                    {/*                        header.getContext()*/}
-                    {/*                    )}*/}
-                    {/*            </th>*/}
-                    {/*        ))}*/}
-                    {/*    </tr>*/}
-                    {/*))}*/}
-                    {/*</tfoot>*/}
                 </table>
             </Grid>
         </Grid>

@@ -15,7 +15,10 @@ export function Review(){
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const {user} = useSelector((state: any) => state.auth)
-    const [allLanguages, setAllLanguages] = useState<string[]>((Object.values(Lang).filter((v) => isNaN(Number(v))) as unknown as Array<keyof typeof Lang>))
+    // Languages currently displayed as columns on the table
+    const [allSelectedLanguages, setAllSelectedLanguages] = useState<string[]>((Object.values(Lang).filter((v) => isNaN(Number(v)))) as unknown as Array<keyof typeof Lang>)
+    // Languages currently not displayed as columns on the table
+    const [otherLanguages, setOtherLanguages] = useState<string[]>([])
 
     const {words, isLoading, isError, message} = useSelector((state: any) => state.words)
 
@@ -95,8 +98,10 @@ export function Review(){
                         </Typography>
                     </Grid>
                     <DnDLanguageOrderSelector
-                        allItems={allLanguages}
-                        setAllItems={(languages: string[]) => setAllLanguages(languages)}
+                        allSelectedItems={allSelectedLanguages}
+                        setAllSelectedItems={(languages: string[]) => setAllSelectedLanguages(languages)}
+                        otherItems={otherLanguages}
+                        setOtherItems={(languages: string[]) => setOtherLanguages(languages)}
                         direction={"horizontal"}
                     />
                     {/* WORD LIST*/}
@@ -125,7 +130,9 @@ export function Review(){
                             }))
                         }
                     </Grid>
-                    <TranslationsTable/>
+                    <TranslationsTable
+                        sortedAndSelectedLanguages={allSelectedLanguages}
+                    />
                 </>
             }
         </Grid>

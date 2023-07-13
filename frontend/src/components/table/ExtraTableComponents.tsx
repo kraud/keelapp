@@ -15,6 +15,7 @@ export function TableHeaderCell(props: TableHeaderCellProps){
         >
             <Typography
                 variant={'subtitle1'}
+                fontWeight={"bold"}
             >
                 {props.content}
             </Typography>
