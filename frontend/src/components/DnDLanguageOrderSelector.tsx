@@ -84,72 +84,77 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
     }
 
     return(
-        <DndContext
-            collisionDetection={closestCenter}
-            // onDragEnd={handleDragEnd} // Works better to avoid too much re-rendering while dragging - but animations are not working
-            onDragOver={handleDragEnd}
+        <Grid
+            container={true}
+            item={true}
         >
-            <SortableContext
-                id={"selected"}
-                items={props.allSelectedItems}
-                strategy={props.direction === "horizontal" ? horizontalListSortingStrategy :verticalListSortingStrategy}
+            <DndContext
+                collisionDetection={closestCenter}
+                // onDragEnd={handleDragEnd} // Works better to avoid too much re-rendering while dragging - but animations are not working
+                onDragOver={handleDragEnd}
             >
-                <Grid
-                    item={true}
-                    container={true}
-                    xs={4}
-                    justifyContent={props.justifyContent}
-                    sx={
-                        componentStyles.sortableContextInnerContainer
-                    }
+                <SortableContext
+                    id={"selected"}
+                    items={props.allSelectedItems}
+                    strategy={props.direction === "horizontal" ? horizontalListSortingStrategy :verticalListSortingStrategy}
                 >
-                    {props.allSelectedItems.map((item: string, index: number) => {
-                        return (
-                            <DnDSortableItem
-                                key={item}
-                                id={item}
-                                direction={props.direction}
-                                index={index}
-                            />
-                        )
-                    })}
-                </Grid>
-            </SortableContext>
-            <SortableContext
-                id={"other"}
-                items={props.otherItems}
-                strategy={props.direction === "horizontal" ? horizontalListSortingStrategy :verticalListSortingStrategy}
-            >
-                <Grid
-                    item={true}
-                    container={true}
-                    xs={4}
-                    justifyContent={props.justifyContent}
-                    sx={
-                        componentStyles.sortableContextInnerContainer
-                    }
+                    <Grid
+                        item={true}
+                        container={true}
+                        xs={4}
+                        justifyContent={props.justifyContent}
+                        sx={
+                            componentStyles.sortableContextInnerContainer
+                        }
+                    >
+                        {props.allSelectedItems.map((item: string, index: number) => {
+                            return (
+                                <DnDSortableItem
+                                    key={item}
+                                    id={item}
+                                    direction={props.direction}
+                                    index={index}
+                                />
+                            )
+                        })}
+                    </Grid>
+                </SortableContext>
+                <SortableContext
+                    id={"other"}
+                    items={props.otherItems}
+                    strategy={props.direction === "horizontal" ? horizontalListSortingStrategy :verticalListSortingStrategy}
                 >
-                    {(props.otherItems.length === 0)
-                        ?
-                            <DnDSortableItem
-                                invisible={true} // not be displayed - only to make SortableContext work properly
-                                id={'do-not-display'}
-                                direction={props.direction}
-                            />
-                        :
-                            props.otherItems.map((item: string, index: number) => {
-                                return (
-                                    <DnDSortableItem
-                                        disableAll={true}
-                                        key={index}
-                                        id={item}
-                                        direction={props.direction}
-                                    />
-                                )
-                            })
-                    }
-                </Grid>
-            </SortableContext>
-        </DndContext>
+                    <Grid
+                        item={true}
+                        container={true}
+                        xs={4}
+                        justifyContent={props.justifyContent}
+                        sx={
+                            componentStyles.sortableContextInnerContainer
+                        }
+                    >
+                        {(props.otherItems.length === 0)
+                            ?
+                                <DnDSortableItem
+                                    invisible={true} // not be displayed - only to make SortableContext work properly
+                                    id={'do-not-display'}
+                                    direction={props.direction}
+                                />
+                            :
+                                props.otherItems.map((item: string, index: number) => {
+                                    return (
+                                        <DnDSortableItem
+                                            disableAll={true}
+                                            key={index}
+                                            id={item}
+                                            direction={props.direction}
+                                        />
+                                    )
+                                })
+                        }
+                    </Grid>
+                </SortableContext>
+            </DndContext>
+        </Grid>
     )
 }

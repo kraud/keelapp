@@ -37,10 +37,10 @@ export enum NounCases {
 }
 
 export enum Lang {
-    ES= "Spanish",
+    ES = "Spanish",
     EN = "English",
     DE = "German",
-    EE= "Estonian"
+    EE = "Estonian"
 }
 
 export enum GenderDE {

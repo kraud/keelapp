@@ -4,9 +4,8 @@ import globalTheme from "../theme/theme";
 import {useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
-import {getWords} from "../features/words/wordSlice";
+import {getWordsSimplified} from "../features/words/wordSlice";
 import LinearIndeterminate from "../components/Spinner";
-import {WordData} from "../ts/interfaces";
 import {DnDLanguageOrderSelector} from "../components/DnDLanguageOrderSelector";
 import {Lang} from "../ts/enums";
 import {TranslationsTable} from "../components/table/TranslationsTable";
@@ -20,7 +19,7 @@ export function Review(){
     // Languages currently not displayed as columns on the table
     const [otherLanguages, setOtherLanguages] = useState<string[]>([])
 
-    const {words, isLoading, isError, message} = useSelector((state: any) => state.words)
+    const {wordsSimple, isLoading, isError, message} = useSelector((state: any) => state.words)
 
     useEffect(() => {
         if(isError){
@@ -34,7 +33,7 @@ export function Review(){
         //  Then when we go to the detailed view of the translation, we fetch all the data for that specific word.
         //  We'll filter here for now, in order to "fake" the lighter-data until the endpoint is up and running.
         //@ts-ignore
-        dispatch(getWords())
+        dispatch(getWordsSimplified())
 
         //on unmount
         return() => {
@@ -62,14 +61,14 @@ export function Review(){
                 >
                     {(isLoading)
                         ? "Fetching word data"
-                        : (words.length >0)
-                            ? `You have saved ${words.length} translations`
+                        : (wordsSimple.amount >0)
+                            ? `You have saved ${wordsSimple.amount} translations`
                             : "You haven't saved any words yet."
                     }
 
                 </Typography>
             </Grid>
-            {(words.length >0)  &&
+            {(wordsSimple.amount >0)  &&
                 <>
                     <Grid
                         container={true}
@@ -104,34 +103,10 @@ export function Review(){
                         setOtherItems={(languages: string[]) => setOtherLanguages(languages)}
                         direction={"horizontal"}
                     />
-                    {/* WORD LIST*/}
-                    <Grid
-                        container={true}
-                        item={true}
-                        sx={{
-                            marginTop: globalTheme.spacing(2)
-                        }}
-                    >
-                        {
-                            (words.map((word: WordData, index: number) => {
-                                return(
-                                    <Grid
-                                        key={index}
-                                        item={true}
-                                        container={true}
-                                    >
-                                        <Typography
-                                            variant={"subtitle2"}
-                                        >
-                                            ✔ {word.translations[0].cases[0].word}
-                                        </Typography>
-                                    </Grid>
-                                )
-                            }))
-                        }
-                    </Grid>
+                    {/* TABLE */}
                     <TranslationsTable
                         sortedAndSelectedLanguages={allSelectedLanguages}
+                        data={wordsSimple.words}
                     />
                 </>
             }

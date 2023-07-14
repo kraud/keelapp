@@ -26,62 +26,9 @@ type TableWordData = {
     registeredCasesES?: number
 }
 
-const defaultData: TableWordData[] = [
-    {
-        id: '123qwe',
-        partOfSpeech: PartOfSpeech.noun,
-
-        singularNimetavEE: 'Maja',
-        registeredCasesEE: 6,
-
-        singularEN: 'House',
-        registeredCasesEN: 2,
-
-        // genderDE: 'die',
-        // singularNominativDE: 'Haus',
-        // registeredCasesDE: 4,
-        //
-        // genderES: "la",
-        // singularES: "casa",
-        // registeredCasesES: 1,
-    },
-    {
-        id: '124asd',
-        partOfSpeech: PartOfSpeech.noun,
-
-        genderDE: 'das',
-        singularNominativDE: 'Bier',
-        registeredCasesDE: 4,
-
-        genderES: "la",
-        singularES: "cerveza",
-        registeredCasesES: 2,
-
-        // singularNimetavEE: 'õlu',
-        // registeredCasesEE: 4,
-        //
-        // singularEN: 'Cerveza',
-        // registeredCasesEN: 2,
-    },
-    {
-        id: '125zxc',
-        partOfSpeech: PartOfSpeech.noun,
-
-        singularEN: 'Point',
-        registeredCasesEN: 1,
-
-        genderES: "el",
-        singularES: "punto",
-        registeredCasesES: 1,
-
-        genderDE: 'der',
-        singularNominativDE: 'Punkt',
-        registeredCasesDE: 4,
-    },
-]
-
 interface TranslationsTableProps {
     sortedAndSelectedLanguages: string[]
+    data: any
 }
 
 export function TranslationsTable(props: TranslationsTableProps) {
@@ -162,7 +109,11 @@ export function TranslationsTable(props: TranslationsTableProps) {
             }
         },
     }
-    const [data, setData] = useState<TableWordData[]>(() => [...defaultData])
+    const [data, setData] = useState<TableWordData[]>(() => [])
+
+    useEffect(() => {
+        setData(props.data)
+    }, [props.data])
 
     const newColumnHelper = createColumnHelper<TableWordData>()
 
@@ -271,6 +222,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
     return(
         <Grid
             container={true}
+            item={true}
             spacing={1}
             justifyContent={"flex-start"}
             style={{
