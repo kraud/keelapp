@@ -173,123 +173,65 @@ export function TranslationsTable(props: TranslationsTableProps) {
             switch (language){
                 case Lang.DE: {
                     return(
-                        newColumnHelper.group({
-                            header: 'Deutsch',
-                            columns: [
-                                newColumnHelper.accessor('genderDE', {
-                                    header: () => <TableHeaderCell content={'Gender'}/>,
-                                    cell: (info) => info.getValue()
-                                }),
-                                newColumnHelper.accessor('singularNominativDE', {
-                                    header: () => {
-                                        return(
-                                            <TableHeaderCell
-                                                content={
-                                                    <>
-                                                        Singular <br/>
-                                                        Nominativ
-                                                    </>
-                                                }
-                                            />
-                                        )
-                                    },
-                                    cell: (info) => info.getValue()
-                                }),
-                                newColumnHelper.accessor('registeredCasesDE', {
-                                    header: () => <TableHeaderCell content={'Cases'}/>,
-                                    cell: (info) => {
-                                        if(info! && info.getValue()!){
-                                            return(`(${info.getValue()})`)
-                                        } else {
-                                            return("")
-                                        }
-                                    }
-                                })
-                            ]
+                        newColumnHelper.accessor('singularNominativDE',{
+                            header: () => <TableHeaderCell content={'Deutsch'}/>,
+                            cell: (info) => {
+                                if(info.getValue() !== undefined){
+                                    return(
+                                        `${info.row.original.genderDE} ${info.getValue()} (${info.row.original.registeredCasesDE})`
+                                    )
+                                } else {
+                                    return("")
+                                }
+                            }
                         })
                     )
                 }
                 case Lang.EE: {
                     return(
-                        newColumnHelper.group({
-                            header: 'Eesti',
-                            columns: [
-                                newColumnHelper.accessor('singularNimetavEE', {
-                                    header: () => {
-                                        return(
-                                            <TableHeaderCell
-                                                content={
-                                                    <>
-                                                        Ainsus <br/>
-                                                        Nimetav
-                                                    </>
-                                                }
-                                            />
-                                        )
-                                    },
-                                    cell: (info) => info.getValue()
-                                }),
-                                newColumnHelper.accessor('registeredCasesEE', {
-                                    header: () => <TableHeaderCell content={'Cases'}/>,
-                                    cell: (info) => {
-                                        if(info! && info.getValue()!){
-                                            return(`(${info.getValue()})`)
-                                        } else {
-                                            return("")
-                                        }
-                                    }
-                                })
-                            ]
+                        newColumnHelper.accessor('singularNimetavEE',{
+                            header: () => <TableHeaderCell content={'Eesti'}/>,
+                            cell: (info) => {
+                                if(info.getValue() !== undefined){
+                                    return(
+                                        `${info.getValue()} (${info.row.original.registeredCasesEE})`
+                                    )
+                                } else {
+                                    return("")
+                                }
+                            }
                         })
                     )
                 }
                 case Lang.EN: {
                     return(
-                        newColumnHelper.group({
-                            header: 'English',
-                            columns: [
-                                newColumnHelper.accessor('singularEN', {
-                                    header: () => <TableHeaderCell content={'Singular'}/>,
-                                    cell: (info) => info.getValue()
-                                }),
-                                newColumnHelper.accessor('registeredCasesEN', {
-                                    header: () => <TableHeaderCell content={'Cases'}/>,
-                                    cell: (info) => {
-                                        if(info! && info.getValue()!){
-                                            return(`(${info.getValue()})`)
-                                        } else {
-                                            return("")
-                                        }
-                                    }
-                                })
-                            ]
+                        newColumnHelper.accessor('singularEN',{
+                            header: () => <TableHeaderCell content={'English'}/>,
+                            cell: (info) => {
+                                if(info.getValue() !== undefined){
+                                    return(
+                                        `${info.getValue()} (${info.row.original.registeredCasesEN})`
+                                    )
+                                } else {
+                                    return("")
+                                }
+                            }
                         })
                     )
                 }
                 case Lang.ES: {
                     return(
-                        newColumnHelper.group({
-                            header: 'Español',
-                            columns: [
-                                newColumnHelper.accessor('genderES', {
-                                    header: () => <TableHeaderCell content={'Género'}/>,
-                                    cell: (info) => info.getValue()
-                                }),
-                                newColumnHelper.accessor('singularES', {
-                                    header: () => <TableHeaderCell content={'Singular'}/>,
-                                    cell: (info) => info.getValue()
-                                }),
-                                newColumnHelper.accessor('registeredCasesES', {
-                                    header: () => <TableHeaderCell content={'Cases'}/>,
-                                    cell: (info) => {
-                                        if(info! && info.getValue()!){
-                                            return(`(${info.getValue()})`)
-                                        } else {
-                                            return("")
-                                        }
-                                    }
-                                })
-                            ]
+                        newColumnHelper.accessor('singularES',{
+                            header: () => <TableHeaderCell content={'Español'}/>,
+                            cell: (info) => {
+                                if(info.getValue() !== undefined){
+                                    return(
+                                        `${info.row.original.genderES} ${info.getValue()} (${info.row.original.registeredCasesES})`
+                                    )
+                                } else {
+                                    return("")
+                                }
+                            }
                         })
                     )
                 }
