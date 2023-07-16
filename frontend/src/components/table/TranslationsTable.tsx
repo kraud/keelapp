@@ -1,9 +1,9 @@
-import {createColumnHelper, flexRender, getCoreRowModel, useReactTable,} from '@tanstack/react-table'
+import {ColumnResizeMode, createColumnHelper, flexRender, getCoreRowModel, useReactTable,} from '@tanstack/react-table'
 import React, {useEffect, useState} from "react";
 import {Lang, PartOfSpeech} from "../../ts/enums";
 import {Grid} from "@mui/material";
 import globalTheme from "../../theme/theme";
-import {TableHeaderCell} from "./ExtraTableComponents";
+import {TableDataCell, TableHeaderCell} from "./ExtraTableComponents";
 
 type TableWordData = {
     id: string,
@@ -38,29 +38,11 @@ export function TranslationsTable(props: TranslationsTableProps) {
 
             "& table": {
                 // fontSize: '0.8em',
-                borderSpacing: '0',
-                border: '1px solid black',
-                fontFamily: 'Roboto',
-                // fontFamily: 'Open Sans',
+                // borderSpacing: '0',
+                borderCollapse: 'separate',
+                borderSpacing: '0px 20px',
 
-                // "& tr": {
-                //     // height: '40px !important',
-                //     maxHeight: '40px',
-                //     minHeight: '40px',
-                //     // height: '45px',
-                //     borderBottom: '2px solid black',
-                //     '&:last-child': {
-                //         "& td": {
-                //             // borderBottom: '2px solid black',
-                //         },
-                //     },
-                // },
-                "& tr": {
-                    fontWeight: 'normal',
-                    "& th": {
-                        fontWeight: 'bold',
-                    },
-                },
+                fontFamily: 'Roboto',
 
                 // "& th td": {
                 //     margin: '0',
@@ -75,14 +57,43 @@ export function TranslationsTable(props: TranslationsTableProps) {
                 //     },
                 // },
                 // THIS WORKS
+                "& thead": {
+                        "& tr": {
+                    "& th": {
+                        border: "none",
+                        borderRadius: "25px",
+                    }
+                  },
+                },
+                "& tbody": {
+                    "& tr": {
+                        "& td": {
+                            height: '60px',
+                            minWidth: '250px',
+                            color: '#5b5b5b',
+                            borderTop: "1px solid transparent",
+                            borderBottom: "1px solid transparent",
+                            borderRight: "none",
+                            borderLeft: "none",
+                            backgroundImage: 'linear-gradient(180deg, rgba(2, 170, 176, 0.5) 21%, rgba(0, 205, 172, 0.5) 83%)',
+
+                            "&:first-child": {
+                                borderRight: "1px solid transparent",
+                                borderLeft: "1px solid transparent",
+                                borderRadius: '25px 0px 0px 25px',
+                            },
+                            "&:last-child": {
+                                borderLeft: "none",
+                                borderRight: "1px solid transparent",
+                                borderRadius: '0px 25px 25px 0px',
+                            },
+                        },
+                    }
+                },
                 "& th": {
-                    padding: '0.7em 0em 0.3em 0em', // 0 padding on the sides to allow full-width for component inside?
+                    padding: '0.7em 0em 0.7em 0em', // 0 padding on the sides to allow full-width for component inside?
                     borderBottom: `1px solid black`,
                     borderRight: '1px solid black',
-
-                    // fontWeight: 'bold',
-                    // fontSize: theme.typography.fontSize,
-                    // fontFamily: 'Roboto',
                     "&:last-child": {
                         borderRight: 'none',
                     },
@@ -91,7 +102,6 @@ export function TranslationsTable(props: TranslationsTableProps) {
                     }
                 },
                 "& td": {
-                    // fontWeight: 'bold',
                     fontSize: globalTheme.typography.fontSize,
                     fontFamily: 'Roboto',
                     overflow: 'hidden',
@@ -126,15 +136,16 @@ export function TranslationsTable(props: TranslationsTableProps) {
                     return(
                         newColumnHelper.accessor('singularNominativDE',{
                             header: () => <TableHeaderCell content={'Deutsch'}/>,
-                            cell: (info) => {
-                                if(info.getValue() !== undefined){
-                                    return(
-                                        `${info.row.original.genderDE} ${info.getValue()} (${info.row.original.registeredCasesDE})`
-                                    )
-                                } else {
-                                    return("")
-                                }
-                            }
+                            cell: (info) => {return(
+                                (info.getValue() !== undefined)
+                                    ?
+                                    <TableDataCell
+                                        content={`${info.row.original.genderDE} ${info.getValue()} (${info.row.original.registeredCasesDE})`}
+                                        type={"text"}
+                                    />
+                                    :
+                                    ""
+                            )}
                         })
                     )
                 }
@@ -142,15 +153,16 @@ export function TranslationsTable(props: TranslationsTableProps) {
                     return(
                         newColumnHelper.accessor('singularNimetavEE',{
                             header: () => <TableHeaderCell content={'Eesti'}/>,
-                            cell: (info) => {
-                                if(info.getValue() !== undefined){
-                                    return(
-                                        `${info.getValue()} (${info.row.original.registeredCasesEE})`
-                                    )
-                                } else {
-                                    return("")
-                                }
-                            }
+                            cell: (info) => {return(
+                                (info.getValue() !== undefined)
+                                    ?
+                                    <TableDataCell
+                                        content={`${info.getValue()} (${info.row.original.registeredCasesEE})`}
+                                        type={"text"}
+                                    />
+                                    :
+                                    ""
+                            )}
                         })
                     )
                 }
@@ -158,15 +170,16 @@ export function TranslationsTable(props: TranslationsTableProps) {
                     return(
                         newColumnHelper.accessor('singularEN',{
                             header: () => <TableHeaderCell content={'English'}/>,
-                            cell: (info) => {
-                                if(info.getValue() !== undefined){
-                                    return(
-                                        `${info.getValue()} (${info.row.original.registeredCasesEN})`
-                                    )
-                                } else {
-                                    return("")
-                                }
-                            }
+                            cell: (info) => {return(
+                                (info.getValue() !== undefined)
+                                    ?
+                                    <TableDataCell
+                                        content={`${info.getValue()} (${info.row.original.registeredCasesEN})`}
+                                        type={"text"}
+                                    />
+                                    :
+                                    ""
+                            )}
                         })
                     )
                 }
@@ -174,15 +187,16 @@ export function TranslationsTable(props: TranslationsTableProps) {
                     return(
                         newColumnHelper.accessor('singularES',{
                             header: () => <TableHeaderCell content={'Español'}/>,
-                            cell: (info) => {
-                                if(info.getValue() !== undefined){
-                                    return(
-                                        `${info.row.original.genderES} ${info.getValue()} (${info.row.original.registeredCasesES})`
-                                    )
-                                } else {
-                                    return("")
-                                }
-                            }
+                            cell: (info) => {return(
+                                (info.getValue() !== undefined)
+                                    ?
+                                    <TableDataCell
+                                        content={`${info.row.original.genderES} ${info.getValue()} (${info.row.original.registeredCasesES})`}
+                                        type={"text"}
+                                    />
+                                    :
+                                    ""
+                            )}
                         })
                     )
                 }
@@ -191,18 +205,18 @@ export function TranslationsTable(props: TranslationsTableProps) {
         return (
             [
                 newColumnHelper.accessor('partOfSpeech', {
-                    header: () => {
-                        return(
-                            <TableHeaderCell
-                                content={
-                                    <>
-                                        Part of <br/>
-                                        Speech
-                                    </>
-                                }
+                    header: () => <TableHeaderCell content={"Type"}/>,
+                    cell: (info) => {return(
+                        (info.getValue() !== undefined)
+                            ?
+                            <TableDataCell
+                                content={info.getValue()}
+                                type={"text"}
+                                textAlign={"center"}
                             />
-                        )
-                    },
+                            :
+                            ""
+                    )}
                 }),
                 ...newlySortedColumns
             ]
@@ -268,7 +282,9 @@ export function TranslationsTable(props: TranslationsTableProps) {
                         <tr
                             key={row.id}
                             style={{
-                                background: (index%2 === 1) ? '#f9f9f9' :'none'
+                                backgroundImage: (index%2 === 1)
+                                    ? 'linear-gradient(180deg, rgba(0, 205, 172, 0.5) 61%, rgba(2, 170, 176, 0.5) 85%)'
+                                    : 'default'
                             }}
                         >
                             {row.getVisibleCells().map(cell => (
