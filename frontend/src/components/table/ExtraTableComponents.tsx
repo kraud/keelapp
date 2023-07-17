@@ -1,10 +1,12 @@
 import {Grid, Typography} from "@mui/material";
 import React from "react";
 import globalTheme from "../../theme/theme";
-import {Lang} from "../../ts/enums";
+import {SxProps} from "@mui/system";
+import {Theme} from "@mui/material/styles";
 
 interface TableHeaderCellProps {
     content: any
+    sxProps?: SxProps<Theme>
 }
 
 export function TableHeaderCell(props: TableHeaderCellProps){
@@ -16,6 +18,8 @@ export function TableHeaderCell(props: TableHeaderCellProps){
                 marginBottom: 0,
                 border: "1px solid black",
                 borderRadius: "25px",
+                cursor: 'pointer',
+                ...props.sxProps
             }}
         >
             <Typography
@@ -38,7 +42,7 @@ export function TableDataCell(props: TableDataCellProps){
         return(
             <Grid
                 sx={{
-                    paddingX: globalTheme.spacing(2),
+                    paddingX: globalTheme.spacing(4),
                     paddingY: globalTheme.spacing(1),
                 }}
             >

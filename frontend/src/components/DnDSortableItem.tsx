@@ -37,7 +37,8 @@ export function DnDSortableItem(props: DnDSortableItemProps){
             {...listeners}
             sx={{
                 touchAction: 'none', // to avoid lag on touch devices and Chrome DevTools
-                paddingRight: globalTheme.spacing(1)
+                paddingRight: globalTheme.spacing(1),
+                cursor: 'pointer',
             }}
         >
             {!(props.invisible === true) &&

@@ -1,9 +1,10 @@
-import {ColumnResizeMode, createColumnHelper, flexRender, getCoreRowModel, useReactTable,} from '@tanstack/react-table'
+import {createColumnHelper, flexRender, getCoreRowModel, useReactTable,} from '@tanstack/react-table'
 import React, {useEffect, useState} from "react";
 import {Lang, PartOfSpeech} from "../../ts/enums";
 import {Grid} from "@mui/material";
 import globalTheme from "../../theme/theme";
 import {TableDataCell, TableHeaderCell} from "./ExtraTableComponents";
+import {toast} from "react-toastify";
 
 type TableWordData = {
     id: string,
@@ -29,6 +30,7 @@ type TableWordData = {
 interface TranslationsTableProps {
     sortedAndSelectedLanguages: string[]
     data: any
+    setAllSelectedItems: (items: string[]) => void
 }
 
 export function TranslationsTable(props: TranslationsTableProps) {
@@ -61,7 +63,6 @@ export function TranslationsTable(props: TranslationsTableProps) {
                         "& tr": {
                     "& th": {
                         border: "none",
-                        borderRadius: "25px",
                     }
                   },
                 },
@@ -70,15 +71,19 @@ export function TranslationsTable(props: TranslationsTableProps) {
                         "& td": {
                             height: '60px',
                             minWidth: '250px',
-                            color: '#5b5b5b',
+                            // color: '#5b5b5b',
+                            color: 'black',
                             borderTop: "1px solid transparent",
                             borderBottom: "1px solid transparent",
-                            borderRight: "none",
+                            borderRight: "2px solid #f1f1f1",
+                            // borderRight: "none",
                             borderLeft: "none",
-                            backgroundImage: 'linear-gradient(180deg, rgba(2, 170, 176, 0.5) 21%, rgba(0, 205, 172, 0.5) 83%)',
+                            // backgroundImage: 'linear-gradient(180deg, rgba(2, 170, 176, 0.5) 21%, rgba(0, 205, 172, 0.5) 83%)',
+                            backgroundImage: 'linear-gradient(180deg, #4481eb 10%, #04befe 90%)',
 
-                            "&:first-child": {
-                                borderRight: "1px solid transparent",
+                            "&:first-of-type": { // "first-child caused a warning
+                                borderRight: "2px solid #f1f1f1",
+                                // borderRight: "1px solid transparent",
                                 borderLeft: "1px solid transparent",
                                 borderRadius: '25px 0px 0px 25px',
                             },
@@ -205,7 +210,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
         return (
             [
                 newColumnHelper.accessor('partOfSpeech', {
-                    header: () => <TableHeaderCell content={"Type"}/>,
+                    header: () => <TableHeaderCell content={"Type"} sxProps={{cursor: 'default'}}/>,
                     cell: (info) => {return(
                         (info.getValue() !== undefined)
                             ?
@@ -222,16 +227,46 @@ export function TranslationsTable(props: TranslationsTableProps) {
             ]
         )
     }
-
-    useEffect(() => {
-        setColumns(createColumns(props.sortedAndSelectedLanguages))
-    },[props.sortedAndSelectedLanguages])
-
     const table = useReactTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
     })
+
+    useEffect(() => {
+        // this is necessary in order to override a possible new column order,
+        // set by moving the columns manually before (check onDrop function)
+        table.resetColumnOrder()
+        setColumns(createColumns(props.sortedAndSelectedLanguages))
+    },[props.sortedAndSelectedLanguages])
+
+
+    let columnBeingDragged: number;
+
+    //@ts-ignore
+    const onDragStart = (e: DragEvent<HTMLElement>): void => {
+        columnBeingDragged = Number(e.currentTarget.dataset.columnIndex);
+    };
+
+    //@ts-ignore
+    const onDrop = (e: DragEvent<HTMLElement>): void => {
+        e.preventDefault()
+        if(columnBeingDragged !== 0){ // to avoid moving the "type" column.
+            const newPosition = Number(e.currentTarget.dataset.columnIndex)
+            if(newPosition !== 0){ // to avoid moving INTO the type column
+                const currentCols = table.getVisibleLeafColumns().map((c) => c.id)
+                const colToBeMoved = currentCols.splice(columnBeingDragged, 1)
+                currentCols.splice(newPosition, 0, colToBeMoved[0])
+                props.setAllSelectedItems(currentCols)
+                table.setColumnOrder(currentCols) // <------------------------here you save the column ordering state
+            }
+            else {
+                toast.error("The Type column can't be moved.")
+            }
+        } else {
+            toast.error("The Type column can't be moved.")
+        }
+    };
 
     return(
         <Grid
@@ -261,10 +296,24 @@ export function TranslationsTable(props: TranslationsTableProps) {
                         <tr
                             key={headerGroup.id}
                         >
-                            {headerGroup.headers.map(header => (
+                            {headerGroup.headers.map((header, index) => (
                                 <th
                                     colSpan={header.colSpan}
                                     key={header.id}
+                                    // start props for column drag&drop reordering
+                                    draggable={
+                                        !table.getState().columnSizingInfo.isResizingColumn
+                                        &&
+                                        // TODO: tie this to a table prop
+                                        index !== 0 // to avoid moving the "type" column
+                                    }
+                                    data-column-index={header.index}
+                                    onDragStart={onDragStart}
+                                    onDragOver={(e): void => {
+                                        e.preventDefault();
+                                    }}
+                                    onDrop={onDrop}
+                                    // end props for drag&drop
                                 >
                                     {header.isPlaceholder
                                         ? null

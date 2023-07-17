@@ -28,10 +28,6 @@ export function Review(){
         if(!user){
             navigate('/login')
         }
-        // TODO: this returns ALL the stored data. Not necessary, and it will be too much later on.
-        //  We should create a new endpoint where we can get only the data that will be displayed.
-        //  Then when we go to the detailed view of the translation, we fetch all the data for that specific word.
-        //  We'll filter here for now, in order to "fake" the lighter-data until the endpoint is up and running.
         //@ts-ignore
         dispatch(getWordsSimplified())
 
@@ -40,6 +36,17 @@ export function Review(){
 
         }
     }, [user, navigate, isError, message, dispatch])
+
+    // allows column dragging from table to work with DnDLanguageSelector
+    const changeLanguageOrderFromTable = (newList: string[]) => {
+        const updatedOrderList =
+            (newList.slice(1)). // we start at 1, since 0 it's always the "type" column
+                map((language: string) => {
+                    // @ts-ignore
+                    return(Lang[language.slice(-2)]) // we need the LAST 2 letters, to identify the language
+                })
+        setAllSelectedLanguages(updatedOrderList)
+    }
 
     return(
         <Grid
@@ -96,6 +103,10 @@ export function Review(){
                             Sort list by:
                         </Typography>
                     </Grid>
+                    {/*
+                        TODO: refactor later into single table component with DnD language selector included
+                            & add frame, pagination, filters, toggles for extra data, etc.
+                  */}
                     <DnDLanguageOrderSelector
                         allSelectedItems={allSelectedLanguages}
                         setAllSelectedItems={(languages: string[]) => setAllSelectedLanguages(languages)}
@@ -107,6 +118,7 @@ export function Review(){
                     <TranslationsTable
                         sortedAndSelectedLanguages={allSelectedLanguages}
                         data={wordsSimple.words}
+                        setAllSelectedItems={(languages: string[]) => changeLanguageOrderFromTable(languages)}
                     />
                 </>
             }
