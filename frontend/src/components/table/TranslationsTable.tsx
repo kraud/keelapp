@@ -1,10 +1,11 @@
 import {createColumnHelper, flexRender, getCoreRowModel, useReactTable,} from '@tanstack/react-table'
 import React, {useEffect, useState} from "react";
 import {Lang, PartOfSpeech} from "../../ts/enums";
-import {Grid} from "@mui/material";
+import {Grid, Switch} from "@mui/material";
 import globalTheme from "../../theme/theme";
 import {TableDataCell, TableHeaderCell} from "./ExtraTableComponents";
 import {toast} from "react-toastify";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
 type TableWordData = {
     id: string,
@@ -145,7 +146,11 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                 (info.getValue() !== undefined)
                                     ?
                                     <TableDataCell
-                                        content={`${info.row.original.genderDE} ${info.getValue()} (${info.row.original.registeredCasesDE})`}
+                                        content={info.getValue()}
+                                        wordGender={info.row.original.genderDE}
+                                        displayWordGender={displayGender}
+                                        amount={info.row.original.registeredCasesDE}
+                                        onlyDisplayAmountOnHover={true}
                                         type={"text"}
                                     />
                                     :
@@ -162,7 +167,9 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                 (info.getValue() !== undefined)
                                     ?
                                     <TableDataCell
-                                        content={`${info.getValue()} (${info.row.original.registeredCasesEE})`}
+                                        content={info.getValue()}
+                                        amount={info.row.original.registeredCasesEE}
+                                        onlyDisplayAmountOnHover={true}
                                         type={"text"}
                                     />
                                     :
@@ -179,7 +186,9 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                 (info.getValue() !== undefined)
                                     ?
                                     <TableDataCell
-                                        content={`${info.getValue()} (${info.row.original.registeredCasesEN})`}
+                                        content={info.getValue()}
+                                        amount={info.row.original.registeredCasesEN}
+                                        onlyDisplayAmountOnHover={true}
                                         type={"text"}
                                     />
                                     :
@@ -196,8 +205,13 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                 (info.getValue() !== undefined)
                                     ?
                                     <TableDataCell
-                                        content={`${info.row.original.genderES} ${info.getValue()} (${info.row.original.registeredCasesES})`}
+                                        content={info.getValue()}
+                                        wordGender={info.row.original.genderES}
+                                        displayWordGender={displayGender}
+                                        amount={info.row.original.registeredCasesES}
+                                        onlyDisplayAmountOnHover={true}
                                         type={"text"}
+
                                     />
                                     :
                                     ""
@@ -233,12 +247,14 @@ export function TranslationsTable(props: TranslationsTableProps) {
         getCoreRowModel: getCoreRowModel(),
     })
 
+    const [displayGender, setDisplayGender] = useState(true)
+
     useEffect(() => {
         // this is necessary in order to override a possible new column order,
         // set by moving the columns manually before (check onDrop function)
         table.resetColumnOrder()
         setColumns(createColumns(props.sortedAndSelectedLanguages))
-    },[props.sortedAndSelectedLanguages])
+    },[props.sortedAndSelectedLanguages, displayGender])
 
 
     let columnBeingDragged: number;
@@ -266,7 +282,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
         } else {
             toast.error("The Type column can't be moved.")
         }
-    };
+    }
 
     return(
         <Grid
@@ -283,6 +299,18 @@ export function TranslationsTable(props: TranslationsTableProps) {
                 scrollBehavior: 'smooth',
             }}
         >
+            <Grid
+                container={true}
+                item={true}
+            >
+                <FormControlLabel
+                    value={displayGender}
+                    control={<Switch checked={displayGender} color="primary" />}
+                    label="Display gender"
+                    labelPlacement="start"
+                    onChange={() => setDisplayGender(!displayGender)}
+                />
+            </Grid>
             {/* TABLE COMPONENT */}
             <Grid
                 item={true}
