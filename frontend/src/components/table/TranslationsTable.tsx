@@ -1,11 +1,12 @@
 import {createColumnHelper, flexRender, getCoreRowModel, useReactTable,} from '@tanstack/react-table'
 import React, {useEffect, useState} from "react";
 import {Lang, PartOfSpeech} from "../../ts/enums";
-import {Grid, Switch} from "@mui/material";
+import {Button, Grid, Switch} from "@mui/material";
 import globalTheme from "../../theme/theme";
 import {TableDataCell, TableHeaderCell} from "./ExtraTableComponents";
 import {toast} from "react-toastify";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import ReactDOM from 'react-dom/client';
 
 type TableWordData = {
     id: string,
@@ -261,6 +262,25 @@ export function TranslationsTable(props: TranslationsTableProps) {
 
     //@ts-ignore
     const onDragStart = (e: DragEvent<HTMLElement>): void => {
+
+        let image: JSX.Element = (<>
+            <Button
+                variant={"outlined"}
+            >
+                DROP ME
+            </Button>
+        </>)
+
+        let ghost = document.createElement('div')
+        ghost.id = "ghost-ID"
+        ghost.style.transform = "translate(-10000px, -10000px)"
+        ghost.style.position = "absolute"
+        document.body.appendChild(ghost)
+        e.dataTransfer.setDragImage(ghost, 50, 30)
+        //@ts-ignore
+        const root = ReactDOM.createRoot(ghost)
+        root.render(image)
+
         columnBeingDragged = Number(e.currentTarget.dataset.columnIndex);
     };
 
@@ -281,6 +301,11 @@ export function TranslationsTable(props: TranslationsTableProps) {
             }
         } else {
             toast.error("The Type column can't be moved.")
+        }
+        // clean-up for the element used as an image for the column DnD
+        const element = document.getElementById("ghost-ID")
+        if(element !== null){
+            element.remove()
         }
     }
 
@@ -336,9 +361,12 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                         index !== 0 // to avoid moving the "type" column
                                     }
                                     data-column-index={header.index}
-                                    onDragStart={onDragStart}
+                                    onDragStart={(e) => {
+                                        // e.preventDefault()
+                                        onDragStart(e)
+                                    }}
                                     onDragOver={(e): void => {
-                                        e.preventDefault();
+                                        e.preventDefault()
                                     }}
                                     onDrop={onDrop}
                                     // end props for drag&drop
