@@ -1,5 +1,13 @@
-import {createColumnHelper, flexRender, getCoreRowModel, useReactTable,} from '@tanstack/react-table'
-import React, {useEffect, useState} from "react";
+import {
+    createColumnHelper,
+    flexRender,
+    getCoreRowModel,
+    getFilteredRowModel,
+    Row,
+    RowData,
+    useReactTable,
+} from '@tanstack/react-table'
+import React, {useCallback, useEffect, useState} from "react";
 import {Lang, PartOfSpeech} from "../../ts/enums";
 import {Button, Grid, Switch} from "@mui/material";
 import globalTheme from "../../theme/theme";
@@ -127,6 +135,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
         },
     }
     const [data, setData] = useState<TableWordData[]>(() => [])
+    const [globalFilter, setGlobalFilter] = useState("")
 
     useEffect(() => {
         setData(props.data)
@@ -242,11 +251,19 @@ export function TranslationsTable(props: TranslationsTableProps) {
             ]
         )
     }
-    const table = useReactTable({
-        data,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-    })
+    const table = useReactTable(
+        {
+            data,
+            columns,
+            state: {
+              globalFilter: globalFilter,
+            },
+            getCoreRowModel: getCoreRowModel(),
+            getFilteredRowModel: getFilteredRowModel(),
+            onGlobalFilterChange: setGlobalFilter,
+        },
+
+    )
 
     const [displayGender, setDisplayGender] = useState(true)
 
@@ -334,6 +351,17 @@ export function TranslationsTable(props: TranslationsTableProps) {
                     label="Display gender"
                     labelPlacement="start"
                     onChange={() => setDisplayGender(!displayGender)}
+                />
+            </Grid>
+            <Grid
+                container={true}
+                item={true}
+            >
+                {/* TODO: use stylized component AND make the input debounce to improve performance on long lists */}
+                <input
+                    type={"text"}
+                    value={globalFilter}
+                    onChange={(e: any) => setGlobalFilter(e.target.value)}
                 />
             </Grid>
             {/* TABLE COMPONENT */}
