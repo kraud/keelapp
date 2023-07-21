@@ -15,6 +15,7 @@ import {TableDataCell, TableHeaderCell} from "./ExtraTableComponents";
 import {toast} from "react-toastify";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import ReactDOM from 'react-dom/client';
+import {DebouncedTextField} from "./DebouncedTextField";
 
 type TableWordData = {
     id: string,
@@ -344,25 +345,30 @@ export function TranslationsTable(props: TranslationsTableProps) {
             <Grid
                 container={true}
                 item={true}
+                justifyContent={"flex-end"}
+                spacing={2}
             >
-                <FormControlLabel
-                    value={displayGender}
-                    control={<Switch checked={displayGender} color="primary" />}
-                    label="Display gender"
-                    labelPlacement="start"
-                    onChange={() => setDisplayGender(!displayGender)}
-                />
-            </Grid>
-            <Grid
-                container={true}
-                item={true}
-            >
-                {/* TODO: use stylized component AND make the input debounce to improve performance on long lists */}
-                <input
-                    type={"text"}
-                    value={globalFilter}
-                    onChange={(e: any) => setGlobalFilter(e.target.value)}
-                />
+                <Grid
+                    item={true}
+                >
+                    <FormControlLabel
+                        value={displayGender}
+                        control={<Switch checked={displayGender} color="primary" />}
+                        label={"Display gender"}
+                        labelPlacement={"start"}
+                        onChange={() => setDisplayGender(!displayGender)}
+                    />
+                </Grid>
+                <Grid
+                    item={true}
+                >
+                    <DebouncedTextField
+                        value={globalFilter}
+                        onChange={(e: any) => setGlobalFilter(e)}
+                        debounce={750}
+                        placeholder={"Search all columns..."}
+                    />
+                </Grid>
             </Grid>
             {/* TABLE COMPONENT */}
             <Grid
