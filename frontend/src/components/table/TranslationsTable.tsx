@@ -1,8 +1,9 @@
 import {
+    ColumnSort,
     createColumnHelper,
     flexRender,
     getCoreRowModel,
-    getFilteredRowModel,
+    getFilteredRowModel, getSortedRowModel,
     Row,
     RowData,
     useReactTable,
@@ -16,6 +17,7 @@ import {toast} from "react-toastify";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import ReactDOM from 'react-dom/client';
 import {DebouncedTextField} from "./DebouncedTextField";
+import {SortDirection} from "@tanstack/table-core/build/lib/features/Sorting";
 
 type TableWordData = {
     id: string,
@@ -138,11 +140,22 @@ export function TranslationsTable(props: TranslationsTableProps) {
     const [data, setData] = useState<TableWordData[]>(() => [])
     const [globalFilter, setGlobalFilter] = useState("")
 
+    const sortItems = (prev: Row<any>, curr: Row<any>, columnId: string) => {
+        if (prev.original[columnId].toLowerCase() > curr.original[columnId].toLowerCase()) {
+            return 1;
+        } else if (prev.original[columnId].toLowerCase() < curr.original[columnId].toLowerCase()) {
+            return -1;
+        } else {
+            return 0;
+        }
+    }
+
     useEffect(() => {
         setData(props.data)
     }, [props.data])
 
     const newColumnHelper = createColumnHelper<TableWordData>()
+
 
     const [columns, setColumns] = useState<any[]>([])
     // As the order of selected languages changes, so should the order they are displayed on the table
@@ -166,7 +179,10 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                     />
                                     :
                                     ""
-                            )}
+                            )},
+                            sortingFn: (prev, curr, columnId) => {
+                                return sortItems(prev, curr, columnId);
+                            }
                         })
                     )
                 }
@@ -185,7 +201,10 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                     />
                                     :
                                     ""
-                            )}
+                            )},
+                            sortingFn: (prev, curr, columnId) => {
+                                return sortItems(prev, curr, columnId);
+                            }
                         })
                     )
                 }
@@ -204,7 +223,10 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                     />
                                     :
                                     ""
-                            )}
+                            )},
+                            sortingFn: (prev, curr, columnId) => {
+                                return sortItems(prev, curr, columnId);
+                            }
                         })
                     )
                 }
@@ -226,7 +248,10 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                     />
                                     :
                                     ""
-                            )}
+                            )},
+                            sortingFn: (prev, curr, columnId) => {
+                                return sortItems(prev, curr, columnId);
+                            }
                         })
                     )
                 }
@@ -252,16 +277,22 @@ export function TranslationsTable(props: TranslationsTableProps) {
             ]
         )
     }
+
+    const [sorting, setSorting] = useState<ColumnSort[]>([])
+
     const table = useReactTable(
         {
             data,
             columns,
             state: {
-              globalFilter: globalFilter,
+                globalFilter: globalFilter,
+                sorting: sorting
             },
             getCoreRowModel: getCoreRowModel(),
             getFilteredRowModel: getFilteredRowModel(),
             onGlobalFilterChange: setGlobalFilter,
+            onSortingChange: setSorting,
+            getSortedRowModel: getSortedRowModel(),
         },
 
     )
@@ -385,6 +416,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
                         >
                             {headerGroup.headers.map((header, index) => (
                                 <th
+                                    onClick={header.column.getToggleSortingHandler()}
                                     colSpan={header.colSpan}
                                     key={header.id}
                                     // start props for column drag&drop reordering
@@ -411,6 +443,11 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                             header.column.columnDef.header,
                                             header.getContext()
                                         )}
+                                    {
+                                        {asc: '⬆', desc: '⬇'}[
+                                            (header.column.getIsSorted() as SortDirection) ?? null
+                                        ]
+                                    }
                                 </th>
                             ))}
                         </tr>
