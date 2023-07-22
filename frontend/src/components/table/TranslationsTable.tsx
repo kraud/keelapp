@@ -140,7 +140,15 @@ export function TranslationsTable(props: TranslationsTableProps) {
     const [data, setData] = useState<TableWordData[]>(() => [])
     const [globalFilter, setGlobalFilter] = useState("")
 
-    const sortItems = (prev: Row<any>, curr: Row<any>, columnId: string) => {
+    // default sort function is case-sensitive, so we need to implement a new one
+    const sortItemsCaseInsensitive = (prev: Row<any>, curr: Row<any>, columnId: string) => {
+        // all languages are optional, so there will be empty cells, and we simply don't evaluate them
+        if(prev.original[columnId] === undefined){
+            return -1
+        }
+        if(curr.original[columnId] === undefined){
+            return 1
+        }
         if (prev.original[columnId].toLowerCase() > curr.original[columnId].toLowerCase()) {
             return 1;
         } else if (prev.original[columnId].toLowerCase() < curr.original[columnId].toLowerCase()) {
@@ -181,8 +189,8 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                     ""
                             )},
                             sortingFn: (prev, curr, columnId) => {
-                                return sortItems(prev, curr, columnId);
-                            }
+                                return sortItemsCaseInsensitive(prev, curr, columnId);
+                            },
                         })
                     )
                 }
@@ -203,7 +211,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                     ""
                             )},
                             sortingFn: (prev, curr, columnId) => {
-                                return sortItems(prev, curr, columnId);
+                                return sortItemsCaseInsensitive(prev, curr, columnId);
                             }
                         })
                     )
@@ -225,7 +233,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                     ""
                             )},
                             sortingFn: (prev, curr, columnId) => {
-                                return sortItems(prev, curr, columnId);
+                                return sortItemsCaseInsensitive(prev, curr, columnId);
                             }
                         })
                     )
@@ -250,8 +258,8 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                     ""
                             )},
                             sortingFn: (prev, curr, columnId) => {
-                                return sortItems(prev, curr, columnId);
-                            }
+                                return sortItemsCaseInsensitive(prev, curr, columnId);
+                            },
                         })
                     )
                 }
