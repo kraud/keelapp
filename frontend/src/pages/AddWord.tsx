@@ -6,6 +6,8 @@ import {TranslationForm} from "../components/TranslationForm";
 import {createWord} from "../features/words/wordSlice";
 import {WordData} from "../ts/interfaces";
 import globalTheme from "../theme/theme";
+import {motion} from "framer-motion";
+import {routeVariantsAnimation} from "./management/RoutesWithAnimation";
 
 export function AddWord() {
     const navigate = useNavigate()
@@ -20,6 +22,10 @@ export function AddWord() {
 
     return(
         <Grid
+            component={motion.div} // to implement animations with Framer Motion
+            variants={routeVariantsAnimation}
+            initial="initial"
+            animate="final"
             container={true}
             item={true}
             justifyContent={"center"}

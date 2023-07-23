@@ -69,7 +69,7 @@ function ResponsiveAppBar() {
             }
         }
         setAnchorElNav(null);
-    };
+    }
 
     const handleCloseUserMenu = (option: string) => {
         switch (option){
@@ -88,7 +88,7 @@ function ResponsiveAppBar() {
                 toast.error("Something went wrong, try again.")
             }
         }
-        setAnchorElUser(null);
+        setAnchorElUser(null)
     }
 
     return (

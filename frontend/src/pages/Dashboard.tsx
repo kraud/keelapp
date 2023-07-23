@@ -3,6 +3,8 @@ import {Grid, Typography} from "@mui/material";
 import {useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import globalTheme from "../theme/theme";
+import {motion} from "framer-motion";
+import {childVariantsAnimation, routeVariantsAnimation} from "./management/RoutesWithAnimation";
 
 export function Dashboard() {
     const navigate = useNavigate()
@@ -16,6 +18,10 @@ export function Dashboard() {
 
     return(
         <Grid
+            component={motion.div} // to implement animations with Framer Motion
+            variants={routeVariantsAnimation}
+            initial="initial"
+            animate="final"
             container={true}
             spacing={1}
             sx={{
@@ -41,6 +47,10 @@ export function Dashboard() {
                 container={true}
                 justifyContent={"center"}
                 item={true}
+                component={motion.div}
+                variants={childVariantsAnimation}
+                initial="initial"
+                animate="final"
             >
                 <Grid
                     item={true}

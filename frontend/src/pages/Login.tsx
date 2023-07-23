@@ -11,8 +11,18 @@ import {useDispatch, useSelector} from "react-redux";
 import LinearIndeterminate from "../components/Spinner";
 import {login, resetState} from "../features/auth/authSlice";
 import {toast} from "react-toastify";
+import {motion} from "framer-motion";
+import {childVariantsAnimation, routeVariantsAnimation} from "./management/RoutesWithAnimation";
 
 export function Login() {
+    const componentStyles = {
+        mainContainer: {
+            marginTop: globalTheme.spacing(6),
+            border: '2px solid #0072CE',
+            borderRadius: '25px',
+            paddingBottom: globalTheme.spacing(2),
+        }
+    }
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
@@ -55,16 +65,24 @@ export function Login() {
 
     return(
         <Grid
+            component={motion.div} // to implement animations with Framer Motion
+            variants={routeVariantsAnimation}
+            initial="initial"
+            animate="final"
             container={true}
-            spacing={4}
+            item={true}
+            rowSpacing={4}
             direction={"column"}
             alignItems={"center"}
+            sx={componentStyles.mainContainer}
+            xs={'auto'}
         >
             <Grid
                 item={true}
-                sx={{
-                    marginTop: globalTheme.spacing(6),
-                }}
+                component={motion.div}
+                variants={childVariantsAnimation}
+                initial="initial"
+                animate="final"
             >
                 <Typography
                     variant={"h2"}
@@ -80,6 +98,10 @@ export function Login() {
             </Grid>
             <Grid
                 item={true}
+                component={motion.div}
+                variants={childVariantsAnimation}
+                initial="initial"
+                animate="final"
             >
                 <form>
                     <Grid
@@ -151,7 +173,7 @@ export function Login() {
                                     sx={{
                                         textAlign: 'center',
                                         textTransform: 'none',
-                                }}
+                                    }}
                                 >
                                     You don't have an account?
                                 </Button>

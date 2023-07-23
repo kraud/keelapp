@@ -11,6 +11,8 @@ import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 import {register, resetState} from '../features/auth/authSlice'
 import LinearIndeterminate from "../components/Spinner";
+import {motion} from "framer-motion";
+import {childVariantsAnimation, routeVariantsAnimation} from "./management/RoutesWithAnimation";
 
 export interface IFormInput {
     name: string;
@@ -21,6 +23,16 @@ export interface IFormInput {
 
 
 export function Register() {
+    const componentStyles = {
+        mainContainer: {
+            marginTop: globalTheme.spacing(6),
+            border: '2px solid #0072CE',
+            borderRadius: '25px',
+            paddingLeft: globalTheme.spacing(6),
+            paddingRight: globalTheme.spacing(6),
+            paddingBottom: globalTheme.spacing(2),
+        }
+    }
 
     const validationSchema = Yup.object().shape({
     name: Yup.string().required("Name is required"),
@@ -63,16 +75,24 @@ export function Register() {
 
     return(
         <Grid
+            component={motion.div} // to implement animations with Framer Motion
+            variants={routeVariantsAnimation}
+            initial="initial"
+            animate="final"
             container={true}
-            spacing={4}
+            item={true}
+            rowSpacing={4}
             direction={"column"}
             alignItems={"center"}
+            sx={componentStyles.mainContainer}
+            xs={'auto'}
         >
             <Grid
                 item={true}
-                sx={{
-                    marginTop: globalTheme.spacing(6),
-                }}
+                component={motion.div}
+                variants={childVariantsAnimation}
+                initial="initial"
+                animate="final"
             >
                 <Typography
                     variant={"h2"}
@@ -88,6 +108,10 @@ export function Register() {
             </Grid>
             <Grid
                 item={true}
+                component={motion.div}
+                variants={childVariantsAnimation}
+                initial="initial"
+                animate="final"
             >
                 <form>
                     <Grid
@@ -95,6 +119,7 @@ export function Register() {
                         container={true}
                         spacing={2}
                         direction={"column"}
+                        alignItems={"center"}
                     >
                         <Grid
                             item={true}
@@ -105,6 +130,7 @@ export function Register() {
                                 name={"name"}
                                 defaultValue={""}
                                 errors={errors.name}
+                                fullWidth={true}
                             />
                         </Grid>
                         <Grid
@@ -117,6 +143,7 @@ export function Register() {
                                 defaultValue={""}
                                 errors={errors.email}
                                 type={"email"}
+                                fullWidth={true}
                             />
                         </Grid>
                         <Grid
@@ -129,6 +156,7 @@ export function Register() {
                                 defaultValue={""}
                                 errors={errors.password}
                                 type={"password"}
+                                fullWidth={true}
                             />
                         </Grid>
                         <Grid
@@ -141,6 +169,7 @@ export function Register() {
                                 defaultValue={""}
                                 errors={errors.password2}
                                 type={"password"}
+                                fullWidth={true}
                             />
                         </Grid>
                         <Grid
@@ -160,6 +189,7 @@ export function Register() {
                                 <Button
                                     onClick={handleSubmit(onSubmit)}
                                     variant={"outlined"}
+                                    fullWidth={true}
                                 >
                                     Submit
                                 </Button>
@@ -170,6 +200,7 @@ export function Register() {
                                 <Button
                                     onClick={() => reset()}
                                     variant={"outlined"}
+                                    fullWidth={true}
                                 >
                                     Reset
                                 </Button>
@@ -177,6 +208,7 @@ export function Register() {
                         </Grid>
                         <Grid
                             item={true}
+                            xs={12}
                         >
                             <Button
                                 variant={"text"}

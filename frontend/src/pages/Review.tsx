@@ -9,6 +9,8 @@ import LinearIndeterminate from "../components/Spinner";
 import {DnDLanguageOrderSelector} from "../components/DnDLanguageOrderSelector";
 import {Lang} from "../ts/enums";
 import {TranslationsTable} from "../components/table/TranslationsTable";
+import {motion} from "framer-motion";
+import {routeVariantsAnimation} from "./management/RoutesWithAnimation";
 
 export function Review(){
     const navigate = useNavigate()
@@ -50,6 +52,10 @@ export function Review(){
 
     return(
         <Grid
+            component={motion.div} // to implement animations with Framer Motion
+            variants={routeVariantsAnimation}
+            initial="initial"
+            animate="final"
             container={true}
             sx={{
                 marginTop: globalTheme.spacing(4),

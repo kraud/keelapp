@@ -4,6 +4,8 @@ import {Button, Grid, Slide, Typography} from "@mui/material";
 import {toast} from "react-toastify";
 import globalTheme from "../theme/theme";
 import Box from "@mui/material/Box";
+import {motion} from "framer-motion";
+import {childVariantsAnimation} from "../pages/management/RoutesWithAnimation";
 
 interface partOfSpeechSelectorProps{
     setPartOfSpeech: (pos: PartOfSpeech) => void
@@ -205,6 +207,10 @@ export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
                 <Grid
                     item={true}
                     xs={12}
+                    component={motion.div}
+                    variants={childVariantsAnimation}
+                    initial="initial"
+                    animate="final"
                 >
                     <Typography
                         sx={{ typography: {xs: "caption", sm: "subtitle2"}}}
@@ -222,6 +228,10 @@ export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
                     justifyContent: {xs: "space-around", sm: "center"}
                 }}
                 spacing={3}
+                component={motion.div}
+                variants={childVariantsAnimation}
+                initial="initial"
+                animate="final"
             >
                 {(partsOfSpeech).map((part: string, index: number) => {
                     return(

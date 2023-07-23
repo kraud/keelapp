@@ -206,8 +206,6 @@ export function TranslationForm(props: TranslationFormProps) {
         })
     }
 
-
-
     return(
         <>
             {!(partOfSpeech!)

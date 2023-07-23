@@ -7,15 +7,17 @@ import React, {useEffect, useState} from "react";
 import ResponsiveAppBar from "../../components/Header";
 import {Grid} from "@mui/material";
 import {Review} from "../Review";
+import {RoutesWithAnimation} from "./RoutesWithAnimation";
+import {LocationProvider} from "./LocationProvider";
 
 export function MainView(){
     const componentStyles = {
         mainColumn:{
-
+            margin: 0,
         }
     }
     const location = useLocation()
-    const [displayToolbar, setDisplayToolbar] = useState(true)
+    const [displayToolbar, setDisplayToolbar] = useState(false)
     const urlListNoToolbar = ["/login", "/register"]
 
     useEffect(() => {
@@ -39,28 +41,9 @@ export function MainView(){
                 xs={12}
                 sx={componentStyles.mainColumn}
             >
-                <Routes>
-                    <Route
-                        path='/'
-                        element={<Dashboard/>}
-                    />
-                    <Route
-                        path='/addWord'
-                        element={<AddWord/>}
-                    />
-                    <Route
-                        path='/review'
-                        element={<Review/>}
-                    />
-                    <Route
-                        path='/login'
-                        element={<Login/>}
-                    />
-                    <Route
-                        path='/register'
-                        element={<Register/>}
-                    />
-                </Routes>
+                <LocationProvider> {/* Framer Motion */}
+                    <RoutesWithAnimation/>
+                </LocationProvider>
             </Grid>
         </>
     )
