@@ -188,6 +188,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                     :
                                     ""
                             )},
+                            enableColumnFilter: true,
                             sortingFn: (prev, curr, columnId) => {
                                 return sortItemsCaseInsensitive(prev, curr, columnId);
                             },
@@ -210,6 +211,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                     :
                                     ""
                             )},
+                            enableColumnFilter: true,
                             sortingFn: (prev, curr, columnId) => {
                                 return sortItemsCaseInsensitive(prev, curr, columnId);
                             }
@@ -232,6 +234,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                     :
                                     ""
                             )},
+                            enableColumnFilter: true,
                             sortingFn: (prev, curr, columnId) => {
                                 return sortItemsCaseInsensitive(prev, curr, columnId);
                             }
@@ -257,6 +260,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                     :
                                     ""
                             )},
+                            enableColumnFilter: true,
                             sortingFn: (prev, curr, columnId) => {
                                 return sortItemsCaseInsensitive(prev, curr, columnId);
                             },
@@ -279,7 +283,20 @@ export function TranslationsTable(props: TranslationsTableProps) {
                             />
                             :
                             ""
-                    )}
+                    )},
+                    // meta: {
+                    //     filterComponent: (setFilterValue: any) => {
+                    //         // console.log("setFilterValue")
+                    //         // console.log(setFilterValue)
+                    //         return (
+                    //             <DebouncedTextField
+                    //                 value={t}
+                    //                 // @ts-ignore
+                    //                 onChange={(e) => f(e.target.value)}
+                    //             />
+                    //         )
+                    //     },
+                    // },
                 }),
                 ...newlySortedColumns
             ]
@@ -287,6 +304,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
     }
 
     const [sorting, setSorting] = useState<ColumnSort[]>([])
+    const [columnFiltersState, setColumnFiltersState] = useState<{ id: string, value: unknown }[]>([])
 
     const table = useReactTable(
         {
@@ -294,6 +312,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
             columns,
             state: {
                 globalFilter: globalFilter,
+                columnFilters: columnFiltersState,
                 sorting: sorting
             },
             getCoreRowModel: getCoreRowModel(),
@@ -301,6 +320,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
             onGlobalFilterChange: setGlobalFilter,
             onSortingChange: setSorting,
             getSortedRowModel: getSortedRowModel(),
+            onColumnFiltersChange: setColumnFiltersState,
         },
 
     )
@@ -456,6 +476,22 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                             (header.column.getIsSorted() as SortDirection) ?? null
                                         ]
                                     }
+                                    {header.column.getCanFilter()
+                                        ?
+                                        //@ts-ignore
+                                        (header.column.columnDef.meta!)
+                                            //@ts-ignore
+                                            ? header.column.columnDef.meta.filterComponent()
+                                            : null
+
+                                        : null
+                                    }
+                                    {header.column.getCanFilter() ? (
+                                        <DebouncedTextField
+                                            value={(header.column.getFilterValue() ?? '') as string}
+                                            onChange={value => header.column.setFilterValue(value)}
+                                        />
+                                    ) : null}
                                 </th>
                             ))}
                         </tr>
