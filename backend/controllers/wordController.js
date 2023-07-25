@@ -71,6 +71,31 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
     res.status(200).json(result)
 })
 
+// @desc    Get Words
+// @route   GET /api/words
+// @access  Private
+const getWordById = asyncHandler(async (req, res) => {
+    const word = await Word.findById(req.params.id)
+
+    if(!word){
+        res.status(400)
+        throw new Error("Word not found")
+    }
+
+    // Check for user
+    if(!req.user){
+        res.status(401)
+        throw new Error('User not found')
+    }
+
+    // Make sure the logged-in user matches the goal user
+    if(word.user.toString() !== req.user.id){
+        res.status(401)
+        throw new Error('User not authorized')
+    }
+    res.status(200).json(word)
+})
+
 // @desc    Set Word
 // @route   POST /api/words
 // @access  Private
@@ -149,8 +174,9 @@ const deleteWords = asyncHandler(async (req, res) => {
 
 module.exports = {
     getWords,
+    getWordsSimplified,
+    getWordById,
     setWord,
     updateWord,
     deleteWords,
-    getWordsSimplified
 }

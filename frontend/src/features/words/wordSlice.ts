@@ -5,6 +5,7 @@ import {WordData} from "../../ts/interfaces";
 interface worldSliceState {
     words: WordData[],
     wordsSimple: any[],
+    word?: WordData,
     isError: boolean,
     isSuccess: boolean,
     isLoading: boolean,
@@ -14,6 +15,7 @@ interface worldSliceState {
 const initialState: worldSliceState = {
     words: [], // TODO: adjust this to the structure defined in TranslationForm and WordFromGeneric
     wordsSimple: [],
+    word: undefined,
     isError: false,
     isSuccess: false,
     isLoading: false,
@@ -71,6 +73,23 @@ export const getWordsSimplified = createAsyncThunk('words/getAllSimple', async (
         return thunkAPI.rejectWithValue(message)
     }
 })
+// Get a word data by its id
+export const getWordById = createAsyncThunk(`words/getWordById`, async (wordId: string, thunkAPI) => {
+    try {
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await wordService.getWordById(token, wordId)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
 
 export const wordSlice = createSlice({
     name: 'word',
@@ -116,6 +135,19 @@ export const wordSlice = createSlice({
                 state.wordsSimple = (action.payload)
             })
             .addCase(getWordsSimplified.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload as string
+            })
+            .addCase(getWordById.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(getWordById.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.word = (action.payload)
+            })
+            .addCase(getWordById.rejected, (state, action) => {
                 state.isLoading = false
                 state.isError = true
                 state.message = action.payload as string

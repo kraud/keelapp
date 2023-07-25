@@ -178,6 +178,8 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                 (info.getValue() !== undefined)
                                     ?
                                     <TableDataCell
+                                        language={Lang.DE}
+                                        wordId={info.row.original.id}
                                         content={info.getValue()}
                                         wordGender={info.row.original.genderDE}
                                         displayWordGender={displayGender}
@@ -203,6 +205,8 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                 (info.getValue() !== undefined)
                                     ?
                                     <TableDataCell
+                                        language={Lang.EE}
+                                        wordId={info.row.original.id}
                                         content={info.getValue()}
                                         amount={info.row.original.registeredCasesEE}
                                         onlyDisplayAmountOnHover={true}
@@ -226,6 +230,8 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                 (info.getValue() !== undefined)
                                     ?
                                     <TableDataCell
+                                        language={Lang.EN}
+                                        wordId={info.row.original.id}
                                         content={info.getValue()}
                                         amount={info.row.original.registeredCasesEN}
                                         onlyDisplayAmountOnHover={true}
@@ -249,6 +255,8 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                 (info.getValue() !== undefined)
                                     ?
                                     <TableDataCell
+                                        language={Lang.ES}
+                                        wordId={info.row.original.id}
                                         content={info.getValue()}
                                         wordGender={info.row.original.genderES}
                                         displayWordGender={displayGender}
@@ -284,19 +292,6 @@ export function TranslationsTable(props: TranslationsTableProps) {
                             :
                             ""
                     )},
-                    // meta: {
-                    //     filterComponent: (setFilterValue: any) => {
-                    //         // console.log("setFilterValue")
-                    //         // console.log(setFilterValue)
-                    //         return (
-                    //             <DebouncedTextField
-                    //                 value={t}
-                    //                 // @ts-ignore
-                    //                 onChange={(e) => f(e.target.value)}
-                    //             />
-                    //         )
-                    //     },
-                    // },
                 }),
                 ...newlySortedColumns
             ]
@@ -370,8 +365,9 @@ export function TranslationsTable(props: TranslationsTableProps) {
                 const currentCols = table.getVisibleLeafColumns().map((c) => c.id)
                 const colToBeMoved = currentCols.splice(columnBeingDragged, 1)
                 currentCols.splice(newPosition, 0, colToBeMoved[0])
-                props.setAllSelectedItems(currentCols)
-                table.setColumnOrder(currentCols) // <------------------------here you save the column ordering state
+                props.setAllSelectedItems(currentCols) // this will change the order outside the table, on the DnD selector
+                // TODO: more testing on edge cases for column order? Next line might be redundant
+                // table.setColumnOrder(currentCols) // this will change the internal column order
             }
             else {
                 toast.error("The Type column can't be moved.")
