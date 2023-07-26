@@ -1,4 +1,4 @@
-import {Grid, Modal, Typography} from "@mui/material";
+import {Grid, Modal, Typography, Box} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import globalTheme from "../../theme/theme";
 import {SxProps} from "@mui/system";
@@ -8,7 +8,8 @@ import {TranslationItem} from "../../ts/interfaces";
 import {Lang, PartOfSpeech} from "../../ts/enums";
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
-import {getWordById, getWordsSimplified} from "../../features/words/wordSlice";
+import {getWordById} from "../../features/words/wordSlice";
+import LinearIndeterminate from "../Spinner";
 
 interface TableHeaderCellProps {
     content: any
@@ -50,20 +51,38 @@ interface TableDataCellProps {
     displayAmount?: boolean
     onlyDisplayAmountOnHover?: boolean
 
+    onlyForDisplay?: boolean
+
     wordId?: string,
     language?: Lang,
 }
 
 export function TableDataCell(props: TableDataCellProps){
+    const componentStyles = {
+        mainContainer: {
+            position: 'absolute' as 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '80vw',
+            background: 'white',
+            border: '4px solid #0072CE',
+            borderRadius: '25px',
+            padding: globalTheme.spacing(3),
+            boxShadow: 24,
+        },
+        text: {
+            cursor: (! props.onlyForDisplay!) ?"pointer" : "default",
+        }
+    }
     const dispatch = useDispatch()
     const [isHovering, setIsHovering] = useState(false)
     const [open, setOpen] = useState(false)
     const [selectedWordData, setSelectedWordData] = useState<TranslationItem>()
-    const [partOfSpeech, setPartOfSpeech] = useState<PartOfSpeech | undefined>()
+    const {word, isLoading, isError, message} = useSelector((state: any) => state.words)
 
     const openModal = () => {
         // call API for full word data
-        // set data on variable to feed form displayed inside modal
         if(props.wordId !== undefined){
             //@ts-ignore
             dispatch(getWordById(props.wordId))
@@ -71,26 +90,19 @@ export function TableDataCell(props: TableDataCellProps){
         setOpen(true)
     }
 
-    const {word, isLoading, isError, message} = useSelector((state: any) => state.words)
-
     useEffect(() => {
         if(isError){
-            toast.error(`Something went wrong: ${message}`)
+            toast.error(`Something went wrong: ${message}`, {
+                toastId: "click-on-modal"
+            })
         }
-        // if(props.wordId !== undefined){
-        //     //@ts-ignore
-        //     dispatch(getWordById(props.wordId))
-        // }
+    }, [isError, message])
 
-        //on unmount
-        return() => {
-
-        }
-    }, [isError, message, dispatch])
-
+    // set data on variable to feed the form displayed inside modal
     useEffect(() => {
-        console.log("word")
-        console.log(word)
+        if((word !== undefined) && open){
+            setSelectedWordData(word.translations.find((translation: TranslationItem) => translation.language === props.language))
+        }
     }, [word])
 
     if(props.content !== undefined){
@@ -112,7 +124,11 @@ export function TableDataCell(props: TableDataCellProps){
                         props.content // i.e: button icon
                         :
                         <Typography
-                            onClick={() => openModal()}
+                            onClick={() => {
+                                if(! props.onlyForDisplay!){
+                                    openModal()
+                                }
+                            }}
                             variant={'subtitle1'}
                             textAlign={
                                 (props.textAlign !== undefined)
@@ -122,6 +138,7 @@ export function TableDataCell(props: TableDataCellProps){
                                         : "left"
                             }
                             fontWeight={500}
+                            sx={componentStyles.text}
                         >
                             {
                                 (
@@ -149,15 +166,46 @@ export function TableDataCell(props: TableDataCellProps){
                 <Modal
                     open={open}
                     onClose={() => setOpen(false)}
+                    disableAutoFocus={true}
                 >
-                    <Typography
-                        variant={"h6"}
+                    <Box
+                        sx={componentStyles.mainContainer}
                     >
                         {(isLoading)
-                            ? "Loading!"
-                            : "Done!"
+                            ?
+                                <Grid
+                                    container={true}
+                                    rowSpacing={3}
+                                    justifyContent={'center'}
+                                >
+                                    <Grid
+                                        item={true}
+                                        xs={6}
+                                    >
+                                        <LinearIndeterminate/>
+                                    </Grid>
+                                    <Grid
+                                        item={true}
+                                        xs={12}
+                                    >
+                                        <Typography
+                                            variant={"h4"}
+                                            textAlign={"center"}
+                                        >
+                                            Loading...
+                                        </Typography>
+                                    </Grid>
+                                </Grid>
+                            : (selectedWordData !== undefined) &&
+                                <FormSelector
+                                    currentLang={props.language!}
+                                    currentTranslationData={selectedWordData!}
+                                    partOfSpeech={PartOfSpeech.noun}
+                                    updateFormData={() => null}
+                                    displayOnly={true}
+                                />
                         }
-                    </Typography>
+                    </Box>
                 </Modal>
             </>
         )
@@ -165,10 +213,4 @@ export function TableDataCell(props: TableDataCellProps){
     } else {
         return(<></>)
     }
-                    // <FormSelector
-                    //     currentLang={props.language!}
-                    //     currentTranslationData={selectedWordData!}
-                    //     partOfSpeech={PartOfSpeech.noun}
-                    //     updateFormData={() => null}
-                    // />
 }

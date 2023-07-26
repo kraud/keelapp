@@ -10,12 +10,13 @@ interface RadioGroupHookProps {
     control: Control<any, any>, // Comes from the useForm() hook in React-Hook-Form
     name: string // Necessary to identify component from a form in React-Hook-Form
     label: string,
-    options: string[] // TODO: should we have value AND label for each item?1
+    options: string[] // TODO: should we have value AND label for each item?
     defaultValue: string,
     errors?: any,
     type?: "password"|"text"|"email",
     fullWidth?: boolean
     onChange?: (value: any) => void // Needed to inform parent component about the Radio Group current value
+    disabled?: boolean
 }
 
 export const RadioGroupWithHook = (props: RadioGroupHookProps) => {
@@ -90,6 +91,7 @@ export const RadioGroupWithHook = (props: RadioGroupHookProps) => {
                                                         props.onChange!(option)
                                                     }
                                                 }}
+                                                disabled={props.disabled}
                                             />
                                         }
                                     />

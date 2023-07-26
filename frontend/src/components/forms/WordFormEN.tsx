@@ -16,6 +16,7 @@ interface WordFormENProps {
             completionState?: boolean
         }
     ) => void
+    displayOnly?: boolean
 }
 // Displays the fields required to add the english translation of a word (and handles the validations)
 export function WordFormEN(props: WordFormENProps) {
@@ -118,6 +119,7 @@ export function WordFormEN(props: WordFormENProps) {
                             onChange={(value: any) => {
                                 setSingularWord(value)
                             }}
+                            disabled={props.displayOnly}
                         />
                     </Grid>
                     <Grid
@@ -134,6 +136,7 @@ export function WordFormEN(props: WordFormENProps) {
                             onChange={(value: any) => {
                                 setPluralWord(value)
                             }}
+                            disabled={props.displayOnly}
                         />
                     </Grid>
                 </Grid>

@@ -18,6 +18,7 @@ interface WordFormESProps {
             completionState?: boolean
         }
     ) => void
+    displayOnly?: boolean
 }
 // Displays the fields required to add the spanish translation of a word (and handles the validations)
 export function WordFormES(props: WordFormESProps) {
@@ -139,6 +140,7 @@ export function WordFormES(props: WordFormESProps) {
                                 setGenderWord(value)
                             }}
                             fullWidth={true}
+                            disabled={props.displayOnly}
                         />
                     </Grid>
                     <Grid
@@ -155,6 +157,7 @@ export function WordFormES(props: WordFormESProps) {
                                 setSingularWord(value)
                             }}
                             fullWidth={true}
+                            disabled={props.displayOnly}
                         />
                     </Grid>
                     <Grid
@@ -171,6 +174,7 @@ export function WordFormES(props: WordFormESProps) {
                                 setPluralWord(value)
                             }}
                             fullWidth={true}
+                            disabled={props.displayOnly}
                         />
                     </Grid>
                 </Grid>

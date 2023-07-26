@@ -22,6 +22,7 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
             partOfSpeech: completeWord.partOfSpeech,
             createdAt: completeWord.createdAt,
             updatedAt: completeWord.updatedAt,
+            id: completeWord.id,
         }
         // from each translated language, we only retrieve the necessary data
         completeWord.translations.forEach((translation) => {

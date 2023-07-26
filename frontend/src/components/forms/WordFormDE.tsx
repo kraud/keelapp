@@ -18,6 +18,7 @@ interface WordFormDEProps {
             completionState?: boolean
         }
     ) => void
+    displayOnly?: boolean
 }
 // Displays the fields required to add the german translation of a word (and handles the validations)
 export function WordFormDE(props: WordFormDEProps) {
@@ -248,6 +249,7 @@ export function WordFormDE(props: WordFormDEProps) {
                                 setGenderWord(value)
                             }}
                             fullWidth={true}
+                            disabled={props.displayOnly}
                         />
                     </Grid>
                     <Grid
@@ -264,6 +266,7 @@ export function WordFormDE(props: WordFormDEProps) {
                                 setSingularNominativ(value)
                             }}
                             fullWidth={true}
+                            disabled={props.displayOnly}
                         />
                     </Grid>
                     <Grid
@@ -280,6 +283,7 @@ export function WordFormDE(props: WordFormDEProps) {
                                 setPluralNominativ(value)
                             }}
                             fullWidth={true}
+                            disabled={props.displayOnly}
                         />
                     </Grid>
                     <Grid
@@ -296,6 +300,7 @@ export function WordFormDE(props: WordFormDEProps) {
                                 setSingularAkkusativ(value)
                             }}
                             fullWidth={true}
+                            disabled={props.displayOnly}
                         />
                     </Grid>
                     <Grid
@@ -312,6 +317,7 @@ export function WordFormDE(props: WordFormDEProps) {
                                 setPluralAkkusativ(value)
                             }}
                             fullWidth={true}
+                            disabled={props.displayOnly}
                         />
                     </Grid>
                     <Grid
@@ -328,6 +334,7 @@ export function WordFormDE(props: WordFormDEProps) {
                                 setSingularGenitiv(value)
                             }}
                             fullWidth={true}
+                            disabled={props.displayOnly}
                         />
                     </Grid>
                     <Grid
@@ -344,6 +351,7 @@ export function WordFormDE(props: WordFormDEProps) {
                                 setPluralGenitiv(value)
                             }}
                             fullWidth={true}
+                            disabled={props.displayOnly}
                         />
                     </Grid>
                     <Grid
@@ -360,6 +368,7 @@ export function WordFormDE(props: WordFormDEProps) {
                                 setSingularDativ(value)
                             }}
                             fullWidth={true}
+                            disabled={props.displayOnly}
                         />
                     </Grid>
                     <Grid
@@ -376,6 +385,7 @@ export function WordFormDE(props: WordFormDEProps) {
                                 setPluralDativ(value)
                             }}
                             fullWidth={true}
+                            disabled={props.displayOnly}
                         />
                     </Grid>
                 </Grid>

@@ -1,6 +1,6 @@
 import {Control, Controller} from "react-hook-form";
 import {TextField} from "@mui/material";
-import React, {useEffect} from "react";
+import React from "react";
 
 interface TextInputFormWithHookProps {
     control: Control<any, any>, // Comes from the useForm() hook in React-Hook-Form
@@ -11,6 +11,7 @@ interface TextInputFormWithHookProps {
     type?: "password"|"text"|"email",
     fullWidth?: boolean
     onChange?: (value: any) => void // Needed to inform parent component about the Textfield current value
+    disabled?: boolean
 }
 
 export const TextInputFormWithHook = (props: TextInputFormWithHookProps) => {
@@ -36,6 +37,7 @@ export const TextInputFormWithHook = (props: TextInputFormWithHookProps) => {
                     error={!!props.errors}
                     type={props.type}
                     fullWidth={props.fullWidth}
+                    disabled={props.disabled}
                 />
             )}
         />

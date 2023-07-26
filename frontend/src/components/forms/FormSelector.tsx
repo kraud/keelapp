@@ -15,6 +15,7 @@ interface FormSelectorProps {
         cases?: NounItem[],
         completionState?: boolean
     }) => void
+    displayOnly?: boolean
 }
 
 export function FormSelector(props: FormSelectorProps) {
@@ -48,6 +49,7 @@ export function FormSelector(props: FormSelectorProps) {
                                 completionState: formData.completionState
                             })
                         }}
+                        displayOnly={props.displayOnly}
                     />
                 )
             }
@@ -65,6 +67,7 @@ export function FormSelector(props: FormSelectorProps) {
                                 completionState: formData.completionState
                             })
                         }}
+                        displayOnly={props.displayOnly}
                     />
                 )
             }
@@ -82,6 +85,7 @@ export function FormSelector(props: FormSelectorProps) {
                                 completionState: formData.completionState
                             })
                         }}
+                        displayOnly={props.displayOnly}
                     />
                 )
             }
@@ -99,6 +103,7 @@ export function FormSelector(props: FormSelectorProps) {
                                 completionState: formData.completionState
                             })
                         }}
+                        displayOnly={props.displayOnly}
                     />
                 )
             }

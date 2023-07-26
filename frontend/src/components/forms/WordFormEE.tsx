@@ -16,6 +16,7 @@ interface WordFormEEProps {
             completionState?: boolean
         }
     ) => void
+    displayOnly?: boolean
 }
 // Displays the fields required to add the estonian translation of a word (and handles the validations)
 export function WordFormEE(props: WordFormEEProps) {
@@ -208,6 +209,7 @@ export function WordFormEE(props: WordFormEEProps) {
                                 setSingularNimetav(value)
                             }}
                             fullWidth={true}
+                            disabled={props.displayOnly}
                         />
                     </Grid>
                     <Grid
@@ -224,6 +226,7 @@ export function WordFormEE(props: WordFormEEProps) {
                                 setPluralNimetav(value)
                             }}
                             fullWidth={true}
+                            disabled={props.displayOnly}
                         />
                     </Grid>
                     <Grid
@@ -240,6 +243,7 @@ export function WordFormEE(props: WordFormEEProps) {
                                 setSingularOmastav(value)
                             }}
                             fullWidth={true}
+                            disabled={props.displayOnly}
                         />
                     </Grid>
                     <Grid
@@ -256,6 +260,7 @@ export function WordFormEE(props: WordFormEEProps) {
                                 setPluralOmastav(value)
                             }}
                             fullWidth={true}
+                            disabled={props.displayOnly}
                         />
                     </Grid>
                     <Grid
@@ -272,6 +277,7 @@ export function WordFormEE(props: WordFormEEProps) {
                                 setSingularOsastav(value)
                             }}
                             fullWidth={true}
+                            disabled={props.displayOnly}
                         />
                     </Grid>
                     <Grid
@@ -288,6 +294,7 @@ export function WordFormEE(props: WordFormEEProps) {
                                 setPluralOsastav(value)
                             }}
                             fullWidth={true}
+                            disabled={props.displayOnly}
                         />
                     </Grid>
                     <Grid
@@ -304,6 +311,7 @@ export function WordFormEE(props: WordFormEEProps) {
                                 setShortForm(value)
                             }}
                             fullWidth={true}
+                            disabled={props.displayOnly}
                         />
                     </Grid>
                 </Grid>

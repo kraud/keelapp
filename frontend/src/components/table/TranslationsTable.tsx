@@ -288,6 +288,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                 content={info.getValue()}
                                 type={"text"}
                                 textAlign={"center"}
+                                onlyForDisplay={true}
                             />
                             :
                             ""
