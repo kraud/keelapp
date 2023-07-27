@@ -15,6 +15,20 @@ interface TextInputFormWithHookProps {
 }
 
 export const TextInputFormWithHook = (props: TextInputFormWithHookProps) => {
+    const componentStyles = {
+        disabledStyles: {
+            "& .MuiInputBase-input.Mui-disabled": {
+                WebkitTextFillColor: "#000000",
+            },
+            "& label": {
+                color: 'black',
+                WebkitTextFillColor: 'black',
+            },
+            "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: 'black !important',
+            }
+        },
+    }
 
     return (
         <Controller
@@ -38,6 +52,7 @@ export const TextInputFormWithHook = (props: TextInputFormWithHookProps) => {
                     type={props.type}
                     fullWidth={props.fullWidth}
                     disabled={props.disabled}
+                    sx={(props.disabled!) ?componentStyles.disabledStyles :undefined}
                 />
             )}
         />
