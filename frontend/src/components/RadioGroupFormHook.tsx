@@ -58,6 +58,29 @@ export const RadioGroupWithHook = (props: RadioGroupHookProps) => {
         }
     }
 
+    const getSelectedItem = (selectedValue: string) => {
+        const option = props.options.find(option => option === selectedValue)
+        return(
+            <FormControlLabel
+                sx={{
+                    ...componentStyles.middleOption,
+                    ...componentStyles.optionPill,
+                }}
+                value={option}
+                label={option}
+                control={
+                    <Radio
+                        //@ts-ignore
+                        color={'allWhite'}
+                        sx={componentStyles.optionCircle}
+                        onChange={() => null}
+                        disabled={props.disabled}
+                    />
+                }
+            />
+        )
+    }
+
     return (
         <Controller
             name={props.name}
@@ -71,7 +94,10 @@ export const RadioGroupWithHook = (props: RadioGroupHookProps) => {
                         row
                         name={props.name}
                     >
-                        {
+                        { (props.disabled!)
+                            ?
+                            getSelectedItem(field.value)
+                            :
                             (props.options).map((option: string, index: number) => {
                                 return(
                                     <FormControlLabel
