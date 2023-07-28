@@ -6,7 +6,7 @@ import React, {useEffect, useState} from "react";
 import {TextInputFormWithHook} from "../TextInputFormHook";
 import {NounItem, TranslationItem} from "../../ts/interfaces";
 import {NounCases} from "../../ts/enums";
-import {getWordByCase} from "./commonFunctions";
+import {getDisabledInputFieldDisplayLogic, getWordByCase} from "./commonFunctions";
 
 interface WordFormEEProps {
     currentTranslationData: TranslationItem,
@@ -195,125 +195,139 @@ export function WordFormEE(props: WordFormEEProps) {
                     item={true}
                     spacing={2}
                 >
-                    <Grid
-                        item={true}
-                        xs={6}
-                    >
-                        <TextInputFormWithHook
-                            control={control}
-                            label={"Ainsus nimetav"}
-                            name={"singularNimetav"}
-                            defaultValue={""}
-                            errors={errors.singularNimetav}
-                            onChange={(value: any) => {
-                                setSingularNimetav(value)
-                            }}
-                            fullWidth={true}
-                            disabled={props.displayOnly}
-                        />
-                    </Grid>
-                    <Grid
-                        item={true}
-                        xs={6}
-                    >
-                        <TextInputFormWithHook
-                            control={control}
-                            label={"Mitmus nimetav"}
-                            name={"pluralNimetav"}
-                            defaultValue={""}
-                            errors={errors.pluralNimetav}
-                            onChange={(value: any) => {
-                                setPluralNimetav(value)
-                            }}
-                            fullWidth={true}
-                            disabled={props.displayOnly}
-                        />
-                    </Grid>
-                    <Grid
-                        item={true}
-                        xs={6}
-                    >
-                        <TextInputFormWithHook
-                            control={control}
-                            label={"Ainsus omastav"}
-                            name={"singularOmastav"}
-                            defaultValue={""}
-                            errors={errors.singularOmastav}
-                            onChange={(value: any) => {
-                                setSingularOmastav(value)
-                            }}
-                            fullWidth={true}
-                            disabled={props.displayOnly}
-                        />
-                    </Grid>
-                    <Grid
-                        item={true}
-                        xs={6}
-                    >
-                        <TextInputFormWithHook
-                            control={control}
-                            label={"Mitmus omastav"}
-                            name={"pluralOmastav"}
-                            defaultValue={""}
-                            errors={errors.pluralOmastav}
-                            onChange={(value: any) => {
-                                setPluralOmastav(value)
-                            }}
-                            fullWidth={true}
-                            disabled={props.displayOnly}
-                        />
-                    </Grid>
-                    <Grid
-                        item={true}
-                        xs={6}
-                    >
-                        <TextInputFormWithHook
-                            control={control}
-                            label={"Ainsus osastav"}
-                            name={"singularOsastav"}
-                            defaultValue={""}
-                            errors={errors.singularOsastav}
-                            onChange={(value: any) => {
-                                setSingularOsastav(value)
-                            }}
-                            fullWidth={true}
-                            disabled={props.displayOnly}
-                        />
-                    </Grid>
-                    <Grid
-                        item={true}
-                        xs={6}
-                    >
-                        <TextInputFormWithHook
-                            control={control}
-                            label={"Mitmus osastav"}
-                            name={"pluralOsastav"}
-                            defaultValue={""}
-                            errors={errors.pluralOsastav}
-                            onChange={(value: any) => {
-                                setPluralOsastav(value)
-                            }}
-                            fullWidth={true}
-                            disabled={props.displayOnly}
-                        />
-                    </Grid>
-                    <Grid
-                        item={true}
-                        xs={6}
-                    >
-                        <TextInputFormWithHook
-                            control={control}
-                            label={"Lühike sisseütlev"}
-                            name={"shortForm"}
-                            defaultValue={""}
-                            errors={errors.shortForm}
-                            onChange={(value: any) => {
-                                setShortForm(value)
-                            }}
-                            fullWidth={true}
-                            disabled={props.displayOnly}
-                        />
-                    </Grid>
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, singularNimetav)) &&
+                        <Grid
+                            item={true}
+                            xs={6}
+                        >
+                            <TextInputFormWithHook
+                                control={control}
+                                label={"Ainsus nimetav"}
+                                name={"singularNimetav"}
+                                defaultValue={""}
+                                errors={errors.singularNimetav}
+                                onChange={(value: any) => {
+                                    setSingularNimetav(value)
+                                }}
+                                fullWidth={true}
+                                disabled={props.displayOnly}
+                            />
+                        </Grid>
+                    }
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, pluralNimetav)) &&
+                        <Grid
+                            item={true}
+                            xs={6}
+                        >
+                            <TextInputFormWithHook
+                                control={control}
+                                label={"Mitmus nimetav"}
+                                name={"pluralNimetav"}
+                                defaultValue={""}
+                                errors={errors.pluralNimetav}
+                                onChange={(value: any) => {
+                                    setPluralNimetav(value)
+                                }}
+                                fullWidth={true}
+                                disabled={props.displayOnly}
+                            />
+                        </Grid>
+                    }
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, singularOmastav)) &&
+                        <Grid
+                            item={true}
+                            xs={6}
+                        >
+                            <TextInputFormWithHook
+                                control={control}
+                                label={"Ainsus omastav"}
+                                name={"singularOmastav"}
+                                defaultValue={""}
+                                errors={errors.singularOmastav}
+                                onChange={(value: any) => {
+                                    setSingularOmastav(value)
+                                }}
+                                fullWidth={true}
+                                disabled={props.displayOnly}
+                            />
+                        </Grid>
+                    }
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, pluralOmastav)) &&
+                        <Grid
+                            item={true}
+                            xs={6}
+                        >
+                            <TextInputFormWithHook
+                                control={control}
+                                label={"Mitmus omastav"}
+                                name={"pluralOmastav"}
+                                defaultValue={""}
+                                errors={errors.pluralOmastav}
+                                onChange={(value: any) => {
+                                    setPluralOmastav(value)
+                                }}
+                                fullWidth={true}
+                                disabled={props.displayOnly}
+                            />
+                        </Grid>
+                    }
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, singularOsastav)) &&
+                        <Grid
+                            item={true}
+                            xs={6}
+                        >
+                            <TextInputFormWithHook
+                                control={control}
+                                label={"Ainsus osastav"}
+                                name={"singularOsastav"}
+                                defaultValue={""}
+                                errors={errors.singularOsastav}
+                                onChange={(value: any) => {
+                                    setSingularOsastav(value)
+                                }}
+                                fullWidth={true}
+                                disabled={props.displayOnly}
+                            />
+                        </Grid>
+                    }
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, pluralOsastav)) &&
+                        <Grid
+                            item={true}
+                            xs={6}
+                        >
+                            <TextInputFormWithHook
+                                control={control}
+                                label={"Mitmus osastav"}
+                                name={"pluralOsastav"}
+                                defaultValue={""}
+                                errors={errors.pluralOsastav}
+                                onChange={(value: any) => {
+                                    setPluralOsastav(value)
+                                }}
+                                fullWidth={true}
+                                disabled={props.displayOnly}
+                            />
+                        </Grid>
+                    }
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, shortForm)) &&
+                        <Grid
+                            item={true}
+                            xs={6}
+                        >
+                            <TextInputFormWithHook
+                                control={control}
+                                label={"Lühike sisseütlev"}
+                                name={"shortForm"}
+                                defaultValue={""}
+                                errors={errors.shortForm}
+                                onChange={(value: any) => {
+                                    setShortForm(value)
+                                }}
+                                fullWidth={true}
+                                disabled={props.displayOnly}
+                            />
+                        </Grid>
+                    }
                 </Grid>
             </form>
         </Grid>

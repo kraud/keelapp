@@ -7,7 +7,7 @@ import {TextInputFormWithHook} from "../TextInputFormHook";
 import {SelectFormWithHook} from "../SelectFormHook";
 import {NounItem, TranslationItem} from "../../ts/interfaces";
 import {GenderDE, NounCases} from "../../ts/enums";
-import {getWordByCase} from "./commonFunctions";
+import {getDisabledInputFieldDisplayLogic, getWordByCase} from "./commonFunctions";
 import {RadioGroupWithHook} from "../RadioGroupFormHook";
 
 interface WordFormDEProps {
@@ -269,125 +269,139 @@ export function WordFormDE(props: WordFormDEProps) {
                             disabled={props.displayOnly}
                         />
                     </Grid>
-                    <Grid
-                        item={true}
-                        xs={6}
-                    >
-                        <TextInputFormWithHook
-                            control={control}
-                            label={"Plural nominativ"}
-                            name={"pluralNominativ"}
-                            defaultValue={""}
-                            errors={errors.pluralNominativ}
-                            onChange={(value: any) => {
-                                setPluralNominativ(value)
-                            }}
-                            fullWidth={true}
-                            disabled={props.displayOnly}
-                        />
-                    </Grid>
-                    <Grid
-                        item={true}
-                        xs={6}
-                    >
-                        <TextInputFormWithHook
-                            control={control}
-                            label={"Singular akkusativ"}
-                            name={"singularAkkusativ"}
-                            defaultValue={""}
-                            errors={errors.singularAkkusativ}
-                            onChange={(value: any) => {
-                                setSingularAkkusativ(value)
-                            }}
-                            fullWidth={true}
-                            disabled={props.displayOnly}
-                        />
-                    </Grid>
-                    <Grid
-                        item={true}
-                        xs={6}
-                    >
-                        <TextInputFormWithHook
-                            control={control}
-                            label={"Plural akkusativ"}
-                            name={"pluralAkkusativ"}
-                            defaultValue={""}
-                            errors={errors.pluralAkkusativ}
-                            onChange={(value: any) => {
-                                setPluralAkkusativ(value)
-                            }}
-                            fullWidth={true}
-                            disabled={props.displayOnly}
-                        />
-                    </Grid>
-                    <Grid
-                        item={true}
-                        xs={6}
-                    >
-                        <TextInputFormWithHook
-                            control={control}
-                            label={"Singular genitiv"}
-                            name={"singularGenitiv"}
-                            defaultValue={""}
-                            errors={errors.singularGenitiv}
-                            onChange={(value: any) => {
-                                setSingularGenitiv(value)
-                            }}
-                            fullWidth={true}
-                            disabled={props.displayOnly}
-                        />
-                    </Grid>
-                    <Grid
-                        item={true}
-                        xs={6}
-                    >
-                        <TextInputFormWithHook
-                            control={control}
-                            label={"Plural genitiv"}
-                            name={"pluralGenitiv"}
-                            defaultValue={""}
-                            errors={errors.pluralGenitiv}
-                            onChange={(value: any) => {
-                                setPluralGenitiv(value)
-                            }}
-                            fullWidth={true}
-                            disabled={props.displayOnly}
-                        />
-                    </Grid>
-                    <Grid
-                        item={true}
-                        xs={6}
-                    >
-                        <TextInputFormWithHook
-                            control={control}
-                            label={"Singular dativ"}
-                            name={"singularDativ"}
-                            defaultValue={""}
-                            errors={errors.singularDativ}
-                            onChange={(value: any) => {
-                                setSingularDativ(value)
-                            }}
-                            fullWidth={true}
-                            disabled={props.displayOnly}
-                        />
-                    </Grid>
-                    <Grid
-                        item={true}
-                        xs={6}
-                    >
-                        <TextInputFormWithHook
-                            control={control}
-                            label={"Plural dativ"}
-                            name={"pluralDativ"}
-                            defaultValue={""}
-                            errors={errors.pluralDativ}
-                            onChange={(value: any) => {
-                                setPluralDativ(value)
-                            }}
-                            fullWidth={true}
-                            disabled={props.displayOnly}
-                        />
-                    </Grid>
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, pluralNominativ)) &&
+                        <Grid
+                            item={true}
+                            xs={6}
+                        >
+                            <TextInputFormWithHook
+                                control={control}
+                                label={"Plural nominativ"}
+                                name={"pluralNominativ"}
+                                defaultValue={""}
+                                errors={errors.pluralNominativ}
+                                onChange={(value: any) => {
+                                    setPluralNominativ(value)
+                                }}
+                                fullWidth={true}
+                                disabled={props.displayOnly}
+                            />
+                        </Grid>
+                    }
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, singularAkkusativ)) &&
+                        <Grid
+                            item={true}
+                            xs={6}
+                        >
+                            <TextInputFormWithHook
+                                control={control}
+                                label={"Singular akkusativ"}
+                                name={"singularAkkusativ"}
+                                defaultValue={""}
+                                errors={errors.singularAkkusativ}
+                                onChange={(value: any) => {
+                                    setSingularAkkusativ(value)
+                                }}
+                                fullWidth={true}
+                                disabled={props.displayOnly}
+                            />
+                        </Grid>
+                    }
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, pluralAkkusativ)) &&
+                        <Grid
+                            item={true}
+                            xs={6}
+                        >
+                            <TextInputFormWithHook
+                                control={control}
+                                label={"Plural akkusativ"}
+                                name={"pluralAkkusativ"}
+                                defaultValue={""}
+                                errors={errors.pluralAkkusativ}
+                                onChange={(value: any) => {
+                                    setPluralAkkusativ(value)
+                                }}
+                                fullWidth={true}
+                                disabled={props.displayOnly}
+                            />
+                        </Grid>
+                    }
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, singularGenitiv)) &&
+                        <Grid
+                            item={true}
+                            xs={6}
+                        >
+                            <TextInputFormWithHook
+                                control={control}
+                                label={"Singular genitiv"}
+                                name={"singularGenitiv"}
+                                defaultValue={""}
+                                errors={errors.singularGenitiv}
+                                onChange={(value: any) => {
+                                    setSingularGenitiv(value)
+                                }}
+                                fullWidth={true}
+                                disabled={props.displayOnly}
+                            />
+                        </Grid>
+                    }
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, pluralGenitiv)) &&
+                        <Grid
+                            item={true}
+                            xs={6}
+                        >
+                            <TextInputFormWithHook
+                                control={control}
+                                label={"Plural genitiv"}
+                                name={"pluralGenitiv"}
+                                defaultValue={""}
+                                errors={errors.pluralGenitiv}
+                                onChange={(value: any) => {
+                                    setPluralGenitiv(value)
+                                }}
+                                fullWidth={true}
+                                disabled={props.displayOnly}
+                            />
+                        </Grid>
+                    }
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, singularDativ)) &&
+                        <Grid
+                            item={true}
+                            xs={6}
+                        >
+                            <TextInputFormWithHook
+                                control={control}
+                                label={"Singular dativ"}
+                                name={"singularDativ"}
+                                defaultValue={""}
+                                errors={errors.singularDativ}
+                                onChange={(value: any) => {
+                                    setSingularDativ(value)
+                                }}
+                                fullWidth={true}
+                                disabled={props.displayOnly}
+                            />
+                        </Grid>
+                    }
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, pluralDativ)) &&
+                        <Grid
+                            item={true}
+                            xs={6}
+                        >
+                            <TextInputFormWithHook
+                                control={control}
+                                label={"Plural dativ"}
+                                name={"pluralDativ"}
+                                defaultValue={""}
+                                errors={errors.pluralDativ}
+                                onChange={(value: any) => {
+                                    setPluralDativ(value)
+                                }}
+                                fullWidth={true}
+                                disabled={props.displayOnly}
+                            />
+                        </Grid>
+                    }
                 </Grid>
             </form>
         </Grid>

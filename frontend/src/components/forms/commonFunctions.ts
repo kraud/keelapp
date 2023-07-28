@@ -11,3 +11,14 @@ export function getWordByCase(searchCase: NounCases, currentTranslationData: Tra
         return (returnValue.word)
     }
 }
+
+// To determine exactly when to display the empty fields on a disabled language form
+export function getDisabledInputFieldDisplayLogic(disabled: boolean, fieldValue: string) {
+    return(
+        (!disabled)
+        ||
+        (
+            (disabled) && (fieldValue !== "")
+        )
+    )
+}

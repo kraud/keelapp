@@ -30,11 +30,19 @@ export const RadioGroupWithHook = (props: RadioGroupHookProps) => {
             padding: '5px 15px 5px 10px',
             color: 'white',
             fontWeight: '400',
+            "span":{
+                "&.MuiFormControlLabel-label.Mui-disabled": {
+                    color: 'black',
+                },
+            },
         },
         optionCircle: {
             padding: '0px',
             paddingRight: '5px',
             color: 'white',
+            "&.Mui-disabled": {
+                color: 'black',
+            },
         },
         optionGroup: {
             paddingLeft: globalTheme.spacing(1),

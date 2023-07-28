@@ -6,7 +6,7 @@ import React, {useEffect, useState} from "react";
 import {TextInputFormWithHook} from "../TextInputFormHook";
 import {NounItem, TranslationItem} from "../../ts/interfaces";
 import {NounCases} from "../../ts/enums";
-import {getWordByCase} from "./commonFunctions";
+import {getDisabledInputFieldDisplayLogic, getWordByCase} from "./commonFunctions";
 
 interface WordFormENProps {
     currentTranslationData: TranslationItem,
@@ -105,40 +105,44 @@ export function WordFormEN(props: WordFormENProps) {
                     item={true}
                     spacing={2}
                 >
-                    <Grid
-                        item={true}
-                        xs={6}
-                    >
-                        <TextInputFormWithHook
-                            control={control}
-                            label={"Singular"}
-                            name={"singular"}
-                            defaultValue={""}
-                            fullWidth={true}
-                            errors={errors.singular}
-                            onChange={(value: any) => {
-                                setSingularWord(value)
-                            }}
-                            disabled={props.displayOnly}
-                        />
-                    </Grid>
-                    <Grid
-                        item={true}
-                        xs={6}
-                    >
-                        <TextInputFormWithHook
-                            control={control}
-                            label={"Plural"}
-                            name={"plural"}
-                            defaultValue={""}
-                            fullWidth={true}
-                            errors={errors.plural}
-                            onChange={(value: any) => {
-                                setPluralWord(value)
-                            }}
-                            disabled={props.displayOnly}
-                        />
-                    </Grid>
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, singularWord)) &&
+                        <Grid
+                            item={true}
+                            xs={6}
+                        >
+                            <TextInputFormWithHook
+                                control={control}
+                                label={"Singular"}
+                                name={"singular"}
+                                defaultValue={""}
+                                fullWidth={true}
+                                errors={errors.singular}
+                                onChange={(value: any) => {
+                                    setSingularWord(value)
+                                }}
+                                disabled={props.displayOnly}
+                            />
+                        </Grid>
+                    }
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, pluralWord)) &&
+                        <Grid
+                            item={true}
+                            xs={6}
+                        >
+                            <TextInputFormWithHook
+                                control={control}
+                                label={"Plural"}
+                                name={"plural"}
+                                defaultValue={""}
+                                fullWidth={true}
+                                errors={errors.plural}
+                                onChange={(value: any) => {
+                                    setPluralWord(value)
+                                }}
+                                disabled={props.displayOnly}
+                            />
+                        </Grid>
+                    }
                 </Grid>
             </form>
         </Grid>
