@@ -5,6 +5,7 @@ import {useNavigate} from "react-router-dom";
 import globalTheme from "../theme/theme";
 import {motion} from "framer-motion";
 import {childVariantsAnimation, routeVariantsAnimation} from "./management/RoutesWithAnimation";
+import {SpinningText} from "../components/SpinningText";
 
 export function Dashboard() {
     const navigate = useNavigate()
@@ -46,22 +47,44 @@ export function Dashboard() {
             <Grid
                 container={true}
                 justifyContent={"center"}
-                item={true}
-                component={motion.div}
-                variants={childVariantsAnimation}
-                initial="initial"
-                animate="final"
+                sx={{
+                    // border: '1px solid red',
+                }}
             >
                 <Grid
                     item={true}
+                    xs={6}
                 >
-                    <Typography
-                        variant={"h6"}
-                    >
-                        Ready to learn something today?
-                    </Typography>
+                    <SpinningText
+                        translations={[
+                            "Ready to learn something today?",
+                            "¿Listo para aprender algo hoy?",
+                            "Sind Sie bereit, heute etwas Neues zu lernen?",
+                            "Kas sa oled valmis midagi uut täna õppida?"
+                        ]}
+                        // translations={["A", "AB", "ABC", "ABCD"]}
+                    />
                 </Grid>
             </Grid>
+            {/*<Grid*/}
+            {/*    container={true}*/}
+            {/*    justifyContent={"center"}*/}
+            {/*    item={true}*/}
+            {/*    component={motion.div}*/}
+            {/*    variants={childVariantsAnimation}*/}
+            {/*    initial="initial"*/}
+            {/*    animate="final"*/}
+            {/*>*/}
+            {/*    <Grid*/}
+            {/*        item={true}*/}
+            {/*    >*/}
+            {/*        <Typography*/}
+            {/*            variant={"h6"}*/}
+            {/*        >*/}
+            {/*            Ready to learn something today?*/}
+            {/*        </Typography>*/}
+            {/*    </Grid>*/}
+            {/*</Grid>*/}
         </Grid>
     )
 }
