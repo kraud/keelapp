@@ -10,6 +10,8 @@ interface SpinningTextProps {
     width?: number, // amount in pixels required to display the longest text inside props.translations - overrides the auto-calculated max
     sxProps?: any,
     color?: "primary" | "secondary",
+    direction?: "up" | "down",
+    justifyContent?: 'center' | 'flex-start' | 'flex-end'
 }
 
 export function SpinningText(props: SpinningTextProps) {
@@ -19,7 +21,7 @@ export function SpinningText(props: SpinningTextProps) {
     const spinnerComponentAnimation = {
         initial: {
             opacity: 0,
-            y: "80px",
+            y: `${(props.direction === "down") ?"-" :"+"}80px`, // by default, it goes up.
         },
         final: {
             opacity: 1,
@@ -88,7 +90,7 @@ export function SpinningText(props: SpinningTextProps) {
             <Grid
                 container={true}
                 item={true}
-                justifyContent={'center'}
+                justifyContent={(props.justifyContent !== undefined) ? props.justifyContent :'center'}
                 sx={{
                     width: (props.width !== undefined) ?props.width :calculateMaxWidth(),
                     height: `${getVariantData(props.variant, "height")}px`,
@@ -111,6 +113,7 @@ export function SpinningText(props: SpinningTextProps) {
                             variant={props.variant}
                             sxProps={props.sxProps}
                             color={props.color}
+                            direction={props.direction}
                         />
                     )
                 })}
@@ -127,25 +130,27 @@ interface TextItemProps {
     variant: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "subtitle1" | "subtitle2" | "body1" | "body2",
     sxProps: any,
     color?: "primary" | "secondary",
+    direction?: "up" | "down"
 }
 
 function TextItem(props: TextItemProps){
     let y = useTransform(props.mv, (latest) => {
-        let height = getVariantData(props.variant, "height") // 37 with h5
+        let height = getVariantData(props.variant, "height")
         let placeValue = latest % props.wrapLength
         let offset = (props.wrapLength + props.index - placeValue) % props.wrapLength
 
-        let memo = (offset * height)-4 // -4 to account for upside-down question marks and g-y-etc.
+        let memo = (props.direction === "down") ?((offset * height)+4) :((offset * height)-4) // -4 to account for upside-down question marks and g-y-etc.
 
         if (offset > (props.wrapLength/2)) {
             memo -= props.wrapLength * height
         }
 
-        return memo
+        return((props.direction === "down") ?(-memo) :(memo)) // by default, it spins upwards
     })
 
     return (
         <Grid
+            item={true}
             component={motion.div}
             // @ts-ignore
             style={{ y }}
@@ -171,37 +176,37 @@ const getVariantData = (variant: string, type: "width"|"height") => {
         case "width": {
             switch(variant){
                 case "h1": {
-                    return(55)
+                    return(42)
                 }
                 case "h2": {
-                    return(35)
+                    return(26)
                 }
                 case "h3": {
-                    return(30)
+                    return(22)
                 }
                 case "h4": {
-                    return(20)
+                    return(16)
                 }
                 case "h5": {
-                    return(14)
+                    return(11)
                 }
                 case "h6": {
-                    return(12)
+                    return(10)
                 }
                 case "subtitle1": {
-                    return(10)
+                    return(8)
                 }
                 case "subtitle2": {
-                    return(8)
+                    return(7)
                 }
                 case "body1": {
-                    return(10)
-                }
-                case "body2": {
                     return(8)
                 }
+                case "body2": {
+                    return(7)
+                }
                 default: {
-                    return(20)
+                    return(20) // between h4 and h3
                 }
             }
         }

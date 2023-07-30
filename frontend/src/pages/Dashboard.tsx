@@ -61,7 +61,7 @@ export function Dashboard() {
                             "Sind Sie bereit, heute etwas Neues zu lernen?",
                             "Kas sa oled valmis midagi uut täna õppida?"
                         ]}
-                        variant={'h6'}
+                        variant={'h3'}
                         color={"primary"}
                     />
                 </Grid>
