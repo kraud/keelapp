@@ -4,7 +4,7 @@ import {useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import globalTheme from "../theme/theme";
 import {motion} from "framer-motion";
-import {childVariantsAnimation, routeVariantsAnimation} from "./management/RoutesWithAnimation";
+import {routeVariantsAnimation} from "./management/RoutesWithAnimation";
 import {SpinningText} from "../components/SpinningText";
 
 export function Dashboard() {
@@ -48,12 +48,11 @@ export function Dashboard() {
                 container={true}
                 justifyContent={"center"}
                 sx={{
-                    // border: '1px solid red',
+                    paddingLeft: globalTheme.spacing(2),
                 }}
             >
                 <Grid
                     item={true}
-                    xs={6}
                 >
                     <SpinningText
                         translations={[
@@ -62,29 +61,11 @@ export function Dashboard() {
                             "Sind Sie bereit, heute etwas Neues zu lernen?",
                             "Kas sa oled valmis midagi uut täna õppida?"
                         ]}
-                        // translations={["A", "AB", "ABC", "ABCD"]}
+                        variant={'h6'}
+                        color={"primary"}
                     />
                 </Grid>
             </Grid>
-            {/*<Grid*/}
-            {/*    container={true}*/}
-            {/*    justifyContent={"center"}*/}
-            {/*    item={true}*/}
-            {/*    component={motion.div}*/}
-            {/*    variants={childVariantsAnimation}*/}
-            {/*    initial="initial"*/}
-            {/*    animate="final"*/}
-            {/*>*/}
-            {/*    <Grid*/}
-            {/*        item={true}*/}
-            {/*    >*/}
-            {/*        <Typography*/}
-            {/*            variant={"h6"}*/}
-            {/*        >*/}
-            {/*            Ready to learn something today?*/}
-            {/*        </Typography>*/}
-            {/*    </Grid>*/}
-            {/*</Grid>*/}
         </Grid>
     )
 }

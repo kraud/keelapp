@@ -1,82 +1,147 @@
 import {Grid, Typography} from "@mui/material";
 import {motion, MotionValue, useSpring, useTransform} from "framer-motion";
 import React, {useEffect, useRef, useState} from "react";
+import Tooltip from "@mui/material/Tooltip";
 
 interface SpinningTextProps {
-    translations: string[]
+    translations: string[] //  First item will be the translation displayed on the tooltip
+    variant: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "subtitle1" | "subtitle2" | "body1" | "body2"
+    // TODO: until we can find a solution for no-width divs when position is absolute - we use a calculated value or this optional prop
+    width?: number, // amount in pixels required to display the longest text inside props.translations - overrides the auto-calculated max
+    sxProps?: any,
+    color?: "primary" | "secondary",
 }
 
 export function SpinningText(props: SpinningTextProps) {
-    let [value, setValue] = useState(0)
-    let animatedValue = useSpring(value)
+    const [value, setValue] = useState(0)
+    const reelSpins = 10
+    let animatedValue = useSpring(value, { stiffness: 66, damping: 4 })
+    const spinnerComponentAnimation = {
+        initial: {
+            opacity: 0,
+            y: "80px",
+        },
+        final: {
+            opacity: 1,
+            y: "0px",
+            transition: {
+                duration: 0.45,
+                delay: 0.65,
+            },
+        }
+    }
 
-    let intervalID = useRef(null); //using useRef hook to maintain state changes across rerenders.
+    // Function to calculate the speed of a slot machine reel slowing down
+    function calculateReelSpeed(x: number) {
+        return 1 - (1 - 0.01) * Math.pow(x / 40, 2)
+    }
+
+    // We iterate through an increasing number to trigger the reel rolling animation
+    let intervalID = useRef(null) //using useRef hook to maintain state changes across re-renders
     useEffect(() => {
+        let speedFactor = calculateReelSpeed(value)
 
-        if (value < 10) {
+        if (value < reelSpins) {
             // @ts-ignore
             intervalID.current = setInterval(() => {
-                setValue((value) => value + 1);
-
-            }, 150)
+                setValue((value) => value + 1)
+            }, (125*(1/speedFactor)))
         }
-
         // @ts-ignore
         return () => clearInterval(intervalID.current); //clear previous interval when unmounting.
-    }, [value]);
+    }, [value])
 
     useEffect(() => {
         animatedValue.set(value)
     }, [animatedValue, value])
 
+    // We need to shuffle the array of options, so we don't display the same one every time
+    const [shuffledArray, setShuffledArray] = useState<string[]>([])
+    useEffect(() => {
+        setShuffledArray(
+            props.translations
+            .map((value: string) => ({ value, sort: Math.random() }))
+            .sort((a, b) => a.sort - b.sort)
+            .map(({ value }) => value)
+        )
+    },[])
+
+    const calculateMaxWidth = () => {
+        let longestString: number = 10
+        let fontSize = getVariantData(props.variant, "width") as number
+        (props.translations).forEach((translation: string) => {
+            if(translation.length > longestString){
+                longestString = translation.length
+            }
+        })
+        // multiply string length by size of font to determine the width
+        return(`${longestString * fontSize}px`)
+
+    }
+
 
     return(
-        <Grid
-            item={true}
-            xs
-            sx={{
-                // width: '300px',
-                height: '26px',
-                // border: '3px solid blue',
-                overflow: 'hidden',
-                position: 'relative',
-            }}
+        <Tooltip
+            // to avoid displaying the tooltip when the displayed translation is the first one on the array - already displayed
+            title={(shuffledArray[reelSpins%props.translations.length] !== props.translations[0]) ? props.translations[0] :""}
         >
-            {props.translations.map((translation, index) => {
-                return(
-                    <TextItem
-                        key={index}
-                        mv={animatedValue}
-                        index={index}
-                        text={translation}
-                        wrapLength={props.translations.length}
-                    />
-                )
-            })}
-        </Grid>
+            <Grid
+                container={true}
+                item={true}
+                justifyContent={'center'}
+                sx={{
+                    width: (props.width !== undefined) ?props.width :calculateMaxWidth(),
+                    height: `${getVariantData(props.variant, "height")}px`,
+                    overflow: 'hidden',
+                    position: 'relative',
+                }}
+                component={motion.div}
+                variants={spinnerComponentAnimation}
+                initial="initial"
+                animate="final"
+            >
+                {shuffledArray.map((translation, index) => {
+                    return(
+                        <TextItem
+                            key={index}
+                            mv={animatedValue}
+                            index={index}
+                            text={translation}
+                            wrapLength={props.translations.length}
+                            variant={props.variant}
+                            sxProps={props.sxProps}
+                            color={props.color}
+                        />
+                    )
+                })}
+            </Grid>
+        </Tooltip>
     )
 }
 
 interface TextItemProps {
     mv: MotionValue,
     index: number,
-    text: string
-    wrapLength: number
+    text: string,
+    wrapLength: number,
+    variant: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "subtitle1" | "subtitle2" | "body1" | "body2",
+    sxProps: any,
+    color?: "primary" | "secondary",
 }
 
 function TextItem(props: TextItemProps){
     let y = useTransform(props.mv, (latest) => {
-        let height = 27
+        let height = getVariantData(props.variant, "height") // 37 with h5
         let placeValue = latest % props.wrapLength
         let offset = (props.wrapLength + props.index - placeValue) % props.wrapLength
 
-        let memo = offset * height
+        let memo = (offset * height)-4 // -4 to account for upside-down question marks and g-y-etc.
 
-        if (offset > 2) {
+        if (offset > (props.wrapLength/2)) {
             memo -= props.wrapLength * height
         }
 
-        return memo;
+        return memo
     })
 
     return (
@@ -85,17 +150,99 @@ function TextItem(props: TextItemProps){
             // @ts-ignore
             style={{ y }}
             sx={{
-                // border: '1px solid grey',
                 position: 'absolute',
+                width: 'max-content',
             }}
         >
             <Typography
-                variant={"h6"}
+                variant={(props.variant !== undefined) ? props.variant :'h3'}
+                color={props.color}
+                sx={props.sxProps}
             >
-                {/*Ready to learn something today?*/}
                 {props.text}
             </Typography>
         </Grid>
     )
+
+}
+
+const getVariantData = (variant: string, type: "width"|"height") => {
+    switch(type){
+        case "width": {
+            switch(variant){
+                case "h1": {
+                    return(55)
+                }
+                case "h2": {
+                    return(35)
+                }
+                case "h3": {
+                    return(30)
+                }
+                case "h4": {
+                    return(20)
+                }
+                case "h5": {
+                    return(14)
+                }
+                case "h6": {
+                    return(12)
+                }
+                case "subtitle1": {
+                    return(10)
+                }
+                case "subtitle2": {
+                    return(8)
+                }
+                case "body1": {
+                    return(10)
+                }
+                case "body2": {
+                    return(8)
+                }
+                default: {
+                    return(20)
+                }
+            }
+        }
+        case "height": {
+            switch(variant){
+                case "h1": {
+                    return(115)
+                }
+                case "h2": {
+                    return(72)
+                }
+                case "h3": {
+                    return(58)
+                }
+                case "h4": {
+                    return(41)
+                }
+                case "h5": {
+                    return(29)
+                }
+                case "h6": {
+                    return(24)
+                }
+                case "subtitle1": {
+                    return(19)
+                }
+                case "subtitle2": {
+                    return(17)
+                }
+                case "body1": {
+                    return(19)
+                }
+                case "body2": {
+                    return(17)
+                }
+                default: {
+                    return(41)
+                }
+            }
+        }
+        default: return(30)
+    }
 
 }
