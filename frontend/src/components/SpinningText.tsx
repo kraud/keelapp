@@ -14,6 +14,9 @@ interface SpinningTextProps {
     justifyContent?: 'center' | 'flex-start' | 'flex-end'
 }
 
+// NB! This is intended to be used for titles or short phrases.
+// Component width is calculated on an approximation of average letter width, so it can be inaccurate at times.
+// Can be corrected with the optional "width" prop, if needed.
 export function SpinningText(props: SpinningTextProps) {
     const [value, setValue] = useState(0)
     const reelSpins = 10
@@ -50,7 +53,7 @@ export function SpinningText(props: SpinningTextProps) {
             }, (125*(1/speedFactor)))
         }
         // @ts-ignore
-        return () => clearInterval(intervalID.current); //clear previous interval when unmounting.
+        return () => clearInterval(intervalID.current) //clear previous interval when unmounting.
     }, [value])
 
     useEffect(() => {
@@ -78,7 +81,6 @@ export function SpinningText(props: SpinningTextProps) {
         })
         // multiply string length by size of font to determine the width
         return(`${longestString * fontSize}px`)
-
     }
 
 

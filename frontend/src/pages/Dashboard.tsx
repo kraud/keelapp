@@ -6,8 +6,13 @@ import globalTheme from "../theme/theme";
 import {motion} from "framer-motion";
 import {routeVariantsAnimation} from "./management/RoutesWithAnimation";
 import {SpinningText} from "../components/SpinningText";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import {useTheme} from "@mui/material/styles";
 
 export function Dashboard() {
+    const theme = useTheme()
+    const lessThanSm = useMediaQuery(theme.breakpoints.down("sm"))
+    const smallToMid = useMediaQuery(theme.breakpoints.between("sm", "md"))
     const navigate = useNavigate()
     const {user} = useSelector((state: any) => state.auth)
 
@@ -38,7 +43,13 @@ export function Dashboard() {
                     item={true}
                 >
                     <Typography
-                        variant={"h1"}
+                        sx={{
+                            typography: {
+                                xs: 'h5',
+                                sm: 'h4',
+                                md: 'h1',
+                            },
+                        }}
                     >
                         Welcome, {user?.name}
                     </Typography>
@@ -56,12 +67,18 @@ export function Dashboard() {
                 >
                     <SpinningText
                         translations={[
-                            "Ready to learn something today?",
-                            "¿Listo para aprender algo hoy?",
+                            "Ready to learn something new today?",
+                            "¿Listo para aprender algo nuevo hoy?",
                             "Sind Sie bereit, heute etwas Neues zu lernen?",
                             "Kas sa oled valmis midagi uut täna õppida?"
                         ]}
-                        variant={'h3'}
+                        variant={
+                            (smallToMid)
+                                ? 'h6'
+                                : (lessThanSm)
+                                    ? 'subtitle1'
+                                    :'h4' // lg and up
+                        }
                         color={"primary"}
                     />
                 </Grid>
