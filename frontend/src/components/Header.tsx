@@ -71,7 +71,8 @@ function ResponsiveAppBar() {
         setAnchorElNav(null);
     }
 
-    const handleCloseUserMenu = (option: string) => {
+    // type string when clicking on option and object when clicking off the menu
+    const handleCloseUserMenu = (option: string | object) => {
         switch (option){
             case "Logout": {
                 //@ts-ignore
@@ -85,7 +86,9 @@ function ResponsiveAppBar() {
                 break
             }
             default: {
-                toast.error("Something went wrong, try again.")
+                if(typeof option === 'string'){ // for options no yet implemented
+                    toast.error("Something went wrong, try again.")
+                }
             }
         }
         setAnchorElUser(null)
