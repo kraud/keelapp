@@ -52,69 +52,49 @@ export function TranslationsTable(props: TranslationsTableProps) {
             padding: '0',
 
             "& table": {
-                // fontSize: '0.8em',
-                // borderSpacing: '0',
-                borderCollapse: 'separate',
-                borderSpacing: '0px 20px',
-
+                borderCollapse: 'collapse',
                 fontFamily: 'Roboto',
 
-                // "& th td": {
-                //     margin: '0',
-                //
-                //     "&:last-child": {
-                //         borderRight: '0',
-                //     },
-                //     "&:first-child": {
-                //         padding: '0',
-                //         margin: '0',
-                //         textAlign: 'center',
-                //     },
-                // },
-                // THIS WORKS
                 "& thead": {
-                        "& tr": {
-                    "& th": {
-                        border: "none",
-                    }
+                    "& tr": {
+                        "& th": {
+                            border: "none",
+                        }
                   },
                 },
                 "& tbody": {
                     "& tr": {
                         "& td": {
-                            height: '60px',
-                            minWidth: '250px',
-                            // color: '#5b5b5b',
-                            color: 'black',
-                            borderTop: "1px solid transparent",
-                            borderBottom: "1px solid transparent",
-                            borderRight: "2px solid #f1f1f1",
-                            // borderRight: "none",
-                            borderLeft: "none",
-                            // backgroundImage: 'linear-gradient(180deg, rgba(2, 170, 176, 0.5) 21%, rgba(0, 205, 172, 0.5) 83%)',
-                            backgroundImage: 'linear-gradient(180deg, #4481eb 10%, #04befe 90%)',
-
+                            padding: 0,
+                            "&:nth-of-type(even)": {
+                                "& .tdContainer": {
+                                    background: '#c7c7c7',
+                                },
+                            },
                             "&:first-of-type": { // "first-child caused a warning
-                                borderRight: "2px solid #f1f1f1",
-                                // borderRight: "1px solid transparent",
-                                borderLeft: "1px solid transparent",
-                                borderRadius: '25px 0px 0px 25px',
+                                "& .tdContainer": {
+                                    borderLeft: "2px solid black",
+                                    borderRadius: '25px 0px 0px 25px',
+                                },
                             },
                             "&:last-child": {
-                                borderLeft: "none",
-                                borderRight: "1px solid transparent",
-                                borderRadius: '0px 25px 25px 0px',
+                                "& .tdContainer": {
+                                    borderRight: "2px solid black",
+                                    borderRadius: '0px 25px 25px 0px',
+                                },
+                            },
+                            "& .tdContainer": {
+                                height: '60px',
+                                minWidth: '250px',
+                                color: 'black',
+                                borderTop: "2px solid black",
+                                borderBottom: "2px solid black",
                             },
                         },
                     }
                 },
                 "& th": {
-                    padding: '0.7em 0em 0.7em 0em', // 0 padding on the sides to allow full-width for component inside?
-                    borderBottom: `1px solid black`,
-                    borderRight: '1px solid black',
-                    "&:last-child": {
-                        borderRight: 'none',
-                    },
+                    padding: `${globalTheme.spacing(1)} 0 ${globalTheme.spacing(1)} 0`, // 0 padding on the sides to allow full-width for component inside?
                     "& svg": {
                         marginBottom: '3px',
                     }
@@ -128,11 +108,6 @@ export function TranslationsTable(props: TranslationsTableProps) {
                     height: '40px',
                     maxHeight: '40px',
                     minHeight: '40px',
-                    borderLeft: '1px solid #f1f1f1',
-
-                    "&:last-child": {
-                        borderRight: '1px solid #f1f1f1',
-                    }
                 },
             }
         },
@@ -190,7 +165,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                     :
                                     ""
                             )},
-                            enableColumnFilter: true,
+                            enableColumnFilter: false,
                             sortingFn: (prev, curr, columnId) => {
                                 return sortItemsCaseInsensitive(prev, curr, columnId);
                             },
@@ -215,7 +190,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                     :
                                     ""
                             )},
-                            enableColumnFilter: true,
+                            enableColumnFilter: false,
                             sortingFn: (prev, curr, columnId) => {
                                 return sortItemsCaseInsensitive(prev, curr, columnId);
                             }
@@ -240,7 +215,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                     :
                                     ""
                             )},
-                            enableColumnFilter: true,
+                            enableColumnFilter: false,
                             sortingFn: (prev, curr, columnId) => {
                                 return sortItemsCaseInsensitive(prev, curr, columnId);
                             }
@@ -268,7 +243,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                     :
                                     ""
                             )},
-                            enableColumnFilter: true,
+                            enableColumnFilter: false,
                             sortingFn: (prev, curr, columnId) => {
                                 return sortItemsCaseInsensitive(prev, curr, columnId);
                             },
@@ -293,6 +268,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
                             :
                             ""
                     )},
+                    enableColumnFilter: false,
                 }),
                 ...newlySortedColumns
             ]
@@ -318,7 +294,6 @@ export function TranslationsTable(props: TranslationsTableProps) {
             getSortedRowModel: getSortedRowModel(),
             onColumnFiltersChange: setColumnFiltersState,
         },
-
     )
 
     const [displayGender, setDisplayGender] = useState(true)
@@ -498,15 +473,24 @@ export function TranslationsTable(props: TranslationsTableProps) {
                     {table.getRowModel().rows.map((row, index) => (
                         <tr
                             key={row.id}
-                            style={{
-                                backgroundImage: (index%2 === 1)
-                                    ? 'linear-gradient(180deg, rgba(0, 205, 172, 0.5) 61%, rgba(2, 170, 176, 0.5) 85%)'
-                                    : 'default'
-                            }}
+                            // style={{
+                            //     backgroundImage: (index%2 === 1)
+                            //         ? 'linear-gradient(180deg, rgba(0, 205, 172, 0.5) 61%, rgba(2, 170, 176, 0.5) 85%)'
+                            //         : 'default'
+                            // }}
                         >
                             {row.getVisibleCells().map(cell => (
                                 <td key={cell.id}>
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    <div
+                                        className={"tdContainer"}
+                                        style={{
+                                            marginTop: '5px',
+                                            marginBottom: '5px',
+                                            // background: 'grey',
+                                        }}
+                                    >
+                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    </div>
                                 </td>
                             ))}
                         </tr>

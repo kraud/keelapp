@@ -57,69 +57,90 @@ export function Review(){
             initial="initial"
             animate="final"
             container={true}
+            justifyContent={'center'}
             sx={{
                 marginTop: globalTheme.spacing(4),
             }}
         >
-            {(isLoading) && <LinearIndeterminate/>}
             <Grid
-                container={true}
                 item={true}
+                container={true}
+                justifyContent={'center'}
             >
-                <Typography
-                    variant={'h4'}
-                    sx={{
-                        textDecoration: 'underline'
-                    }}
+                <Grid
+                    container={true}
+                    justifyContent={'center'}
+                    item={true}
                 >
                     {(isLoading)
-                        ? "Fetching word data"
-                        : (wordsSimple.amount >0)
-                            ? `You have saved ${wordsSimple.amount} translations`
-                            : "You haven't saved any words yet."
+                        ?
+                        <Grid
+                            item={true}
+                        >
+                            <Typography
+                                variant={'h4'}
+                                sx={{
+                                    textDecoration: 'underline'
+                                }}
+                            >
+                                Fetching word data
+                            </Typography>
+                        </Grid>
+                        :
+                        <>
+                            <Grid
+                                item={true}
+                                xs={12}
+                            >
+                                <Typography
+                                    variant={'h4'}
+                                    sx={{
+                                        textDecoration: 'underline'
+                                    }}
+                                    align={"center"}
+                                >
+                                    {(wordsSimple.amount > 0)
+                                        ? `You have saved ${wordsSimple.amount} translations`
+                                        : "You haven't saved any words yet."
+                                    }
+                                </Typography>
+                            </Grid>
+                            <Grid
+                                item={true}
+                            >
+                                {(wordsSimple.amount > 0) &&
+                                    <Typography
+                                        variant={'subtitle1'}
+                                        align={"center"}
+                                    >
+                                        Review and edit them from here.
+                                    </Typography>
+                                }
+                            </Grid>
+                        </>
                     }
-
-                </Typography>
+                </Grid>
             </Grid>
+            {(isLoading) && <LinearIndeterminate/>}
             {(wordsSimple.amount >0)  &&
                 <>
-                    <Grid
-                        container={true}
-                        item={true}
-                    >
-                        <Typography
-                            variant={'subtitle1'}
-                        >
-                            Review and edit them from here.
-                        </Typography>
-                    </Grid>
-                    <Grid
-                        container={true}
-                        item={true}
-                        sx={{
-                            marginTop: globalTheme.spacing(4)
-                        }}
-                    >
-                        <Typography
-                            variant={'h6'}
-                            sx={{
-                                textDecoration: 'underline'
-                            }}
-                        >
-                            Sort list by:
-                        </Typography>
-                    </Grid>
                     {/*
                         TODO: refactor later into single table component with DnD language selector included
-                            & add frame, pagination, filters, toggles for extra data, etc.
-                  */}
-                    <DnDLanguageOrderSelector
-                        allSelectedItems={allSelectedLanguages}
-                        setAllSelectedItems={(languages: string[]) => setAllSelectedLanguages(languages)}
-                        otherItems={otherLanguages}
-                        setOtherItems={(languages: string[]) => setOtherLanguages(languages)}
-                        direction={"horizontal"}
-                    />
+                         & add frame, pagination, filters, toggles for extra data, etc.
+                    */}
+                    <Grid
+                        item={true}
+                        container={true}
+                        justifyContent={"center"}
+                    >
+                        <DnDLanguageOrderSelector
+                            allSelectedItems={allSelectedLanguages}
+                            setAllSelectedItems={(languages: string[]) => setAllSelectedLanguages(languages)}
+                            otherItems={otherLanguages}
+                            setOtherItems={(languages: string[]) => setOtherLanguages(languages)}
+                            direction={"horizontal"}
+                        />
+                    </Grid>
                     {/* TABLE */}
                     <TranslationsTable
                         sortedAndSelectedLanguages={allSelectedLanguages}

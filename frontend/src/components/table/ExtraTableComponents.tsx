@@ -1,10 +1,10 @@
-import {Grid, Modal, Typography, Box} from "@mui/material";
+import {Grid, Modal, Typography, Box, Button} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import globalTheme from "../../theme/theme";
 import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
 import {FormSelector} from "../forms/FormSelector";
-import {TranslationItem} from "../../ts/interfaces";
+import {NounItem, TranslationItem} from "../../ts/interfaces";
 import {Lang, PartOfSpeech} from "../../ts/enums";
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
@@ -23,7 +23,7 @@ export function TableHeaderCell(props: TableHeaderCellProps){
                 padding: '10px 25px',
                 margin: '10px',
                 marginBottom: 0,
-                border: "1px solid black",
+                border: "4px solid black",
                 borderRadius: "25px",
                 cursor: 'pointer',
                 ...props.sxProps
@@ -80,6 +80,7 @@ export function TableDataCell(props: TableDataCellProps){
     const [open, setOpen] = useState(false)
     const [selectedWordData, setSelectedWordData] = useState<TranslationItem>()
     const {word, isLoading, isError, message} = useSelector((state: any) => state.words)
+    const [displayOnly, setDisplayOnly] = useState(true)
 
     const openModal = () => {
         // call API for full word data
@@ -105,13 +106,35 @@ export function TableDataCell(props: TableDataCellProps){
         }
     }, [word])
 
+    const appendUpdatedTranslation = (updatedTranslation: TranslationItem) => {
+        return(
+            word.translations.map((translation: TranslationItem) => {
+                if(translation.language === updatedTranslation.language){
+                    return({
+                        language: updatedTranslation.language,
+                        cases: updatedTranslation.cases,
+                    })
+                } else {
+                    return translation
+                }
+            })
+        )
+    }
+
     if(props.content !== undefined){
         return(
             <>
                 <Grid
                     sx={{
-                        paddingX: globalTheme.spacing(4),
+                        paddingX: globalTheme.spacing(3),
                         paddingY: globalTheme.spacing(1),
+                        height: '100%',
+                        marginTop: 'auto',
+                        marginBottom: 'auto',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignContent: 'center',
+                        flexDirection: 'column',
                         ...props.sxProps
                     }}
                     onMouseOver={() => setIsHovering(true)}
@@ -197,13 +220,84 @@ export function TableDataCell(props: TableDataCellProps){
                                     </Grid>
                                 </Grid>
                             : (selectedWordData !== undefined) &&
+                            <Grid
+                                item={true}
+                                container={true}
+                                direction={"column"}
+                            >
+                                <Grid
+                                    item={true}
+                                    container={true}
+                                    justifyContent={"flex-end"}
+                                    spacing={2}
+                                    sx={{
+                                        marginBottom: globalTheme.spacing(2)
+                                    }}
+                                >
+                                    <Grid
+                                        item={true}
+                                    >
+                                        <Button
+                                            variant={"outlined"}
+                                            color={"warning"}
+                                            onClick={() => {
+                                                // check if at least 2 more translations are saved
+                                                // deleteById
+                                                // closeModal
+                                            }}
+                                        >
+                                            Delete
+                                        </Button>
+                                    </Grid>
+                                    <Grid
+                                        item={true}
+                                    >
+                                        <Button
+                                            variant={"outlined"}
+                                            color={"secondary"}
+                                            onClick={() => {
+                                                if(displayOnly){
+                                                    setDisplayOnly(false)
+                                                } else {
+                                                    // append changes to full word translation
+                                                    console.log("updated data full")
+                                                    console.log({
+                                                        ...word,
+                                                        translations: appendUpdatedTranslation(selectedWordData)
+                                                    })
+                                                    // save translation
+                                                    // toast if save successful
+                                                    setDisplayOnly(true)
+                                                }
+                                            }}
+                                        >
+                                            {(displayOnly)
+                                                ? "Edit"
+                                                : "Save changes"
+                                            }
+                                        </Button>
+                                    </Grid>
+                                </Grid>
                                 <FormSelector
                                     currentLang={props.language!}
                                     currentTranslationData={selectedWordData!}
                                     partOfSpeech={PartOfSpeech.noun}
-                                    updateFormData={() => null}
-                                    displayOnly={true}
+                                    updateFormData={(formData: {
+                                        language: Lang,
+                                        cases?: NounItem[],
+                                        completionState?: boolean
+                                    }) => {
+                                        if(!displayOnly){
+                                            setSelectedWordData({
+                                                language: formData.language,
+                                                cases: (formData.cases!) ?formData.cases :[],
+                                                completionState: formData.completionState,
+                                            })
+                                        }
+                                    }}
+                                    displayOnly={displayOnly}
                                 />
+                            </Grid>
                         }
                     </Box>
                 </Modal>
