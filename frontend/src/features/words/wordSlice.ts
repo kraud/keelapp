@@ -1,6 +1,6 @@
-import {createSlice, createAsyncThunk} from "@reduxjs/toolkit"
+import {createSlice, createAsyncThunk, PayloadAction} from "@reduxjs/toolkit"
 import wordService from "./wordService"
-import {WordData} from "../../ts/interfaces";
+import {WordData, WordDataBE} from "../../ts/interfaces";
 
 interface worldSliceState {
     words: WordData[],
@@ -90,6 +90,40 @@ export const getWordById = createAsyncThunk(`words/getWordById`, async (wordId: 
         return thunkAPI.rejectWithValue(message)
     }
 })
+// Update a word data by its id
+export const updateWordById = createAsyncThunk(`words/updateWordById`, async (updatedData: WordDataBE, thunkAPI) => {
+    try {
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await wordService.updateWordById(token, updatedData)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+// Delete a word data by its id
+export const deleteWordById = createAsyncThunk(`words/updateWordById`, async (wordId: string, thunkAPI) => {
+    try {
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await wordService.deleteWordById(token, wordId)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
 
 export const wordSlice = createSlice({
     name: 'word',
@@ -148,6 +182,20 @@ export const wordSlice = createSlice({
                 state.word = (action.payload)
             })
             .addCase(getWordById.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload as string
+            })
+            .addCase(updateWordById.pending, (state) => {
+                state.isLoading = true
+            })
+            // TODO: instead of '| any', it should be WordData, with all the possible fields coming from the backend - dates, ids, etc.
+            .addCase(updateWordById.fulfilled, (state, action: PayloadAction<{} | any>) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.word = (action.payload)
+            })
+            .addCase(updateWordById.rejected, (state, action) => {
                 state.isLoading = false
                 state.isError = true
                 state.message = action.payload as string

@@ -5,6 +5,12 @@ export interface WordData {
     partOfSpeech?: string,
     clue?: string,
 }
+export interface WordDataBE {
+    id: string,
+    translations: TranslationItem[],
+    partOfSpeech?: string,
+    clue?: string,
+}
 export interface TranslationItem {
     language: Lang,
     cases: NounItem[]

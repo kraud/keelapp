@@ -1,5 +1,5 @@
 import axios from "axios";
-import {WordData} from "../../ts/interfaces";
+import {WordData, WordDataBE} from "../../ts/interfaces";
 
 const API_URL = '/api/words/'
 
@@ -43,9 +43,29 @@ const getWordById = async (token: any, id: string) => {
     return(response.data)
 }
 
+const deleteWordById = async (token: any, id: string) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+    const response = await axios.delete(`${API_URL}/${id}`, config)
+    return(response.data)
+}
+
+const updateWordById = async (token: any, updatedData: WordDataBE) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+    const response = await axios.put(`${API_URL}/${updatedData.id}`, updatedData, config)
+    return(response.data)
+}
+
 
 const wordService = {
-    createWord, getWords, getWordsSimplified, getWordById
+    createWord, getWords, getWordsSimplified, getWordById, updateWordById, deleteWordById
 }
 
 export default wordService

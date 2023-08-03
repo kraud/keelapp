@@ -8,7 +8,7 @@ import {NounItem, TranslationItem} from "../../ts/interfaces";
 import {Lang, PartOfSpeech} from "../../ts/enums";
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
-import {getWordById} from "../../features/words/wordSlice";
+import {deleteWordById, getWordById, updateWordById} from "../../features/words/wordSlice";
 import LinearIndeterminate from "../Spinner";
 
 interface TableHeaderCellProps {
@@ -81,6 +81,8 @@ export function TableDataCell(props: TableDataCellProps){
     const [selectedWordData, setSelectedWordData] = useState<TranslationItem>()
     const {word, isLoading, isError, message} = useSelector((state: any) => state.words)
     const [displayOnly, setDisplayOnly] = useState(true)
+    const [finishedUpdating, setFinishedUpdating] = useState(true)
+    const [finishedDeleting, setFinishedDeleting] = useState(true)
 
     const openModal = () => {
         // call API for full word data
@@ -98,6 +100,32 @@ export function TableDataCell(props: TableDataCellProps){
             })
         }
     }, [isError, message])
+
+    useEffect(() => {
+        // isLoading switches back to false once the response from backend is set on redux
+        // finishedUpdating will only be false while waiting for a response from backend
+        if(!finishedUpdating && !isLoading){
+            toast.success(`Word was updated successfully`, {
+                toastId: "click-on-modal"
+            })
+            // we reverse to the original state, before sending data to update
+            setFinishedUpdating(true)
+        }
+    }, [isLoading, finishedUpdating])
+
+    useEffect(() => {
+        // isLoading switches back to false once the response from backend is set on redux
+        // finishedDeleting will only be false while waiting for a response from backend
+        if(!finishedDeleting && !isLoading){
+            // closeModal
+            toast.success(`Translation was deleted successfully`, {
+                toastId: "click-on-modal"
+            })
+            // we reverse to the original state, before sending data to update
+            setFinishedDeleting(true)
+            setOpen(false)
+        }
+    }, [isLoading, finishedDeleting])
 
     // set data on variable to feed the form displayed inside modal
     useEffect(() => {
@@ -119,6 +147,15 @@ export function TableDataCell(props: TableDataCellProps){
                 }
             })
         )
+    }
+    const deleteCurrentTranslationFromWordData = (currentLanguage: Lang) => {
+        let updatedTranslations: TranslationItem[] = []
+        word.translations.forEach((translation: TranslationItem) => {
+            if(translation.language !== currentLanguage){
+                updatedTranslations.push(translation)
+            }
+        })
+        return(updatedTranslations)
     }
 
     if(props.content !== undefined){
@@ -242,9 +279,26 @@ export function TableDataCell(props: TableDataCellProps){
                                             color={"warning"}
                                             onClick={() => {
                                                 // check if at least 2 more translations are saved
-                                                // deleteById
-                                                // closeModal
+                                                if(word.translations.length > 2){
+                                                    // deleteById
+                                                    //@ts-ignore
+                                                    // dispatch(deleteWordById(props.wordId)) // deletes whole word => TODO: add as button on table?
+
+                                                    // delete all data for this language on this word
+                                                    // TODO: check if it's ok to send whole 'word' data (dates, user ids, etc.)
+                                                    const updatedWordData = {
+                                                        id: props.wordId,
+                                                        clue: word.clue,
+                                                        partOfSpeech: word.partOfSpeech,
+                                                        translations: deleteCurrentTranslationFromWordData(props.language!)
+                                                    }
+                                                    // save changes to translation
+                                                    //@ts-ignore
+                                                    dispatch(updateWordById(updatedWordData))
+                                                    setFinishedDeleting(false)
+                                                }
                                             }}
+                                            disabled={word.translations.length < 3}
                                         >
                                             Delete
                                         </Button>
@@ -260,14 +314,17 @@ export function TableDataCell(props: TableDataCellProps){
                                                     setDisplayOnly(false)
                                                 } else {
                                                     // append changes to full word translation
-                                                    console.log("updated data full")
-                                                    console.log({
-                                                        ...word,
+                                                    // TODO: check if it's ok to send whole 'word' data (dates, user ids, etc.)
+                                                    const updatedWordData = {
+                                                        id: props.wordId,
+                                                        clue: word.clue,
+                                                        partOfSpeech: word.partOfSpeech,
                                                         translations: appendUpdatedTranslation(selectedWordData)
-                                                    })
-                                                    // save translation
-                                                    // toast if save successful
-                                                    setDisplayOnly(true)
+                                                    }
+                                                    // save changes to translation
+                                                    //@ts-ignore
+                                                    dispatch(updateWordById(updatedWordData))
+                                                    setFinishedUpdating(false)
                                                 }
                                             }}
                                         >
