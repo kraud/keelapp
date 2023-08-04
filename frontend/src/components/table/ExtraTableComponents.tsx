@@ -1,5 +1,5 @@
 import {Grid, Modal, Typography, Box, Button} from "@mui/material";
-import React, {useEffect, useState} from "react";
+import React, {HTMLProps, useEffect, useState} from "react";
 import globalTheme from "../../theme/theme";
 import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
@@ -364,4 +364,27 @@ export function TableDataCell(props: TableDataCellProps){
     } else {
         return(<></>)
     }
+}
+
+export function IndeterminateCheckbox({
+   indeterminate,
+   className = '',
+   ...rest
+}: { indeterminate?: boolean } & HTMLProps<HTMLInputElement>) {
+    const ref = React.useRef<HTMLInputElement>(null!)
+
+    React.useEffect(() => {
+        if (typeof indeterminate === 'boolean') {
+            ref.current.indeterminate = !rest.checked && indeterminate
+        }
+    }, [ref, indeterminate])
+
+    return (
+        <input
+            type="checkbox"
+            ref={ref}
+            className={className + ' cursor-pointer'}
+            {...rest}
+        />
+    )
 }

@@ -12,12 +12,14 @@ import React, {useCallback, useEffect, useState} from "react";
 import {Lang, PartOfSpeech} from "../../ts/enums";
 import {Button, Grid, Switch} from "@mui/material";
 import globalTheme from "../../theme/theme";
-import {TableDataCell, TableHeaderCell} from "./ExtraTableComponents";
+import {IndeterminateCheckbox, TableDataCell, TableHeaderCell} from "./ExtraTableComponents";
 import {toast} from "react-toastify";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import ReactDOM from 'react-dom/client';
 import {DebouncedTextField} from "./DebouncedTextField";
 import {SortDirection} from "@tanstack/table-core/build/lib/features/Sorting";
+import {useDispatch, useSelector} from "react-redux";
+import {deleteWordById} from "../../features/words/wordSlice";
 
 type TableWordData = {
     id: string,
@@ -114,6 +116,9 @@ export function TranslationsTable(props: TranslationsTableProps) {
     }
     const [data, setData] = useState<TableWordData[]>(() => [])
     const [globalFilter, setGlobalFilter] = useState("")
+    const [rowSelection, setRowSelection] = React.useState({})
+    const dispatch = useDispatch()
+    const {isLoading, isError, message} = useSelector((state: any) => state.words)
 
     // default sort function is case-sensitive, so we need to implement a new one
     const sortItemsCaseInsensitive = (prev: Row<any>, curr: Row<any>, columnId: string) => {
@@ -138,7 +143,6 @@ export function TranslationsTable(props: TranslationsTableProps) {
     }, [props.data])
 
     const newColumnHelper = createColumnHelper<TableWordData>()
-
 
     const [columns, setColumns] = useState<any[]>([])
     // As the order of selected languages changes, so should the order they are displayed on the table
@@ -254,6 +258,41 @@ export function TranslationsTable(props: TranslationsTableProps) {
         })
         return (
             [
+                {
+                    id: 'select',
+                    // @ts-ignore
+                    header: ({ table }) => (
+                        <IndeterminateCheckbox
+                            {...{
+                                checked: table.getIsAllRowsSelected(),
+                                indeterminate: table.getIsSomeRowsSelected(),
+                                onChange: table.getToggleAllRowsSelectedHandler(),
+                            }}
+                        />
+                    ),
+                    // @ts-ignore
+                    cell: ({ row }) => (
+                        <div className="px-1">
+                            ?
+                            <TableDataCell
+                                content={
+                                    <IndeterminateCheckbox
+                                        {...{
+                                            checked: row.getIsSelected(),
+                                            disabled: !row.getCanSelect(),
+                                            indeterminate: row.getIsSomeSelected(),
+                                            onChange: row.getToggleSelectedHandler(),
+                                        }}
+                                    />
+                                }
+                                type={"other"}
+                                textAlign={"center"}
+                                onlyForDisplay={true}
+                            />
+
+                        </div>
+                    ),
+                },
                 newColumnHelper.accessor('partOfSpeech', {
                     header: () => <TableHeaderCell content={"Type"} sxProps={{cursor: 'default'}}/>,
                     cell: (info) => {return(
@@ -285,7 +324,8 @@ export function TranslationsTable(props: TranslationsTableProps) {
             state: {
                 globalFilter: globalFilter,
                 columnFilters: columnFiltersState,
-                sorting: sorting
+                sorting: sorting,
+                rowSelection: rowSelection,
             },
             getCoreRowModel: getCoreRowModel(),
             getFilteredRowModel: getFilteredRowModel(),
@@ -293,6 +333,8 @@ export function TranslationsTable(props: TranslationsTableProps) {
             onSortingChange: setSorting,
             getSortedRowModel: getSortedRowModel(),
             onColumnFiltersChange: setColumnFiltersState,
+            enableRowSelection: true, //enable row selection for all rows
+            onRowSelectionChange: setRowSelection,
         },
     )
 
@@ -357,6 +399,38 @@ export function TranslationsTable(props: TranslationsTableProps) {
             element.remove()
         }
     }
+    const [finishedDeleting, setFinishedDeleting] = useState(true)
+
+    const deleteSelectedRows = () => {
+        Object.entries(rowSelection).forEach(selectionData => {
+            const index: number = parseInt(selectionData[0])
+            const rowData = data[index]
+            //@ts-ignore
+            dispatch(deleteWordById(rowData.id)) // deletes whole word
+            setFinishedDeleting(false)
+        })
+    }
+
+    useEffect(() => {
+        // isLoading switches back to false once the response from backend is set on redux
+        // finishedDeleting will only be false while waiting for a response from backend
+        if(!finishedDeleting && !isLoading){
+            // closeModal
+            toast.success(`Word was deleted successfully`, {
+                toastId: "click-on-modal"
+            })
+            // we reverse to the original state, before sending data to update
+            setFinishedDeleting(true)
+        }
+    }, [isLoading, finishedDeleting])
+
+    useEffect(() => {
+        if(isError){
+            toast.error(`Something went wrong: ${message}`, {
+                toastId: "click-on-modal"
+            })
+        }
+    }, [isError, message])
 
     return(
         <Grid
@@ -379,6 +453,18 @@ export function TranslationsTable(props: TranslationsTableProps) {
                 justifyContent={"flex-end"}
                 spacing={2}
             >
+                {(rowSelection !== {}) &&
+                <Grid
+                    item={true}
+                >
+                    <Button
+                        variant={"outlined"}
+                        onClick={() => deleteSelectedRows()}
+                    >
+                        Delete selected
+                    </Button>
+                </Grid>
+                }
                 <Grid
                     item={true}
                 >
