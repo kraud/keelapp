@@ -1,4 +1,4 @@
-import {Grid, Modal, Typography, Box, Button} from "@mui/material";
+import {Grid, Modal, Typography, Box, Button, Checkbox} from "@mui/material";
 import React, {HTMLProps, useEffect, useState} from "react";
 import globalTheme from "../../theme/theme";
 import {SxProps} from "@mui/system";
@@ -8,7 +8,7 @@ import {NounItem, TranslationItem} from "../../ts/interfaces";
 import {Lang, PartOfSpeech} from "../../ts/enums";
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
-import {deleteWordById, getWordById, updateWordById} from "../../features/words/wordSlice";
+import {deleteWordById, getWordById, getWordsSimplified, updateWordById} from "../../features/words/wordSlice";
 import LinearIndeterminate from "../Spinner";
 
 interface TableHeaderCellProps {
@@ -23,6 +23,7 @@ export function TableHeaderCell(props: TableHeaderCellProps){
                 padding: '10px 25px',
                 margin: '10px',
                 marginBottom: 0,
+                marginTop: 0,
                 border: "4px solid black",
                 borderRadius: "25px",
                 cursor: 'pointer',
@@ -51,7 +52,7 @@ interface TableDataCellProps {
     displayAmount?: boolean
     onlyDisplayAmountOnHover?: boolean
 
-    onlyForDisplay?: boolean
+    onlyForDisplay?: boolean // Will not change the cursor to pointer and if it's text, it won't be clickable.
 
     wordId?: string,
     language?: Lang,
@@ -110,6 +111,8 @@ export function TableDataCell(props: TableDataCellProps){
             })
             // we reverse to the original state, before sending data to update
             setFinishedUpdating(true)
+            //@ts-ignore
+            dispatch(getWordsSimplified()) // to update the list of words displayed on the table
         }
     }, [isLoading, finishedUpdating])
 
@@ -124,6 +127,8 @@ export function TableDataCell(props: TableDataCellProps){
             // we reverse to the original state, before sending data to update
             setFinishedDeleting(true)
             setOpen(false)
+            //@ts-ignore
+            dispatch(getWordsSimplified()) // to update the list of words displayed on the table
         }
     }, [isLoading, finishedDeleting])
 
@@ -368,7 +373,6 @@ export function TableDataCell(props: TableDataCellProps){
 
 export function IndeterminateCheckbox({
    indeterminate,
-   className = '',
    ...rest
 }: { indeterminate?: boolean } & HTMLProps<HTMLInputElement>) {
     const ref = React.useRef<HTMLInputElement>(null!)
@@ -380,10 +384,10 @@ export function IndeterminateCheckbox({
     }, [ref, indeterminate])
 
     return (
-        <input
-            type="checkbox"
-            ref={ref}
-            className={className + ' cursor-pointer'}
+        <Checkbox
+            // @ts-ignore
+            color={"secondary"}
+            inputRef={ref}
             {...rest}
         />
     )

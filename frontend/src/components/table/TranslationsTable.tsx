@@ -19,7 +19,7 @@ import ReactDOM from 'react-dom/client';
 import {DebouncedTextField} from "./DebouncedTextField";
 import {SortDirection} from "@tanstack/table-core/build/lib/features/Sorting";
 import {useDispatch, useSelector} from "react-redux";
-import {deleteWordById} from "../../features/words/wordSlice";
+import {deleteWordById, getWordsSimplified} from "../../features/words/wordSlice";
 
 type TableWordData = {
     id: string,
@@ -87,7 +87,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
                             },
                             "& .tdContainer": {
                                 height: '60px',
-                                minWidth: '250px',
+                                minWidth: 'max-content',
                                 color: 'black',
                                 borderTop: "2px solid black",
                                 borderBottom: "2px solid black",
@@ -97,9 +97,6 @@ export function TranslationsTable(props: TranslationsTableProps) {
                 },
                 "& th": {
                     padding: `${globalTheme.spacing(1)} 0 ${globalTheme.spacing(1)} 0`, // 0 padding on the sides to allow full-width for component inside?
-                    "& svg": {
-                        marginBottom: '3px',
-                    }
                 },
                 "& td": {
                     fontSize: globalTheme.typography.fontSize,
@@ -140,7 +137,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
 
     useEffect(() => {
         setData(props.data)
-    }, [props.data])
+    }, [props.data, isLoading])
 
     const newColumnHelper = createColumnHelper<TableWordData>()
 
@@ -165,6 +162,9 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                         amount={info.row.original.registeredCasesDE}
                                         onlyDisplayAmountOnHover={true}
                                         type={"text"}
+                                        sxProps={{
+                                            width: '200px',
+                                        }}
                                     />
                                     :
                                     ""
@@ -190,6 +190,9 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                         amount={info.row.original.registeredCasesEE}
                                         onlyDisplayAmountOnHover={true}
                                         type={"text"}
+                                        sxProps={{
+                                            width: '200px',
+                                        }}
                                     />
                                     :
                                     ""
@@ -215,6 +218,9 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                         amount={info.row.original.registeredCasesEN}
                                         onlyDisplayAmountOnHover={true}
                                         type={"text"}
+                                        sxProps={{
+                                            width: '200px',
+                                        }}
                                     />
                                     :
                                     ""
@@ -242,6 +248,9 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                         amount={info.row.original.registeredCasesES}
                                         onlyDisplayAmountOnHover={true}
                                         type={"text"}
+                                        sxProps={{
+                                            width: '200px',
+                                        }}
 
                                     />
                                     :
@@ -262,35 +271,38 @@ export function TranslationsTable(props: TranslationsTableProps) {
                     id: 'select',
                     // @ts-ignore
                     header: ({ table }) => (
-                        <IndeterminateCheckbox
-                            {...{
-                                checked: table.getIsAllRowsSelected(),
-                                indeterminate: table.getIsSomeRowsSelected(),
-                                onChange: table.getToggleAllRowsSelectedHandler(),
-                            }}
+                        <TableDataCell
+                            content={
+                                <IndeterminateCheckbox
+                                    {...{
+                                        checked: table.getIsAllRowsSelected(),
+                                        indeterminate: table.getIsSomeRowsSelected(),
+                                        onChange: table.getToggleAllRowsSelectedHandler(),
+                                    }}
+                                />
+                            }
+                            type={"other"}
+                            textAlign={"center"}
+                            onlyForDisplay={true}
                         />
                     ),
                     // @ts-ignore
                     cell: ({ row }) => (
-                        <div className="px-1">
-                            ?
-                            <TableDataCell
-                                content={
-                                    <IndeterminateCheckbox
-                                        {...{
-                                            checked: row.getIsSelected(),
-                                            disabled: !row.getCanSelect(),
-                                            indeterminate: row.getIsSomeSelected(),
-                                            onChange: row.getToggleSelectedHandler(),
-                                        }}
-                                    />
-                                }
-                                type={"other"}
-                                textAlign={"center"}
-                                onlyForDisplay={true}
-                            />
-
-                        </div>
+                        <TableDataCell
+                            content={
+                                <IndeterminateCheckbox
+                                    {...{
+                                        checked: row.getIsSelected(),
+                                        disabled: !row.getCanSelect(),
+                                        indeterminate: row.getIsSomeSelected(),
+                                        onChange: row.getToggleSelectedHandler(),
+                                    }}
+                                />
+                            }
+                            type={"other"}
+                            textAlign={"center"}
+                            onlyForDisplay={true}
+                        />
                     ),
                 },
                 newColumnHelper.accessor('partOfSpeech', {
@@ -402,9 +414,10 @@ export function TranslationsTable(props: TranslationsTableProps) {
     const [finishedDeleting, setFinishedDeleting] = useState(true)
 
     const deleteSelectedRows = () => {
-        Object.entries(rowSelection).forEach(selectionData => {
-            const index: number = parseInt(selectionData[0])
-            const rowData = data[index]
+        // rowSelection format:
+        // { selectedRowIndex: true } // TODO: should we change it to saving the row info instead?
+        Object.keys(rowSelection).forEach((selectionDataIndex: string) => {
+            const rowData = data[parseInt(selectionDataIndex)]
             //@ts-ignore
             dispatch(deleteWordById(rowData.id)) // deletes whole word
             setFinishedDeleting(false)
@@ -421,6 +434,8 @@ export function TranslationsTable(props: TranslationsTableProps) {
             })
             // we reverse to the original state, before sending data to update
             setFinishedDeleting(true)
+            //@ts-ignore
+            dispatch(getWordsSimplified()) // to update the list of words displayed on the table
         }
     }, [isLoading, finishedDeleting])
 
@@ -453,7 +468,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
                 justifyContent={"flex-end"}
                 spacing={2}
             >
-                {(rowSelection !== {}) &&
+                {(Object.keys(rowSelection).length > 0) &&
                 <Grid
                     item={true}
                 >
@@ -544,6 +559,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
 
                                         : null
                                     }
+                                    {/* Testing filter - delete later */}
                                     {header.column.getCanFilter() ? (
                                         <DebouncedTextField
                                             value={(header.column.getFilterValue() ?? '') as string}
@@ -559,11 +575,6 @@ export function TranslationsTable(props: TranslationsTableProps) {
                     {table.getRowModel().rows.map((row, index) => (
                         <tr
                             key={row.id}
-                            // style={{
-                            //     backgroundImage: (index%2 === 1)
-                            //         ? 'linear-gradient(180deg, rgba(0, 205, 172, 0.5) 61%, rgba(2, 170, 176, 0.5) 85%)'
-                            //         : 'default'
-                            // }}
                         >
                             {row.getVisibleCells().map(cell => (
                                 <td key={cell.id}>
@@ -572,7 +583,9 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                         style={{
                                             marginTop: '5px',
                                             marginBottom: '5px',
-                                            // background: 'grey',
+                                            boxShadow: row.getIsSelected()
+                                                ? 'inset 0 0 0 1000px rgba(0,114,206,.25)'
+                                                : undefined,
                                         }}
                                     >
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
