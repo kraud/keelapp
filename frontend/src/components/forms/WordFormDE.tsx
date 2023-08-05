@@ -4,20 +4,14 @@ import {yupResolver} from "@hookform/resolvers/yup/dist/yup";
 import {Grid} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {TextInputFormWithHook} from "../TextInputFormHook";
-import {SelectFormWithHook} from "../SelectFormHook";
 import {NounItem, TranslationItem} from "../../ts/interfaces";
-import {GenderDE, NounCases} from "../../ts/enums";
+import {GenderDE, Lang, NounCases} from "../../ts/enums";
 import {getDisabledInputFieldDisplayLogic, getWordByCase} from "./commonFunctions";
 import {RadioGroupWithHook} from "../RadioGroupFormHook";
 
 interface WordFormDEProps {
     currentTranslationData: TranslationItem,
-    updateFormData: (
-        formData: {
-            cases?: NounItem[],
-            completionState?: boolean
-        }
-    ) => void
+    updateFormData: (formData: TranslationItem) => void
     displayOnly?: boolean
 }
 // Displays the fields required to add the german translation of a word (and handles the validations)
@@ -48,7 +42,7 @@ export function WordFormDE(props: WordFormDEProps) {
     })
 
     const {
-        control, formState: { errors, isValid }, setValue
+        control, formState: { errors, isValid, isDirty }, setValue
     } = useForm<
         {
             gender: string,
@@ -118,8 +112,10 @@ export function WordFormDE(props: WordFormDEProps) {
             }
         ]
         props.updateFormData({
+            language: Lang.DE,
             cases: currentCases,
-            completionState: isValid
+            completionState: isValid,
+            isDirty: isDirty
         })
     }, [
         genderWord, singularNominativ, pluralNominativ, singularAkkusativ, pluralAkkusativ, singularGenitiv,

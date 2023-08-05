@@ -6,18 +6,13 @@ import React, {useEffect, useState} from "react";
 import {TextInputFormWithHook} from "../TextInputFormHook";
 import {SelectFormWithHook} from "../SelectFormHook";
 import {NounItem, TranslationItem} from "../../ts/interfaces";
-import {NounCases} from "../../ts/enums";
+import {Lang, NounCases} from "../../ts/enums";
 import {getDisabledInputFieldDisplayLogic, getWordByCase} from "./commonFunctions";
 import {RadioGroupWithHook} from "../RadioGroupFormHook";
 
 interface WordFormESProps {
     currentTranslationData: TranslationItem,
-    updateFormData: (
-        formData: {
-            cases?: NounItem[],
-            completionState?: boolean
-        }
-    ) => void
+    updateFormData: (formData: TranslationItem) => void
     displayOnly?: boolean
 }
 // Displays the fields required to add the spanish translation of a word (and handles the validations)
@@ -36,7 +31,7 @@ export function WordFormES(props: WordFormESProps) {
     })
 
     const {
-        control, formState: { errors, isValid }, setValue
+        control, formState: { errors, isValid, isDirty }, setValue
     } = useForm<
         {
             singular: string,
@@ -68,8 +63,10 @@ export function WordFormES(props: WordFormESProps) {
             }
         ]
         props.updateFormData({
+            language: Lang.ES,
             cases: currentCases,
-            completionState: isValid
+            completionState: isValid,
+            isDirty: isDirty
         })
     }, [singularWord, pluralWord, genderWord, isValid])
 

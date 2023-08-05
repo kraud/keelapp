@@ -10,11 +10,7 @@ interface FormSelectorProps {
     currentLang?: Lang,
     currentTranslationData: TranslationItem,
     partOfSpeech?: PartOfSpeech,
-    updateFormData: (formData: {
-        language: Lang,
-        cases?: NounItem[],
-        completionState?: boolean
-    }) => void
+    updateFormData: (formData: TranslationItem) => void
     displayOnly?: boolean
 }
 
@@ -39,15 +35,8 @@ export function FormSelector(props: FormSelectorProps) {
                 return(
                     <WordFormEN
                         currentTranslationData={props.currentTranslationData}
-                        updateFormData={(formData: {
-                            cases?: NounItem[],
-                            completionState?: boolean
-                        }) => {
-                            props.updateFormData({
-                                language: Lang.EN,
-                                cases: formData.cases,
-                                completionState: formData.completionState
-                            })
+                        updateFormData={(formData: TranslationItem) => {
+                            props.updateFormData(formData)
                         }}
                         displayOnly={props.displayOnly}
                     />
@@ -57,15 +46,8 @@ export function FormSelector(props: FormSelectorProps) {
                 return(
                     <WordFormES
                         currentTranslationData={props.currentTranslationData}
-                        updateFormData={(formData: {
-                            cases?: NounItem[],
-                            completionState?: boolean
-                        }) => {
-                            props.updateFormData({
-                                language: Lang.ES,
-                                cases: formData.cases,
-                                completionState: formData.completionState
-                            })
+                        updateFormData={(formData: TranslationItem) => {
+                            props.updateFormData(formData)
                         }}
                         displayOnly={props.displayOnly}
                     />
@@ -75,15 +57,8 @@ export function FormSelector(props: FormSelectorProps) {
                 return(
                     <WordFormDE
                         currentTranslationData={props.currentTranslationData}
-                        updateFormData={(formData: {
-                            cases?: NounItem[],
-                            completionState?: boolean
-                        }) => {
-                            props.updateFormData({
-                                language: Lang.DE,
-                                cases: formData.cases,
-                                completionState: formData.completionState
-                            })
+                        updateFormData={(formData: TranslationItem) => {
+                            props.updateFormData(formData)
                         }}
                         displayOnly={props.displayOnly}
                     />
@@ -93,15 +68,8 @@ export function FormSelector(props: FormSelectorProps) {
                 return(
                     <WordFormEE
                         currentTranslationData={props.currentTranslationData}
-                        updateFormData={(formData: {
-                            cases?: NounItem[],
-                            completionState?: boolean
-                        }) => {
-                            props.updateFormData({
-                                language: Lang.EE,
-                                cases: formData.cases,
-                                completionState: formData.completionState
-                            })
+                        updateFormData={(formData: TranslationItem) => {
+                            props.updateFormData(formData)
                         }}
                         displayOnly={props.displayOnly}
                     />

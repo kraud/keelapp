@@ -18,11 +18,7 @@ interface WordFormGenericProps {
         willUpdateLanguage: boolean // true when selecting switching between languages - false when removing form from screen
     ) => void // when changing the language we inform parent component that previous one is now available
     updateFormData: (
-        formData: {
-            language: Lang,
-            cases?: NounItem[],
-            completionState?: boolean
-        },
+        formData: TranslationItem,
         index: number
     ) => void
 }
@@ -199,18 +195,12 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                         currentLang={currentLang}
                         currentTranslationData={props.currentTranslationData}
                         partOfSpeech={props.partOfSpeech}
-                        updateFormData={(formData: {
-                            language: Lang,
-                            cases?: NounItem[],
-                            completionState?: boolean
-                        }) => {
+                        updateFormData={(formData: TranslationItem) => {
                             props.updateFormData(
                                 {
                                     ...formData,
-                                    cases: (formData.cases!)
-                                        // To avoid saving empty cases,
-                                        ? formData.cases.filter((nounCase) => (nounCase.word !== ""))
-                                        : formData.cases
+                                    // To avoid saving empty cases,
+                                    cases: formData.cases.filter((nounCase) => (nounCase.word !== "")),
                                 },
                                 props.index
                             )

@@ -5,17 +5,12 @@ import {Grid} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {TextInputFormWithHook} from "../TextInputFormHook";
 import {NounItem, TranslationItem} from "../../ts/interfaces";
-import {NounCases} from "../../ts/enums";
+import {Lang, NounCases} from "../../ts/enums";
 import {getDisabledInputFieldDisplayLogic, getWordByCase} from "./commonFunctions";
 
 interface WordFormENProps {
     currentTranslationData: TranslationItem,
-    updateFormData: (
-        formData: {
-            cases?: NounItem[],
-            completionState?: boolean
-        }
-    ) => void
+    updateFormData: (formData: TranslationItem) => void
     displayOnly?: boolean
 }
 // Displays the fields required to add the english translation of a word (and handles the validations)
@@ -32,7 +27,7 @@ export function WordFormEN(props: WordFormENProps) {
     })
 
     const {
-        control, formState: { errors, isValid }, setValue
+        control, formState: { errors, isValid, isDirty }, setValue
     } = useForm<
         {
             singular: string,
@@ -58,8 +53,10 @@ export function WordFormEN(props: WordFormENProps) {
             }
         ]
         props.updateFormData({
+            language: Lang.EN,
             cases: currentCases,
-            completionState: isValid
+            completionState: isValid,
+            isDirty: isDirty
         })
     }, [singularWord, pluralWord, isValid])
 

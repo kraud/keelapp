@@ -5,17 +5,12 @@ import {Grid} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {TextInputFormWithHook} from "../TextInputFormHook";
 import {NounItem, TranslationItem} from "../../ts/interfaces";
-import {NounCases} from "../../ts/enums";
+import {Lang, NounCases} from "../../ts/enums";
 import {getDisabledInputFieldDisplayLogic, getWordByCase} from "./commonFunctions";
 
 interface WordFormEEProps {
     currentTranslationData: TranslationItem,
-    updateFormData: (
-        formData: {
-            cases?: NounItem[],
-            completionState?: boolean
-        }
-    ) => void
+    updateFormData: (formData: TranslationItem) => void
     displayOnly?: boolean
 }
 // Displays the fields required to add the estonian translation of a word (and handles the validations)
@@ -42,7 +37,7 @@ export function WordFormEE(props: WordFormEEProps) {
     })
 
     const {
-        control, formState: { errors, isValid }, setValue
+        control, formState: { errors, isValid, isDirty }, setValue
     } = useForm<
         {
             singularNimetav: string,
@@ -99,12 +94,14 @@ export function WordFormEE(props: WordFormEEProps) {
             },
         ]
         props.updateFormData({
+            language: Lang.EE,
             cases: currentCases,
-            completionState: isValid
+            completionState: isValid,
+            isDirty: isDirty
         })
     }, [
         singularNimetav, pluralNimetav, singularOmastav, pluralOmastav, singularOsastav,
-        pluralOsastav, shortForm, isValid
+        pluralOsastav, shortForm, isValid,
     ])
 
     // This will only be run on first render

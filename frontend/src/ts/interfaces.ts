@@ -11,10 +11,20 @@ export interface WordDataBE {
     partOfSpeech?: string,
     clue?: string,
 }
-export interface TranslationItem {
+export type TranslationItem = {
+    language: Lang,
+    cases: NounItem[]
+} & (InternalStatus)
+
+type InternalStatus = {
+    completionState?: boolean // used while completing forms, not saved on BE
+    isDirty?: boolean // used while completing forms, not saved on BE
+}
+export interface TranslationItemInternal {
     language: Lang,
     cases: NounItem[]
     completionState?: boolean // used while completing forms, not saved on BE
+    isDirty?: boolean // used while completing forms, not saved on BE
 }
 export interface NounItem {
     word: string,
