@@ -5,6 +5,7 @@ import {Lang, PartOfSpeech} from "../ts/enums";
 import {FormSelector} from "./forms/FormSelector";
 import globalTheme from "../theme/theme";
 import Tooltip from "@mui/material/Tooltip";
+import {getCurrentLangTranslated} from "./generalUseFunctions";
 
 interface WordFormGenericProps {
     index: number, // needed to know on which item in completeWordData.translations list this form data is stored
@@ -132,24 +133,6 @@ export function WordFormGeneric(props: WordFormGenericProps) {
         )
     }
 
-    const getCurrentLangTranslated = () => {
-        switch(currentLang) {
-            case Lang.DE: {
-                return ("Deutsch")
-            }
-            case Lang.EE: {
-                return ("Eesti")
-            }
-            case Lang.EN: {
-                return ("English")
-            }
-            case Lang.ES: {
-                return ("Español")
-            }
-            default: return("Not Found")
-        }
-    }
-
     return(
         <Grid
             item={true}
@@ -173,7 +156,7 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                             variant={"h3"}
                             sx={componentStyles.languageTitle}
                         >
-                            {getCurrentLangTranslated()}
+                            {getCurrentLangTranslated(currentLang)}
                         </Typography>
                 }
             </Grid>

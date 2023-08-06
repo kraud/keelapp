@@ -20,6 +20,9 @@ import {DebouncedTextField} from "./DebouncedTextField";
 import {SortDirection} from "@tanstack/table-core/build/lib/features/Sorting";
 import {useDispatch, useSelector} from "react-redux";
 import {deleteWordById, getWordsSimplified} from "../../features/words/wordSlice";
+import {Theme} from "@mui/material/styles";
+import {SxProps} from "@mui/system";
+import {getCurrentLangTranslated} from "../generalUseFunctions";
 
 type TableWordData = {
     id: string,
@@ -145,125 +148,258 @@ export function TranslationsTable(props: TranslationsTableProps) {
     // As the order of selected languages changes, so should the order they are displayed on the table
     const createColumns = (selectedLanguagesList: string[]) => {
         const newlySortedColumns = selectedLanguagesList.map((language: string) => {
+            let currentLanguageData: {
+                accessor: string,
+                language: Lang,
+                wordGender?: string, // i.e. info.row.original.*genderDE*
+                displayWordGender?: boolean,
+                amount?: string,  // i.e. info.row.original.*registeredCasesDE*
+                onlyDisplayAmountOnHover?: boolean,
+                type: "number" | "text" | "other",
+                sxProps?: SxProps<Theme>,
+                enableColumnFilter?: boolean,
+                sortingFn?: (prev: Row<TableWordData>, curr: Row<TableWordData>, columnId: string) => void
+            }
+
             switch (language){
                 case Lang.DE: {
-                    return(
-                        newColumnHelper.accessor('singularNominativDE',{
-                            header: () => <TableHeaderCell content={'Deutsch'}/>,
-                            cell: (info) => {return(
-                                (info.getValue() !== undefined)
-                                    ?
-                                    <TableDataCell
-                                        language={Lang.DE}
-                                        wordId={info.row.original.id}
-                                        content={info.getValue()}
-                                        wordGender={info.row.original.genderDE}
-                                        displayWordGender={displayGender}
-                                        amount={info.row.original.registeredCasesDE}
-                                        onlyDisplayAmountOnHover={true}
-                                        type={"text"}
-                                        sxProps={{
-                                            width: '200px',
-                                        }}
-                                    />
-                                    :
-                                    ""
-                            )},
-                            enableColumnFilter: false,
-                            sortingFn: (prev, curr, columnId) => {
-                                return sortItemsCaseInsensitive(prev, curr, columnId);
-                            },
-                        })
-                    )
+                    currentLanguageData = {
+                        accessor: 'singularNominativDE',
+                        language: Lang.DE,
+                        wordGender: 'genderDE', // i.e. info.row.original.*genderDE*
+                        displayWordGender: displayGender,
+                        amount: 'registeredCasesDE',  // i.e. info.row.original.*registeredCasesDE*
+                        onlyDisplayAmountOnHover: true,
+                        type: "text",
+                        sxProps: {
+                            width: '200px',
+                        },
+                        enableColumnFilter: false,
+                        sortingFn: (prev: Row<TableWordData>, curr: Row<TableWordData>, columnId: string) => {
+                            return sortItemsCaseInsensitive(prev, curr, columnId)
+                        },
+                    }
+                    break
                 }
                 case Lang.EE: {
-                    return(
-                        newColumnHelper.accessor('singularNimetavEE',{
-                            header: () => <TableHeaderCell content={'Eesti'}/>,
-                            cell: (info) => {return(
-                                (info.getValue() !== undefined)
-                                    ?
-                                    <TableDataCell
-                                        language={Lang.EE}
-                                        wordId={info.row.original.id}
-                                        content={info.getValue()}
-                                        amount={info.row.original.registeredCasesEE}
-                                        onlyDisplayAmountOnHover={true}
-                                        type={"text"}
-                                        sxProps={{
-                                            width: '200px',
-                                        }}
-                                    />
-                                    :
-                                    ""
-                            )},
-                            enableColumnFilter: false,
-                            sortingFn: (prev, curr, columnId) => {
-                                return sortItemsCaseInsensitive(prev, curr, columnId);
-                            }
-                        })
-                    )
+                    currentLanguageData = {
+                        accessor: 'singularNimetavEE',
+                        language: Lang.EE,
+                        amount: 'registeredCasesEE',  // i.e. info.row.original.*registeredCasesDE*
+                        onlyDisplayAmountOnHover: true,
+                        type: "text",
+                        sxProps: {
+                            width: '200px',
+                        },
+                        enableColumnFilter: false,
+                        sortingFn: (prev: Row<TableWordData>, curr: Row<TableWordData>, columnId: string) => {
+                            return sortItemsCaseInsensitive(prev, curr, columnId)
+                        },
+                    }
+                    break
                 }
-                case Lang.EN: {
-                    return(
-                        newColumnHelper.accessor('singularEN',{
-                            header: () => <TableHeaderCell content={'English'}/>,
-                            cell: (info) => {return(
-                                (info.getValue() !== undefined)
-                                    ?
-                                    <TableDataCell
-                                        language={Lang.EN}
-                                        wordId={info.row.original.id}
-                                        content={info.getValue()}
-                                        amount={info.row.original.registeredCasesEN}
-                                        onlyDisplayAmountOnHover={true}
-                                        type={"text"}
-                                        sxProps={{
-                                            width: '200px',
-                                        }}
-                                    />
-                                    :
-                                    ""
-                            )},
-                            enableColumnFilter: false,
-                            sortingFn: (prev, curr, columnId) => {
-                                return sortItemsCaseInsensitive(prev, curr, columnId);
-                            }
-                        })
-                    )
-                }
-                case Lang.ES: {
-                    return(
-                        newColumnHelper.accessor('singularES',{
-                            header: () => <TableHeaderCell content={'Español'}/>,
-                            cell: (info) => {return(
-                                (info.getValue() !== undefined)
-                                    ?
-                                    <TableDataCell
-                                        language={Lang.ES}
-                                        wordId={info.row.original.id}
-                                        content={info.getValue()}
-                                        wordGender={info.row.original.genderES}
-                                        displayWordGender={displayGender}
-                                        amount={info.row.original.registeredCasesES}
-                                        onlyDisplayAmountOnHover={true}
-                                        type={"text"}
-                                        sxProps={{
-                                            width: '200px',
-                                        }}
 
-                                    />
-                                    :
-                                    ""
-                            )},
-                            enableColumnFilter: false,
-                            sortingFn: (prev, curr, columnId) => {
-                                return sortItemsCaseInsensitive(prev, curr, columnId);
-                            },
-                        })
-                    )
+                case Lang.EN: {
+                    currentLanguageData = {
+                        accessor: 'singularEN',
+                        language: Lang.EN,
+                        amount: 'registeredCasesEN',  // i.e. info.row.original.*registeredCasesDE*
+                        onlyDisplayAmountOnHover: true,
+                        type: "text",
+                        sxProps: {
+                            width: '200px',
+                        },
+                        enableColumnFilter: false,
+                        sortingFn: (prev: Row<TableWordData>, curr: Row<TableWordData>, columnId: string) => {
+                            return sortItemsCaseInsensitive(prev, curr, columnId)
+                        },
+                    }
+                    break
+                }
+
+                case Lang.ES: {
+                    currentLanguageData = {
+                        accessor: 'singularES',
+                        language: Lang.ES,
+                        wordGender: 'genderES', // i.e. info.row.original.*genderDE*
+                        displayWordGender: displayGender,
+                        amount: 'registeredCasesES',  // i.e. info.row.original.*registeredCasesDE*
+                        onlyDisplayAmountOnHover: true,
+                        type: "text",
+                        sxProps: {
+                            width: '200px',
+                        },
+                        enableColumnFilter: false,
+                        sortingFn: (prev: Row<TableWordData>, curr: Row<TableWordData>, columnId: string) => {
+                            return sortItemsCaseInsensitive(prev, curr, columnId)
+                        },
+                    }
+                    break
+                }
+
+                default: {
+                    currentLanguageData = {
+                        accessor: 'missing-data',
+                        language: Lang.EN,
+                        type: "other",
+                    }
                 }
             }
+
+            return(
+                //@ts-ignore
+                newColumnHelper.accessor(currentLanguageData.accessor,{
+                    header: () => <TableHeaderCell content={getCurrentLangTranslated(currentLanguageData.language)}/>,
+                    cell: (info) => {return(
+                        (info.getValue() !== undefined)
+                            ?
+                            <TableDataCell
+                                language={currentLanguageData.language}
+                                wordId={info.row.original.id}
+                                content={info.getValue()}
+                                wordGender={(currentLanguageData.wordGender !== undefined)
+                                    //@ts-ignore
+                                    ? info.row.original[currentLanguageData.wordGender]
+                                    : undefined
+                                }
+                                displayWordGender={currentLanguageData.displayWordGender!}
+                                //@ts-ignore
+                                amount={(currentLanguageData.amount !== undefined) ?info.row.original[currentLanguageData.amount] :undefined}
+                                onlyDisplayAmountOnHover={currentLanguageData.onlyDisplayAmountOnHover!}
+                                type={currentLanguageData.type}
+                                sxProps={currentLanguageData.sxProps}
+                            />
+                            :
+                            ""
+                    )},
+                    enableColumnFilter: currentLanguageData.enableColumnFilter!,
+                    sortingFn: (prev, curr, columnId) => {
+                        if(currentLanguageData.sortingFn !== undefined) {
+                            currentLanguageData.sortingFn(prev, curr, columnId)
+                        }
+                    },
+                })
+            )
+
+            // switch (language){
+            //     case Lang.DE: {
+            //         return(
+            //             newColumnHelper.accessor('singularNominativDE',{
+            //                 header: () => <TableHeaderCell content={'Deutsch'}/>,
+            //                 cell: (info) => {return(
+            //                     (info.getValue() !== undefined)
+            //                         ?
+            //                         <TableDataCell
+            //                             language={Lang.DE}
+            //                             wordId={info.row.original.id}
+            //                             content={info.getValue()}
+            //                             wordGender={info.row.original.genderDE}
+            //                             displayWordGender={displayGender}
+            //                             amount={info.row.original.registeredCasesDE}
+            //                             onlyDisplayAmountOnHover={true}
+            //                             type={"text"}
+            //                             sxProps={{
+            //                                 width: '200px',
+            //                             }}
+            //                         />
+            //                         :
+            //                         ""
+            //                 )},
+            //                 enableColumnFilter: false,
+            //                 sortingFn: (prev, curr, columnId) => {
+            //                     return sortItemsCaseInsensitive(prev, curr, columnId);
+            //                 },
+            //             })
+            //         )
+            //     }
+            //     case Lang.EE: {
+            //         return(
+            //             newColumnHelper.accessor('singularNimetavEE',{
+            //                 header: () => <TableHeaderCell content={'Eesti'}/>,
+            //                 cell: (info) => {return(
+            //                     (info.getValue() !== undefined)
+            //                         ?
+            //                         <TableDataCell
+            //                             language={Lang.EE}
+            //                             wordId={info.row.original.id}
+            //                             content={info.getValue()}
+            //                             amount={info.row.original.registeredCasesEE}
+            //                             onlyDisplayAmountOnHover={true}
+            //                             type={"text"}
+            //                             sxProps={{
+            //                                 width: '200px',
+            //                             }}
+            //                         />
+            //                         :
+            //                         ""
+            //                 )},
+            //                 enableColumnFilter: false,
+            //                 sortingFn: (prev, curr, columnId) => {
+            //                     return sortItemsCaseInsensitive(prev, curr, columnId);
+            //                 }
+            //             })
+            //         )
+            //     }
+            //     case Lang.EN: {
+            //         return(
+            //             newColumnHelper.accessor('singularEN',{
+            //                 header: () => <TableHeaderCell content={'English'}/>,
+            //                 cell: (info) => {return(
+            //                     (info.getValue() !== undefined)
+            //                         ?
+            //                         <TableDataCell
+            //                             language={Lang.EN}
+            //                             wordId={info.row.original.id}
+            //                             content={info.getValue()}
+            //                             amount={info.row.original.registeredCasesEN}
+            //                             onlyDisplayAmountOnHover={true}
+            //                             type={"text"}
+            //                             sxProps={{
+            //                                 width: '200px',
+            //                             }}
+            //                         />
+            //                         :
+            //                         ""
+            //                 )},
+            //                 enableColumnFilter: false,
+            //                 sortingFn: (prev, curr, columnId) => {
+            //                     return sortItemsCaseInsensitive(prev, curr, columnId);
+            //                 }
+            //             })
+            //         )
+            //     }
+            //     case Lang.ES: {
+            //         return(
+            //             newColumnHelper.accessor('singularES',{
+            //                 header: () => <TableHeaderCell content={'Español'}/>,
+            //                 cell: (info) => {return(
+            //                     (info.getValue() !== undefined)
+            //                         ?
+            //                         <TableDataCell
+            //                             language={Lang.ES}
+            //                             wordId={info.row.original.id}
+            //                             content={info.getValue()}
+            //                             wordGender={info.row.original.genderES}
+            //                             displayWordGender={displayGender}
+            //                             amount={info.row.original.registeredCasesES}
+            //                             onlyDisplayAmountOnHover={true}
+            //                             type={"text"}
+            //                             sxProps={{
+            //                                 width: '200px',
+            //                             }}
+            //
+            //                         />
+            //                         :
+            //                         ""
+            //                 )},
+            //                 enableColumnFilter: false,
+            //                 sortingFn: (prev, curr, columnId) => {
+            //                     return sortItemsCaseInsensitive(prev, curr, columnId);
+            //                 },
+            //             })
+            //         )
+            //     }
+            // }
         })
         return (
             [
@@ -384,14 +520,20 @@ export function TranslationsTable(props: TranslationsTableProps) {
         root.render(image)
 
         columnBeingDragged = Number(e.currentTarget.dataset.columnIndex);
-    };
+    }
 
     //@ts-ignore
     const onDrop = (e: DragEvent<HTMLElement>): void => {
         e.preventDefault()
-        if(columnBeingDragged !== 0){ // to avoid moving the "type" column.
+        if(
+            // TODO: this should be an array and we check if 'includes' column number
+            (columnBeingDragged !== 0) && (columnBeingDragged !== 1)
+        ){ // to avoid moving the "type" column.
             const newPosition = Number(e.currentTarget.dataset.columnIndex)
-            if(newPosition !== 0){ // to avoid moving INTO the type column
+            if(
+                // TODO: this should be an array and we check if 'includes' column number
+                (newPosition !== 0) && (newPosition !== 1)
+            ){ // to avoid moving INTO the type column
                 const currentCols = table.getVisibleLeafColumns().map((c) => c.id)
                 const colToBeMoved = currentCols.splice(columnBeingDragged, 1)
                 currentCols.splice(newPosition, 0, colToBeMoved[0])
@@ -471,25 +613,42 @@ export function TranslationsTable(props: TranslationsTableProps) {
                 {(Object.keys(rowSelection).length > 0) &&
                 <Grid
                     item={true}
+                    container={true}
+                    alignContent={"center"}
+                    xs={"auto"}
                 >
-                    <Button
-                        variant={"outlined"}
-                        onClick={() => deleteSelectedRows()}
+                    <Grid
+                        item={true}
                     >
-                        Delete selected
-                    </Button>
+                        <Button
+                            variant={"outlined"}
+                            onClick={() => deleteSelectedRows()}
+                        >
+                            Delete selected
+                        </Button>
+                    </Grid>
                 </Grid>
                 }
                 <Grid
                     item={true}
+                    container={true}
+                    alignContent={"center"}
+                    xs={"auto"}
                 >
-                    <FormControlLabel
-                        value={displayGender}
-                        control={<Switch checked={displayGender} color="primary" />}
-                        label={"Display gender"}
-                        labelPlacement={"start"}
-                        onChange={() => setDisplayGender(!displayGender)}
-                    />
+                    <Grid
+                        item={true}
+                    >
+                        <FormControlLabel
+                            value={displayGender}
+                            control={<Switch checked={displayGender} color="primary" />}
+                            label={"Display gender"}
+                            labelPlacement={"start"}
+                            onChange={() => setDisplayGender(!displayGender)}
+                            sx={{
+                                marginLeft: 0,
+                            }}
+                        />
+                    </Grid>
                 </Grid>
                 <Grid
                     item={true}
