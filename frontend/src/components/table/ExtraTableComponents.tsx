@@ -1,15 +1,18 @@
-import {Grid, Modal, Typography, Box, Button, Checkbox} from "@mui/material";
+import {Button, Checkbox, Grid, Modal, Typography} from "@mui/material";
 import React, {HTMLProps, useEffect, useState} from "react";
 import globalTheme from "../../theme/theme";
 import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
-import {FormSelector} from "../forms/FormSelector";
-import {NounItem, TranslationItem, TranslationItemInternal} from "../../ts/interfaces";
+import {TranslationItem} from "../../ts/interfaces";
 import {Lang, PartOfSpeech} from "../../ts/enums";
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
-import {deleteWordById, getWordById, getWordsSimplified, updateWordById} from "../../features/words/wordSlice";
+import {getWordById, getWordsSimplified, updateWordById} from "../../features/words/wordSlice";
+import IconButton from "@mui/material/IconButton";
+import AddIcon from '@mui/icons-material/Add';
 import LinearIndeterminate from "../Spinner";
+import Box from "@mui/material/Box";
+import {FormSelector} from "../forms/FormSelector";
 
 interface TableHeaderCellProps {
     content: any
@@ -134,7 +137,11 @@ export function TableDataCell(props: TableDataCellProps){
 
     // set data on variable to feed the form displayed inside modal
     useEffect(() => {
-        if((word !== undefined) && open){
+        if(
+            (word !== undefined) &&
+            open &&
+            (props.content !== undefined) // to avoid checking when opening an empty form
+        ){
             setSelectedWordData({
                 ...(word.translations.find((translation: TranslationItem) => translation.language === props.language)),
                 // we set this manually, because completion state is not saved on BE - to save the data, it must already be validated
@@ -173,7 +180,17 @@ export function TableDataCell(props: TableDataCellProps){
         return(updatedTranslations)
     }
 
-    if(props.content !== undefined){
+    const checkCurrentLanguageIncludedInTranslations = () => {
+        let isIncluded = false
+        word.translations.map((translation: TranslationItem) => {
+            if(translation.language === props.language){
+                isIncluded = true
+            }
+        })
+        return isIncluded
+    }
+
+    // if(props.content !== undefined){
         return(
             <>
                 <Grid
@@ -198,44 +215,67 @@ export function TableDataCell(props: TableDataCellProps){
                         ?
                         props.content // i.e: button icon
                         :
-                        <Typography
-                            onClick={() => {
-                                if(! props.onlyForDisplay!){
-                                    openModal()
+                        (props.content !== undefined)
+                            ?
+                            <Typography
+                                onClick={() => {
+                                    if (!props.onlyForDisplay!) {
+                                        openModal()
+                                    }
+                                }}
+                                variant={'subtitle1'}
+                                textAlign={
+                                    (props.textAlign !== undefined)
+                                        ? props.textAlign
+                                        : (props.type === "number")
+                                            ? "right"
+                                            : "left"
                                 }
-                            }}
-                            variant={'subtitle1'}
-                            textAlign={
-                                (props.textAlign !== undefined)
-                                    ? props.textAlign
-                                    : (props.type === "number")
-                                        ? "right"
-                                        : "left"
-                            }
-                            fontWeight={500}
-                            sx={componentStyles.text}
-                        >
-                            {
-                                (
-                                    (props.displayWordGender!) && (props.wordGender)
-                                ) &&
-                                props.wordGender
-                            }
-                            {" "}
-                            {props.content}
-                            {" "}
-                            {
-                                (
+                                fontWeight={500}
+                                sx={componentStyles.text}
+                            >
+                                {/* GENDER */}
+                                {
                                     (
-                                        props.displayAmount!
-                                        ||
-                                        (props.onlyDisplayAmountOnHover! && isHovering)
+                                        (props.displayWordGender!) && (props.wordGender)
                                     ) &&
-                                    (props.amount!)
-                                ) &&
-                                `(${props.amount})`
-                            }
-                        </Typography>
+                                    props.wordGender
+                                }
+                                {" "}
+                                {/* WORD */}
+                                {props.content}
+                                {" "}
+                                {/* AMOUNT OF STORED CASES */}
+                                {
+                                    (
+                                        (
+                                            props.displayAmount!
+                                            ||
+                                            (props.onlyDisplayAmountOnHover! && isHovering)
+                                        ) &&
+                                        (props.amount!)
+                                    ) &&
+                                    `(${props.amount})`
+                                }
+                            </Typography>
+                            :
+                            <IconButton
+                                onClick={() => {
+                                    if (!props.onlyForDisplay!) {
+                                        // setOpen(true)
+                                        openModal()
+                                        setDisplayOnly(false)
+                                        setSelectedWordData({
+                                            language: props.language!,
+                                            cases: [],
+                                            completionState: false,
+                                            isDirty: false,
+                                        })
+                                    }
+                                }}
+                            >
+                                <AddIcon fontSize={'inherit'}/>
+                            </IconButton>
                     }
                 </Grid>
                 <Modal
@@ -323,7 +363,11 @@ export function TableDataCell(props: TableDataCellProps){
                                                     setFinishedDeleting(false)
                                                 }
                                             }}
-                                            disabled={word.translations.length < 3}
+                                            disabled={
+                                                (word.translations.length < 3)
+                                                ||
+                                                !(checkCurrentLanguageIncludedInTranslations()) // if not included => we can simply click away, no need to delete
+                                        }
                                         >
                                             Delete
                                         </Button>
@@ -340,13 +384,26 @@ export function TableDataCell(props: TableDataCellProps){
                                                     setDisplayOnly(false)
                                                 } else {
                                                     if(selectedWordData.isDirty){
+                                                        let updatedList = []
+                                                        if(checkCurrentLanguageIncludedInTranslations()){
+                                                           updatedList = appendUpdatedTranslation(selectedWordData)
+                                                        } else {
+                                                            updatedList = [
+                                                                ...word.translations,
+                                                                {
+                                                                    // this way, we don't save the InternalStatus info (completionState, isDirty, etc.)
+                                                                    language: selectedWordData.language,
+                                                                    cases: selectedWordData.cases,
+                                                                }
+                                                            ]
+                                                        }
                                                         // append changes to full word translation
                                                         // TODO: check if it's ok to send whole 'word' data (dates, user ids, etc.)
                                                         const updatedWordData = {
                                                             id: props.wordId,
                                                             clue: word.clue,
                                                             partOfSpeech: word.partOfSpeech,
-                                                            translations: appendUpdatedTranslation(selectedWordData)
+                                                            translations: updatedList
                                                         }
                                                         // save changes to translation
                                                         //@ts-ignore
@@ -390,9 +447,9 @@ export function TableDataCell(props: TableDataCellProps){
             </>
         )
 
-    } else {
-        return(<></>)
-    }
+    // } else {
+    //     return(<></>)
+    // }
 }
 
 export function IndeterminateCheckbox({

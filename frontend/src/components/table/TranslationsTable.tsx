@@ -251,8 +251,6 @@ export function TranslationsTable(props: TranslationsTableProps) {
                 newColumnHelper.accessor(currentLanguageData.accessor,{
                     header: () => <TableHeaderCell content={getCurrentLangTranslated(currentLanguageData.language)}/>,
                     cell: (info) => {return(
-                        (info.getValue() !== undefined)
-                            ?
                             <TableDataCell
                                 language={currentLanguageData.language}
                                 wordId={info.row.original.id}
@@ -269,8 +267,6 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                 type={currentLanguageData.type}
                                 sxProps={currentLanguageData.sxProps}
                             />
-                            :
-                            ""
                     )},
                     enableColumnFilter: currentLanguageData.enableColumnFilter!,
                     sortingFn: (prev, curr, columnId) => {
@@ -280,126 +276,6 @@ export function TranslationsTable(props: TranslationsTableProps) {
                     },
                 })
             )
-
-            // switch (language){
-            //     case Lang.DE: {
-            //         return(
-            //             newColumnHelper.accessor('singularNominativDE',{
-            //                 header: () => <TableHeaderCell content={'Deutsch'}/>,
-            //                 cell: (info) => {return(
-            //                     (info.getValue() !== undefined)
-            //                         ?
-            //                         <TableDataCell
-            //                             language={Lang.DE}
-            //                             wordId={info.row.original.id}
-            //                             content={info.getValue()}
-            //                             wordGender={info.row.original.genderDE}
-            //                             displayWordGender={displayGender}
-            //                             amount={info.row.original.registeredCasesDE}
-            //                             onlyDisplayAmountOnHover={true}
-            //                             type={"text"}
-            //                             sxProps={{
-            //                                 width: '200px',
-            //                             }}
-            //                         />
-            //                         :
-            //                         ""
-            //                 )},
-            //                 enableColumnFilter: false,
-            //                 sortingFn: (prev, curr, columnId) => {
-            //                     return sortItemsCaseInsensitive(prev, curr, columnId);
-            //                 },
-            //             })
-            //         )
-            //     }
-            //     case Lang.EE: {
-            //         return(
-            //             newColumnHelper.accessor('singularNimetavEE',{
-            //                 header: () => <TableHeaderCell content={'Eesti'}/>,
-            //                 cell: (info) => {return(
-            //                     (info.getValue() !== undefined)
-            //                         ?
-            //                         <TableDataCell
-            //                             language={Lang.EE}
-            //                             wordId={info.row.original.id}
-            //                             content={info.getValue()}
-            //                             amount={info.row.original.registeredCasesEE}
-            //                             onlyDisplayAmountOnHover={true}
-            //                             type={"text"}
-            //                             sxProps={{
-            //                                 width: '200px',
-            //                             }}
-            //                         />
-            //                         :
-            //                         ""
-            //                 )},
-            //                 enableColumnFilter: false,
-            //                 sortingFn: (prev, curr, columnId) => {
-            //                     return sortItemsCaseInsensitive(prev, curr, columnId);
-            //                 }
-            //             })
-            //         )
-            //     }
-            //     case Lang.EN: {
-            //         return(
-            //             newColumnHelper.accessor('singularEN',{
-            //                 header: () => <TableHeaderCell content={'English'}/>,
-            //                 cell: (info) => {return(
-            //                     (info.getValue() !== undefined)
-            //                         ?
-            //                         <TableDataCell
-            //                             language={Lang.EN}
-            //                             wordId={info.row.original.id}
-            //                             content={info.getValue()}
-            //                             amount={info.row.original.registeredCasesEN}
-            //                             onlyDisplayAmountOnHover={true}
-            //                             type={"text"}
-            //                             sxProps={{
-            //                                 width: '200px',
-            //                             }}
-            //                         />
-            //                         :
-            //                         ""
-            //                 )},
-            //                 enableColumnFilter: false,
-            //                 sortingFn: (prev, curr, columnId) => {
-            //                     return sortItemsCaseInsensitive(prev, curr, columnId);
-            //                 }
-            //             })
-            //         )
-            //     }
-            //     case Lang.ES: {
-            //         return(
-            //             newColumnHelper.accessor('singularES',{
-            //                 header: () => <TableHeaderCell content={'Español'}/>,
-            //                 cell: (info) => {return(
-            //                     (info.getValue() !== undefined)
-            //                         ?
-            //                         <TableDataCell
-            //                             language={Lang.ES}
-            //                             wordId={info.row.original.id}
-            //                             content={info.getValue()}
-            //                             wordGender={info.row.original.genderES}
-            //                             displayWordGender={displayGender}
-            //                             amount={info.row.original.registeredCasesES}
-            //                             onlyDisplayAmountOnHover={true}
-            //                             type={"text"}
-            //                             sxProps={{
-            //                                 width: '200px',
-            //                             }}
-            //
-            //                         />
-            //                         :
-            //                         ""
-            //                 )},
-            //                 enableColumnFilter: false,
-            //                 sortingFn: (prev, curr, columnId) => {
-            //                     return sortItemsCaseInsensitive(prev, curr, columnId);
-            //                 },
-            //             })
-            //         )
-            //     }
-            // }
         })
         return (
             [

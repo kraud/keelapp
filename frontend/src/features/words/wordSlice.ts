@@ -3,6 +3,8 @@ import wordService from "./wordService"
 import {WordData, WordDataBE} from "../../ts/interfaces";
 
 interface worldSliceState {
+    // list with full translation info for all words might not be needed?
+    // wordSimple + request for specific data in word can be enough?
     words: WordData[],
     wordsSimple: any[],
     word?: WordData,
@@ -15,7 +17,9 @@ interface worldSliceState {
 const initialState: worldSliceState = {
     words: [], // TODO: adjust this to the structure defined in TranslationForm and WordFromGeneric
     wordsSimple: [],
-    word: undefined,
+    word: {
+        translations: []
+    },
     isError: false,
     isSuccess: false,
     isLoading: false,
