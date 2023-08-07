@@ -155,6 +155,7 @@ export function TableDataCell(props: TableDataCellProps){
     const handleOnClose = () => {
         setOpen(false)
         setDisplayOnly(true)
+        setSelectedWordData(undefined)
         dispatch(clearWord())
     }
 
