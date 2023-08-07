@@ -133,7 +133,13 @@ export const wordSlice = createSlice({
     name: 'word',
     initialState,
     reducers: {
-        reset: (state: any) => initialState
+        reset: (state: any) => initialState,
+        clearWord: (state: any) => {
+            return ({
+                ...state,
+                word: initialState.word
+            })
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -207,5 +213,5 @@ export const wordSlice = createSlice({
     }
 })
 
-export const {reset} = wordSlice.actions
+export const {reset, clearWord} = wordSlice.actions
 export default wordSlice.reducer

@@ -7,7 +7,7 @@ import {TranslationItem} from "../../ts/interfaces";
 import {Lang, PartOfSpeech} from "../../ts/enums";
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
-import {getWordById, getWordsSimplified, updateWordById} from "../../features/words/wordSlice";
+import {clearWord, getWordById, getWordsSimplified, updateWordById} from "../../features/words/wordSlice";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from '@mui/icons-material/Add';
 import LinearIndeterminate from "../Spinner";
@@ -42,6 +42,7 @@ export function TableHeaderCell(props: TableHeaderCellProps){
         </Grid>
     )
 }
+
 interface TableDataCellProps {
     content: any
     type: "number" | "text" | "other"
@@ -138,9 +139,9 @@ export function TableDataCell(props: TableDataCellProps){
     // set data on variable to feed the form displayed inside modal
     useEffect(() => {
         if(
-            (word !== undefined) &&
+            (word.translations.length > 0) &&
             open &&
-            (props.content !== undefined) // to avoid checking when opening an empty form
+            (props.content !== undefined) // to avoid setting a value when opening an empty form (i.e. a translation that doesn't yet exist)
         ){
             setSelectedWordData({
                 ...(word.translations.find((translation: TranslationItem) => translation.language === props.language)),
@@ -154,6 +155,7 @@ export function TableDataCell(props: TableDataCellProps){
     const handleOnClose = () => {
         setOpen(false)
         setDisplayOnly(true)
+        dispatch(clearWord())
     }
 
     const appendUpdatedTranslation = (updatedTranslation: TranslationItem) => {
@@ -190,266 +192,261 @@ export function TableDataCell(props: TableDataCellProps){
         return isIncluded
     }
 
-    // if(props.content !== undefined){
-        return(
-            <>
-                <Grid
-                    sx={{
-                        paddingX: globalTheme.spacing(3),
-                        paddingY: globalTheme.spacing(1),
-                        height: '100%',
-                        marginTop: 'auto',
-                        marginBottom: 'auto',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignContent: 'center',
-                        flexDirection: 'column',
-                        ...props.sxProps
-                    }}
-                    onMouseOver={() => setIsHovering(true)}
-                    onTouchStart={() => setIsHovering(true)}
-                    onMouseOut={() => setIsHovering(false)}
-                    onTouchEnd={() => setIsHovering(false)}
-                >
-                    {(props.type === "other")
+    return(
+        <>
+            <Grid
+                sx={{
+                    paddingX: globalTheme.spacing(3),
+                    paddingY: globalTheme.spacing(1),
+                    height: '100%',
+                    marginTop: 'auto',
+                    marginBottom: 'auto',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignContent: 'center',
+                    flexDirection: 'column',
+                    ...props.sxProps
+                }}
+                onMouseOver={() => setIsHovering(true)}
+                onTouchStart={() => setIsHovering(true)}
+                onMouseOut={() => setIsHovering(false)}
+                onTouchEnd={() => setIsHovering(false)}
+            >
+                {(props.type === "other")
+                    ?
+                    props.content // i.e: button icon
+                    :
+                    (props.content !== undefined)
                         ?
-                        props.content // i.e: button icon
+                        <Typography
+                            onClick={() => {
+                                if (!props.onlyForDisplay!) {
+                                    openModal()
+                                }
+                            }}
+                            variant={'subtitle1'}
+                            textAlign={
+                                (props.textAlign !== undefined)
+                                    ? props.textAlign
+                                    : (props.type === "number")
+                                        ? "right"
+                                        : "left"
+                            }
+                            fontWeight={500}
+                            sx={componentStyles.text}
+                        >
+                            {/* GENDER */}
+                            {
+                                (
+                                    (props.displayWordGender!) && (props.wordGender)
+                                ) &&
+                                props.wordGender
+                            }
+                            {" "}
+                            {/* WORD */}
+                            {props.content}
+                            {" "}
+                            {/* AMOUNT OF STORED CASES */}
+                            {
+                                (
+                                    (
+                                        props.displayAmount!
+                                        ||
+                                        (props.onlyDisplayAmountOnHover! && isHovering)
+                                    ) &&
+                                    (props.amount!)
+                                ) &&
+                                `(${props.amount})`
+                            }
+                        </Typography>
                         :
-                        (props.content !== undefined)
-                            ?
-                            <Typography
-                                onClick={() => {
-                                    if (!props.onlyForDisplay!) {
-                                        openModal()
-                                    }
-                                }}
-                                variant={'subtitle1'}
-                                textAlign={
-                                    (props.textAlign !== undefined)
-                                        ? props.textAlign
-                                        : (props.type === "number")
-                                            ? "right"
-                                            : "left"
+                        <IconButton
+                            onClick={() => {
+                                if (!props.onlyForDisplay!) {
+                                    // setOpen(true)
+                                    openModal()
+                                    setDisplayOnly(false)
+                                    setSelectedWordData({
+                                        language: props.language!,
+                                        cases: [],
+                                        completionState: false,
+                                        isDirty: false,
+                                    })
                                 }
-                                fontWeight={500}
-                                sx={componentStyles.text}
-                            >
-                                {/* GENDER */}
-                                {
-                                    (
-                                        (props.displayWordGender!) && (props.wordGender)
-                                    ) &&
-                                    props.wordGender
-                                }
-                                {" "}
-                                {/* WORD */}
-                                {props.content}
-                                {" "}
-                                {/* AMOUNT OF STORED CASES */}
-                                {
-                                    (
-                                        (
-                                            props.displayAmount!
-                                            ||
-                                            (props.onlyDisplayAmountOnHover! && isHovering)
-                                        ) &&
-                                        (props.amount!)
-                                    ) &&
-                                    `(${props.amount})`
-                                }
-                            </Typography>
-                            :
-                            <IconButton
-                                onClick={() => {
-                                    if (!props.onlyForDisplay!) {
-                                        // setOpen(true)
-                                        openModal()
-                                        setDisplayOnly(false)
-                                        setSelectedWordData({
-                                            language: props.language!,
-                                            cases: [],
-                                            completionState: false,
-                                            isDirty: false,
-                                        })
-                                    }
-                                }}
-                            >
-                                <AddIcon fontSize={'inherit'}/>
-                            </IconButton>
-                    }
-                </Grid>
-                <Modal
-                    open={open}
-                    onClose={() => handleOnClose()}
-                    disableAutoFocus={true}
+                            }}
+                        >
+                            <AddIcon fontSize={'inherit'}/>
+                        </IconButton>
+                }
+            </Grid>
+            <Modal
+                open={open}
+                onClose={() => handleOnClose()}
+                disableAutoFocus={true}
+            >
+                <Box
+                    sx={componentStyles.mainContainer}
                 >
-                    <Box
-                        sx={componentStyles.mainContainer}
-                    >
-                        {(
-                            isLoading &&
-                            !(selectedWordData!!) // to display form while isLoading is true, because we're saving changes
-                        )
-                            ?
-                                <Grid
-                                    container={true}
-                                    rowSpacing={3}
-                                    justifyContent={'center'}
-                                >
-                                    <Grid
-                                        item={true}
-                                        xs={6}
-                                    >
-                                        <LinearIndeterminate/>
-                                    </Grid>
-                                    <Grid
-                                        item={true}
-                                        xs={12}
-                                    >
-                                        <Typography
-                                            variant={"h4"}
-                                            textAlign={"center"}
-                                        >
-                                            Loading...
-                                        </Typography>
-                                    </Grid>
-                                </Grid>
-                            : (selectedWordData !== undefined) &&
+                    {(
+                        isLoading &&
+                        !(selectedWordData !== undefined) // to display form while isLoading is true, because we're saving changes
+                    )
+                        ?
                             <Grid
-                                item={true}
                                 container={true}
-                                direction={"column"}
+                                rowSpacing={3}
+                                justifyContent={'center'}
                             >
                                 <Grid
                                     item={true}
-                                    container={true}
-                                    justifyContent={"flex-end"}
-                                    spacing={2}
-                                    sx={{
-                                        marginBottom: globalTheme.spacing(2)
-                                    }}
-                                    xs={"auto"}
+                                    xs={6}
                                 >
-                                    {(isLoading) &&
-                                        <Grid
-                                            container={true}
-                                            item={true}
-                                            alignContent={"center"}
-                                            xs
-                                        >
-                                            <LinearIndeterminate/>
-                                        </Grid>
-                                    }
-                                    <Grid
-                                        item={true}
+                                    <LinearIndeterminate/>
+                                </Grid>
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <Typography
+                                        variant={"h4"}
+                                        textAlign={"center"}
                                     >
-                                        <Button
-                                            variant={"outlined"}
-                                            color={"warning"}
-                                            onClick={() => {
-                                                // check if at least 2 more translations are saved
-                                                if(word.translations.length > 2){
-                                                    // delete all data for this language on this word
+                                        Loading...
+                                    </Typography>
+                                </Grid>
+                            </Grid>
+                        : (selectedWordData !== undefined) &&
+                        <Grid
+                            item={true}
+                            container={true}
+                            direction={"column"}
+                        >
+                            <Grid
+                                item={true}
+                                container={true}
+                                justifyContent={"flex-end"}
+                                spacing={2}
+                                sx={{
+                                    marginBottom: globalTheme.spacing(2)
+                                }}
+                                xs={"auto"}
+                            >
+                                {(isLoading) &&
+                                    <Grid
+                                        container={true}
+                                        item={true}
+                                        alignContent={"center"}
+                                        xs
+                                    >
+                                        <LinearIndeterminate/>
+                                    </Grid>
+                                }
+                                <Grid
+                                    item={true}
+                                >
+                                    <Button
+                                        variant={"outlined"}
+                                        color={"warning"}
+                                        onClick={() => {
+                                            // check if at least 2 more translations are saved
+                                            if(word.translations.length > 2){
+                                                // delete all data for this language on this word
+                                                // TODO: check if it's ok to send whole 'word' data (dates, user ids, etc.)
+                                                const updatedWordData = {
+                                                    id: props.wordId,
+                                                    clue: word.clue,
+                                                    partOfSpeech: word.partOfSpeech,
+                                                    translations: deleteCurrentTranslationFromWordData(props.language!)
+                                                }
+                                                // save changes to translation
+                                                //@ts-ignore
+                                                dispatch(updateWordById(updatedWordData))
+                                                setFinishedDeleting(false)
+                                            }
+                                        }}
+                                        disabled={
+                                            (word.translations.length < 3)
+                                            ||
+                                            !(checkCurrentLanguageIncludedInTranslations()) // if not included => we can simply click away, no need to delete
+                                    }
+                                    >
+                                        Delete
+                                    </Button>
+                                </Grid>
+                                <Grid
+                                    item={true}
+                                >
+                                    <Button
+                                        variant={"outlined"}
+                                        color={"secondary"}
+                                        disabled={((!displayOnly) && (!selectedWordData.completionState!))}
+                                        onClick={() => {
+                                            if(displayOnly){
+                                                setDisplayOnly(false)
+                                            } else {
+                                                if(selectedWordData.isDirty){
+                                                    let updatedList: TranslationItem[]
+                                                    if(checkCurrentLanguageIncludedInTranslations()){
+                                                       updatedList = appendUpdatedTranslation(selectedWordData)
+                                                    } else {
+                                                        updatedList = [
+                                                            ...word.translations,
+                                                            {
+                                                                // this way, we don't save the InternalStatus info (completionState, isDirty, etc.)
+                                                                language: selectedWordData.language,
+                                                                cases: selectedWordData.cases,
+                                                            }
+                                                        ]
+                                                    }
+                                                    // append changes to full word translation
                                                     // TODO: check if it's ok to send whole 'word' data (dates, user ids, etc.)
                                                     const updatedWordData = {
                                                         id: props.wordId,
                                                         clue: word.clue,
                                                         partOfSpeech: word.partOfSpeech,
-                                                        translations: deleteCurrentTranslationFromWordData(props.language!)
+                                                        translations: updatedList
                                                     }
                                                     // save changes to translation
                                                     //@ts-ignore
                                                     dispatch(updateWordById(updatedWordData))
-                                                    setFinishedDeleting(false)
-                                                }
-                                            }}
-                                            disabled={
-                                                (word.translations.length < 3)
-                                                ||
-                                                !(checkCurrentLanguageIncludedInTranslations()) // if not included => we can simply click away, no need to delete
-                                        }
-                                        >
-                                            Delete
-                                        </Button>
-                                    </Grid>
-                                    <Grid
-                                        item={true}
-                                    >
-                                        <Button
-                                            variant={"outlined"}
-                                            color={"secondary"}
-                                            disabled={((!displayOnly) && (!selectedWordData.completionState!))}
-                                            onClick={() => {
-                                                if(displayOnly){
-                                                    setDisplayOnly(false)
+                                                    setFinishedUpdating(false)
+                                                    setDisplayOnly(true)
                                                 } else {
-                                                    if(selectedWordData.isDirty){
-                                                        let updatedList = []
-                                                        if(checkCurrentLanguageIncludedInTranslations()){
-                                                           updatedList = appendUpdatedTranslation(selectedWordData)
-                                                        } else {
-                                                            updatedList = [
-                                                                ...word.translations,
-                                                                {
-                                                                    // this way, we don't save the InternalStatus info (completionState, isDirty, etc.)
-                                                                    language: selectedWordData.language,
-                                                                    cases: selectedWordData.cases,
-                                                                }
-                                                            ]
-                                                        }
-                                                        // append changes to full word translation
-                                                        // TODO: check if it's ok to send whole 'word' data (dates, user ids, etc.)
-                                                        const updatedWordData = {
-                                                            id: props.wordId,
-                                                            clue: word.clue,
-                                                            partOfSpeech: word.partOfSpeech,
-                                                            translations: updatedList
-                                                        }
-                                                        // save changes to translation
-                                                        //@ts-ignore
-                                                        dispatch(updateWordById(updatedWordData))
-                                                        setFinishedUpdating(false)
-                                                        setDisplayOnly(true)
-                                                    } else {
-                                                        setDisplayOnly(true)
-                                                    }
+                                                    setDisplayOnly(true)
                                                 }
-                                            }}
-                                        >
-                                            {(displayOnly)
-                                                ? "Edit"
-                                                : (selectedWordData.isDirty)
-                                                    ?"Save changes"
-                                                    :"Cancel"
                                             }
-                                        </Button>
-                                    </Grid>
-                                </Grid>
-                                <FormSelector
-                                    currentLang={props.language!} // TODO: this data should come from "selectedWordData
-                                    currentTranslationData={selectedWordData!}
-                                    partOfSpeech={PartOfSpeech.noun} // TODO: this data should come from "selectedWordData
-                                    updateFormData={(formData: TranslationItem) => {
-                                        if(!displayOnly && !(isLoading)){ // && (formData.isDirty) for extra security?
-                                            setSelectedWordData({
-                                                ...formData,
-                                                // To avoid saving empty cases,
-                                                cases: formData.cases.filter((nounCase) => (nounCase.word !== "")),
-                                            })
+                                        }}
+                                    >
+                                        {(displayOnly)
+                                            ? "Edit"
+                                            : (selectedWordData.isDirty)
+                                                ?"Save changes"
+                                                :"Cancel"
                                         }
-                                    }}
-                                    displayOnly={displayOnly}
-                                />
+                                    </Button>
+                                </Grid>
                             </Grid>
-                        }
-                    </Box>
-                </Modal>
-            </>
-        )
-
-    // } else {
-    //     return(<></>)
-    // }
+                            <FormSelector
+                                currentLang={props.language!} // TODO: this data should come from "selectedWordData
+                                currentTranslationData={selectedWordData!}
+                                partOfSpeech={PartOfSpeech.noun} // TODO: this data should come from "selectedWordData
+                                updateFormData={(formData: TranslationItem) => {
+                                    if(!displayOnly && !(isLoading)){ // && (formData.isDirty) for extra security?
+                                        setSelectedWordData({
+                                            ...formData,
+                                            // To avoid saving empty cases,
+                                            cases: formData.cases.filter((nounCase) => (nounCase.word !== "")),
+                                        })
+                                    }
+                                }}
+                                displayOnly={displayOnly}
+                            />
+                        </Grid>
+                    }
+                </Box>
+            </Modal>
+        </>
+    )
 }
 
 export function IndeterminateCheckbox({
