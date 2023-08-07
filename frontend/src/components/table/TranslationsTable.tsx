@@ -418,10 +418,10 @@ export function TranslationsTable(props: TranslationsTableProps) {
                 // table.setColumnOrder(currentCols) // this will change the internal column order
             }
             else {
-                toast.error("The Type column can't be moved.")
+                toast.error("Columns can't be placed there.")
             }
         } else {
-            toast.error("The Type column can't be moved.")
+            toast.error("This column can't be moved.")
         }
         // clean-up for the element used as an image for the column DnD
         const element = document.getElementById("ghost-ID")
@@ -454,6 +454,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
             setFinishedDeleting(true)
             //@ts-ignore
             dispatch(getWordsSimplified()) // to update the list of words displayed on the table
+            setRowSelection({})
         }
     }, [isLoading, finishedDeleting])
 
