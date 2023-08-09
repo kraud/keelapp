@@ -25,3 +25,9 @@ export interface NounItem {
     word: string,
     caseName: NounCases, // the type on noun stored in "word" property
 }
+
+export interface SearchResults {
+    id: string,
+    label: string,
+    language: Lang,
+}

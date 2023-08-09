@@ -15,8 +15,8 @@ const wordSchema = mongoose.Schema(
             type: [{
                 language: String,
                 cases: [{
-                    word: String,
-                    caseName: String,
+                    word: {type: String},
+                    caseName: {type: String},
                     _id: false
                 }]
             }],

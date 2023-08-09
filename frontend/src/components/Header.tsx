@@ -16,6 +16,8 @@ import {logout, resetState} from "../features/auth/authSlice";
 import {useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
+import {AutocompleteSearch} from "./AutocompleteSearch";
+import globalTheme from "../theme/theme";
 
 const pages = ['Add word', 'Practice', 'Review'];
 const settings = ['Dashboard', 'Logout'];
@@ -210,7 +212,16 @@ function ResponsiveAppBar() {
                             </Button>
                         ))}
                     </Box>
-
+                    <Box
+                        sx={{
+                            flexGrow: 1,
+                            display: { xs: 'none', md: 'flex' },
+                            justifyContent: 'end',
+                            marginRight: globalTheme.spacing(6)
+                        }}
+                    >
+                        <AutocompleteSearch/>
+                    </Box>
                     {/* USER ICON */}
                     <Box sx={{ flexGrow: 0 }}>
                         <Tooltip title="Open settings">

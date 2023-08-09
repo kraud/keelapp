@@ -63,9 +63,21 @@ const updateWordById = async (token: any, updatedData: WordDataBE) => {
     return(response.data)
 }
 
+const searchWord = async (token: any, query: string) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        },
+        params: {
+            query: query,
+        }
+    }
+    const response = await axios.get(`${API_URL}/searchWord`, config)
+    return(response.data)
+}
 
 const wordService = {
-    createWord, getWords, getWordsSimplified, getWordById, updateWordById, deleteWordById
+    createWord, getWords, getWordsSimplified, getWordById, updateWordById, deleteWordById, searchWord
 }
 
 export default wordService

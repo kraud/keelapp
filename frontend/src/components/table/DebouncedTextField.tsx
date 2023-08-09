@@ -22,7 +22,6 @@ export function DebouncedTextField({
     fullWidth,
    ...props
 }: DebouncedTextFieldProps & Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange'>) {
-
     const [value, setValue] = useState(initialValue)
 
     useEffect(() => {

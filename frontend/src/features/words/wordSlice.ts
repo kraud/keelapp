@@ -1,6 +1,6 @@
 import {createSlice, createAsyncThunk, PayloadAction} from "@reduxjs/toolkit"
 import wordService from "./wordService"
-import {WordData, WordDataBE} from "../../ts/interfaces";
+import {SearchResults, WordData, WordDataBE} from "../../ts/interfaces";
 
 interface worldSliceState {
     // list with full translation info for all words might not be needed?
@@ -8,6 +8,7 @@ interface worldSliceState {
     words: WordData[],
     wordsSimple: any[],
     word?: WordData,
+    searchResults: SearchResults[],
     isError: boolean,
     isSuccess: boolean,
     isLoading: boolean,
@@ -20,6 +21,7 @@ const initialState: worldSliceState = {
     word: {
         translations: []
     },
+    searchResults: [],
     isError: false,
     isSuccess: false,
     isLoading: false,
@@ -129,6 +131,24 @@ export const deleteWordById = createAsyncThunk(`words/updateWordById`, async (wo
     }
 })
 
+// Get a word data by its id
+export const searchWordByAnyTranslation = createAsyncThunk(`words/searchWord`, async (query: string, thunkAPI) => {
+    try {
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await wordService.searchWord(token, query)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
 export const wordSlice = createSlice({
     name: 'word',
     initialState,
@@ -206,6 +226,19 @@ export const wordSlice = createSlice({
                 state.word = (action.payload)
             })
             .addCase(updateWordById.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload as string
+            })
+            .addCase(searchWordByAnyTranslation.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(searchWordByAnyTranslation.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.searchResults = (action.payload)
+            })
+            .addCase(searchWordByAnyTranslation.rejected, (state, action) => {
                 state.isLoading = false
                 state.isError = true
                 state.message = action.payload as string
