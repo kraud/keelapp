@@ -6,6 +6,7 @@ import {FormSelector} from "./forms/FormSelector";
 import globalTheme from "../theme/theme";
 import Tooltip from "@mui/material/Tooltip";
 import {getCurrentLangTranslated} from "./generalUseFunctions";
+import {CountryFlag} from "./GeneralUseComponents";
 
 interface WordFormGenericProps {
     index: number, // needed to know on which item in completeWordData.translations list this form data is stored
@@ -124,6 +125,13 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                                     setCurrentLang(lang)
                                 }}
                             >
+                                <CountryFlag
+                                    country={lang}
+                                    border={true}
+                                    sxProps={{
+                                        marginRight: '10px',
+                                    }}
+                                />
                                 {lang}
                             </Button>
                         </Grid>

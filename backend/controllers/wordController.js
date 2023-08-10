@@ -175,6 +175,9 @@ const deleteWords = asyncHandler(async (req, res) => {
     res.status(200).json(word)
 })
 
+// @desc    Get a list of Words that match a search query in any of its translations
+// @route   Get /api/words/searchWord
+// @access  Private
 const filterWordByAnyTranslation = asyncHandler(async (req, res) => {
     if(!(req.query)){
         res.status(400)
@@ -196,16 +199,16 @@ const filterWordByAnyTranslation = asyncHandler(async (req, res) => {
         },
         "user": req.user
     })
-    // this will return a single option, representing at most a single translation PER word
-    // in the case of auto (same for ES, DE, EE), we would simply display the option for the last one listed inside of translations
-    // also see search: "men" for DE: MENschen && EE: iniMENe => this only displays 1 option (inimene), instead of both
-    // TODO: return an array from the iterations here and if > 1 => return a spread array with both options - both with same ID -
+    // this will return an array of options, representing one or more translation PER word,
+    // in case that more than one translation in a word matches the search query
     .then((data) => {
         if (data) {
-            const simpleResults = data.map((word) => {
-                let fullWord // word + language + id
-                let found = false
+            let simpleResults = []
+            data.forEach((word) => {
+                let fullWord = [] // word + language + id
                 word.translations.forEach((translation) => {
+                    // this should guarantee a single result per language
+                    let found = false // we reset the flag state when iterating over a new language
                     translation.cases.forEach((wordCase) => {
                         if(
                             ((wordCase.word).toLowerCase()).includes((req.query.query).toLowerCase())
@@ -214,17 +217,22 @@ const filterWordByAnyTranslation = asyncHandler(async (req, res) => {
                             &&
                             (!found) // TODO: change this to a specific case? to always display the "easiest" case if multiple do match
                         ){
-                            fullWord = {
+                            fullWord.push({
                                 id: word.id,
                                 language: translation.language,
                                 label: wordCase.word
-                            }
+                            })
                             found = true
                         }
                     })
                 })
-                return(fullWord)
+                simpleResults = [
+                    ...simpleResults,
+                    ...fullWord
+                ]
             })
+            // sort simpleResults by alphabetical order
+            simpleResults.sort((a, b) => a.label.localeCompare(b.label))
             res.status(200).json(simpleResults)
         } else {
             res.status(404).json({
