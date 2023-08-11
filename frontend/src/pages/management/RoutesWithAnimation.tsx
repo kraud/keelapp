@@ -5,6 +5,7 @@ import {Review} from "../Review";
 import Login from "../Login";
 import Register from "../Register";
 import React from "react";
+import {DisplayWord} from "../DisplayWord";
 
 export const routeVariantsAnimation = {
     initial: {
@@ -66,6 +67,12 @@ export function RoutesWithAnimation() {
                 path='/register'
                 element={
                     <Register/>
+                }
+            />
+            <Route
+                path='/word/:wordId?'
+                element={
+                    <DisplayWord defaultDisabled={true}/>
                 }
             />
         </Routes>

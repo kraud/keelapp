@@ -12,6 +12,8 @@ interface worldSliceState {
     isError: boolean,
     isSuccess: boolean,
     isLoading: boolean,
+    // needed a different loading status for search, since it's displayed simultaneously with other components that depend on isLoading
+    isSearchLoading: boolean,
     message: string,
 }
 
@@ -25,6 +27,7 @@ const initialState: worldSliceState = {
     isError: false,
     isSuccess: false,
     isLoading: false,
+    isSearchLoading: false,
     message: "",
 }
 
@@ -231,15 +234,15 @@ export const wordSlice = createSlice({
                 state.message = action.payload as string
             })
             .addCase(searchWordByAnyTranslation.pending, (state) => {
-                state.isLoading = true
+                state.isSearchLoading = true
             })
             .addCase(searchWordByAnyTranslation.fulfilled, (state, action) => {
-                state.isLoading = false
+                state.isSearchLoading = false
                 state.isSuccess = true
                 state.searchResults = (action.payload)
             })
             .addCase(searchWordByAnyTranslation.rejected, (state, action) => {
-                state.isLoading = false
+                state.isSearchLoading = false
                 state.isError = true
                 state.message = action.payload as string
             })

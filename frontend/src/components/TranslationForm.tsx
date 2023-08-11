@@ -10,9 +10,14 @@ import 'react-toastify/dist/ReactToastify.css';
 import {PartOfSpeechSelector} from "./PartOfSpeechSelector";
 
 interface TranslationFormProps {
-    onSave: (wordData: WordData) => void
+    onSave: (wordData: WordData) => void,
+    initialState?: WordData,
+    title: string,
+    subTitle: string,
+    defaultDisabled?: boolean
 }
 
+// TODO: should rename to WordForm, since this stores the complete*Word*Data
 export function TranslationForm(props: TranslationFormProps) {
     const {isSuccess, isLoading} = useSelector((state: any) => state.words)
 
@@ -32,6 +37,34 @@ export function TranslationForm(props: TranslationFormProps) {
             ]
         }
     )
+
+    const [disabledForms, setDisabledForms] = useState(false)
+
+    useEffect(() => {
+        if(props.defaultDisabled!){
+            setDisabledForms(true)
+        }
+    }, [props.defaultDisabled])
+
+    // In case we're loading an already existing word into the form, we need to set that data into the local state
+    useEffect(() => {
+        if(props.initialState !== undefined){
+            setCompleteWordData({
+                translations: (props.initialState.translations).map((translation: TranslationItem) => {
+                    return({
+                        ...translation,
+                        completionState: true,
+                        isDirty: false,
+                    })
+                }),
+                partOfSpeech: props.initialState.partOfSpeech,
+                clue: props.initialState.clue
+            })
+            if(props.initialState.partOfSpeech !== undefined){
+                setPartOfSpeech(props.initialState.partOfSpeech as PartOfSpeech)
+            }
+        }
+    },[props.initialState]) // TODO: should this be [] instead?
 
     // This function is used to update the list of currently selected languages and their status
     // It basically checks if the new data received corresponds to a language already stored.
@@ -101,7 +134,9 @@ export function TranslationForm(props: TranslationFormProps) {
     }
 
     useEffect(() => {
-        setAvailableLanguagesList()
+        if(completeWordData.translations !== undefined){
+            setAvailableLanguagesList()
+        }
     }, [(completeWordData.translations)])
 
 
@@ -127,8 +162,10 @@ export function TranslationForm(props: TranslationFormProps) {
     });
 
     useEffect(() => {
-        if(isLoading){
+        // if(isLoading){ // added recentlyModified to avoid triggering modal when loading Form from another screen
+        if(isLoading && recentlyModified){ // added recentlyModified to avoid triggering modal when loading Form from another screen
             notify()
+            setRecentlyModified(false)
         }
     }, [isLoading])
 
@@ -170,7 +207,6 @@ export function TranslationForm(props: TranslationFormProps) {
 
     const resetAll = () => {
         setPartOfSpeech(undefined)
-        setCompleteWordData({translations: []})
         setCompleteWordData(
             {
                 translations: [
@@ -191,14 +227,16 @@ export function TranslationForm(props: TranslationFormProps) {
         })
     }
 
+    const [recentlyModified, setRecentlyModified] = useState(false)
     const sanitizeDataForStorage = () => {
         const cleanData: TranslationItem[] = completeWordData.translations.map((translation: TranslationItem) => {
-            // This removes the completionState attribute, used during word-input, but that it should not be saved on BE
+            // This removes the InternalStatus properties, used during word-input, but that it should not be saved on BE
             return({
                 cases: translation.cases,
                 language: translation.language,
             })
         })
+        setRecentlyModified(true)
         props.onSave({
             ...completeWordData, // optional fields like: clue, askedToReviseSoon, etc.
             translations: cleanData,
@@ -208,7 +246,14 @@ export function TranslationForm(props: TranslationFormProps) {
 
     return(
         <>
-            {!(partOfSpeech!)
+            {
+                (
+                    !(partOfSpeech!) &&
+                    !(isLoading) &&
+                    (   // we should only display the PartOfSpeechSelector when creating new words
+                        (props.initialState === undefined)
+                    )
+                )
                 ?
                 <PartOfSpeechSelector
                     setPartOfSpeech={(part: PartOfSpeech) => setPartOfSpeech(part)}
@@ -231,13 +276,13 @@ export function TranslationForm(props: TranslationFormProps) {
                             <Typography
                                 variant={"h3"}
                             >
-                                Add a new word
+                                {props.title}
                             </Typography>
                             <Typography
                                 variant={"subtitle2"}
                                 align={"center"}
                             >
-                                All the required fields must be completed before saving
+                                {props.subTitle}
                             </Typography>
                         </Grid>
                         <Grid
@@ -253,10 +298,25 @@ export function TranslationForm(props: TranslationFormProps) {
                                 <Button
                                     variant={"outlined"}
                                     color={"error"}
-                                    onClick={() => resetAll()}
+                                    onClick={() => {
+                                        if(disabledForms){
+                                            setDisabledForms(false)
+                                        } else {
+                                            resetAll()
+                                        }
+                                    }}
                                     fullWidth={true}
+                                    /*
+                                    TODO: temporary fix - until we decide what this button should say/do when editing an existing word
+                                     Should we be able to fully reset a word to choose Part of Speech again, or should it simply allow to delete whole word?
+                                     Should there always be a "delete word" button next to "edit" when reviewing an existing word?
+                                    */
+                                    disabled={(props.initialState !== undefined) && !disabledForms}
                                 >
-                                    Reset
+                                    {(disabledForms)
+                                        ? "Edit"
+                                        : "Reset"
+                                    }
                                 </Button>
                             </Grid>
                             <Grid
@@ -268,6 +328,7 @@ export function TranslationForm(props: TranslationFormProps) {
                                     variant={"outlined"}
                                     fullWidth={true}
                                     disabled={
+                                    // TODO: fix disabled state to work correctly when loading an already stored word
                                         ((completeWordData.translations).length < 2)
                                         ||
                                         (((completeWordData.translations).filter((selectedLang) => {
@@ -294,103 +355,115 @@ export function TranslationForm(props: TranslationFormProps) {
                             </Grid>
                         </Grid>
                     }
-                    <Grid
-                        item={true}
-                        container={true}
-                        justifyContent={"center"}
-                    >
-                        {
-                            completeWordData.translations.map((translation: TranslationItem, index) => {
-                                return(
-                                    <WordFormGeneric
-                                        key={index}
-                                        index={index}
-                                        partOfSpeech={partOfSpeech}
-                                        availableLanguages={availableLanguages}
-                                        currentTranslationData={translation}
-                                        amountOfFormsOnScreen={completeWordData.translations.length}
-
-                                        removeLanguageFromSelected={(index: number, willUpdateLanguage: boolean) => {
-                                            removeLanguageFromSelected(index, willUpdateLanguage)
-                                        }}
-                                        updateFormData={(
-                                            formData: {
-                                                language: Lang,
-                                                cases?: NounItem[],
-                                                completionState?: boolean
-                                            },
-                                            index: number
-                                        ) => {
-                                            editTranslationsData(
-                                                formData,
-                                                completeWordData.translations,
-                                                (updatedList) => {
-                                                    setCompleteWordData({
-                                                        ...completeWordData,
-                                                        translations: updatedList
-                                                    })
-                                                },
-                                                index
-                                            )
-                                        }}
-                                    />
-                                )
-                            })
-                        }
-                    </Grid>
-                    {/* CLUE */}
-                    <Grid
-                        item={true}
-                        container={true}
-                        justifyContent={"center"}
-                    >
-                        <Grid
-                            item={true}
-                            xs={12}
-                            md={4}
-                        >
-                            <TextField
-                                label={"Clue"}
-                                multiline
-                                rows={3}
-                                value={(completeWordData.clue) ? completeWordData.clue : ""}
-                                onChange={(e: any) => {
-                                    setCompleteWordData({
-                                        ...completeWordData,
-                                        clue: e.target.value
-                                    })
-                                }}
-                                fullWidth={true}
-                            />
-                        </Grid>
-                    </Grid>
-                    {/* FORM BUTTONS */}
-                    <Grid
-                        item={true}
-                        container={true}
-                        spacing={2}
-                        justifyContent={"center"}
-                    >
-                        <Grid
-                            item={true}
-                        >
-                            <Button
-                                onClick={() => {
-                                    addEmptyLanguageForm()
-                                }}
-                                variant={"outlined"}
-                                disabled={(
-                                    // only true when all the languages are being used
-                                    (availableLanguages.length === 0)
-                                    ||
-                                    // or when the maximum amount of translations is reached
-                                    (completeWordData.translations.length === 4)
-                                )}
+                    {(
+                        (!isLoading) // if we're loading the detailed view, this will avoid displaying the empty forms
+                        ||
+                        (   // this combination is to keep the form on display while we're saving changes
+                            (isLoading) &&
+                            (recentlyModified)
+                        )
+                    ) &&
+                        <>
+                            <Grid
+                                item={true}
+                                container={true}
+                                justifyContent={"center"}
                             >
-                                Add another translation
-                            </Button>
-                        </Grid>
-                    </Grid>
+                                {
+                                    completeWordData.translations.map((translation: TranslationItem, index) => {
+                                        return(
+                                            <WordFormGeneric
+                                                key={index}
+                                                index={index}
+                                                partOfSpeech={partOfSpeech}
+                                                availableLanguages={availableLanguages}
+                                                currentTranslationData={translation}
+                                                amountOfFormsOnScreen={completeWordData.translations.length}
+                                                defaultDisabled={disabledForms}
+
+                                                removeLanguageFromSelected={(index: number, willUpdateLanguage: boolean) => {
+                                                    removeLanguageFromSelected(index, willUpdateLanguage)
+                                                }}
+                                                updateFormData={(
+                                                    formData: {
+                                                        language: Lang,
+                                                        cases?: NounItem[],
+                                                        completionState?: boolean
+                                                    },
+                                                    index: number
+                                                ) => {
+                                                    editTranslationsData(
+                                                        formData,
+                                                        completeWordData.translations,
+                                                        (updatedList) => {
+                                                            setCompleteWordData({
+                                                                ...completeWordData,
+                                                                translations: updatedList
+                                                            })
+                                                        },
+                                                        index
+                                                    )
+                                                }}
+                                            />
+                                        )
+                                    })
+                                }
+                            </Grid>
+                            {/* CLUE */}
+                            <Grid
+                                item={true}
+                                container={true}
+                                justifyContent={"center"}
+                            >
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                    md={4}
+                                >
+                                    <TextField
+                                        label={"Clue"}
+                                        multiline
+                                        rows={3}
+                                        value={(completeWordData.clue) ? completeWordData.clue : ""}
+                                        onChange={(e: any) => {
+                                            setCompleteWordData({
+                                                ...completeWordData,
+                                                clue: e.target.value
+                                            })
+                                        }}
+                                        fullWidth={true}
+                                    />
+                                </Grid>
+                            </Grid>
+                            {/* FORM BUTTONS */}
+                            <Grid
+                                item={true}
+                                container={true}
+                                spacing={2}
+                                justifyContent={"center"}
+                            >
+                                <Grid
+                                    item={true}
+                                >
+                                    <Button
+                                        onClick={() => {
+                                            addEmptyLanguageForm()
+                                        }}
+                                        variant={"outlined"}
+                                        disabled={(
+                                            // only true when all the languages are being used
+                                            (availableLanguages.length === 0)
+                                            ||
+                                            // or when the maximum amount of translations is reached
+                                            (completeWordData.translations.length === 4)
+                                        )}
+                                    >
+                                        Add another translation
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </>
+                    }
                 </Grid>}
         </>
     )

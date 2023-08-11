@@ -3,35 +3,36 @@ import React, {useEffect, useState} from "react";
 import {SearchResults} from "../ts/interfaces";
 import {searchWordByAnyTranslation} from "../features/words/wordSlice";
 import {useDispatch, useSelector} from "react-redux";
-import {ImportContacts} from "@mui/icons-material";
 import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from '@mui/icons-material/Search';
 import globalTheme from "../theme/theme";
 import {CountryFlag} from "./GeneralUseComponents";
+import {useNavigate} from "react-router-dom";
 
 interface AutocompleteSearchProps {
 
 }
 
 export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
+    const navigate = useNavigate()
     const [value, setValue] = useState<SearchResults|null>(null)
     const [inputValue, setInputValue] = useState<string>('')
     const [options, setOptions] = useState<SearchResults[]>([])
     const [open, setOpen] = useState(false)
     const [loadingLocal, setLoadingLocal] = useState(false)
     const dispatch = useDispatch()
-    const {searchResults, isLoading} = useSelector((state: any) => state.words)
+    const {searchResults, isSearchLoading} = useSelector((state: any) => state.words)
 
     // if we simply depend on isLoading, the text on the first option reads "no matches" for a second, before "Loading.."
     useEffect(() => {
-        if(!isLoading && loadingLocal){ // only valid once isLoading catches up with loadingLocal, and then finishes
+        if(!isSearchLoading && loadingLocal){ // only valid once isLoading catches up with loadingLocal, and then finishes
             setLoadingLocal(false)
         } else {
-            if(isLoading){
+            if(isSearchLoading){
                 setOptions([])
             }
         }
-    }, [isLoading])
+    }, [isSearchLoading])
 
     // this triggers when we type something on the search field
     useEffect(() => {
@@ -54,12 +55,10 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
 
     // this triggers once we select something from the list
     useEffect(() => {
-        if (inputValue === '') {
-            setOptions(value ? [value] : []);
-            return undefined;
-        }
-        // dispatch getById with data from selected value and when results are updated, we load them and change screen
-        return () => {
+        if(value !== null){
+            navigate(`/word/${value.id}`) // should we somehow check if value.id is something valid?
+            setOpen(false)
+            setValue(null)
         }
     }, [value])
 
@@ -68,21 +67,23 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
             open={open}
             forcePopupIcon={false}
             clearIcon={<ClearIcon />}
-            sx={{ width: 300 }}
+            sx={{ width: 250 }}
             getOptionLabel={(option: SearchResults) => option.label}
             isOptionEqualToValue={(option, value) => option.id === value.id}
             filterOptions={(x: any) => x} // necessary to implement filter on server
-            options={(loadingLocal || isLoading) ?[] :options}
+            options={(loadingLocal || isSearchLoading) ?[] :options}
             autoComplete
             includeInputInList
             filterSelectedOptions
             value={value}
-            noOptionsText={(loadingLocal || isLoading) ?"Loading..." :"No matches"}
+            noOptionsText={(loadingLocal || isSearchLoading) ?"Loading..." :"No matches"}
             onChange={(event: any, newValue: SearchResults | null) => {
                 setValue(newValue)
+                // if(newValue !== null){
+                //     navigate(`/word/${newValue.id}`)
+                //     setOpen(false)
+                // }
             }}
-            // TODO: define desired behaviour - should it display "Loading..." after every change?
-            //  Better to display last results (as it is now)?
             onInputChange={(event, newInputValue) => {
                 if (newInputValue.length === 0) {
                     if (open) {
@@ -116,7 +117,7 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                                             },
                                         }}
                                     >
-                                        {(loadingLocal || isLoading)
+                                        {(loadingLocal || isSearchLoading)
                                             //@ts-ignore
                                             ? <CircularProgress color={"allWhite"}/>
                                             //@ts-ignore
@@ -129,7 +130,6 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                         fullWidth
                         sx={{
                             '& .MuiAutocomplete-inputRoot': {
-                                // background: 'white',
                                 borderBottom: '2px white solid',
                                 "& ::placeholder": {
                                     color: "white",
@@ -147,8 +147,6 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                         //@ts-ignore
                         key={props['data-option-index'] as number}
                         style={{
-                            // marginTop: 0,
-                            // marginBottom: 0,
                             paddingTop: 0,
                             paddingBottom: 0,
                             paddingLeft: 0,

@@ -4,7 +4,6 @@ import {yupResolver} from "@hookform/resolvers/yup/dist/yup";
 import {Grid} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {TextInputFormWithHook} from "../TextInputFormHook";
-import {SelectFormWithHook} from "../SelectFormHook";
 import {NounItem, TranslationItem} from "../../ts/interfaces";
 import {Lang, NounCases} from "../../ts/enums";
 import {getDisabledInputFieldDisplayLogic, getWordByCase} from "./commonFunctions";
@@ -24,7 +23,7 @@ export function WordFormES(props: WordFormESProps) {
         gender: Yup.string().required("Required")
             .oneOf(["el", "la", "el/la"], "Required"),
         singular: Yup.string()
-            .required("Word is required")
+            .required("Singular form is required")
             .matches(/^[^0-9]+$/, 'Must not include numbers'),
         plural: Yup.string().nullable()
             .matches(/^[^0-9]+$|^$/, 'Must not include numbers')

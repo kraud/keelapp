@@ -1,6 +1,6 @@
 import {Lang, PartOfSpeech} from "../../ts/enums";
 import {WordFormES} from "./WordFormES";
-import {NounItem, TranslationItem} from "../../ts/interfaces";
+import {TranslationItem} from "../../ts/interfaces";
 import React from "react";
 import {WordFormEN} from "./WordFormEN";
 import {WordFormDE} from "./WordFormDE";
@@ -14,6 +14,7 @@ interface FormSelectorProps {
     displayOnly?: boolean
 }
 
+// TODO: should rename to FormLanguageSelector, since we set the Form for the selected language
 export function FormSelector(props: FormSelectorProps) {
 
 

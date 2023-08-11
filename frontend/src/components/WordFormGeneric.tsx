@@ -1,6 +1,6 @@
 import {Button, Grid, Typography} from "@mui/material";
 import React, {useEffect, useState} from "react";
-import {NounItem, TranslationItem} from "../ts/interfaces";
+import {TranslationItem} from "../ts/interfaces";
 import {Lang, PartOfSpeech} from "../ts/enums";
 import {FormSelector} from "./forms/FormSelector";
 import globalTheme from "../theme/theme";
@@ -14,6 +14,7 @@ interface WordFormGenericProps {
     availableLanguages: Lang[], // list provided by parent component, so we know which languages can be displayed as options to choose from
     currentTranslationData: TranslationItem,
     amountOfFormsOnScreen: number,
+    defaultDisabled?: boolean
 
     removeLanguageFromSelected: (
         index: number,
@@ -26,6 +27,7 @@ interface WordFormGenericProps {
 }
 
 
+// TODO: should rename to TranslationFormGeneric, since this stores refers to all the data corresponding to a specific language
 // Displays available language options, and once selected it displays the correct fields to input
 // This form will only display buttons/textfields/selects for A SINGLE language+word combo
 export function WordFormGeneric(props: WordFormGenericProps) {
@@ -156,10 +158,10 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                 justifyContent={"center"}
                 spacing={2}
             >
-                {(currentLang == null)
+                {((currentLang == null) && !(currentTranslationData.language!!))
                     ?
                         languageButtonList()
-                    :
+                    : (currentLang !== null) &&
                         <Typography
                             variant={"h3"}
                             sx={componentStyles.languageTitle}
@@ -174,53 +176,57 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                 container={true}
                 justifyContent={"center"}
             >
-                {(currentLang == null)
+                {((currentLang == null) && !(currentTranslationData.language!!))
                     ?
                     <Typography
                         variant={"subtitle2"}
                     >
                         Pick a language for the new word
                     </Typography>
-                    :
-                    <FormSelector
-                        currentLang={currentLang}
-                        currentTranslationData={props.currentTranslationData}
-                        partOfSpeech={props.partOfSpeech}
-                        updateFormData={(formData: TranslationItem) => {
-                            props.updateFormData(
-                                {
-                                    ...formData,
-                                    // To avoid saving empty cases,
-                                    cases: formData.cases.filter((nounCase) => (nounCase.word !== "")),
-                                },
-                                props.index
-                            )
-                        }}
-                    />
+                    : (currentLang !== null) &&
+                        <FormSelector
+                            // TODO: add displayOnly prop according to props.disabledDefault
+                            currentLang={currentLang}
+                            currentTranslationData={props.currentTranslationData}
+                            partOfSpeech={props.partOfSpeech}
+                            displayOnly={props.defaultDisabled}
+                            updateFormData={(formData: TranslationItem) => {
+                                props.updateFormData(
+                                    {
+                                        ...formData,
+                                        // To avoid saving empty cases,
+                                        cases: formData.cases.filter((nounCase) => (nounCase.word !== "")),
+                                    },
+                                    props.index
+                                )
+                            }}
+                        />
+
                 }
             </Grid>
             {/* Additional buttons */}
-            <Grid
-                item={true}
-                container={true}
-                justifyContent={"space-between"}
-                sx={{
-                    marginTop: globalTheme.spacing(2)
-                }}
-            >
+            {!(props.defaultDisabled!!) &&
                 <Grid
                     item={true}
                     container={true}
-                    spacing={1}
-                    justifyContent={"flex-start"}
-                    xs={"auto"} // so it grows to use only the necessary width to render the buttons
+                    justifyContent={"space-between"}
+                    sx={{
+                        marginTop: globalTheme.spacing(2)
+                    }}
                 >
                     <Grid
                         item={true}
+                        container={true}
+                        spacing={1}
+                        justifyContent={"flex-start"}
+                        xs={"auto"} // so it grows to use only the necessary width to render the buttons
                     >
-                        <Tooltip
-                            title={(props.amountOfFormsOnScreen < 3) ? "You need at least 2 translations" : ""}
+                        <Grid
+                            item={true}
                         >
+                            <Tooltip
+                                title={(props.amountOfFormsOnScreen < 3) ? "You need at least 2 translations" : ""}
+                            >
                             <span>
                                 <Button
                                     variant={"outlined"}
@@ -237,35 +243,36 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                                     REMOVE
                                 </Button>
                             </span>
-                        </Tooltip>
-                    </Grid>
-                    {(currentLang !== null) &&
-                        <Grid
-                            item={true}
-                        >
-                            <Button
-                                variant={"outlined"}
-                                onClick={() => {
-                                    props.removeLanguageFromSelected(props.index, true)
-                                    setCurrentLang(null)
-                                }}
-                            >
-                                CLEAR
-                            </Button>
+                            </Tooltip>
                         </Grid>
-                    }
+                        {(currentLang !== null && (currentTranslationData.language!!)) &&
+                            <Grid
+                                item={true}
+                            >
+                                <Button
+                                    variant={"outlined"}
+                                    onClick={() => {
+                                        props.removeLanguageFromSelected(props.index, true)
+                                        setCurrentLang(null)
+                                    }}
+                                >
+                                    CLEAR
+                                </Button>
+                            </Grid>
+                        }
+                    </Grid>
+                    <Grid
+                        item={true}
+                        container={true}
+                        justifyContent={"flex-end"}
+                        alignItems={"flex-end"}
+                        xs // so it grows to take all the space left available on this row
+                        spacing={1}
+                    >
+                        {(currentLang !== null && (currentTranslationData.language!!)) && languageButtonList()}
+                    </Grid>
                 </Grid>
-                <Grid
-                    item={true}
-                    container={true}
-                    justifyContent={"flex-end"}
-                    alignItems={"flex-end"}
-                    xs // so it grows to take all the space left available on this row
-                    spacing={1}
-                >
-                    {(currentLang !== null) && languageButtonList()}
-                </Grid>
-            </Grid>
+            }
         </Grid>
     )
 }

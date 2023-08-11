@@ -38,6 +38,8 @@ export function AddWord() {
             }}
         >
             <TranslationForm
+                title={"Add a new word"}
+                subTitle={"All the required fields must be completed before saving"}
                 onSave={(wordData: WordData) => {
                     //@ts-ignore
                     dispatch(createWord(wordData))

@@ -20,7 +20,7 @@ export function WordFormEN(props: WordFormENProps) {
 
     const validationSchema = Yup.object().shape({
         singular: Yup.string()
-            .required("Word is required")
+            .required("Singular form is required")
             .matches(/^[^0-9]+$/, 'Must not include numbers'),
         plural: Yup.string().nullable()
             .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),

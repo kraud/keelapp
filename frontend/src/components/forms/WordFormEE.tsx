@@ -20,7 +20,7 @@ export function WordFormEE(props: WordFormEEProps) {
 
     const validationSchema = Yup.object().shape({
         singularNimetav: Yup.string()
-            .required("Singular nominativ is required")
+            .required("Singular nimetav is required")
             .matches(/^[^0-9]+$/, 'Must not include numbers'),
         pluralNimetav: Yup.string().nullable()
             .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
