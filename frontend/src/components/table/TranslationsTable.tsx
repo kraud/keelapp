@@ -19,10 +19,11 @@ import ReactDOM from 'react-dom/client';
 import {DebouncedTextField} from "./DebouncedTextField";
 import {SortDirection} from "@tanstack/table-core/build/lib/features/Sorting";
 import {useDispatch, useSelector} from "react-redux";
-import {deleteWordById, getWordsSimplified} from "../../features/words/wordSlice";
+import {deleteWordById, getWordsSimplified, searchWordByAnyTranslation} from "../../features/words/wordSlice";
 import {Theme} from "@mui/material/styles";
 import {SxProps} from "@mui/system";
 import {getCurrentLangTranslated} from "../generalUseFunctions";
+import {useNavigate} from "react-router-dom";
 
 type TableWordData = {
     id: string,
@@ -119,6 +120,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
     const [rowSelection, setRowSelection] = React.useState({})
     const dispatch = useDispatch()
     const {isLoading, isError, message} = useSelector((state: any) => state.words)
+    const navigate = useNavigate()
 
     // default sort function is case-sensitive, so we need to implement a new one
     const sortItemsCaseInsensitive = (prev: Row<any>, curr: Row<any>, columnId: string) => {
@@ -442,6 +444,12 @@ export function TranslationsTable(props: TranslationsTableProps) {
         })
     }
 
+    const goToDetailedView = () => {
+        // rowSelection format:
+        // { selectedRowIndex: true } // TODO: should we change it to saving the row info instead?
+        navigate(`/word/${data[parseInt(Object.keys(rowSelection)[0])].id}`)
+    }
+
     useEffect(() => {
         // isLoading switches back to false once the response from backend is set on redux
         // finishedDeleting will only be false while waiting for a response from backend
@@ -487,6 +495,25 @@ export function TranslationsTable(props: TranslationsTableProps) {
                 justifyContent={"flex-end"}
                 spacing={2}
             >
+                {(Object.keys(rowSelection).length === 1) &&
+                <Grid
+                    item={true}
+                    container={true}
+                    alignContent={"center"}
+                    xs={"auto"}
+                >
+                    <Grid
+                        item={true}
+                    >
+                        <Button
+                            variant={"outlined"}
+                            onClick={() => goToDetailedView()}
+                        >
+                            Detailed View
+                        </Button>
+                    </Grid>
+                </Grid>
+                }
                 {(Object.keys(rowSelection).length > 0) &&
                 <Grid
                     item={true}
