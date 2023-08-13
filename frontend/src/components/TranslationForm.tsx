@@ -451,6 +451,7 @@ export function TranslationForm(props: TranslationFormProps) {
                                             })
                                         }}
                                         fullWidth={true}
+                                        disabled={disabledForms}
                                     />
                                 </Grid>
                             </Grid>
