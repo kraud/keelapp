@@ -3,7 +3,7 @@ import React, {useEffect, useState} from "react";
 import {WordFormGeneric} from "./WordFormGeneric";
 import {NounItem, TranslationItem, WordData} from "../ts/interfaces";
 import {Lang, PartOfSpeech} from "../ts/enums";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import LinearIndeterminate from "./Spinner";
 import {toast, Flip} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -151,7 +151,7 @@ export function TranslationForm(props: TranslationFormProps) {
         draggable: true,
         progress: undefined,
         theme: "colored",
-    });
+    })
     // @ts-ignore
     const update = () => toast.update(toastId.current, {
         render: "The word was saved successfully!",
@@ -159,7 +159,7 @@ export function TranslationForm(props: TranslationFormProps) {
         autoClose: 5000,
         transition: Flip,
         delay: 500
-    });
+    })
 
     useEffect(() => {
         // if(isLoading){ // added recentlyModified to avoid triggering modal when loading Form from another screen
@@ -244,6 +244,14 @@ export function TranslationForm(props: TranslationFormProps) {
         })
     }
 
+    // hack to trigger re-rendering - alternative would've required changes in all language forms
+    // and could cause unforeseen side effects
+    // TODO: add timeout and during it display an animation?
+    const [hideView, setHideView] = useState(false)
+    useEffect(() => {
+        setHideView(false)
+    }, [hideView])
+
     return(
         <>
             {
@@ -301,6 +309,10 @@ export function TranslationForm(props: TranslationFormProps) {
                                     onClick={() => {
                                         if(disabledForms){
                                             setDisabledForms(false)
+                                        } else if(props.initialState !== undefined) {
+                                            setCompleteWordData(props.initialState)
+                                            setHideView(true)
+                                            setDisabledForms(true)
                                         } else {
                                             resetAll()
                                         }
@@ -308,14 +320,17 @@ export function TranslationForm(props: TranslationFormProps) {
                                     fullWidth={true}
                                     /*
                                     TODO: temporary fix - until we decide what this button should say/do when editing an existing word
-                                     Should we be able to fully reset a word to choose Part of Speech again, or should it simply allow to delete whole word?
+                                     Should we be able to fully reset a word to choose Part of Speech again, (rta: NO, that would require to switch forms; better delete and restart)
+                                     or should it simply allow to delete whole word? (rta: should be possible from here too)
                                      Should there always be a "delete word" button next to "edit" when reviewing an existing word?
                                     */
-                                    disabled={(props.initialState !== undefined) && !disabledForms}
+                                    // disabled={(props.initialState !== undefined) && !disabledForms}
                                 >
                                     {(disabledForms)
                                         ? "Edit"
-                                        : "Reset"
+                                        : (props.initialState !== undefined)
+                                            ? "Cancel"
+                                            : "Reset"
                                     }
                                 </Button>
                             </Grid>
@@ -356,12 +371,16 @@ export function TranslationForm(props: TranslationFormProps) {
                         </Grid>
                     }
                     {(
-                        (!isLoading) // if we're loading the detailed view, this will avoid displaying the empty forms
-                        ||
-                        (   // this combination is to keep the form on display while we're saving changes
-                            (isLoading) &&
-                            (recentlyModified)
+                        (
+                            (!isLoading) // if we're loading the detailed view, this will avoid displaying the empty forms
+                            ||
+                            (   // this combination is to keep the form on display while we're saving changes
+                                (isLoading) &&
+                                (recentlyModified)
+                            )
                         )
+                        &&
+                        (!hideView)
                     ) &&
                         <>
                             <Grid

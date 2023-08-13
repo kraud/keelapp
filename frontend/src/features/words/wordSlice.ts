@@ -12,7 +12,7 @@ interface worldSliceState {
     isError: boolean,
     isSuccess: boolean,
     isLoading: boolean,
-    // needed a different loading status for search, since it's displayed simultaneously with other components that depend on isLoading
+    // different loading status for search, since it's displayed simultaneously with other components that depend on isLoading
     isSearchLoading: boolean,
     message: string,
 }

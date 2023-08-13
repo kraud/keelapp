@@ -185,7 +185,6 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                     </Typography>
                     : (currentLang !== null) &&
                         <FormSelector
-                            // TODO: add displayOnly prop according to props.disabledDefault
                             currentLang={currentLang}
                             currentTranslationData={props.currentTranslationData}
                             partOfSpeech={props.partOfSpeech}

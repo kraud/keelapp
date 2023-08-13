@@ -48,7 +48,7 @@ export function DisplayWord(props: DisplayWordProps){
             }}
         >
             {(isLoading)
-                ? "Loading"
+                ? "Loading" // TODO: add a 'loading' word-spinner?
                 :
                 <TranslationForm
                     title={"Detailed view"}
