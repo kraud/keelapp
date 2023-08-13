@@ -455,35 +455,38 @@ export function TranslationForm(props: TranslationFormProps) {
                                 </Grid>
                             </Grid>
                             {/* FORM BUTTONS */}
-                            <Grid
-                                item={true}
-                                container={true}
-                                spacing={2}
-                                justifyContent={"center"}
-                            >
+                            {(!disabledForms) &&
                                 <Grid
                                     item={true}
+                                    container={true}
+                                    spacing={2}
+                                    justifyContent={"center"}
                                 >
-                                    <Button
-                                        onClick={() => {
-                                            addEmptyLanguageForm()
-                                        }}
-                                        variant={"outlined"}
-                                        disabled={(
-                                            // only true when all the languages are being used
-                                            (availableLanguages.length === 0)
-                                            ||
-                                            // or when the maximum amount of translations is reached
-                                            (completeWordData.translations.length === 4)
-                                        )}
+                                    <Grid
+                                        item={true}
                                     >
-                                        Add another translation
-                                    </Button>
+                                        <Button
+                                            onClick={() => {
+                                                addEmptyLanguageForm()
+                                            }}
+                                            variant={"outlined"}
+                                            disabled={(
+                                                // only true when all the languages are being used
+                                                (availableLanguages.length === 0)
+                                                ||
+                                                // or when the maximum amount of translations is reached
+                                                (completeWordData.translations.length === 4)
+                                            )}
+                                        >
+                                            Add another translation
+                                        </Button>
+                                    </Grid>
                                 </Grid>
-                            </Grid>
+                            }
                         </>
                     }
-                </Grid>}
+                </Grid>
+            }
         </>
     )
 }

@@ -12,6 +12,8 @@ interface SpinningTextProps {
     color?: "primary" | "secondary",
     direction?: "up" | "down",
     justifyContent?: 'center' | 'flex-start' | 'flex-end'
+    fastDisplay?: boolean,
+    speedFunction?: (x: number) => number
 }
 
 // NB! This is intended to be used for titles or short phrases.
@@ -30,8 +32,8 @@ export function SpinningText(props: SpinningTextProps) {
             opacity: 1,
             y: "0px",
             transition: {
-                duration: 0.45,
-                delay: 0.65,
+                duration: (props.fastDisplay!) ? 0.15 :0.45,
+                delay: (props.fastDisplay!) ? 0.25 :0.65,
             },
         }
     }
@@ -44,13 +46,18 @@ export function SpinningText(props: SpinningTextProps) {
     // We iterate through an increasing number to trigger the reel rolling animation
     let intervalID = useRef(null) //using useRef hook to maintain state changes across re-renders
     useEffect(() => {
-        let speedFactor = calculateReelSpeed(value)
+        let speedFactor = 1
+        if(props.speedFunction !== undefined){
+            speedFactor = (props.speedFunction(value))
+        } else {
+            speedFactor = calculateReelSpeed(value)
+        }
 
         if (value < reelSpins) {
             // @ts-ignore
             intervalID.current = setInterval(() => {
                 setValue((value) => value + 1)
-            }, (125*(1/speedFactor)))
+            }, (125*(speedFactor)))
         }
         // @ts-ignore
         return () => clearInterval(intervalID.current) //clear previous interval when unmounting.
