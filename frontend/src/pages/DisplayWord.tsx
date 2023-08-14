@@ -7,7 +7,7 @@ import {TranslationForm} from "../components/TranslationForm";
 import {WordData} from "../ts/interfaces";
 import {useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {getWordById} from "../features/words/wordSlice";
+import {getWordById, updateWordById} from "../features/words/wordSlice";
 import {toast} from "react-toastify";
 import {LoadingScreen} from "../components/LoadingScreen";
 
@@ -22,8 +22,9 @@ export function DisplayWord(props: DisplayWordProps){
     const dispatch = useDispatch()
     // @ts-ignore
     const { wordId } = useParams<RouterWordProps>()
-    const {word, isLoading} = useSelector((state: any) => state.words)
+    const {word, isLoading, isError, message} = useSelector((state: any) => state.words)
     const [displayContent, setDisplayContent] = useState(false)
+    const [finishedUpdating, setFinishedUpdating] = useState(true)
 
     useEffect(() => {
         if(wordId!!) {
@@ -37,6 +38,27 @@ export function DisplayWord(props: DisplayWordProps){
             setDisplayContent(false)
         }
     },[isLoading])
+
+
+    useEffect(() => {
+        if(isError){
+            toast.error(`Something went wrong: ${message}`, {
+                toastId: "click-on-modal"
+            })
+        }
+    }, [isError, message])
+
+    useEffect(() => {
+        // isLoading switches back to false once the response from backend is set on redux
+        // finishedUpdating will only be false while waiting for a response from backend
+        if(!finishedUpdating && !isLoading){
+            toast.success(`Word was updated successfully`, {
+                toastId: "click-on-modal"
+            })
+            // we reverse to the original state, before sending data to update
+            setFinishedUpdating(true)
+        }
+    }, [isLoading, finishedUpdating])
 
     // TODO: should this be a reusable component to simplify having a loading screen or better to do it on a case by case basis?
     return(
@@ -56,21 +78,23 @@ export function DisplayWord(props: DisplayWordProps){
                 marginBottom: globalTheme.spacing(4),
             }}
         >
-            <LoadingScreen
-                loadingTextList={[
-                    "Loading...",
-                    "Cargando...",
-                    "Laadimine...",
-                    "Laden...",
-                ]}
-                callback={() => setDisplayContent(true) }
-                sxProps={{
-                    // when displaying content we hide this (display 'none'),
-                    // but when not we simply display it as it normally would ('undefined' changes)
-                    display: (!displayContent) ?undefined :"none",
-                }}
-                displayTime={2500}
-            />
+            {(!displayContent) &&
+                <LoadingScreen
+                    loadingTextList={[
+                        "Loading...",
+                        "Cargando...",
+                        "Laadimine...",
+                        "Laden...",
+                    ]}
+                    callback={() => setDisplayContent(true) }
+                    sxProps={{
+                        // when displaying content we hide this (display 'none'),
+                        // but when not we simply display it as it normally would ('undefined' changes)
+                        display: (!displayContent) ?undefined :"none",
+                    }}
+                    displayTime={2500}
+                />
+            }
             <div
                 style={{
                     display: (displayContent) ?undefined :"none",
@@ -80,10 +104,15 @@ export function DisplayWord(props: DisplayWordProps){
                     title={"Detailed view"}
                     subTitle={"All the currently stored translations for this word"}
                     onSave={(wordData: WordData) => {
-                        console.log(wordData)
-                        toast.info(`Word editing from this screen is not yet implemented.`, {
-                            toastId: "DisplayWord-wordData"
-                        })
+                        const updatedWordData = {
+                            id: wordId,
+                            clue: wordData.clue,
+                            partOfSpeech: wordData.partOfSpeech,
+                            translations: wordData.translations,
+                        }
+                        //@ts-ignore
+                        dispatch(updateWordById(updatedWordData))
+                        setFinishedUpdating(false)
                     }}
                     initialState={word}
                     defaultDisabled={props.defaultDisabled}

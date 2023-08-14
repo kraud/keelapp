@@ -3,7 +3,7 @@ import React, {useEffect, useState} from "react";
 import {WordFormGeneric} from "./WordFormGeneric";
 import {NounItem, TranslationItem, WordData} from "../ts/interfaces";
 import {Lang, PartOfSpeech} from "../ts/enums";
-import {useDispatch, useSelector} from "react-redux";
+import {useSelector} from "react-redux";
 import LinearIndeterminate from "./Spinner";
 import {toast, Flip} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -144,7 +144,9 @@ export function TranslationForm(props: TranslationFormProps) {
     // @ts-ignore
     const notify = () => toastId.current = toast.info('Saving...', {
         position: "bottom-right",
-        autoClose: false,
+        // if initialState exist => saving toast should close automatically, because we're editing a word and success is triggered from calling screen
+        // if no initialState => saving should be displayed but not closed, since it'll be replaced by "update" automatically
+        autoClose: (props.initialState! !== undefined) ? 3000 : false,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -162,7 +164,6 @@ export function TranslationForm(props: TranslationFormProps) {
     })
 
     useEffect(() => {
-        // if(isLoading){ // added recentlyModified to avoid triggering modal when loading Form from another screen
         if(isLoading && recentlyModified){ // added recentlyModified to avoid triggering modal when loading Form from another screen
             notify()
             setRecentlyModified(false)
@@ -242,6 +243,8 @@ export function TranslationForm(props: TranslationFormProps) {
             translations: cleanData,
             partOfSpeech: partOfSpeech,
         })
+        // when editing an existing word, we must then set the TextFields back to disabled
+        setDisabledForms(true)
     }
 
     // hack to trigger re-rendering - alternative would've required changes in all language forms
@@ -343,11 +346,16 @@ export function TranslationForm(props: TranslationFormProps) {
                                     variant={"outlined"}
                                     fullWidth={true}
                                     disabled={
-                                    // TODO: fix disabled state to work correctly when loading an already stored word
                                         ((completeWordData.translations).length < 2)
                                         ||
                                         (((completeWordData.translations).filter((selectedLang) => {
                                             return (!selectedLang.completionState)
+                                        })).length > 0)
+                                        ||
+                                        (disabledForms)
+                                        ||
+                                        !(((completeWordData.translations).filter((selectedLang) => {
+                                            return (selectedLang.isDirty)
                                         })).length > 0)
                                     }
                                 >
