@@ -69,7 +69,7 @@ export function TableDataCell(props: TableDataCellProps){
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            width: '80vw',
+            width: 'min(80vw, max-content)',
             background: 'white',
             border: '4px solid #0072CE',
             borderRadius: '25px',

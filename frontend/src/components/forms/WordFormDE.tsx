@@ -221,18 +221,22 @@ export function WordFormDE(props: WordFormDEProps) {
 
     return(
         <Grid
-            item={true}
+            container={true}
+            justifyContent={"center"}
         >
-            <form>
+            <form
+                style={{
+                    width: '100%',
+                }}
+            >
                 <Grid
-                    container={true}
-                    justifyContent={"left"}
                     item={true}
+                    container={true}
                     spacing={2}
                 >
                     <Grid
                         item={true}
-                        container={true}
+                        xs={12}
                     >
                         <RadioGroupWithHook
                             control={control}
@@ -244,7 +248,7 @@ export function WordFormDE(props: WordFormDEProps) {
                             onChange={(value: any) => {
                                 setGenderWord(value)
                             }}
-                            fullWidth={true}
+                            fullWidth={false}
                             disabled={props.displayOnly}
                         />
                     </Grid>

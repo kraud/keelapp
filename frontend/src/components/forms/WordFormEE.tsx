@@ -183,9 +183,13 @@ export function WordFormEE(props: WordFormEEProps) {
 
     return(
         <Grid
-            item={true}
+            container={true}
         >
-            <form>
+            <form
+                style={{
+                    width: '100%'
+                }}
+            >
                 <Grid
                     container={true}
                     justifyContent={"left"}
