@@ -495,6 +495,26 @@ export function TranslationsTable(props: TranslationsTableProps) {
                 justifyContent={"flex-end"}
                 spacing={2}
             >
+                {(Object.keys(rowSelection).length > 1) &&
+                <Grid
+                    item={true}
+                    container={true}
+                    alignContent={"center"}
+                    xs={"auto"}
+                >
+                    <Grid
+                        item={true}
+                    >
+                        <Button
+                            variant={"outlined"}
+                            onClick={() => null}
+                            disabled={true} // TODO: be be implemented soon, will redirect to a version of the Practice screen
+                        >
+                            Create exercises
+                        </Button>
+                    </Grid>
+                </Grid>
+                }
                 {(Object.keys(rowSelection).length === 1) &&
                 <Grid
                     item={true}

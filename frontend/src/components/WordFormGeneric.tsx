@@ -175,7 +175,6 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                 item={true}
                 container={true}
                 justifyContent={"flex-start"}
-                // justifyContent={"center"}
             >
                 {((currentLang == null) && !(currentTranslationData.language!!))
                     ?
