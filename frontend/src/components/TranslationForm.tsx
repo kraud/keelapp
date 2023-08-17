@@ -437,32 +437,34 @@ export function TranslationForm(props: TranslationFormProps) {
                                 }
                             </Grid>
                             {/* CLUE */}
-                            <Grid
-                                item={true}
-                                container={true}
-                                justifyContent={"center"}
-                            >
+                            {(!disabledForms || (disabledForms && completeWordData.clue!!)) &&
                                 <Grid
                                     item={true}
-                                    xs={12}
-                                    md={4}
+                                    container={true}
+                                    justifyContent={"center"}
                                 >
-                                    <TextField
-                                        label={"Clue"}
-                                        multiline
-                                        rows={3}
-                                        value={(completeWordData.clue) ? completeWordData.clue : ""}
-                                        onChange={(e: any) => {
-                                            setCompleteWordData({
-                                                ...completeWordData,
-                                                clue: e.target.value
-                                            })
-                                        }}
-                                        fullWidth={true}
-                                        disabled={disabledForms}
-                                    />
+                                    <Grid
+                                        item={true}
+                                        xs={12}
+                                        md={4}
+                                    >
+                                        <TextField
+                                            label={"Clue"}
+                                            multiline
+                                            rows={3}
+                                            value={(completeWordData.clue) ? completeWordData.clue : ""}
+                                            onChange={(e: any) => {
+                                                setCompleteWordData({
+                                                    ...completeWordData,
+                                                    clue: e.target.value
+                                                })
+                                            }}
+                                            fullWidth={true}
+                                            disabled={disabledForms}
+                                        />
+                                    </Grid>
                                 </Grid>
-                            </Grid>
+                            }
                             {/* FORM BUTTONS */}
                             {(!disabledForms) &&
                                 <Grid

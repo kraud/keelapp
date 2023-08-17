@@ -13,13 +13,16 @@ import AddIcon from '@mui/icons-material/Add';
 import LinearIndeterminate from "../Spinner";
 import Box from "@mui/material/Box";
 import {FormSelector} from "../forms/FormSelector";
+import {SortDirection} from "@tanstack/table-core/build/lib/features/Sorting";
 
 interface TableHeaderCellProps {
     content: any
     sxProps?: SxProps<Theme>
+    column?: any // if we specify a type, it  will only work correctly on that type of table
 }
 
 export function TableHeaderCell(props: TableHeaderCellProps){
+
     return(
         <Grid
             sx={{
@@ -36,6 +39,19 @@ export function TableHeaderCell(props: TableHeaderCellProps){
             <Typography
                 variant={'h6'}
                 fontWeight={"bold"}
+                color={"primary"}
+                display={"inline"}
+            >
+                {(props.column !== undefined) &&
+                    {asc: '⬆ ', desc: '⬇ '}[
+                    (props.column.getIsSorted() as SortDirection) ?? null
+                        ]
+                }
+            </Typography>
+            <Typography
+                variant={'h6'}
+                fontWeight={"bold"}
+                display={"inline"}
             >
                 {props.content}
             </Typography>

@@ -122,24 +122,6 @@ export function TranslationsTable(props: TranslationsTableProps) {
     const {isLoading, isError, message} = useSelector((state: any) => state.words)
     const navigate = useNavigate()
 
-    // default sort function is case-sensitive, so we need to implement a new one
-    const sortItemsCaseInsensitive = (prev: Row<any>, curr: Row<any>, columnId: string) => {
-        // all languages are optional, so there will be empty cells, and we simply don't evaluate them
-        if(prev.original[columnId] === undefined){
-            return -1
-        }
-        if(curr.original[columnId] === undefined){
-            return 1
-        }
-        if (prev.original[columnId].toLowerCase() > curr.original[columnId].toLowerCase()) {
-            return 1;
-        } else if (prev.original[columnId].toLowerCase() < curr.original[columnId].toLowerCase()) {
-            return -1;
-        } else {
-            return 0;
-        }
-    }
-
     useEffect(() => {
         setData(props.data)
     }, [props.data, isLoading])
@@ -177,9 +159,6 @@ export function TranslationsTable(props: TranslationsTableProps) {
                             width: '200px',
                         },
                         enableColumnFilter: false,
-                        sortingFn: (prev: Row<TableWordData>, curr: Row<TableWordData>, columnId: string) => {
-                            return sortItemsCaseInsensitive(prev, curr, columnId)
-                        },
                     }
                     break
                 }
@@ -194,9 +173,6 @@ export function TranslationsTable(props: TranslationsTableProps) {
                             width: '200px',
                         },
                         enableColumnFilter: false,
-                        sortingFn: (prev: Row<TableWordData>, curr: Row<TableWordData>, columnId: string) => {
-                            return sortItemsCaseInsensitive(prev, curr, columnId)
-                        },
                     }
                     break
                 }
@@ -212,9 +188,6 @@ export function TranslationsTable(props: TranslationsTableProps) {
                             width: '200px',
                         },
                         enableColumnFilter: false,
-                        sortingFn: (prev: Row<TableWordData>, curr: Row<TableWordData>, columnId: string) => {
-                            return sortItemsCaseInsensitive(prev, curr, columnId)
-                        },
                     }
                     break
                 }
@@ -232,9 +205,6 @@ export function TranslationsTable(props: TranslationsTableProps) {
                             width: '200px',
                         },
                         enableColumnFilter: false,
-                        sortingFn: (prev: Row<TableWordData>, curr: Row<TableWordData>, columnId: string) => {
-                            return sortItemsCaseInsensitive(prev, curr, columnId)
-                        },
                     }
                     break
                 }
@@ -251,7 +221,11 @@ export function TranslationsTable(props: TranslationsTableProps) {
             return(
                 //@ts-ignore
                 newColumnHelper.accessor(currentLanguageData.accessor,{
-                    header: () => <TableHeaderCell content={getCurrentLangTranslated(currentLanguageData.language)}/>,
+                    header: (info) =>
+                        <TableHeaderCell
+                            content={getCurrentLangTranslated(currentLanguageData.language)}
+                            column={info.column}
+                        />,
                     cell: (info) => {return(
                             <TableDataCell
                                 language={currentLanguageData.language}
@@ -271,11 +245,6 @@ export function TranslationsTable(props: TranslationsTableProps) {
                             />
                     )},
                     enableColumnFilter: currentLanguageData.enableColumnFilter!,
-                    sortingFn: (prev, curr, columnId) => {
-                        if(currentLanguageData.sortingFn !== undefined) {
-                            currentLanguageData.sortingFn(prev, curr, columnId)
-                        }
-                    },
                 })
             )
         })
@@ -374,7 +343,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
     },[props.sortedAndSelectedLanguages, displayGender])
 
 
-    let columnBeingDragged: number;
+    let columnBeingDragged: number
 
     //@ts-ignore
     const onDragStart = (e: DragEvent<HTMLElement>): void => {
@@ -508,6 +477,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
                         <Button
                             variant={"outlined"}
                             onClick={() => null}
+                            color={"secondary"}
                             disabled={true} // TODO: be be implemented soon, will redirect to a version of the Practice screen
                         >
                             Create exercises
@@ -546,6 +516,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
                     >
                         <Button
                             variant={"outlined"}
+                            color={"error"}
                             onClick={() => deleteSelectedRows()}
                         >
                             Delete selected
@@ -627,11 +598,11 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                             header.column.columnDef.header,
                                             header.getContext()
                                         )}
-                                    {
-                                        {asc: '⬆', desc: '⬇'}[
-                                            (header.column.getIsSorted() as SortDirection) ?? null
-                                        ]
-                                    }
+                                    {/*{*/}
+                                    {/*    {asc: '⬆', desc: '⬇'}[*/}
+                                    {/*        (header.column.getIsSorted() as SortDirection) ?? null*/}
+                                    {/*    ]*/}
+                                    {/*}*/}
                                     {header.column.getCanFilter()
                                         ?
                                         //@ts-ignore
