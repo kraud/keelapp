@@ -15,64 +15,88 @@ const getWords = asyncHandler(async (req, res) => {
 // @route   GET /api/words/simple
 // @access  Private
 const getWordsSimplified = asyncHandler(async (req, res) => {
-    const wordsComplete = await Word.find({
-        user: req.user.id,
-    })
-    let wordsSimplified = []
-    wordsComplete.forEach((completeWord) => {
-        // we must go through all the languages listed on "translations" and create simplified versions of each
-        let simplifiedWord = {
-            partOfSpeech: completeWord.partOfSpeech,
-            createdAt: completeWord.createdAt,
-            updatedAt: completeWord.updatedAt,
-            id: completeWord.id,
-        }
-        // from each translated language, we only retrieve the necessary data
-        completeWord.translations.forEach((translation) => {
-            switch(translation.language){
-                case 'Estonian': {
-                    simplifiedWord = {
-                        ...simplifiedWord,
-                        singularNimetavEE: (translation.cases.find(wordCase => (wordCase.caseName === 'singularNimetavEE'))).word,
-                        registeredCasesEE: translation.cases.length
-                    }
-                    break
-                }
-                case 'English': {
-                    simplifiedWord = {
-                        ...simplifiedWord,
-                        singularEN: (translation.cases.find(wordCase => (wordCase.caseName === 'singularEN'))).word,
-                        registeredCasesEN: translation.cases.length
-                    }
-                    break
-                }
-                case 'Spanish': {
-                    simplifiedWord = {
-                        ...simplifiedWord,
-                        genderES: (translation.cases.find(wordCase => (wordCase.caseName === 'genderES'))).word,
-                        singularES: (translation.cases.find(wordCase => (wordCase.caseName === 'singularES'))).word,
-                        registeredCasesES: translation.cases.length
-                    }
-                    break
-                }
-                case 'German': {
-                    simplifiedWord = {
-                        ...simplifiedWord,
-                        genderDE: (translation.cases.find(wordCase => (wordCase.caseName === 'genderDE'))).word,
-                        singularNominativDE: (translation.cases.find(wordCase => (wordCase.caseName === 'singularNominativDE'))).word,
-                        registeredCasesDE: translation.cases.length
-                    }
-                    break
-                }
-            }
+    const filters = req.query.filters
+    let filterStrings = []
+    if(filters !== undefined){
+        filterStrings = filters.map(filter => {
+            return ((filter.filterValue).toString())
         })
-        wordsSimplified.push(simplifiedWord)
-    })
-    const result = {
-        amount: wordsComplete.length, // the total amount of words saved for this user
-        words: wordsSimplified // the data corresponding to those words, reduced to only the most necessary fields
     }
-    res.status(200).json(result)
+    await Word.find(
+        ((filters !== undefined) && (filterStrings.length > 0))
+        ? {
+            "translations.cases": {
+                $elemMatch: {
+                    // "word": {$in: ['der', 'die']}, // this works
+                    "word": {$in: `${filterStrings}`}, // this doesn't work => only 1 filter at a time
+                    "caseName": {$regex: "^gender"}, // To avoid filtering by word gender
+                }
+            },
+            "user": req.user.id,
+        }
+        : {
+            "user": req.user.id,
+        }
+    )
+    .then((data) => {
+        if(data){
+            let wordsSimplified = []
+            data.forEach((completeWord) => {
+                // we must go through all the languages listed on "translations" and create simplified versions of each
+                let simplifiedWord = {
+                    partOfSpeech: completeWord.partOfSpeech,
+                    createdAt: completeWord.createdAt,
+                    updatedAt: completeWord.updatedAt,
+                    id: completeWord.id,
+                }
+                // from each translated language, we only retrieve the necessary data
+                completeWord.translations.forEach((translation) => {
+                    switch(translation.language){
+                        case 'Estonian': {
+                            simplifiedWord = {
+                                ...simplifiedWord,
+                                singularNimetavEE: (translation.cases.find(wordCase => (wordCase.caseName === 'singularNimetavEE'))).word,
+                                registeredCasesEE: translation.cases.length
+                            }
+                            break
+                        }
+                        case 'English': {
+                            simplifiedWord = {
+                                ...simplifiedWord,
+                                singularEN: (translation.cases.find(wordCase => (wordCase.caseName === 'singularEN'))).word,
+                                registeredCasesEN: translation.cases.length
+                            }
+                            break
+                        }
+                        case 'Spanish': {
+                            simplifiedWord = {
+                                ...simplifiedWord,
+                                genderES: (translation.cases.find(wordCase => (wordCase.caseName === 'genderES'))).word,
+                                singularES: (translation.cases.find(wordCase => (wordCase.caseName === 'singularES'))).word,
+                                registeredCasesES: translation.cases.length
+                            }
+                            break
+                        }
+                        case 'German': {
+                            simplifiedWord = {
+                                ...simplifiedWord,
+                                genderDE: (translation.cases.find(wordCase => (wordCase.caseName === 'genderDE'))).word,
+                                singularNominativDE: (translation.cases.find(wordCase => (wordCase.caseName === 'singularNominativDE'))).word,
+                                registeredCasesDE: translation.cases.length
+                            }
+                            break
+                        }
+                    }
+                })
+                wordsSimplified.push(simplifiedWord)
+            })
+            const result = {
+                amount: data.length, // the total amount of words saved for this user
+                words: wordsSimplified // the data corresponding to those words, reduced to only the most necessary fields
+            }
+            res.status(200).json(result)
+        }
+    })
 })
 
 // @desc    Get Words

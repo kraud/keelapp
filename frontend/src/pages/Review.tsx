@@ -11,6 +11,7 @@ import {Lang} from "../ts/enums";
 import {TranslationsTable} from "../components/table/TranslationsTable";
 import {motion} from "framer-motion";
 import {routeVariantsAnimation} from "./management/RoutesWithAnimation";
+import {TableFilters} from "../components/TableFilters";
 
 export function Review(){
     const navigate = useNavigate()
@@ -30,14 +31,13 @@ export function Review(){
         if(!user){
             navigate('/login')
         }
+    }, [user, navigate, isError, message, dispatch])
+
+
+    useEffect(() => {
         //@ts-ignore
         dispatch(getWordsSimplified())
-
-        //on unmount
-        return() => {
-
-        }
-    }, [user, navigate, isError, message, dispatch])
+    }, [])
 
     // allows column dragging from table to work with DnDLanguageSelector
     const changeLanguageOrderFromTable = (newList: string[]) => {
@@ -122,8 +122,8 @@ export function Review(){
                 </Grid>
             </Grid>
             {(isLoading) && <LinearIndeterminate/>}
-            {(wordsSimple.amount >0)  &&
-                <>
+            {/*{(wordsSimple.amount >0)  &&*/}
+            {/*    <>*/}
                     {/*
                         TODO: refactor later into single table component with DnD language selector included
                          & add frame, pagination, filters, toggles for extra data, etc.
@@ -141,14 +141,21 @@ export function Review(){
                             direction={"horizontal"}
                         />
                     </Grid>
+                    <TableFilters
+                        applyFilters={(filters) => {
+                            console.log(filters)
+                            // @ts-ignore
+                            dispatch(getWordsSimplified(filters))
+                        }}
+                    />
                     {/* TABLE */}
                     <TranslationsTable
                         sortedAndSelectedLanguages={allSelectedLanguages}
                         data={wordsSimple.words}
                         setAllSelectedItems={(languages: string[]) => changeLanguageOrderFromTable(languages)}
                     />
-                </>
-            }
+            {/*    </>*/}
+            {/*}*/}
         </Grid>
     )
 }

@@ -5,21 +5,19 @@ import {
     getCoreRowModel,
     getFilteredRowModel, getSortedRowModel,
     Row,
-    RowData,
     useReactTable,
 } from '@tanstack/react-table'
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Lang, PartOfSpeech} from "../../ts/enums";
-import {Button, Grid, Switch} from "@mui/material";
+import {Button, Grid, Switch, Typography} from "@mui/material";
 import globalTheme from "../../theme/theme";
 import {IndeterminateCheckbox, TableDataCell, TableHeaderCell} from "./ExtraTableComponents";
 import {toast} from "react-toastify";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import ReactDOM from 'react-dom/client';
 import {DebouncedTextField} from "./DebouncedTextField";
-import {SortDirection} from "@tanstack/table-core/build/lib/features/Sorting";
 import {useDispatch, useSelector} from "react-redux";
-import {deleteWordById, getWordsSimplified, searchWordByAnyTranslation} from "../../features/words/wordSlice";
+import {deleteWordById, getWordsSimplified} from "../../features/words/wordSlice";
 import {Theme} from "@mui/material/styles";
 import {SxProps} from "@mui/system";
 import {getCurrentLangTranslated} from "../generalUseFunctions";
@@ -448,6 +446,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
             container={true}
             item={true}
             spacing={1}
+            lg={12}
             justifyContent={"flex-start"}
             style={{
                 display: 'relative',
@@ -650,6 +649,30 @@ export function TranslationsTable(props: TranslationsTableProps) {
                     ))}
                     </tbody>
                 </table>
+                {(table.getRowModel().rows.length === 0) &&
+                    <Grid
+                        container={true}
+                        justifyContent={"center"}
+                        sx={{
+                            border: '2px solid black',
+                            borderRadius: '25px',
+                            background: '#e1e1e1',
+                            padding: globalTheme.spacing(2),
+                            marginTop: globalTheme.spacing(1),
+                        }}
+                    >
+                        <Grid
+                            item={true}
+                        >
+                            <Typography
+                                variant={'h3'}
+                                color={'primary'}
+                            >
+                                No data to display
+                            </Typography>
+                        </Grid>
+                    </Grid>
+                }
             </Grid>
         </Grid>
     )

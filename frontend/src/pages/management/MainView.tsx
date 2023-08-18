@@ -1,19 +1,16 @@
-import {Route, Routes, useLocation} from "react-router-dom";
-import Dashboard from "../Dashboard";
-import AddWord from "../AddWord";
-import Login from "../Login";
-import Register from "../Register";
+import {useLocation} from "react-router-dom";
 import React, {useEffect, useState} from "react";
 import ResponsiveAppBar from "../../components/Header";
 import {Grid} from "@mui/material";
-import {Review} from "../Review";
 import {RoutesWithAnimation} from "./RoutesWithAnimation";
 import {LocationProvider} from "./LocationProvider";
+import globalTheme from "../../theme/theme";
 
 export function MainView(){
     const componentStyles = {
         mainColumn:{
             margin: 0,
+            marginBottom: globalTheme.spacing(6)
         }
     }
     const location = useLocation()

@@ -1,6 +1,7 @@
 import {createSlice, createAsyncThunk, PayloadAction} from "@reduxjs/toolkit"
 import wordService from "./wordService"
 import {SearchResults, WordData, WordDataBE} from "../../ts/interfaces";
+import {Lang, NounCases} from "../../ts/enums";
 
 interface worldSliceState {
     // list with full translation info for all words might not be needed?
@@ -29,6 +30,22 @@ const initialState: worldSliceState = {
     isLoading: false,
     isSearchLoading: false,
     message: "",
+}
+
+type FilterItem = {
+    // any mandatory fields for filtering?
+} & (FilterByCase | FilterByTag)
+
+type FilterByCase = {
+    filterValue: string,
+    type: 'case'
+    caseName: NounCases | string, // TODO: as we add new PartOfSpeech, we should add the other interfaces too (VerbConjugations, PronounCases, etc.)
+    language: Lang,
+}
+
+type FilterByTag = {
+    type: 'tag'
+    tagIds: string[],
 }
 
 // Create a new word
@@ -66,11 +83,11 @@ export const getWords = createAsyncThunk('words/getAll', async (_, thunkAPI) => 
     }
 })
 // Get user words simplified to be displayed on table
-export const getWordsSimplified = createAsyncThunk('words/getAllSimple', async (_, thunkAPI) => {
+export const getWordsSimplified = createAsyncThunk('words/getAllSimple', async (filters: FilterItem[] | undefined, thunkAPI) => {
     try {
         // @ts-ignore
         const token = thunkAPI.getState().auth.user.token
-        return await wordService.getWordsSimplified(token)
+        return await wordService.getWordsSimplified(token, filters)
     } catch(error: any) {
         const message = (
                 error.response &&

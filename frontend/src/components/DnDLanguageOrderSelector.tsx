@@ -96,7 +96,8 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
             item={true}
             xs={12}
             md={11}
-            lg={6}
+            lg={10}
+            xl={6}
             justifyContent={"center"}
             direction={"row"}
         >

@@ -23,10 +23,13 @@ const getWords = async (token: any) => {
     return(response.data)
 }
 
-const getWordsSimplified = async (token: any) => {
+const getWordsSimplified = async (token: any, query: any) => {
     const config = {
         headers: {
             Authorization: `Bearer ${token}`
+        },
+        params: {
+            filters: query,
         }
     }
     const response = await axios.get(`${API_URL}/simple`, config)
