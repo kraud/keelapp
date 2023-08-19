@@ -1,4 +1,4 @@
-import {Button, Checkbox, Grid, Modal, Typography} from "@mui/material";
+import {Button, Checkbox, CircularProgress, Grid, Modal, Typography} from "@mui/material";
 import React, {HTMLProps, useEffect, useState} from "react";
 import globalTheme from "../../theme/theme";
 import {SxProps} from "@mui/system";
@@ -14,6 +14,7 @@ import LinearIndeterminate from "../Spinner";
 import Box from "@mui/material/Box";
 import {FormSelector} from "../forms/FormSelector";
 import {SortDirection} from "@tanstack/table-core/build/lib/features/Sorting";
+import DoneIcon from "@mui/icons-material/Done";
 
 interface TableHeaderCellProps {
     content: any
@@ -209,6 +210,41 @@ export function TableDataCell(props: TableDataCellProps){
         return isIncluded
     }
 
+    const getPercentage = (amount: number) => {
+        let maxAmountOfCases = 0
+        // switch (word.partOfSpeech) { // TODO: not working correctly, and only noun exists for now, so temp fix
+        switch (PartOfSpeech.noun) {
+            case PartOfSpeech.noun: {
+                switch (props.language) {
+                    case Lang.EN: {
+                        maxAmountOfCases = 2
+                        break
+                    }
+                    case Lang.ES: {
+                        maxAmountOfCases = 3
+                        break
+                    }
+                    case Lang.DE: {
+                        maxAmountOfCases = 9
+                        break
+                    }
+                    case Lang.EE: {
+                        maxAmountOfCases = 7
+                        break
+                    }
+                    default:
+                        maxAmountOfCases = 99
+                        break
+                }
+            }
+            break
+            default:
+                maxAmountOfCases = 6
+                break
+        }
+        return ((amount/maxAmountOfCases)*100)
+    }
+
     return(
         <>
             <Grid
@@ -273,7 +309,64 @@ export function TableDataCell(props: TableDataCellProps){
                                     ) &&
                                     (props.amount!)
                                 ) &&
-                                `(${props.amount})`
+                                <>
+                                    {((props.amount!!) && (getPercentage(props.amount) < 100)) &&
+                                    <span
+                                        style={{
+                                            height: '30px',
+                                            width: '30px',
+                                            position: 'absolute',
+                                        }}
+                                    >
+                                        <CircularProgress
+                                            variant="determinate"
+                                            value={100}
+                                            color={"secondary"}
+                                            sx={{
+                                                zIndex: 100,
+                                                marginTop: '-11px',
+                                                marginLeft: '10px',
+                                                color: 'grey !important',
+                                            }}
+                                        />
+                                    </span>
+                                    }
+                                    <span
+                                        style={{
+                                            height: '30px',
+                                            width: '30px',
+                                            position: 'absolute',
+                                        }}
+                                    >
+                                        <CircularProgress
+                                            variant="determinate"
+                                            color={((props.amount!!) && (getPercentage(props.amount) >= 100)) ?"success" :"primary"}
+                                            value={(props.amount!!) ?getPercentage(props.amount) :0}
+                                            sx={{
+                                                zIndex: 1000,
+                                                marginTop: '-11px',
+                                                marginLeft: '10px',
+                                            }}
+                                        />
+                                    </span>
+                                    {((props.amount!!) && (getPercentage(props.amount) >= 100)) &&
+                                        <span
+                                            className={"smallerIconCompletePercentage"}
+                                            style={{
+                                                position: 'absolute',
+                                            }}
+                                        >
+                                            <DoneIcon
+                                                sx={{
+                                                    marginTop: '2px',
+                                                    marginLeft: '12px',
+                                                    color: 'green',
+                                                    fontSize: '10px',
+                                                }}
+                                            />
+                                        </span>
+                                    }
+                                </>
                             }
                         </Typography>
                         :

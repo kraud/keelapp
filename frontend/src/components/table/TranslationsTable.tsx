@@ -88,11 +88,21 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                 },
                             },
                             "& .tdContainer": {
-                                height: '60px',
+                                height: '40px',
                                 minWidth: 'max-content',
                                 color: 'black',
                                 borderTop: "2px solid black",
                                 borderBottom: "2px solid black",
+                                "& svg": {
+                                    height: '30px',
+                                    width: '30px',
+                                },
+                                "& .smallerIconCompletePercentage": {
+                                    "& svg": {
+                                        height: '25px',
+                                        width: '25px',
+                                    },
+                                },
                             },
                         },
                     }
@@ -668,7 +678,10 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                 variant={'h3'}
                                 color={'primary'}
                             >
-                                No data to display
+                                {(isLoading)
+                                    ? 'Loading...'
+                                    : 'No data to display'
+                                }
                             </Typography>
                         </Grid>
                     </Grid>
