@@ -143,7 +143,6 @@ export function Review(){
                     </Grid>
                     <TableFilters
                         applyFilters={(filters) => {
-                            console.log(filters)
                             // @ts-ignore
                             dispatch(getWordsSimplified(filters))
                         }}

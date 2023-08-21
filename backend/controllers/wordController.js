@@ -22,11 +22,23 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
             return ((filter.filterValue).toString())
         })
     }
+    // let queryString = ""
+    // if(filters !== undefined){
+    //     filters.forEach(filter => {
+    //         queryString = queryString+"'"+(filter.filterValue).toString()+"',"
+    //     })
+    // }
+
     await Word.find(
         ((filters !== undefined) && (filterStrings.length > 0))
+        // ? { $where: function() { return queryString.indexOf(this.translations.cases.word) > -1; } } // 'where' is not free for mongoDB
+        // ? {"$expr": {$ne : [{$indexOfCP: [queryString, "$translations.cases.word"]}, -1]}} // this doesn't work because word is an array?
         ? {
             "translations.cases": {
                 $elemMatch: {
+                    // bug with MongoDB? Might have to create work-around iterating through the filters array
+                    // and checking one at a time, and then joining the unique results at the end
+                    // see more at: https://stackoverflow.com/questions/22907451/nodejs-mongodb-in-array-not-working-if-array-is-a-variable
                     // "word": {$in: ['der', 'die']}, // this works
                     "word": {$in: `${filterStrings}`}, // this doesn't work => only 1 filter at a time
                     "caseName": {$regex: "^gender"}, // To avoid filtering by word gender
