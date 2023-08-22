@@ -11,7 +11,7 @@ const getWords = asyncHandler(async (req, res) => {
     res.status(200).json(words)
 })
 
-// @desc    Get Words with simplied data
+// @desc    Get Words with simplified data
 // @route   GET /api/words/simple
 // @access  Private
 const getWordsSimplified = asyncHandler(async (req, res) => {
@@ -25,7 +25,7 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
     // let queryString = ""
     // if(filters !== undefined){
     //     filters.forEach(filter => {
-    //         queryString = queryString+"'"+(filter.filterValue).toString()+"',"
+    //         queryString = queryString+((filter.filterValue).toString())+" "
     //     })
     // }
 
@@ -33,6 +33,11 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
         ((filters !== undefined) && (filterStrings.length > 0))
         // ? { $where: function() { return queryString.indexOf(this.translations.cases.word) > -1; } } // 'where' is not free for mongoDB
         // ? {"$expr": {$ne : [{$indexOfCP: [queryString, "$translations.cases.word"]}, -1]}} // this doesn't work because word is an array?
+        // ? {$text: {$search: queryString}} // always empty results?
+        // ? {
+        //     $text: {$search: queryString},
+        //     "user": req.user.id,
+        // } // no results?
         ? {
             "translations.cases": {
                 $elemMatch: {
@@ -41,11 +46,15 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
                     // see more at: https://stackoverflow.com/questions/22907451/nodejs-mongodb-in-array-not-working-if-array-is-a-variable
                     // "word": {$in: ['der', 'die']}, // this works
                     "word": {$in: `${filterStrings}`}, // this doesn't work => only 1 filter at a time
-                    "caseName": {$regex: "^gender"}, // To avoid filtering by word gender
+                    "caseName": {$regex: "^gender"},
                 }
             },
             "user": req.user.id,
         }
+        // ? {
+        //     // "translations.cases.word": {$in: ['der', 'die']}, // this works
+        //     // "translations.cases.word": {$in: `${filterStrings}`}, // this doesn't work => only 1 filter at a time
+        // } same issues as above
         : {
             "user": req.user.id,
         }

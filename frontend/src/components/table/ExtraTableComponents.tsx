@@ -385,7 +385,7 @@ export function TableDataCell(props: TableDataCellProps){
                                 }
                             }}
                         >
-                            <AddIcon fontSize={'inherit'}/>
+                            <AddIcon color={"primary"} fontSize={'inherit'}/>
                         </IconButton>
                 }
             </Grid>

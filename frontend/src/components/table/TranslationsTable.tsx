@@ -606,12 +606,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                         : flexRender(
                                             header.column.columnDef.header,
                                             header.getContext()
-                                        )}
-                                    {/*{*/}
-                                    {/*    {asc: '⬆', desc: '⬇'}[*/}
-                                    {/*        (header.column.getIsSorted() as SortDirection) ?? null*/}
-                                    {/*    ]*/}
-                                    {/*}*/}
+                                    )}
                                     {header.column.getCanFilter()
                                         ?
                                         //@ts-ignore
