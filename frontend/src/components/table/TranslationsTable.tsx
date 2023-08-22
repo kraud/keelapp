@@ -9,7 +9,7 @@ import {
 } from '@tanstack/react-table'
 import React, {useEffect, useState} from "react";
 import {Lang, PartOfSpeech} from "../../ts/enums";
-import {Button, Grid, Switch, Typography} from "@mui/material";
+import {Button, Grid, Slide, Switch, Typography} from "@mui/material";
 import globalTheme from "../../theme/theme";
 import {IndeterminateCheckbox, TableDataCell, TableHeaderCell} from "./ExtraTableComponents";
 import {toast} from "react-toastify";
@@ -54,6 +54,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
     const componentStyles = {
         mainGridContainer: {
             padding: '0',
+            overflowY: 'hidden',
 
             "& table": {
                 borderCollapse: 'collapse',
@@ -233,6 +234,12 @@ export function TranslationsTable(props: TranslationsTableProps) {
                         <TableHeaderCell
                             content={getCurrentLangTranslated(currentLanguageData.language)}
                             column={info.column}
+                            sxProps={{
+                                background: 'white',
+                                zIndex: 1000,
+                                position: 'relative',
+                            }}
+
                         />,
                     cell: (info) => {return(
                             <TableDataCell
@@ -297,7 +304,16 @@ export function TranslationsTable(props: TranslationsTableProps) {
                     ),
                 },
                 newColumnHelper.accessor('partOfSpeech', {
-                    header: () => <TableHeaderCell content={"Type"} sxProps={{cursor: 'default'}}/>,
+                    header: () =>
+                        <TableHeaderCell
+                            content={"Type"}
+                            sxProps={{
+                                cursor: 'default',
+                                background: 'white',
+                                zIndex: 1000,
+                                position: 'relative',
+                            }}
+                        />,
                     cell: (info) => {return(
                         (info.getValue() !== undefined)
                             ?
@@ -629,30 +645,38 @@ export function TranslationsTable(props: TranslationsTableProps) {
                         </tr>
                     ))}
                     </thead>
-                    <tbody>
-                    {table.getRowModel().rows.map((row, index) => (
-                        <tr
-                            key={row.id}
-                        >
-                            {row.getVisibleCells().map(cell => (
-                                <td key={cell.id}>
-                                    <div
-                                        className={"tdContainer"}
-                                        style={{
-                                            marginTop: '5px',
-                                            marginBottom: '5px',
-                                            boxShadow: row.getIsSelected()
-                                                ? 'inset 0 0 0 1000px rgba(0,114,206,.25)'
-                                                : undefined,
-                                        }}
-                                    >
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </div>
-                                </td>
-                            ))}
-                        </tr>
-                    ))}
-                    </tbody>
+                    <Slide
+                        in={(table.getRowModel().rows.length > 0)}
+                        direction="down"
+                        mountOnEnter
+                        unmountOnExit
+                        timeout={650}
+                    >
+                        <tbody>
+                        {table.getRowModel().rows.map((row, index) => (
+                            <tr
+                                key={row.id}
+                            >
+                                {row.getVisibleCells().map(cell => (
+                                    <td key={cell.id}>
+                                        <div
+                                            className={"tdContainer"}
+                                            style={{
+                                                marginTop: '5px',
+                                                marginBottom: '5px',
+                                                boxShadow: row.getIsSelected()
+                                                    ? 'inset 0 0 0 1000px rgba(0,114,206,.25)'
+                                                    : undefined,
+                                            }}
+                                        >
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </div>
+                                    </td>
+                                ))}
+                            </tr>
+                        ))}
+                        </tbody>
+                    </Slide>
                 </table>
                 {(table.getRowModel().rows.length === 0) &&
                     <Grid
