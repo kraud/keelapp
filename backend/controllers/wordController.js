@@ -15,6 +15,132 @@ const getWords = asyncHandler(async (req, res) => {
 // @route   GET /api/words/simple
 // @access  Private
 const getWordsSimplified = asyncHandler(async (req, res) => {
+    const getFilterQuery = (filter) => {
+        switch(filter.type) {
+            case 'gender': {
+                return {
+                    "translations.cases": {
+                        $elemMatch: {
+                            // bug with MongoDB? Might have to create work-around iterating through the filters array
+                            // and checking one at a time, and then joining the unique results at the end
+                            // see more at: https://stackoverflow.com/questions/22907451/nodejs-mongodb-in-array-not-working-if-array-is-a-variable
+                            // "word": {$in: ['der', 'die']}, // this works
+                            // it's an array to allow searching by more than 1 gender at a time
+                            "word": {$in: `${[filter.filterValue]}`}, // this doesn't work => only 1 filter at a time
+                            "caseName": {$regex: "^gender"},
+                        }
+                    },
+                    "user": req.user.id,
+                }
+            }
+            case 'tag': {
+                // TODO: specify and implement
+                return {
+                    "user": req.user.id,
+                }
+            }
+            case 'PoS': {
+                return {
+                    "user": req.user.id,
+                    "partOfSpeech": {$eq: `${filter.filterValue}`}, // this doesn't work => only 1 filter at a time
+                }
+            }
+            default: { // NO FILTER?
+                return {
+                    "user": req.user.id,
+                }
+            }
+        }
+    }
+    const filters = (req.query.filters !== undefined) ?req.query.filters :[]
+    // let filterStrings = []
+    // if(filters !== undefined){
+    //     filterStrings = filters.map(filter => {
+    //         return ((filter.filterValue).toString())
+    //     })
+    // }
+    // console.log('filters')
+    // console.log(filters)
+
+    let filteredResults = []
+
+    if(filters.length > 0){
+        for (const filter of filters) {
+            let result = await Word.find(
+                getFilterQuery(filter)
+            )
+            filteredResults.push(...result)
+        }
+    } else {
+        const result = await Word.find(
+            {
+                "user": req.user.id,
+            }
+        )
+        filteredResults.push(...result)
+    }
+
+    let wordsSimplified = []
+    filteredResults.forEach((completeWord) => {
+        // we must go through all the languages listed on "translations" and create simplified versions of each
+        let simplifiedWord = {
+            partOfSpeech: completeWord.partOfSpeech,
+            createdAt: completeWord.createdAt,
+            updatedAt: completeWord.updatedAt,
+            id: completeWord.id,
+        }
+        // from each translated language, we only retrieve the necessary data
+        completeWord.translations.forEach((translation) => {
+            switch(translation.language){
+                case 'Estonian': {
+                    simplifiedWord = {
+                        ...simplifiedWord,
+                        singularNimetavEE: (translation.cases.find(wordCase => (wordCase.caseName === 'singularNimetavEE'))).word,
+                        registeredCasesEE: translation.cases.length
+                    }
+                    break
+                }
+                case 'English': {
+                    simplifiedWord = {
+                        ...simplifiedWord,
+                        singularEN: (translation.cases.find(wordCase => (wordCase.caseName === 'singularEN'))).word,
+                        registeredCasesEN: translation.cases.length
+                    }
+                    break
+                }
+                case 'Spanish': {
+                    simplifiedWord = {
+                        ...simplifiedWord,
+                        genderES: (translation.cases.find(wordCase => (wordCase.caseName === 'genderES'))).word,
+                        singularES: (translation.cases.find(wordCase => (wordCase.caseName === 'singularES'))).word,
+                        registeredCasesES: translation.cases.length
+                    }
+                    break
+                }
+                case 'German': {
+                    simplifiedWord = {
+                        ...simplifiedWord,
+                        genderDE: (translation.cases.find(wordCase => (wordCase.caseName === 'genderDE'))).word,
+                        singularNominativDE: (translation.cases.find(wordCase => (wordCase.caseName === 'singularNominativDE'))).word,
+                        registeredCasesDE: translation.cases.length
+                    }
+                    break
+                }
+            }
+        })
+        wordsSimplified.push(simplifiedWord)
+    })
+    const result = {
+        amount: wordsSimplified.length, // the total amount of words saved for this user
+        words: wordsSimplified // the data corresponding to those words, reduced to only the most necessary fields
+    }
+    res.status(200).json(result)
+})
+
+// @desc    Get Words with simplified data
+// @route   GET /api/words/simple
+// @access  Private
+const getWordsSimplifiedOG = asyncHandler(async (req, res) => {
     const filters = req.query.filters
     let filterStrings = []
     if(filters !== undefined){

@@ -4,69 +4,27 @@ import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
 import {Lang, NounCases} from "../ts/enums";
 import globalTheme from "../theme/theme";
-
-export interface FilterData {
-    id: number,
-    label: string,
-    caseName: NounCases,
-    language: Lang,
-}
+import {FilterItem} from "../features/words/wordSlice";
 
 interface TableFilterProps {
-    applyFilters: (filters: any[]) => void
+    filterOptions: FilterItem[],
+    applyFilters: (filters: FilterItem[]) => void
 }
 
 export function TableFilters(props: TableFilterProps) {
-    const [selectedFilters, setSelectedFilters] = useState<FilterData[]>([])
-    const allFilters: FilterData[] = [
-        {
-            id: 1,
-            label: 'der',
-            caseName: NounCases.genderDE,
-            language: Lang.DE,
-        },
-        {
-            id: 2,
-            label: 'die',
-            caseName: NounCases.genderDE,
-            language: Lang.DE,
-        },
-        {
-            id: 3,
-            label: 'das',
-            caseName: NounCases.genderDE,
-            language: Lang.DE,
-        },
-        {
-            id: 4,
-            label: 'el',
-            caseName: NounCases.genderES,
-            language: Lang.ES,
-        },
-        {
-            id: 5,
-            label: 'la',
-            caseName: NounCases.genderES,
-            language: Lang.ES,
-        }
-    ]
+    const [selectedFilters, setSelectedFilters] = useState<FilterItem[]>([])
 
     const sanitizeFilters = () => {
-        return selectedFilters.map((filter) => {
-            return({
-                type: 'case',
-                filterValue: filter.label,
-                caseName: filter.caseName,
-                language: filter.language,
-            })
-        })
+        // TODO: should we check if any filters need cleanup/restructure before sending?
+        // we used to clean up data here, but we cleaned up differences in types/interfaces
+        return selectedFilters
     }
 
-    const handleOnClick = (id: number) => {
+    const handleOnClick = (id: string) => {
         if(isChipSelected(id)){
             setSelectedFilters(selectedFilters.filter(filter => filter.id !== id))
         } else {
-            const newSelectedFilter = allFilters.find(filter => filter.id === id)
+            const newSelectedFilter = props.filterOptions.find(filter => filter.id === id)
             if(newSelectedFilter!!){
                 setSelectedFilters([
                     ...selectedFilters,
@@ -76,7 +34,7 @@ export function TableFilters(props: TableFilterProps) {
         }
     }
 
-    const isChipSelected = (id: number) => {
+    const isChipSelected = (id: string) => {
         let isSelected = false
         selectedFilters.forEach((filter) => {
             if(filter.id === id){
@@ -113,7 +71,7 @@ export function TableFilters(props: TableFilterProps) {
                 }}
                 alignItems={"center"}
             >
-                {(allFilters).map((filter, index) => {
+                {(props.filterOptions).map((filter, index) => {
                     return(
                         <Grid
                             item={true}
@@ -127,7 +85,7 @@ export function TableFilters(props: TableFilterProps) {
                                 color={(isChipSelected(filter.id)) ?"success" :"error"}
                                 onDelete={() => handleOnClick(filter.id)}
                                 deleteIcon={(isChipSelected(filter.id)) ? <DoneIcon /> : <CloseIcon />}
-                                label={filter.label}
+                                label={filter.filterValue}
                                 sx={{
                                     background: (isChipSelected(filter.id)) ?undefined :'white',
                                 }}

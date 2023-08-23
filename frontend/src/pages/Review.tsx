@@ -4,10 +4,10 @@ import globalTheme from "../theme/theme";
 import {useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
-import {getWordsSimplified} from "../features/words/wordSlice";
+import {FilterItem, getWordsSimplified} from "../features/words/wordSlice";
 import LinearIndeterminate from "../components/Spinner";
 import {DnDLanguageOrderSelector} from "../components/DnDLanguageOrderSelector";
-import {Lang} from "../ts/enums";
+import {Lang, NounCases, PartOfSpeech} from "../ts/enums";
 import {TranslationsTable} from "../components/table/TranslationsTable";
 import {motion} from "framer-motion";
 import {routeVariantsAnimation} from "./management/RoutesWithAnimation";
@@ -49,6 +49,64 @@ export function Review(){
                 })
         setAllSelectedLanguages(updatedOrderList)
     }
+
+    const genderFilters: FilterItem[] = [
+        {
+            id: 'CaseGenderMaleDE',
+            type: 'gender',
+            filterValue: 'der',
+            caseName: NounCases.genderDE,
+            language: Lang.DE,
+        },
+        {
+            id: 'CaseGenderFemaleDE',
+            type: 'gender',
+            filterValue: 'die',
+            caseName: NounCases.genderDE,
+            language: Lang.DE,
+        },
+        {
+            id: 'CaseGenderNeutralDE',
+            type: 'gender',
+            filterValue: 'das',
+            caseName: NounCases.genderDE,
+            language: Lang.DE,
+        },
+        {
+            id: 'CaseGenderMaleES',
+            type: 'gender',
+            filterValue: 'el',
+            caseName: NounCases.genderES,
+            language: Lang.ES,
+        },
+        {
+            id: 'CaseGenderFemaleES',
+            type: 'gender',
+            filterValue: 'la',
+            caseName: NounCases.genderES,
+            language: Lang.ES,
+        }
+    ]
+    const PoSFilters: FilterItem[] = [
+        {
+            id: 'PoSNoun',
+            type: 'PoS',
+            filterValue: 'Noun',
+            partOfSpeech: PartOfSpeech.noun,
+        },
+        {
+            id: 'PoSVerb',
+            type: 'PoS',
+            filterValue: 'Verb',
+            partOfSpeech: PartOfSpeech.verb,
+        },
+        {
+            id: 'PoSAdjective',
+            type: 'PoS',
+            filterValue: 'Adjective',
+            partOfSpeech: PartOfSpeech.adjective,
+        },
+    ]
 
     return(
         <Grid
@@ -122,39 +180,57 @@ export function Review(){
                 </Grid>
             </Grid>
             {(isLoading) && <LinearIndeterminate/>}
-            {/*{(wordsSimple.amount >0)  &&*/}
-            {/*    <>*/}
-                    {/*
-                        TODO: refactor later into single table component with DnD language selector included
-                         & add frame, pagination, filters, toggles for extra data, etc.
-                    */}
-                    <Grid
-                        item={true}
-                        container={true}
-                        justifyContent={"center"}
-                    >
-                        <DnDLanguageOrderSelector
-                            allSelectedItems={allSelectedLanguages}
-                            setAllSelectedItems={(languages: string[]) => setAllSelectedLanguages(languages)}
-                            otherItems={otherLanguages}
-                            setOtherItems={(languages: string[]) => setOtherLanguages(languages)}
-                            direction={"horizontal"}
-                        />
-                    </Grid>
+            {/*
+                TODO: refactor later into single table component with DnD language selector included
+                 & add frame, pagination, filters, toggles for extra data, etc.
+            */}
+            <Grid
+                item={true}
+                container={true}
+                justifyContent={"center"}
+            >
+                <DnDLanguageOrderSelector
+                    allSelectedItems={allSelectedLanguages}
+                    setAllSelectedItems={(languages: string[]) => setAllSelectedLanguages(languages)}
+                    otherItems={otherLanguages}
+                    setOtherItems={(languages: string[]) => setOtherLanguages(languages)}
+                    direction={"horizontal"}
+                />
+            </Grid>
+            <Grid
+                container={true}
+                justifyContent={"center"}
+                spacing={1}
+            >
+                <Grid
+                    item={true}
+                >
                     <TableFilters
+                        filterOptions={genderFilters}
                         applyFilters={(filters) => {
                             // @ts-ignore
                             dispatch(getWordsSimplified(filters))
                         }}
                     />
-                    {/* TABLE */}
-                    <TranslationsTable
-                        sortedAndSelectedLanguages={allSelectedLanguages}
-                        data={wordsSimple.words}
-                        setAllSelectedItems={(languages: string[]) => changeLanguageOrderFromTable(languages)}
+                </Grid>
+                <Grid
+                    item={true}
+                >
+                    <TableFilters
+                        filterOptions={PoSFilters}
+                        applyFilters={(filters) => {
+                            // @ts-ignore
+                            dispatch(getWordsSimplified(filters))
+                        }}
                     />
-            {/*    </>*/}
-            {/*}*/}
+                </Grid>
+            </Grid>
+            {/* TABLE */}
+            <TranslationsTable
+                sortedAndSelectedLanguages={allSelectedLanguages}
+                data={wordsSimple.words}
+                setAllSelectedItems={(languages: string[]) => changeLanguageOrderFromTable(languages)}
+            />
         </Grid>
     )
 }
