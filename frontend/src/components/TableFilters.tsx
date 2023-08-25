@@ -22,8 +22,10 @@ export function TableFilters(props: TableFilterProps) {
 
     const handleOnClick = (id: string) => {
         if(isChipSelected(id)){
+            // if we click again on a selected filter, it is removed from the currently active ones for this category
             setSelectedFilters(selectedFilters.filter(filter => filter.id !== id))
         } else {
+            // if we click on a filter, it is added to this category
             const newSelectedFilter = props.filterOptions.find(filter => filter.id === id)
             if(newSelectedFilter!!){
                 setSelectedFilters([

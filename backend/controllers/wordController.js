@@ -25,7 +25,7 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
                             // and checking one at a time, and then joining the unique results at the end
                             // see more at: https://stackoverflow.com/questions/22907451/nodejs-mongodb-in-array-not-working-if-array-is-a-variable
                             // "word": {$in: ['der', 'die']}, // this works
-                            // it's an array to allow searching by more than 1 gender at a time
+                            // it's an array to allow searching by more than 1 gender at a time => doesn't work at the moment
                             "word": {$in: `${[filter.filterValue]}`}, // this doesn't work => only 1 filter at a time
                             "caseName": {$regex: "^gender"},
                         }
@@ -53,14 +53,6 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
         }
     }
     const filters = (req.query.filters !== undefined) ?req.query.filters :[]
-    // let filterStrings = []
-    // if(filters !== undefined){
-    //     filterStrings = filters.map(filter => {
-    //         return ((filter.filterValue).toString())
-    //     })
-    // }
-    // console.log('filters')
-    // console.log(filters)
 
     let filteredResults = []
 

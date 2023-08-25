@@ -108,6 +108,19 @@ export function Review(){
         },
     ]
 
+    const [currentGenderFilters, setCurrentGenderFilters] = useState<FilterItem[]>([])
+    const [currentPoSFilters, setCurrentPoSFilters] = useState<FilterItem[]>([])
+
+    useEffect(() => {
+        // @ts-ignore
+        dispatch(getWordsSimplified([
+            ...currentPoSFilters,
+            ...currentGenderFilters
+        ]))
+    }, [currentPoSFilters, currentGenderFilters])
+    // newFilter is an array because for each category we should be able to receive more than 1 value to filter by,
+    // although it is not working as such at the moment
+
     return(
         <Grid
             component={motion.div} // to implement animations with Framer Motion
@@ -208,8 +221,7 @@ export function Review(){
                     <TableFilters
                         filterOptions={genderFilters}
                         applyFilters={(filters) => {
-                            // @ts-ignore
-                            dispatch(getWordsSimplified(filters))
+                            setCurrentGenderFilters(filters)
                         }}
                     />
                 </Grid>
@@ -219,8 +231,7 @@ export function Review(){
                     <TableFilters
                         filterOptions={PoSFilters}
                         applyFilters={(filters) => {
-                            // @ts-ignore
-                            dispatch(getWordsSimplified(filters))
+                            setCurrentPoSFilters(filters)
                         }}
                     />
                 </Grid>
