@@ -9,6 +9,7 @@ import {FilterItem} from "../features/words/wordSlice";
 interface TableFilterProps {
     filterOptions: FilterItem[],
     applyFilters: (filters: FilterItem[]) => void
+    singleSelection?: boolean
 }
 
 export function TableFilters(props: TableFilterProps) {
@@ -94,7 +95,10 @@ export function TableFilters(props: TableFilterProps) {
                                 // This limitation has been added to hide for now
                                 // a bug with MongoDB and variable arrays using the $in operator
                                 // see more at: https://stackoverflow.com/questions/22907451/nodejs-mongodb-in-array-not-working-if-array-is-a-variable
-                                disabled={!(isChipSelected(filter.id)) && (selectedFilters.length>0)} // only 1 chip active at once
+                                disabled={(props.singleSelection!!)
+                                    ? !(isChipSelected(filter.id)) && (selectedFilters.length>0)
+                                    : false
+                                } // only 1 chip active at once
                             />
                         </Grid>
                     )

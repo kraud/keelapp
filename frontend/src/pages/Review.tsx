@@ -112,6 +112,11 @@ export function Review(){
     const [currentPoSFilters, setCurrentPoSFilters] = useState<FilterItem[]>([])
 
     useEffect(() => {
+        // console.log('filters')
+        // console.log([
+        //     ...currentPoSFilters,
+        //     ...currentGenderFilters
+        // ])
         // @ts-ignore
         dispatch(getWordsSimplified([
             ...currentPoSFilters,

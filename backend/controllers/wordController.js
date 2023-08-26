@@ -54,14 +54,18 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
     }
     const filters = (req.query.filters !== undefined) ?req.query.filters :[]
 
-    let filteredResults = []
+    let queryResults = []
 
     if(filters.length > 0){
         for (const filter of filters) {
             let result = await Word.find(
                 getFilterQuery(filter)
             )
-            filteredResults.push(...result)
+            // queryResults.push(...result)
+            // add type to result, so we keep all the unique results
+            queryResults.push({
+                type: filter.type,
+                searchResults: result})
         }
     } else {
         const result = await Word.find(
@@ -69,11 +73,88 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
                 "user": req.user.id,
             }
         )
-        filteredResults.push(...result)
+        // queryResults.push(...result)
+        queryResults.push({
+            type: 'none',
+            searchResults: result
+        })
     }
 
     let wordsSimplified = []
-    filteredResults.forEach((completeWord) => {
+    // we merge all the items with the same "type" into the same array
+    let groupedResults = []
+    let processedResults = []
+    // if no filters => single array results will be spread
+    if((queryResults.length === 1) && (queryResults[0].type === 'none')){
+        console.log('type none')
+        processedResults = [...(queryResults[0].queryResults)]
+    } else {
+        console.log('type something')
+        console.log(queryResults)
+        queryResults.forEach((queryResult, indexQuery) => {
+            // is there an array in groupedResults with this type?
+            groupedResults.forEach((groupedResult, indexGrouped) => {
+                // if so, add this queryResult queryResults into that groupedResults item
+                if(queryResult.type === groupedResult.type){
+                    groupedResults[indexGrouped] = {
+                        ...groupedResult,
+                        queryResults: [
+                            ...(groupedResult.searchResults),
+                            ...(queryResult.searchResults),
+                        ]
+                    }
+                } else {
+                    // if not AND this is the end of the groupedResults array
+                    if(indexGrouped === (groupedResults.length-1)){
+                        // then we add it to the groupedResults array at the end
+                        groupedResults.push(queryResult)
+                    }
+                }
+
+            })
+        })
+        console.log('s.1')
+        // filter each type again to only include unique results
+        let uniqueResults = groupedResults.map((groupedResult) => {
+            const seen = new Set()
+            const uniqueItems = groupedResult.queryResults.filter((groupedResult) => {
+                console.log('groupedResult')
+                console.log(groupedResult)
+                const duplicate = seen.has(groupedResult._id)
+                seen.add(groupedResult._id) // TODO: check if _id the correct property name
+                return(!duplicate)
+            })
+            // we only return the result lists, since the filter type is not relevant anymore
+            return(uniqueItems)
+        })
+        console.log('s.2')
+        // we filter and spread uniqueResults, so it ONLY includes results present in all the arrays?
+        // if only 1 type => no need to check overlap, we simply return list
+        if(uniqueResults.length === 1) {
+            console.log('s.2-2')
+            processedResults = [...(uniqueResults[0])]
+        } else if(uniqueResults.length > 1) {
+            console.log('s.3')
+            // if 2 or more => we check for all the overlapping ids
+            let allIds = uniqueResults.map((uniqueItem, index) => {
+                uniqueItem.map((item) => {
+                    return (item._id)
+                })
+            })
+            const finalIds = (allIds[0]).filter(wordId => allIds.every(typeArray => typeArray.includes(wordId)))
+
+            uniqueResults.forEach((uniqueItem, index) => {
+                uniqueItem.forEach((item) => {
+                    if (finalIds.includes(item._id)) {
+                        processedResults.push(item)
+                    }
+                })
+            })
+        }
+    }
+    console.log('processedResults')
+    console.log(processedResults)
+    processedResults.forEach((completeWord) => {
         // we must go through all the languages listed on "translations" and create simplified versions of each
         let simplifiedWord = {
             partOfSpeech: completeWord.partOfSpeech,
