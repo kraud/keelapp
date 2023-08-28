@@ -1,4 +1,4 @@
-import {Grid, Typography} from "@mui/material";
+import {Grid, Slide, Typography} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import globalTheme from "../theme/theme";
 import {useNavigate} from "react-router-dom";
@@ -12,6 +12,8 @@ import {TranslationsTable} from "../components/table/TranslationsTable";
 import {motion} from "framer-motion";
 import {routeVariantsAnimation} from "./management/RoutesWithAnimation";
 import {TableFilters} from "../components/TableFilters";
+import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
+import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 
 export function Review(){
     const navigate = useNavigate()
@@ -21,6 +23,7 @@ export function Review(){
     const [allSelectedLanguages, setAllSelectedLanguages] = useState<string[]>((Object.values(Lang).filter((v) => isNaN(Number(v)))) as unknown as Array<keyof typeof Lang>)
     // Languages currently not displayed as columns on the table
     const [otherLanguages, setOtherLanguages] = useState<string[]>([])
+    const [displayFilers, setDisplayFilers] = useState(true)
 
     const {wordsSimple, isLoading, isError, message} = useSelector((state: any) => state.words)
 
@@ -38,6 +41,14 @@ export function Review(){
         //@ts-ignore
         dispatch(getWordsSimplified())
     }, [])
+
+    useEffect(() => {
+        // when we hide the filters, we request the filter-less results for the table
+        if(!displayFilers){
+            //@ts-ignore
+            dispatch(getWordsSimplified())
+        }
+    }, [displayFilers])
 
     // allows column dragging from table to work with DnDLanguageSelector
     const changeLanguageOrderFromTable = (newList: string[]) => {
@@ -112,19 +123,12 @@ export function Review(){
     const [currentPoSFilters, setCurrentPoSFilters] = useState<FilterItem[]>([])
 
     useEffect(() => {
-        // console.log('filters')
-        // console.log([
-        //     ...currentPoSFilters,
-        //     ...currentGenderFilters
-        // ])
         // @ts-ignore
         dispatch(getWordsSimplified([
             ...currentPoSFilters,
             ...currentGenderFilters
         ]))
     }, [currentPoSFilters, currentGenderFilters])
-    // newFilter is an array because for each category we should be able to receive more than 1 value to filter by,
-    // although it is not working as such at the moment
 
     return(
         <Grid
@@ -203,43 +207,123 @@ export function Review(){
                  & add frame, pagination, filters, toggles for extra data, etc.
             */}
             <Grid
+                container={true}
                 item={true}
-                container={true}
-                justifyContent={"center"}
+                xs={12}
+                md={10}
+                xl={6}
+                sx={{
+                    overflow: 'hidden',
+                    background: '#c7c7c7',
+                    padding: globalTheme.spacing(2),
+                    marginBottom: globalTheme.spacing(1),
+                    border: '1px solid black',
+                    borderRadius: '25px',
+                    width: 'max-content',
+                }}
             >
-                <DnDLanguageOrderSelector
-                    allSelectedItems={allSelectedLanguages}
-                    setAllSelectedItems={(languages: string[]) => setAllSelectedLanguages(languages)}
-                    otherItems={otherLanguages}
-                    setOtherItems={(languages: string[]) => setOtherLanguages(languages)}
-                    direction={"horizontal"}
-                />
-            </Grid>
-            <Grid
-                container={true}
-                justifyContent={"center"}
-                spacing={1}
-            >
+                {/* Show/hide filter button */}
                 <Grid
+                    container={true}
                     item={true}
+                    onClick={() => setDisplayFilers(!displayFilers)}
+                    sx={{
+                        cursor: 'pointer',
+                        width: 'max-content',
+                        marginLeft: '-17px',
+                        marginTop: '-17px',
+                        marginBottom: displayFilers ? globalTheme.spacing(1) :'-10px',
+                        paddingTop: '10px',
+                        paddingLeft: '15px',
+                        paddingRight: '20px',
+                        background: 'white',
+                        borderRadius: '0 0 15px 0',
+                        borderBottom: '1px solid black',
+                        borderRight: '1px solid black',
+                    }}
                 >
-                    <TableFilters
-                        filterOptions={genderFilters}
-                        applyFilters={(filters) => {
-                            setCurrentGenderFilters(filters)
-                        }}
-                    />
+                    <Grid
+                        item={true}
+                    >
+                        {(displayFilers)
+                            ?
+                            <KeyboardDoubleArrowUpIcon
+                                sx={{
+                                    color: 'green',
+                                    fontSize: '25px',
+                                }}
+                            />
+                            :
+                            <KeyboardDoubleArrowDownIcon
+                                sx={{
+                                    color: 'green',
+                                    fontSize: '25px',
+                                }}
+                            />
+                        }
+                    </Grid>
+                    <Grid
+                        item={true}
+                    >
+                        <Typography
+                            variant={"subtitle1"}
+                            color={"secondary"}
+                        >
+                            {(displayFilers) ?'Hide filters' :'Show filters'}
+                        </Typography>
+                    </Grid>
                 </Grid>
-                <Grid
-                    item={true}
+                <Slide
+                    direction="down"
+                    in={displayFilers}
+                    mountOnEnter
+                    unmountOnExit
                 >
-                    <TableFilters
-                        filterOptions={PoSFilters}
-                        applyFilters={(filters) => {
-                            setCurrentPoSFilters(filters)
-                        }}
-                    />
-                </Grid>
+                     <Grid
+                        container={true}
+                        item={true}
+                    >
+                        <Grid
+                            item={true}
+                            container={true}
+                            justifyContent={"center"}
+                        >
+                            <DnDLanguageOrderSelector
+                                allSelectedItems={allSelectedLanguages}
+                                setAllSelectedItems={(languages: string[]) => setAllSelectedLanguages(languages)}
+                                otherItems={otherLanguages}
+                                setOtherItems={(languages: string[]) => setOtherLanguages(languages)}
+                                direction={"horizontal"}
+                            />
+                        </Grid>
+                        <Grid
+                            container={true}
+                            justifyContent={"center"}
+                            spacing={1}
+                        >
+                            <Grid
+                                item={true}
+                            >
+                                <TableFilters
+                                    filterOptions={genderFilters}
+                                    applyFilters={(filters) => {
+                                        setCurrentGenderFilters(filters)
+                                    }}
+                                />
+                            </Grid>
+                            <Grid
+                                item={true}
+                            >
+                                <TableFilters
+                                    filterOptions={PoSFilters}
+                                    applyFilters={(filters) => {
+                                        setCurrentPoSFilters(filters)
+                                    }}
+                                />
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Slide>
             </Grid>
             {/* TABLE */}
             <TranslationsTable

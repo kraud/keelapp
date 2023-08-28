@@ -94,10 +94,6 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
         <Grid
             container={true}
             item={true}
-            xs={12}
-            md={11}
-            lg={10}
-            xl={6}
             justifyContent={"center"}
             direction={"row"}
         >
@@ -109,11 +105,16 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                 <Grid
                     container={true}
                     item={true}
-                    xs
                     direction={"column"}
+                    sx={{
+                        width: 'max-content'
+                    }}
                 >
                     <Grid
                         item={true}
+                        sx={{
+                            width: 'max-content'
+                        }}
                     >
                         <Typography
                             variant={"subtitle2"}

@@ -474,7 +474,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
             container={true}
             item={true}
             spacing={1}
-            lg={12}
+            xs={12}
             justifyContent={"flex-start"}
             style={{
                 display: 'relative',
