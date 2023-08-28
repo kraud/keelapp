@@ -312,6 +312,7 @@ export function TableDataCell(props: TableDataCellProps){
                                 <>
                                     {((props.amount!!) && (getPercentage(props.amount) < 100)) &&
                                     <span
+                                        className={"completePercentageCircle"}
                                         style={{
                                             height: '30px',
                                             width: '30px',
@@ -332,6 +333,7 @@ export function TableDataCell(props: TableDataCellProps){
                                     </span>
                                     }
                                     <span
+                                        className={"completePercentageCircle"}
                                         style={{
                                             height: '30px',
                                             width: '30px',

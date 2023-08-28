@@ -94,9 +94,11 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                 color: 'black',
                                 borderTop: "2px solid black",
                                 borderBottom: "2px solid black",
-                                "& svg": {
-                                    height: '30px',
-                                    width: '30px',
+                                "& .completePercentageCircle": {
+                                    "& svg": {
+                                        height: '30px',
+                                        width: '30px',
+                                    },
                                 },
                                 "& .smallerIconCompletePercentage": {
                                     "& svg": {
