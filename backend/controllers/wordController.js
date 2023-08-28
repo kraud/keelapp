@@ -54,16 +54,15 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
     }
     const filters = (req.query.filters !== undefined) ?req.query.filters :[]
 
-    let queryResults = []
+    let originalResults = []
 
     if(filters.length > 0){
         for (const filter of filters) {
             let result = await Word.find(
                 getFilterQuery(filter)
             )
-            // queryResults.push(...result)
-            // add type to result, so we keep all the unique results
-            queryResults.push({
+            // TODO: potential optimization => only push if result.length > 0
+            originalResults.push({
                 type: filter.type,
                 searchResults: result})
         }
@@ -73,250 +72,151 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
                 "user": req.user.id,
             }
         )
-        // queryResults.push(...result)
-        queryResults.push({
+        originalResults.push({
             type: 'none',
             searchResults: result
         })
     }
+
 
     let wordsSimplified = []
     // we merge all the items with the same "type" into the same array
     let groupedResults = []
     let processedResults = []
     // if no filters => single array results will be spread
-    if((queryResults.length === 1) && (queryResults[0].type === 'none')){
-        console.log('type none')
-        processedResults = [...(queryResults[0].queryResults)]
+    if((originalResults.length === 1) && (originalResults[0].type === 'none')){
+        processedResults = (originalResults[0].searchResults)
     } else {
-        console.log('type something')
-        console.log(queryResults)
-        queryResults.forEach((queryResult, indexQuery) => {
-            // is there an array in groupedResults with this type?
-            groupedResults.forEach((groupedResult, indexGrouped) => {
-                // if so, add this queryResult queryResults into that groupedResults item
-                if(queryResult.type === groupedResult.type){
-                    groupedResults[indexGrouped] = {
-                        ...groupedResult,
-                        queryResults: [
-                            ...(groupedResult.searchResults),
-                            ...(queryResult.searchResults),
-                        ]
+        originalResults.forEach((originalResult, indexOGResult) => {
+            // first item will be added directly
+            if(groupedResults.length === 0){
+                groupedResults.push({
+                    type: originalResult.type,
+                    queryResults: originalResult.searchResults
+                })
+            } else {
+                // if there is at least 1 item already on the list, we must check if the current queryResult's type is already added
+                groupedResults.forEach((groupedResult, indexGrouped) => {
+                    // if so, add this queryResult queryResults into that groupedResults item
+                    if(originalResult.type === groupedResult.type){
+                        groupedResults[indexGrouped] = {
+                            ...groupedResult, // we keep the other fields (type and potentially others) as they were
+                            queryResults: [
+                                // potentially duplicated items between the 2 lists => will be filtered later
+                                ...(groupedResult.queryResults),
+                                ...(originalResult.searchResults),
+                            ]
+                        }
+                    } else {
+                        // if not AND this is the end of the groupedResults array
+                        if(indexGrouped === (groupedResults.length-1)){
+                            // then we add it to the groupedResults array at the end
+                            groupedResults.push({
+                                // indexQuery will always be 0 for this case?
+                                type: originalResult.type, // TODO: no need for index here?
+                                queryResults: originalResult.searchResults
+                            })
+                        }
                     }
-                } else {
-                    // if not AND this is the end of the groupedResults array
-                    if(indexGrouped === (groupedResults.length-1)){
-                        // then we add it to the groupedResults array at the end
-                        groupedResults.push(queryResult)
-                    }
-                }
-
-            })
+                })
+            }
         })
-        console.log('s.1')
         // filter each type again to only include unique results
         let uniqueResults = groupedResults.map((groupedResult) => {
-            const seen = new Set()
+            let seen = new Set()
             const uniqueItems = groupedResult.queryResults.filter((groupedResult) => {
-                console.log('groupedResult')
-                console.log(groupedResult)
-                const duplicate = seen.has(groupedResult._id)
-                seen.add(groupedResult._id) // TODO: check if _id the correct property name
+                const duplicate = seen.has((groupedResult._id).toString())
+                seen.add((groupedResult._id).toString())
                 return(!duplicate)
             })
             // we only return the result lists, since the filter type is not relevant anymore
             return(uniqueItems)
         })
-        console.log('s.2')
         // we filter and spread uniqueResults, so it ONLY includes results present in all the arrays?
         // if only 1 type => no need to check overlap, we simply return list
         if(uniqueResults.length === 1) {
-            console.log('s.2-2')
             processedResults = [...(uniqueResults[0])]
         } else if(uniqueResults.length > 1) {
-            console.log('s.3')
             // if 2 or more => we check for all the overlapping ids
             let allIds = uniqueResults.map((uniqueItem, index) => {
-                uniqueItem.map((item) => {
-                    return (item._id)
-                })
+                return(
+                    uniqueItem.map((item) => {
+                        return ((item._id).toString())
+                    })
+                )
             })
             const finalIds = (allIds[0]).filter(wordId => allIds.every(typeArray => typeArray.includes(wordId)))
-
+            let checked = new Set()
             uniqueResults.forEach((uniqueItem, index) => {
                 uniqueItem.forEach((item) => {
-                    if (finalIds.includes(item._id)) {
+                    if (
+                        (finalIds.includes((item._id).toString())) &&
+                        !(checked.has((item._id).toString()))
+                    ) {
+                        checked.add((item._id).toString())
                         processedResults.push(item)
                     }
                 })
             })
         }
     }
-    console.log('processedResults')
-    console.log(processedResults)
-    processedResults.forEach((completeWord) => {
-        // we must go through all the languages listed on "translations" and create simplified versions of each
-        let simplifiedWord = {
-            partOfSpeech: completeWord.partOfSpeech,
-            createdAt: completeWord.createdAt,
-            updatedAt: completeWord.updatedAt,
-            id: completeWord.id,
-        }
-        // from each translated language, we only retrieve the necessary data
-        completeWord.translations.forEach((translation) => {
-            switch(translation.language){
-                case 'Estonian': {
-                    simplifiedWord = {
-                        ...simplifiedWord,
-                        singularNimetavEE: (translation.cases.find(wordCase => (wordCase.caseName === 'singularNimetavEE'))).word,
-                        registeredCasesEE: translation.cases.length
-                    }
-                    break
-                }
-                case 'English': {
-                    simplifiedWord = {
-                        ...simplifiedWord,
-                        singularEN: (translation.cases.find(wordCase => (wordCase.caseName === 'singularEN'))).word,
-                        registeredCasesEN: translation.cases.length
-                    }
-                    break
-                }
-                case 'Spanish': {
-                    simplifiedWord = {
-                        ...simplifiedWord,
-                        genderES: (translation.cases.find(wordCase => (wordCase.caseName === 'genderES'))).word,
-                        singularES: (translation.cases.find(wordCase => (wordCase.caseName === 'singularES'))).word,
-                        registeredCasesES: translation.cases.length
-                    }
-                    break
-                }
-                case 'German': {
-                    simplifiedWord = {
-                        ...simplifiedWord,
-                        genderDE: (translation.cases.find(wordCase => (wordCase.caseName === 'genderDE'))).word,
-                        singularNominativDE: (translation.cases.find(wordCase => (wordCase.caseName === 'singularNominativDE'))).word,
-                        registeredCasesDE: translation.cases.length
-                    }
-                    break
-                }
+    // Filtering complete => setting up format to be displayed on table
+    if((processedResults !== undefined) && (processedResults.length > 0)){
+        processedResults.forEach((completeWord) => {
+            // we must go through all the languages listed on "translations" and create simplified versions of each
+            let simplifiedWord = {
+                partOfSpeech: completeWord.partOfSpeech,
+                createdAt: completeWord.createdAt,
+                updatedAt: completeWord.updatedAt,
+                id: completeWord.id,
             }
+            // from each translated language, we only retrieve the necessary data
+            completeWord.translations.forEach((translation) => {
+                switch(translation.language){
+                    case 'Estonian': {
+                        simplifiedWord = {
+                            ...simplifiedWord,
+                            singularNimetavEE: (translation.cases.find(wordCase => (wordCase.caseName === 'singularNimetavEE'))).word,
+                            registeredCasesEE: translation.cases.length
+                        }
+                        break
+                    }
+                    case 'English': {
+                        simplifiedWord = {
+                            ...simplifiedWord,
+                            singularEN: (translation.cases.find(wordCase => (wordCase.caseName === 'singularEN'))).word,
+                            registeredCasesEN: translation.cases.length
+                        }
+                        break
+                    }
+                    case 'Spanish': {
+                        simplifiedWord = {
+                            ...simplifiedWord,
+                            genderES: (translation.cases.find(wordCase => (wordCase.caseName === 'genderES'))).word,
+                            singularES: (translation.cases.find(wordCase => (wordCase.caseName === 'singularES'))).word,
+                            registeredCasesES: translation.cases.length
+                        }
+                        break
+                    }
+                    case 'German': {
+                        simplifiedWord = {
+                            ...simplifiedWord,
+                            genderDE: (translation.cases.find(wordCase => (wordCase.caseName === 'genderDE'))).word,
+                            singularNominativDE: (translation.cases.find(wordCase => (wordCase.caseName === 'singularNominativDE'))).word,
+                            registeredCasesDE: translation.cases.length
+                        }
+                        break
+                    }
+                }
+            })
+            wordsSimplified.push(simplifiedWord)
         })
-        wordsSimplified.push(simplifiedWord)
-    })
+    }
     const result = {
         amount: wordsSimplified.length, // the total amount of words saved for this user
         words: wordsSimplified // the data corresponding to those words, reduced to only the most necessary fields
     }
     res.status(200).json(result)
-})
-
-// @desc    Get Words with simplified data
-// @route   GET /api/words/simple
-// @access  Private
-const getWordsSimplifiedOG = asyncHandler(async (req, res) => {
-    const filters = req.query.filters
-    let filterStrings = []
-    if(filters !== undefined){
-        filterStrings = filters.map(filter => {
-            return ((filter.filterValue).toString())
-        })
-    }
-    // let queryString = ""
-    // if(filters !== undefined){
-    //     filters.forEach(filter => {
-    //         queryString = queryString+((filter.filterValue).toString())+" "
-    //     })
-    // }
-
-    await Word.find(
-        ((filters !== undefined) && (filterStrings.length > 0))
-        // ? { $where: function() { return queryString.indexOf(this.translations.cases.word) > -1; } } // 'where' is not free for mongoDB
-        // ? {"$expr": {$ne : [{$indexOfCP: [queryString, "$translations.cases.word"]}, -1]}} // this doesn't work because word is an array?
-        // ? {$text: {$search: queryString}} // always empty results?
-        // ? {
-        //     $text: {$search: queryString},
-        //     "user": req.user.id,
-        // } // no results?
-        ? {
-            "translations.cases": {
-                $elemMatch: {
-                    // bug with MongoDB? Might have to create work-around iterating through the filters array
-                    // and checking one at a time, and then joining the unique results at the end
-                    // see more at: https://stackoverflow.com/questions/22907451/nodejs-mongodb-in-array-not-working-if-array-is-a-variable
-                    // "word": {$in: ['der', 'die']}, // this works
-                    "word": {$in: `${filterStrings}`}, // this doesn't work => only 1 filter at a time
-                    "caseName": {$regex: "^gender"},
-                }
-            },
-            "user": req.user.id,
-        }
-        // ? {
-        //     // "translations.cases.word": {$in: ['der', 'die']}, // this works
-        //     // "translations.cases.word": {$in: `${filterStrings}`}, // this doesn't work => only 1 filter at a time
-        // } same issues as above
-        : {
-            "user": req.user.id,
-        }
-    )
-    .then((data) => {
-        if(data){
-            let wordsSimplified = []
-            data.forEach((completeWord) => {
-                // we must go through all the languages listed on "translations" and create simplified versions of each
-                let simplifiedWord = {
-                    partOfSpeech: completeWord.partOfSpeech,
-                    createdAt: completeWord.createdAt,
-                    updatedAt: completeWord.updatedAt,
-                    id: completeWord.id,
-                }
-                // from each translated language, we only retrieve the necessary data
-                completeWord.translations.forEach((translation) => {
-                    switch(translation.language){
-                        case 'Estonian': {
-                            simplifiedWord = {
-                                ...simplifiedWord,
-                                singularNimetavEE: (translation.cases.find(wordCase => (wordCase.caseName === 'singularNimetavEE'))).word,
-                                registeredCasesEE: translation.cases.length
-                            }
-                            break
-                        }
-                        case 'English': {
-                            simplifiedWord = {
-                                ...simplifiedWord,
-                                singularEN: (translation.cases.find(wordCase => (wordCase.caseName === 'singularEN'))).word,
-                                registeredCasesEN: translation.cases.length
-                            }
-                            break
-                        }
-                        case 'Spanish': {
-                            simplifiedWord = {
-                                ...simplifiedWord,
-                                genderES: (translation.cases.find(wordCase => (wordCase.caseName === 'genderES'))).word,
-                                singularES: (translation.cases.find(wordCase => (wordCase.caseName === 'singularES'))).word,
-                                registeredCasesES: translation.cases.length
-                            }
-                            break
-                        }
-                        case 'German': {
-                            simplifiedWord = {
-                                ...simplifiedWord,
-                                genderDE: (translation.cases.find(wordCase => (wordCase.caseName === 'genderDE'))).word,
-                                singularNominativDE: (translation.cases.find(wordCase => (wordCase.caseName === 'singularNominativDE'))).word,
-                                registeredCasesDE: translation.cases.length
-                            }
-                            break
-                        }
-                    }
-                })
-                wordsSimplified.push(simplifiedWord)
-            })
-            const result = {
-                amount: data.length, // the total amount of words saved for this user
-                words: wordsSimplified // the data corresponding to those words, reduced to only the most necessary fields
-            }
-            res.status(200).json(result)
-        }
-    })
 })
 
 // @desc    Get Words
