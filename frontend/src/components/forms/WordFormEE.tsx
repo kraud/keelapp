@@ -4,7 +4,7 @@ import {yupResolver} from "@hookform/resolvers/yup/dist/yup";
 import {Grid} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {TextInputFormWithHook} from "../TextInputFormHook";
-import {NounItem, TranslationItem} from "../../ts/interfaces";
+import {WordItem, TranslationItem} from "../../ts/interfaces";
 import {Lang, NounCases} from "../../ts/enums";
 import {getDisabledInputFieldDisplayLogic, getWordByCase} from "./commonFunctions";
 
@@ -63,7 +63,7 @@ export function WordFormEE(props: WordFormEEProps) {
     const [pluralOsastav, setPluralOsastav] = useState("")
 
     useEffect(() => {
-        const currentCases: NounItem[] = [
+        const currentCases: WordItem[] = [
             {
                 caseName: NounCases.singularNimetavEE,
                 word: singularNimetav
