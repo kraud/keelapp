@@ -1,8 +1,8 @@
 import {NounCases} from "../../ts/enums";
-import {NounItem, TranslationItem} from "../../ts/interfaces";
+import {WordItem, TranslationItem} from "../../ts/interfaces";
 
 export function getWordByCase(searchCase: NounCases, currentTranslationData: TranslationItem) {
-    const returnValue = (currentTranslationData.cases).find((wordCase: NounItem) => {
+    const returnValue = (currentTranslationData.cases).find((wordCase: WordItem) => {
         return (wordCase.caseName === searchCase)
     })
     if (returnValue === undefined) {

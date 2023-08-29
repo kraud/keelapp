@@ -1,7 +1,7 @@
 import {Button, Grid, TextField, Typography} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {WordFormGeneric} from "./WordFormGeneric";
-import {NounItem, TranslationItem, WordData} from "../ts/interfaces";
+import {WordItem, TranslationItem, WordData} from "../ts/interfaces";
 import {Lang, PartOfSpeech} from "../ts/enums";
 import {useSelector} from "react-redux";
 import LinearIndeterminate from "./Spinner";
@@ -414,7 +414,7 @@ export function TranslationForm(props: TranslationFormProps) {
                                                 updateFormData={(
                                                     formData: {
                                                         language: Lang,
-                                                        cases?: NounItem[],
+                                                        cases?: WordItem[],
                                                         completionState?: boolean
                                                     },
                                                     index: number

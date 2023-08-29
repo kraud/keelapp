@@ -211,7 +211,7 @@ export function Review(){
                 item={true}
                 xs={12}
                 md={10}
-                xl={6}
+                xl={8}
                 sx={{
                     overflow: 'hidden',
                     background: '#c7c7c7',
@@ -219,7 +219,7 @@ export function Review(){
                     marginBottom: globalTheme.spacing(1),
                     border: '1px solid black',
                     borderRadius: '25px',
-                    width: 'max-content',
+                    // width: 'max-content',
                 }}
             >
                 {/* Show/hide filter button */}

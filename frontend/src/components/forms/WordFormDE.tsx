@@ -4,7 +4,7 @@ import {yupResolver} from "@hookform/resolvers/yup/dist/yup";
 import {Grid} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {TextInputFormWithHook} from "../TextInputFormHook";
-import {NounItem, TranslationItem} from "../../ts/interfaces";
+import {WordItem, TranslationItem} from "../../ts/interfaces";
 import {GenderDE, Lang, NounCases} from "../../ts/enums";
 import {getDisabledInputFieldDisplayLogic, getWordByCase} from "./commonFunctions";
 import {RadioGroupWithHook} from "../RadioGroupFormHook";
@@ -73,7 +73,7 @@ export function WordFormDE(props: WordFormDEProps) {
     const [pluralDativ, setPluralDativ] = useState("")
 
     useEffect(() => {
-        const currentCases: NounItem[] = [
+        const currentCases: WordItem[] = [
             {
                 caseName: NounCases.genderDE,
                 word: genderWord
