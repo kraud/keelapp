@@ -2,7 +2,7 @@ import {Button, Grid, Typography} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {TranslationItem} from "../ts/interfaces";
 import {Lang, PartOfSpeech} from "../ts/enums";
-import {FormSelector} from "./forms/FormSelector";
+import {FormLanguageSelector} from "./forms/FormLanguageSelector";
 import globalTheme from "../theme/theme";
 import Tooltip from "@mui/material/Tooltip";
 import {getCurrentLangTranslated} from "./generalUseFunctions";
@@ -27,10 +27,10 @@ interface WordFormGenericProps {
 }
 
 
-// TODO: should rename to TranslationFormGeneric, since this stores refers to all the data corresponding to a specific language
+// this refers to all the data corresponding to a specific language
 // Displays available language options, and once selected it displays the correct fields to input
 // This form will only display buttons/textfields/selects for A SINGLE language+word combo
-export function WordFormGeneric(props: WordFormGenericProps) {
+export function TranslationFormGeneric(props: WordFormGenericProps) {
     const [currentLang, setCurrentLang] = useState<Lang | null>(null)
     const componentStyles = {
         translationForm: {
@@ -184,7 +184,7 @@ export function WordFormGeneric(props: WordFormGenericProps) {
                         Pick a language for the new word
                     </Typography>
                     : (currentLang !== null) &&
-                        <FormSelector
+                        <FormLanguageSelector
                             currentLang={currentLang}
                             currentTranslationData={props.currentTranslationData}
                             partOfSpeech={props.partOfSpeech}

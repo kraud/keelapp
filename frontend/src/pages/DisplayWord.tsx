@@ -3,7 +3,7 @@ import {Grid} from "@mui/material";
 import {motion} from "framer-motion";
 import {routeVariantsAnimation} from "./management/RoutesWithAnimation";
 import globalTheme from "../theme/theme";
-import {TranslationForm} from "../components/TranslationForm";
+import {WordForm} from "../components/WordForm";
 import {WordData} from "../ts/interfaces";
 import {useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
@@ -100,7 +100,7 @@ export function DisplayWord(props: DisplayWordProps){
                     display: (displayContent) ?undefined :"none",
                 }}
             >
-                <TranslationForm
+                <WordForm
                     title={"Detailed view"}
                     subTitle={"All the currently stored translations for this word"}
                     onSave={(wordData: WordData) => {

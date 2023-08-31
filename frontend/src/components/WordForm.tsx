@@ -1,6 +1,6 @@
 import {Button, Grid, TextField, Typography} from "@mui/material";
 import React, {useEffect, useState} from "react";
-import {WordFormGeneric} from "./WordFormGeneric";
+import {TranslationFormGeneric} from "./TranslationFormGeneric";
 import {WordItem, TranslationItem, WordData} from "../ts/interfaces";
 import {Lang, PartOfSpeech} from "../ts/enums";
 import {useSelector} from "react-redux";
@@ -17,8 +17,8 @@ interface TranslationFormProps {
     defaultDisabled?: boolean
 }
 
-// TODO: should rename to WordForm, since this stores the complete*Word*Data
-export function TranslationForm(props: TranslationFormProps) {
+// stores the complete *Word* Data
+export function WordForm(props: TranslationFormProps) {
     const {isSuccess, isLoading} = useSelector((state: any) => state.words)
 
     // Type of word to be added (noun/verb/adjective/etc.)
@@ -399,7 +399,7 @@ export function TranslationForm(props: TranslationFormProps) {
                                 {
                                     completeWordData.translations.map((translation: TranslationItem, index) => {
                                         return(
-                                            <WordFormGeneric
+                                            <TranslationFormGeneric
                                                 key={index}
                                                 index={index}
                                                 partOfSpeech={partOfSpeech}

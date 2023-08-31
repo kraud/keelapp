@@ -12,7 +12,7 @@ import IconButton from "@mui/material/IconButton";
 import AddIcon from '@mui/icons-material/Add';
 import LinearIndeterminate from "../Spinner";
 import Box from "@mui/material/Box";
-import {FormSelector} from "../forms/FormSelector";
+import {FormLanguageSelector} from "../forms/FormLanguageSelector";
 import {SortDirection} from "@tanstack/table-core/build/lib/features/Sorting";
 import DoneIcon from "@mui/icons-material/Done";
 
@@ -538,7 +538,7 @@ export function TableDataCell(props: TableDataCellProps){
                                     </Button>
                                 </Grid>
                             </Grid>
-                            <FormSelector
+                            <FormLanguageSelector
                                 currentLang={props.language!} // TODO: this data should come from "selectedWordData
                                 currentTranslationData={selectedWordData!}
                                 partOfSpeech={PartOfSpeech.noun} // TODO: this data should come from "selectedWordData

@@ -14,8 +14,8 @@ interface FormSelectorProps {
     displayOnly?: boolean
 }
 
-// TODO: should rename to FormLanguageSelector, since we set the Form for the selected language
-export function FormSelector(props: FormSelectorProps) {
+// set the Form for the selected language
+export function FormLanguageSelector(props: FormSelectorProps) {
 
 
     const getLanguageForm = () => {

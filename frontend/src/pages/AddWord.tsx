@@ -2,7 +2,7 @@ import React, {useEffect} from "react";
 import {Grid} from "@mui/material";
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
-import {TranslationForm} from "../components/TranslationForm";
+import {WordForm} from "../components/WordForm";
 import {createWord} from "../features/words/wordSlice";
 import {WordData} from "../ts/interfaces";
 import globalTheme from "../theme/theme";
@@ -37,7 +37,7 @@ export function AddWord() {
                 marginBottom: globalTheme.spacing(4),
             }}
         >
-            <TranslationForm
+            <WordForm
                 title={"Add a new word"}
                 subTitle={"All the required fields must be completed before saving"}
                 onSave={(wordData: WordData) => {
