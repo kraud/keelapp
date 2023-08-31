@@ -61,7 +61,6 @@ export function TableFilters(props: TableFilterProps) {
             <Grid
                 container={true}
                 item={true}
-                // xs={"auto"}
                 sx={{
                     border: '2px solid black',
                     borderRadius: '25px',
@@ -70,7 +69,6 @@ export function TableFilters(props: TableFilterProps) {
                     paddingRight: globalTheme.spacing(2),
                     paddingTop: globalTheme.spacing(1),
                     paddingBottom: globalTheme.spacing(1),
-                    width: 'max-content',
                 }}
                 alignItems={"center"}
             >

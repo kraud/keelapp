@@ -95,7 +95,6 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
             container={true}
             item={true}
             justifyContent={"center"}
-            direction={"row"}
         >
             <DndContext
                 collisionDetection={closestCenter}

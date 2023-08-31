@@ -209,9 +209,6 @@ export function Review(){
             <Grid
                 container={true}
                 item={true}
-                xs={12}
-                md={10}
-                xl={8}
                 sx={{
                     overflow: 'hidden',
                     background: '#c7c7c7',
@@ -219,7 +216,7 @@ export function Review(){
                     marginBottom: globalTheme.spacing(1),
                     border: '1px solid black',
                     borderRadius: '25px',
-                    // width: 'max-content',
+                    width: 'max-content',
                 }}
             >
                 {/* Show/hide filter button */}
@@ -280,8 +277,10 @@ export function Review(){
                     unmountOnExit
                 >
                      <Grid
-                        container={true}
                         item={true}
+                        container={true}
+                        direction={"column"}
+                        alignItems={"center"}
                     >
                         <Grid
                             item={true}
@@ -297,6 +296,7 @@ export function Review(){
                             />
                         </Grid>
                         <Grid
+                            item={true}
                             container={true}
                             justifyContent={"center"}
                             spacing={1}
@@ -326,11 +326,18 @@ export function Review(){
                 </Slide>
             </Grid>
             {/* TABLE */}
-            <TranslationsTable
-                sortedAndSelectedLanguages={allSelectedLanguages}
-                data={wordsSimple.words}
-                setAllSelectedItems={(languages: string[]) => changeLanguageOrderFromTable(languages)}
-            />
+            <Grid
+                container={true}
+                justifyContent={"center"}
+                item={true}
+                xs={12}
+            >
+                <TranslationsTable
+                    sortedAndSelectedLanguages={allSelectedLanguages}
+                    data={wordsSimple.words}
+                    setAllSelectedItems={(languages: string[]) => changeLanguageOrderFromTable(languages)}
+                />
+            </Grid>
         </Grid>
     )
 }
