@@ -246,6 +246,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
                     cell: (info) => {return(
                             <TableDataCell
                                 language={currentLanguageData.language}
+                                partOfSpeech={info.row.original.partOfSpeech}
                                 wordId={info.row.original.id}
                                 content={info.getValue()}
                                 wordGender={(currentLanguageData.wordGender !== undefined)

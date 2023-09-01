@@ -3,19 +3,19 @@ import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup/dist/yup";
 import {Grid} from "@mui/material";
 import React, {useEffect, useState} from "react";
-import {TextInputFormWithHook} from "../TextInputFormHook";
-import {WordItem, TranslationItem} from "../../ts/interfaces";
-import {GenderDE, Lang, NounCases} from "../../ts/enums";
-import {getDisabledInputFieldDisplayLogic, getWordByCase} from "./commonFunctions";
-import {RadioGroupWithHook} from "../RadioGroupFormHook";
+import {TextInputFormWithHook} from "../../TextInputFormHook";
+import {WordItem, TranslationItem} from "../../../ts/interfaces";
+import {GenderDE, Lang, NounCases} from "../../../ts/enums";
+import {getDisabledInputFieldDisplayLogic, getWordByCase} from "../commonFunctions";
+import {RadioGroupWithHook} from "../../RadioGroupFormHook";
 
-interface WordFormDEProps {
+interface NounFormDEProps {
     currentTranslationData: TranslationItem,
     updateFormData: (formData: TranslationItem) => void
     displayOnly?: boolean
 }
-// Displays the fields required to add the german translation of a word (and handles the validations)
-export function WordFormDE(props: WordFormDEProps) {
+// Displays the fields required to add the german translation of a noun (and handles the validations)
+export function NounFormDE(props: NounFormDEProps) {
 
     const { currentTranslationData } = props
 

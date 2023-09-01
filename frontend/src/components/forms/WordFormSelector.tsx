@@ -1,12 +1,13 @@
 import {Lang, PartOfSpeech} from "../../ts/enums";
-import {WordFormES} from "./WordFormES";
+import {NounFormES} from "./nouns/NounFormES";
 import {TranslationItem} from "../../ts/interfaces";
 import React from "react";
-import {WordFormEN} from "./WordFormEN";
-import {WordFormDE} from "./WordFormDE";
-import {WordFormEE} from "./WordFormEE";
+import {NounFormEN} from "./nouns/NounFormEN";
+import {NounFormDE} from "./nouns/NounFormDE";
+import {NounFormEE} from "./nouns/NounFormEE";
+import {AdjectiveFormEN} from "./adjectives/AdjectiveFormEN";
 
-interface FormSelectorProps {
+interface WordFormSelectorProps {
     currentLang?: Lang,
     currentTranslationData: TranslationItem,
     partOfSpeech?: PartOfSpeech,
@@ -14,14 +15,16 @@ interface FormSelectorProps {
     displayOnly?: boolean
 }
 
-// set the Form for the selected language
-export function FormLanguageSelector(props: FormSelectorProps) {
+// returns the required form, depending on the selected language and part of speech
+export function WordFormSelector(props: WordFormSelectorProps) {
 
-
-    const getLanguageForm = () => {
+    const getPartOfSpeechForm = () => {
         switch (props.partOfSpeech){
             case (PartOfSpeech.noun): {
                 return(getNounForm())
+            }
+            case (PartOfSpeech.adjective): {
+                return(getAdjectiveForm())
             }
             /* TODO: add remaining part of speech, as the forms are made */
             default: {
@@ -30,11 +33,31 @@ export function FormLanguageSelector(props: FormSelectorProps) {
         }
     }
 
+    const getAdjectiveForm = () => {
+        switch (props.currentLang) {
+            case (Lang.EN): {
+                return(
+                    <AdjectiveFormEN
+                        currentTranslationData={props.currentTranslationData}
+                        updateFormData={(formData: TranslationItem) => {
+                            props.updateFormData(formData)
+                        }}
+                        displayOnly={props.displayOnly}
+                    />
+                )
+            }
+            default: {
+                return(<p>That language is not available yet</p>)
+            }
+        }
+
+    }
+
     const getNounForm = () => {
         switch (props.currentLang){
             case (Lang.EN): {
                 return(
-                    <WordFormEN
+                    <NounFormEN
                         currentTranslationData={props.currentTranslationData}
                         updateFormData={(formData: TranslationItem) => {
                             props.updateFormData(formData)
@@ -45,7 +68,7 @@ export function FormLanguageSelector(props: FormSelectorProps) {
             }
             case (Lang.ES): {
                 return(
-                    <WordFormES
+                    <NounFormES
                         currentTranslationData={props.currentTranslationData}
                         updateFormData={(formData: TranslationItem) => {
                             props.updateFormData(formData)
@@ -56,7 +79,7 @@ export function FormLanguageSelector(props: FormSelectorProps) {
             }
             case (Lang.DE): {
                 return(
-                    <WordFormDE
+                    <NounFormDE
                         currentTranslationData={props.currentTranslationData}
                         updateFormData={(formData: TranslationItem) => {
                             props.updateFormData(formData)
@@ -67,7 +90,7 @@ export function FormLanguageSelector(props: FormSelectorProps) {
             }
             case (Lang.EE): {
                 return(
-                    <WordFormEE
+                    <NounFormEE
                         currentTranslationData={props.currentTranslationData}
                         updateFormData={(formData: TranslationItem) => {
                             props.updateFormData(formData)
@@ -82,5 +105,5 @@ export function FormLanguageSelector(props: FormSelectorProps) {
         }
     }
 
-    return(getLanguageForm())
+    return(getPartOfSpeechForm())
 }

@@ -3,30 +3,27 @@ import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup/dist/yup";
 import {Grid} from "@mui/material";
 import React, {useEffect, useState} from "react";
-import {TextInputFormWithHook} from "../TextInputFormHook";
-import {WordItem, TranslationItem} from "../../ts/interfaces";
-import {Lang, NounCases} from "../../ts/enums";
-import {getDisabledInputFieldDisplayLogic, getWordByCase} from "./commonFunctions";
-import {RadioGroupWithHook} from "../RadioGroupFormHook";
+import {TextInputFormWithHook} from "../../TextInputFormHook";
+import {WordItem, TranslationItem} from "../../../ts/interfaces";
+import {Lang, NounCases} from "../../../ts/enums";
+import {getDisabledInputFieldDisplayLogic, getWordByCase} from "../commonFunctions";
 
-interface WordFormESProps {
+interface NounFormENProps {
     currentTranslationData: TranslationItem,
     updateFormData: (formData: TranslationItem) => void
     displayOnly?: boolean
 }
-// Displays the fields required to add the spanish translation of a word (and handles the validations)
-export function WordFormES(props: WordFormESProps) {
+// Displays the fields required to add the english translation of a noun (and handles the validations)
+export function NounFormEN(props: NounFormENProps) {
 
     const { currentTranslationData } = props
 
     const validationSchema = Yup.object().shape({
-        gender: Yup.string().required("Required")
-            .oneOf(["el", "la", "el/la"], "Required"),
         singular: Yup.string()
             .required("Singular form is required")
             .matches(/^[^0-9]+$/, 'Must not include numbers'),
         plural: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers')
+            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
     })
 
     const {
@@ -35,7 +32,6 @@ export function WordFormES(props: WordFormESProps) {
         {
             singular: string,
             plural: string,
-            gender: string,
         }
         >({
         resolver: yupResolver(validationSchema),
@@ -44,38 +40,32 @@ export function WordFormES(props: WordFormESProps) {
 
     const [singularWord, setSingularWord] = useState("")
     const [pluralWord, setPluralWord] = useState("")
-    const [genderWord, setGenderWord] = useState<"el"|"la"|"">("")
 
     useEffect(() => {
         const currentCases: WordItem[] = [
             {
-                caseName: NounCases.singularES,
+                caseName: NounCases.singularEN,
                 word: singularWord
             },
             {
-                caseName: NounCases.pluralES,
+                caseName: NounCases.pluralEN,
                 word: pluralWord
-            },
-            {
-                caseName: NounCases.genderES,
-                word: genderWord
             }
         ]
         props.updateFormData({
-            language: Lang.ES,
+            language: Lang.EN,
             cases: currentCases,
             completionState: isValid,
             isDirty: isDirty
         })
-    }, [singularWord, pluralWord, genderWord, isValid])
+    }, [singularWord, pluralWord, isValid])
 
     // This will only be run on first render
     // we use it to populate the form fields with the previously added information
     useEffect(() => {
         if(currentTranslationData.cases!){
-            const singularValue: string = getWordByCase(NounCases.singularES, currentTranslationData)
-            const pluralValue: string = getWordByCase(NounCases.pluralES, currentTranslationData)
-            const genderValue: string = getWordByCase(NounCases.genderES, currentTranslationData)
+            const singularValue: string = getWordByCase(NounCases.singularEN, currentTranslationData)
+            const pluralValue: string = getWordByCase(NounCases.pluralEN, currentTranslationData)
             setValue(
                 'singular',
                 singularValue,
@@ -94,15 +84,6 @@ export function WordFormES(props: WordFormESProps) {
                 }
             )
             setPluralWord(pluralValue)
-            setValue(
-                'gender',
-                genderValue,
-                {
-                    shouldValidate: true,
-                    shouldTouch: true
-                }
-            )
-            setGenderWord(genderValue as "el"|"la"|"")
         }
     },[])
 
@@ -117,28 +98,10 @@ export function WordFormES(props: WordFormESProps) {
                 }}
             >
                 <Grid
-                    item={true}
                     container={true}
+                    item={true}
                     spacing={2}
                 >
-                    <Grid
-                        item={true}
-                        container={true}
-                    >
-                        <RadioGroupWithHook
-                            control={control}
-                            label={"Gender"}
-                            name={"gender"}
-                            options={["el", "la", "el/la"]}
-                            defaultValue={""}
-                            errors={errors.gender}
-                            onChange={(value: any) => {
-                                setGenderWord(value)
-                            }}
-                            fullWidth={true}
-                            disabled={props.displayOnly}
-                        />
-                    </Grid>
                     {(getDisabledInputFieldDisplayLogic(props.displayOnly!, singularWord)) &&
                         <Grid
                             item={true}
@@ -146,14 +109,14 @@ export function WordFormES(props: WordFormESProps) {
                         >
                             <TextInputFormWithHook
                                 control={control}
-                                label={"Singular palabra"}
+                                label={"Singular"}
                                 name={"singular"}
                                 defaultValue={""}
+                                fullWidth={true}
                                 errors={errors.singular}
                                 onChange={(value: any) => {
                                     setSingularWord(value)
                                 }}
-                                fullWidth={true}
                                 disabled={props.displayOnly}
                             />
                         </Grid>
@@ -165,14 +128,14 @@ export function WordFormES(props: WordFormESProps) {
                         >
                             <TextInputFormWithHook
                                 control={control}
-                                label={"Plural palabra"}
+                                label={"Plural"}
                                 name={"plural"}
                                 defaultValue={""}
+                                fullWidth={true}
                                 errors={errors.plural}
                                 onChange={(value: any) => {
                                     setPluralWord(value)
                                 }}
-                                fullWidth={true}
                                 disabled={props.displayOnly}
                             />
                         </Grid>

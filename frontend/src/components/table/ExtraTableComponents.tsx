@@ -12,7 +12,7 @@ import IconButton from "@mui/material/IconButton";
 import AddIcon from '@mui/icons-material/Add';
 import LinearIndeterminate from "../Spinner";
 import Box from "@mui/material/Box";
-import {FormLanguageSelector} from "../forms/FormLanguageSelector";
+import {WordFormSelector} from "../forms/WordFormSelector";
 import {SortDirection} from "@tanstack/table-core/build/lib/features/Sorting";
 import DoneIcon from "@mui/icons-material/Done";
 
@@ -77,6 +77,7 @@ interface TableDataCellProps {
 
     wordId?: string,
     language?: Lang,
+    partOfSpeech?: PartOfSpeech,
 }
 
 export function TableDataCell(props: TableDataCellProps){
@@ -100,7 +101,7 @@ export function TableDataCell(props: TableDataCellProps){
     const dispatch = useDispatch()
     const [isHovering, setIsHovering] = useState(false)
     const [open, setOpen] = useState(false)
-    const [selectedWordData, setSelectedWordData] = useState<TranslationItem>()
+    const [selectedTranslationData, setSelectedTranslationData] = useState<TranslationItem>()
     const {word, isLoading, isError, message} = useSelector((state: any) => state.words)
     const [displayOnly, setDisplayOnly] = useState(true)
     const [finishedUpdating, setFinishedUpdating] = useState(true)
@@ -160,7 +161,7 @@ export function TableDataCell(props: TableDataCellProps){
             open &&
             (props.content !== undefined) // to avoid setting a value when opening an empty form (i.e. a translation that doesn't yet exist)
         ){
-            setSelectedWordData({
+            setSelectedTranslationData({
                 ...(word.translations.find((translation: TranslationItem) => translation.language === props.language)),
                 // we set this manually, because completion state is not saved on BE - to save the data, it must already be validated
                 completionState: true, // changes in word mean that BE was updated, and that should only happen if the validation was complete
@@ -172,7 +173,7 @@ export function TableDataCell(props: TableDataCellProps){
     const handleOnClose = () => {
         setOpen(false)
         setDisplayOnly(true)
-        setSelectedWordData(undefined)
+        setSelectedTranslationData(undefined)
         dispatch(clearWord())
     }
 
@@ -212,8 +213,7 @@ export function TableDataCell(props: TableDataCellProps){
 
     const getPercentage = (amount: number) => {
         let maxAmountOfCases = 0
-        // switch (word.partOfSpeech) { // TODO: not working correctly, and only noun exists for now, so temp fix
-        switch (PartOfSpeech.noun) {
+        switch (props.partOfSpeech) {
             case PartOfSpeech.noun: {
                 switch (props.language) {
                     case Lang.EN: {
@@ -238,8 +238,20 @@ export function TableDataCell(props: TableDataCellProps){
                 }
             }
             break
+            case PartOfSpeech.adjective: {
+                switch (props.language) {
+                    case Lang.EN: {
+                        maxAmountOfCases = 3
+                        break
+                    }
+                    default:
+                        maxAmountOfCases = 99
+                        break
+                }
+            }
+            break
             default:
-                maxAmountOfCases = 6
+                maxAmountOfCases = 99
                 break
         }
         return ((amount/maxAmountOfCases)*100)
@@ -378,7 +390,7 @@ export function TableDataCell(props: TableDataCellProps){
                                     // setOpen(true)
                                     openModal()
                                     setDisplayOnly(false)
-                                    setSelectedWordData({
+                                    setSelectedTranslationData({
                                         language: props.language!,
                                         cases: [],
                                         completionState: false,
@@ -401,7 +413,7 @@ export function TableDataCell(props: TableDataCellProps){
                 >
                     {(
                         isLoading &&
-                        !(selectedWordData !== undefined) // to display form while isLoading is true, because we're saving changes
+                        !(selectedTranslationData !== undefined) // to display form while isLoading is true, because we're saving changes
                     )
                         ?
                             <Grid
@@ -427,7 +439,7 @@ export function TableDataCell(props: TableDataCellProps){
                                     </Typography>
                                 </Grid>
                             </Grid>
-                        : (selectedWordData !== undefined) &&
+                        : (selectedTranslationData !== undefined) &&
                         <Grid
                             item={true}
                             container={true}
@@ -491,22 +503,22 @@ export function TableDataCell(props: TableDataCellProps){
                                     <Button
                                         variant={"outlined"}
                                         color={"secondary"}
-                                        disabled={((!displayOnly) && (!selectedWordData.completionState!))}
+                                        disabled={((!displayOnly) && (!selectedTranslationData.completionState!))}
                                         onClick={() => {
                                             if(displayOnly){
                                                 setDisplayOnly(false)
                                             } else {
-                                                if(selectedWordData.isDirty){
+                                                if(selectedTranslationData.isDirty){
                                                     let updatedList: TranslationItem[]
                                                     if(checkCurrentLanguageIncludedInTranslations()){
-                                                       updatedList = appendUpdatedTranslation(selectedWordData)
+                                                       updatedList = appendUpdatedTranslation(selectedTranslationData)
                                                     } else {
                                                         updatedList = [
                                                             ...word.translations,
                                                             {
                                                                 // this way, we don't save the InternalStatus info (completionState, isDirty, etc.)
-                                                                language: selectedWordData.language,
-                                                                cases: selectedWordData.cases,
+                                                                language: selectedTranslationData.language,
+                                                                cases: selectedTranslationData.cases,
                                                             }
                                                         ]
                                                     }
@@ -531,20 +543,20 @@ export function TableDataCell(props: TableDataCellProps){
                                     >
                                         {(displayOnly)
                                             ? "Edit"
-                                            : (selectedWordData.isDirty)
+                                            : (selectedTranslationData.isDirty)
                                                 ?"Save changes"
                                                 :"Cancel"
                                         }
                                     </Button>
                                 </Grid>
                             </Grid>
-                            <FormLanguageSelector
-                                currentLang={props.language!} // TODO: this data should come from "selectedWordData
-                                currentTranslationData={selectedWordData!}
-                                partOfSpeech={PartOfSpeech.noun} // TODO: this data should come from "selectedWordData
+                            <WordFormSelector
+                                currentLang={props.language!} // TODO: this data should come from "selectedTranslationData
+                                currentTranslationData={selectedTranslationData!}
+                                partOfSpeech={props.partOfSpeech}
                                 updateFormData={(formData: TranslationItem) => {
                                     if(!displayOnly && !(isLoading)){ // && (formData.isDirty) for extra security?
-                                        setSelectedWordData({
+                                        setSelectedTranslationData({
                                             ...formData,
                                             // To avoid saving empty cases,
                                             cases: formData.cases.filter((nounCase) => (nounCase.word !== "")),

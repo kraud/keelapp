@@ -3,18 +3,18 @@ import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup/dist/yup";
 import {Grid} from "@mui/material";
 import React, {useEffect, useState} from "react";
-import {TextInputFormWithHook} from "../TextInputFormHook";
-import {WordItem, TranslationItem} from "../../ts/interfaces";
-import {Lang, NounCases} from "../../ts/enums";
-import {getDisabledInputFieldDisplayLogic, getWordByCase} from "./commonFunctions";
+import {TextInputFormWithHook} from "../../TextInputFormHook";
+import {WordItem, TranslationItem} from "../../../ts/interfaces";
+import {Lang, NounCases} from "../../../ts/enums";
+import {getDisabledInputFieldDisplayLogic, getWordByCase} from "../commonFunctions";
 
-interface WordFormEEProps {
+interface NounFormEEProps {
     currentTranslationData: TranslationItem,
     updateFormData: (formData: TranslationItem) => void
     displayOnly?: boolean
 }
-// Displays the fields required to add the estonian translation of a word (and handles the validations)
-export function WordFormEE(props: WordFormEEProps) {
+// Displays the fields required to add the estonian translation of a noun (and handles the validations)
+export function NounFormEE(props: NounFormEEProps) {
 
     const { currentTranslationData } = props
 

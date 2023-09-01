@@ -38,7 +38,7 @@ export enum NounCases {
 
 export enum AdjectiveCases {
     // ENGLISH
-    adjectiveEN = "adjectiveEN",
+    positiveEN = "positiveEN",
     comparativeEN = "comparativeEN",
     superlativeEN = "superlativeEN",
 }

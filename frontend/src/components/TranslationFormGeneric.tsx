@@ -2,7 +2,7 @@ import {Button, Grid, Typography} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {TranslationItem} from "../ts/interfaces";
 import {Lang, PartOfSpeech} from "../ts/enums";
-import {FormLanguageSelector} from "./forms/FormLanguageSelector";
+import {WordFormSelector} from "./forms/WordFormSelector";
 import globalTheme from "../theme/theme";
 import Tooltip from "@mui/material/Tooltip";
 import {getCurrentLangTranslated} from "./generalUseFunctions";
@@ -184,7 +184,7 @@ export function TranslationFormGeneric(props: WordFormGenericProps) {
                         Pick a language for the new word
                     </Typography>
                     : (currentLang !== null) &&
-                        <FormLanguageSelector
+                        <WordFormSelector
                             currentLang={currentLang}
                             currentTranslationData={props.currentTranslationData}
                             partOfSpeech={props.partOfSpeech}

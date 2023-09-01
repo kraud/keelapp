@@ -12,6 +12,7 @@ interface partOfSpeechSelectorProps{
 }
 
 export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
+    const implementedForms = ["Noun", "Adjective"]
     const containerRef = React.useRef(null)
 
     const componentStyles = {
@@ -35,7 +36,7 @@ export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
         return(partsOfSpeech)
     }
 
-    const [option, setOption] = useState<any | null>(null)
+    const [option, setOption] = useState<string | null>(null)
     const partsOfSpeech: string[] = getAllPartsOfSpeech()
 
     function handleMouseEnter(event: React.MouseEvent<HTMLLIElement> | null) {
@@ -174,7 +175,7 @@ export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
     }
 
     const handleOnClick = (part: PartOfSpeech) => {
-        if(part !== "Noun"){ // TODO: make this depend on a list of implemented forms
+        if(!(implementedForms).includes(part)){
             toast.error("This part of speech is not implemented yet, we're sorry!")
         } else {
             props.setPartOfSpeech((part as PartOfSpeech))
@@ -241,7 +242,7 @@ export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
                         >
                             <Button
                                 variant={"contained"}
-                                color={(part !== "Noun") ? "secondary" : "primary"} // TODO: make this depend on a list of implemented forms
+                                color={(implementedForms).includes(part) ? "primary" : "secondary"}
                                 onClick={() => handleOnClick(part as PartOfSpeech)}
                                 onMouseEnter={(e: any) => handleMouseEnter(e)}
                                 onMouseLeave={(e: any) => handleMouseEnter(null)}
@@ -261,7 +262,7 @@ export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
             >
                 <Slide
                     direction="down"
-                    in={option!}
+                    in={(option !== null)}
                     container={containerRef.current}
                 >
                     <Grid
