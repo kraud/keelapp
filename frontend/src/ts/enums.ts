@@ -41,6 +41,15 @@ export enum AdjectiveCases {
     positiveEN = "positiveEN",
     comparativeEN = "comparativeEN",
     superlativeEN = "superlativeEN",
+
+    // SPANISH
+    maleSingular = "maleSingular",
+    malePlural = "malePlural",
+    feminineSingular = "feminineSingular",
+    femininePlural = "femininePlural",
+
+    neutralSingular = "neutralSingular",
+    neutralPlural = "neutralPlural",
 }
 
 export enum Lang {
