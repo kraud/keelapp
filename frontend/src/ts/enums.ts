@@ -45,8 +45,8 @@ export enum AdjectiveCases {
     // SPANISH
     maleSingular = "maleSingular",
     malePlural = "malePlural",
-    feminineSingular = "feminineSingular",
-    femininePlural = "femininePlural",
+    femaleSingular = "femaleSingular",
+    femalePlural = "femalePlural",
 
     neutralSingular = "neutralSingular",
     neutralPlural = "neutralPlural",
