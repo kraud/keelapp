@@ -159,7 +159,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
             switch (language){
                 case Lang.DE: {
                     currentLanguageData = {
-                        accessor: 'singularNominativDE',
+                        accessor: 'dataDE',
                         language: Lang.DE,
                         wordGender: 'genderDE', // i.e. info.row.original.*genderDE*
                         displayWordGender: displayGender,
@@ -175,7 +175,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
                 }
                 case Lang.EE: {
                     currentLanguageData = {
-                        accessor: 'singularNimetavEE',
+                        accessor: 'dataEE',
                         language: Lang.EE,
                         amount: 'registeredCasesEE',  // i.e. info.row.original.*registeredCasesDE*
                         onlyDisplayAmountOnHover: true,
@@ -190,7 +190,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
 
                 case Lang.EN: {
                     currentLanguageData = {
-                        accessor: 'singularEN',
+                        accessor: 'dataEN',
                         language: Lang.EN,
                         amount: 'registeredCasesEN',  // i.e. info.row.original.*registeredCasesDE*
                         onlyDisplayAmountOnHover: true,
@@ -205,7 +205,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
 
                 case Lang.ES: {
                     currentLanguageData = {
-                        accessor: 'singularES',
+                        accessor: 'dataES',
                         language: Lang.ES,
                         wordGender: 'genderES', // i.e. info.row.original.*genderDE*
                         displayWordGender: displayGender,

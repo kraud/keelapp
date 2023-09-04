@@ -16,8 +16,6 @@ interface AdjectiveFormESProps {
 }
 // Displays the fields required to add the english translation of a noun (and handles the validations)
 export function AdjectiveFormES(props: AdjectiveFormESProps) {
-    const [isNeutralAdjective, setIsNeutralAdjective] = useState<boolean | null>(null)
-
     const { currentTranslationData } = props
 
     // validation when adjective varies depending on gender
@@ -27,11 +25,11 @@ export function AdjectiveFormES(props: AdjectiveFormESProps) {
         maleSingular: Yup.string()
             .required("Masculine singular degree is required")
             .matches(/^[^0-9]+$/, 'Must not include numbers'),
-        femaleSingular: Yup.string().nullable()
+        femaleSingular: Yup.string()
             .required("Female singular degree is required")
             .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
-        malePlural: Yup.string()
-            .matches(/^[^0-9]+$/, 'Must not include numbers'),
+        malePlural: Yup.string().nullable()
+            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
         femalePlural: Yup.string().nullable()
             .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
     })
@@ -58,13 +56,6 @@ export function AdjectiveFormES(props: AdjectiveFormESProps) {
         neutralPlural: string,
     }
 
-    const {
-        control, formState: { errors, isValid, isDirty }, setValue
-    } = useForm<AdjectiveData>({
-        resolver: yupResolver(isNeutralAdjective ?validationSchemaNeutral :validationSchemaByGender),
-        mode: "all", // Triggers validation/errors without having to submit
-    })
-
     const [adjective, setAdjective] = useState<AdjectiveData>({
         gender: "",
         maleSingular: "",
@@ -74,6 +65,13 @@ export function AdjectiveFormES(props: AdjectiveFormESProps) {
         neutralSingular: "",
         neutralPlural: "",
     })
+    const {
+        control, formState: { errors, isValid, isDirty }, setValue
+    } = useForm<AdjectiveData>({
+        resolver: yupResolver((adjective.gender === "Neutral") ?validationSchemaNeutral :validationSchemaByGender),
+        mode: "all", // Triggers validation/errors without having to submit
+    })
+
 
     const updateData = (field: string, value: string) => {
         setAdjective((prev) => {
@@ -227,15 +225,15 @@ export function AdjectiveFormES(props: AdjectiveFormESProps) {
                             defaultValue={""}
                             errors={errors.gender}
                             onChange={(value: any) => {
-                                setIsNeutralAdjective((value === "Neutral"))
+                                updateData("gender", value)
                             }}
                             fullWidth={true}
                             disabled={props.displayOnly}
                         />
                     </Grid>
-                    {(isNeutralAdjective !== null) &&
+                    {(adjective.gender !== "") &&
                         <>
-                            {(isNeutralAdjective)
+                            {(adjective.gender === "Neutral")
                                 ?
                                 <>
                                     {(getDisabledInputFieldDisplayLogic(props.displayOnly!, adjective.neutralSingular)) &&

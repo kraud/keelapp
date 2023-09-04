@@ -52,6 +52,86 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
             }
         }
     }
+    const getRequiredFieldsData = (translation, partOfSpeech) => {
+        //Fields depend on Part of Speech + Language
+        switch (partOfSpeech){
+            case ("Noun"): {
+                switch (translation.language){
+                    case ("Estonian"): {
+                        return({
+                            dataEE: (translation.cases.find(wordCase => (wordCase.caseName === 'singularNimetavEE'))).word,
+                        })
+                    }
+                    case ("English"): {
+                        return({
+                            dataEN: (translation.cases.find(wordCase => (wordCase.caseName === 'singularEN'))).word,
+                        })
+                    }
+                    case ("Spanish"): {
+                        return({
+                            genderES: (translation.cases.find(wordCase => (wordCase.caseName === 'genderES'))).word,
+                            dataES: (translation.cases.find(wordCase => (wordCase.caseName === 'singularES'))).word,
+                        })
+                    }
+                    case ("German"): {
+                        return({
+                            genderDE: (translation.cases.find(wordCase => (wordCase.caseName === 'genderDE'))).word,
+                            dataDE: (translation.cases.find(wordCase => (wordCase.caseName === 'singularNominativDE'))).word,
+                        })
+                    }
+                    default: {
+                        res.status(400)
+                        throw new Error("Language not found for this part of speech (Noun)")
+                    }
+                }
+            }
+            case ("Adjective"): {
+                switch (translation.language){
+                    case ("English"): {
+                        return({
+                            dataEN: (translation.cases.find(wordCase => (wordCase.caseName === 'positiveEN'))).word,
+                        })
+                    }
+                    case ("Spanish"): {
+                        return(((translation.cases.find(wordCase => (wordCase.caseName === 'maleSingular'))) !== undefined)
+                            ?
+                                ({
+                                    dataES: (translation.cases.find(wordCase => (wordCase.caseName === 'maleSingular'))).word,
+                            })
+                            :
+                                ({
+                                    dataES: (translation.cases.find(wordCase => (wordCase.caseName === 'neutralSingular'))).word,
+                            })
+                    )
+                    }
+                    default: {
+                        res.status(400)
+                        throw new Error("Language not found for this part of speech (Adjective)")
+                    }
+                }
+            }
+            default: {
+                res.status(400)
+                throw new Error("Part of speech not found")
+            }
+        }
+    }
+    const getFieldName = (language) => {
+        switch(language){
+            case 'Estonian': {
+                return("registeredCasesEE")
+            }
+            case 'English': {
+                return("registeredCasesEN")
+            }
+            case 'Spanish': {
+                return("registeredCasesES")
+            }
+            case 'German': {
+                return("registeredCasesDE")
+            }
+        }
+    }
     const filters = (req.query.filters !== undefined) ?req.query.filters :[]
 
     let originalResults = []
@@ -172,41 +252,10 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
             }
             // from each translated language, we only retrieve the necessary data
             completeWord.translations.forEach((translation) => {
-                switch(translation.language){
-                    case 'Estonian': {
-                        simplifiedWord = {
-                            ...simplifiedWord,
-                            singularNimetavEE: (translation.cases.find(wordCase => (wordCase.caseName === 'singularNimetavEE'))).word,
-                            registeredCasesEE: translation.cases.length
-                        }
-                        break
-                    }
-                    case 'English': {
-                        simplifiedWord = {
-                            ...simplifiedWord,
-                            singularEN: (translation.cases.find(wordCase => (wordCase.caseName === 'singularEN'))).word,
-                            registeredCasesEN: translation.cases.length
-                        }
-                        break
-                    }
-                    case 'Spanish': {
-                        simplifiedWord = {
-                            ...simplifiedWord,
-                            genderES: (translation.cases.find(wordCase => (wordCase.caseName === 'genderES'))).word,
-                            singularES: (translation.cases.find(wordCase => (wordCase.caseName === 'singularES'))).word,
-                            registeredCasesES: translation.cases.length
-                        }
-                        break
-                    }
-                    case 'German': {
-                        simplifiedWord = {
-                            ...simplifiedWord,
-                            genderDE: (translation.cases.find(wordCase => (wordCase.caseName === 'genderDE'))).word,
-                            singularNominativDE: (translation.cases.find(wordCase => (wordCase.caseName === 'singularNominativDE'))).word,
-                            registeredCasesDE: translation.cases.length
-                        }
-                        break
-                    }
+                simplifiedWord = {
+                    ...simplifiedWord,
+                    ...(getRequiredFieldsData(translation, completeWord.partOfSpeech)),
+                    [getFieldName(translation.language)]: translation.cases.length
                 }
             })
             wordsSimplified.push(simplifiedWord)

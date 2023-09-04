@@ -244,6 +244,16 @@ export function TableDataCell(props: TableDataCellProps){
                         maxAmountOfCases = 3
                         break
                     }
+                    case Lang.ES: {
+                        // Adjectives that end with 'e' or with a consonant are neutral (single form for both genders)
+                        const lastCharacter = props.content.charAt((props.content).length-1)
+                        if(!(["a","i","o","u"].includes(lastCharacter))){
+                            maxAmountOfCases = 2
+                        } else {
+                            maxAmountOfCases = 4
+                        }
+                        break
+                    }
                     default:
                         maxAmountOfCases = 99
                         break
@@ -321,7 +331,12 @@ export function TableDataCell(props: TableDataCellProps){
                                     ) &&
                                     (props.amount!)
                                 ) &&
-                                <>
+                                <span
+                                    style={{
+                                        float: 'right',
+                                        marginRight: '35px',
+                                    }}
+                                >
                                     {((props.amount!!) && (getPercentage(props.amount) < 100)) &&
                                     <span
                                         className={"completePercentageCircle"}
@@ -380,7 +395,7 @@ export function TableDataCell(props: TableDataCellProps){
                                             />
                                         </span>
                                     }
-                                </>
+                                </span>
                             }
                         </Typography>
                         :
