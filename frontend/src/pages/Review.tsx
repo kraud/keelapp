@@ -29,7 +29,7 @@ export function Review(){
 
     useEffect(() => {
         if(isError){
-            toast.error(`Something went wrong: ${message}`)
+            toast.error(`*Something went wrong: ${message}`)
         }
         if(!user){
             navigate('/login')

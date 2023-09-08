@@ -102,7 +102,12 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
                                 ({
                                     dataES: (translation.cases.find(wordCase => (wordCase.caseName === 'neutralSingular'))).word,
                             })
-                    )
+                        )
+                    }
+                    case ("German"): {
+                        return({
+                            dataDE: (translation.cases.find(wordCase => (wordCase.caseName === 'positiveDE'))).word,
+                        })
                     }
                     default: {
                         res.status(400)

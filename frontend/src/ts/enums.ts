@@ -50,6 +50,11 @@ export enum AdjectiveCases {
 
     neutralSingular = "neutralSingular",
     neutralPlural = "neutralPlural",
+
+    // GERMAN
+    positiveDE = "positiveDE",
+    komparativDE = "komparativDE",
+    superlativDE = "superlativDE",
 }
 
 export enum Lang {
