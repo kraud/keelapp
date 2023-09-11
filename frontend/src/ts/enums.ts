@@ -43,18 +43,32 @@ export enum AdjectiveCases {
     superlativeEN = "superlativeEN",
 
     // SPANISH
-    maleSingular = "maleSingular",
-    malePlural = "malePlural",
-    femaleSingular = "femaleSingular",
-    femalePlural = "femalePlural",
+    maleSingularES = "maleSingularES",
+    malePluralES = "malePluralES",
+    femaleSingularES = "femaleSingularES",
+    femalePluralES = "femalePluralES",
 
-    neutralSingular = "neutralSingular",
-    neutralPlural = "neutralPlural",
+    neutralSingularES = "neutralSingularES",
+    neutralPluralES = "neutralPluralES",
 
     // GERMAN
     positiveDE = "positiveDE",
     komparativDE = "komparativDE",
     superlativDE = "superlativDE",
+
+    // ESTONIAN
+    algvorreEE = "algvorreEE",
+    keskvorreEE = "keskvorreEE",
+    ulivorreEE = "ulivorreEE",
+
+    // NB! singularNivetav is the same as algvorre
+    pluralNimetavEE = "pluralNimetavEE",
+
+    singularOmastavEE = "singularOmastavEE",
+    pluralOmastavEE = "pluralOmastavEE",
+
+    singularOsastavEE = "singularOsastavEE",
+    pluralOsastavEE = "pluralOsastavEE",
 }
 
 export enum Lang {

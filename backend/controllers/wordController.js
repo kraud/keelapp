@@ -93,20 +93,25 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
                         })
                     }
                     case ("Spanish"): {
-                        return(((translation.cases.find(wordCase => (wordCase.caseName === 'maleSingular'))) !== undefined)
+                        return(((translation.cases.find(wordCase => (wordCase.caseName === 'maleSingularES'))) !== undefined)
                             ?
                                 ({
-                                    dataES: (translation.cases.find(wordCase => (wordCase.caseName === 'maleSingular'))).word,
+                                    dataES: (translation.cases.find(wordCase => (wordCase.caseName === 'maleSingularES'))).word,
                             })
                             :
                                 ({
-                                    dataES: (translation.cases.find(wordCase => (wordCase.caseName === 'neutralSingular'))).word,
+                                    dataES: (translation.cases.find(wordCase => (wordCase.caseName === 'neutralSingularES'))).word,
                             })
                         )
                     }
                     case ("German"): {
                         return({
                             dataDE: (translation.cases.find(wordCase => (wordCase.caseName === 'positiveDE'))).word,
+                        })
+                    }
+                    case ("Estonian"): {
+                        return({
+                            dataEE: (translation.cases.find(wordCase => (wordCase.caseName === 'algvorreEE'))).word,
                         })
                     }
                     default: {

@@ -254,6 +254,14 @@ export function TableDataCell(props: TableDataCellProps){
                         }
                         break
                     }
+                    case Lang.DE: {
+                        maxAmountOfCases = 3
+                        break
+                    }
+                    case Lang.EE: {
+                        maxAmountOfCases = 8
+                        break
+                    }
                     default:
                         maxAmountOfCases = 99
                         break

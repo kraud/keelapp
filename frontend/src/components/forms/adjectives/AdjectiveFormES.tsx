@@ -85,27 +85,27 @@ export function AdjectiveFormES(props: AdjectiveFormESProps) {
     useEffect(() => {
         const currentCases: WordItem[] = [
             {
-                caseName: AdjectiveCases.maleSingular,
+                caseName: AdjectiveCases.maleSingularES,
                 word: adjective.maleSingular
             },
             {
-                caseName: AdjectiveCases.femaleSingular,
+                caseName: AdjectiveCases.femaleSingularES,
                 word: adjective.femaleSingular
             },
             {
-                caseName: AdjectiveCases.malePlural,
+                caseName: AdjectiveCases.malePluralES,
                 word: adjective.malePlural
             },
             {
-                caseName: AdjectiveCases.femalePlural,
+                caseName: AdjectiveCases.femalePluralES,
                 word: adjective.femalePlural
             },
             {
-                caseName: AdjectiveCases.neutralSingular,
+                caseName: AdjectiveCases.neutralSingularES,
                 word: adjective.neutralSingular
             },
             {
-                caseName: AdjectiveCases.neutralPlural,
+                caseName: AdjectiveCases.neutralPluralES,
                 word: adjective.neutralPlural
             }
         ]
@@ -121,14 +121,14 @@ export function AdjectiveFormES(props: AdjectiveFormESProps) {
     // we use it to populate the form fields with the previously added information
     useEffect(() => {
         if(currentTranslationData.cases!){
-            const isCurrentTranslationDataNeutral = (getWordByCase(AdjectiveCases.neutralSingular, currentTranslationData) !== "")
+            const isCurrentTranslationDataNeutral = (getWordByCase(AdjectiveCases.neutralSingularES, currentTranslationData) !== "")
 
-            const maleSingularValue: string = getWordByCase(AdjectiveCases.maleSingular, currentTranslationData)
-            const femaleSingularValue: string = getWordByCase(AdjectiveCases.femaleSingular, currentTranslationData)
-            const malePluralValue: string = getWordByCase(AdjectiveCases.malePlural, currentTranslationData)
-            const femalePluralValue: string = getWordByCase(AdjectiveCases.femalePlural, currentTranslationData)
-            const neutralSingularValue: string = getWordByCase(AdjectiveCases.neutralSingular, currentTranslationData)
-            const neutralPluralValue: string = getWordByCase(AdjectiveCases.neutralPlural, currentTranslationData)
+            const maleSingularValue: string = getWordByCase(AdjectiveCases.maleSingularES, currentTranslationData)
+            const femaleSingularValue: string = getWordByCase(AdjectiveCases.femaleSingularES, currentTranslationData)
+            const malePluralValue: string = getWordByCase(AdjectiveCases.malePluralES, currentTranslationData)
+            const femalePluralValue: string = getWordByCase(AdjectiveCases.femalePluralES, currentTranslationData)
+            const neutralSingularValue: string = getWordByCase(AdjectiveCases.neutralSingularES, currentTranslationData)
+            const neutralPluralValue: string = getWordByCase(AdjectiveCases.neutralPluralES, currentTranslationData)
 
             setValue(
                 'gender',

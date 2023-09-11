@@ -8,6 +8,7 @@ import {NounFormEE} from "./nouns/NounFormEE";
 import {AdjectiveFormEN} from "./adjectives/AdjectiveFormEN";
 import {AdjectiveFormES} from "./adjectives/AdjectiveFormES";
 import {AdjectiveFormDE} from "./adjectives/AdjectiveFormDE";
+import {AdjectiveFormEE} from "./adjectives/AdjectiveFormEE";
 
 interface WordFormSelectorProps {
     currentLang?: Lang,
@@ -62,6 +63,17 @@ export function WordFormSelector(props: WordFormSelectorProps) {
             case (Lang.DE): {
                 return(
                     <AdjectiveFormDE
+                        currentTranslationData={props.currentTranslationData}
+                        updateFormData={(formData: TranslationItem) => {
+                            props.updateFormData(formData)
+                        }}
+                        displayOnly={props.displayOnly}
+                    />
+                )
+            }
+            case (Lang.EE): {
+                return(
+                    <AdjectiveFormEE
                         currentTranslationData={props.currentTranslationData}
                         updateFormData={(formData: TranslationItem) => {
                             props.updateFormData(formData)
