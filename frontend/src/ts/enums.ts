@@ -36,6 +36,13 @@ export enum NounCases {
     shortFormEE = "shortFormEE",
 }
 
+export enum AdverbCases {
+    // ENGLISH
+    adverbEN = "adverbEN",
+    comparativeEN = "comparativeEN",
+    superlativeEN = "superlativeEN",
+}
+
 export enum AdjectiveCases {
     // ENGLISH
     positiveEN = "positiveEN",

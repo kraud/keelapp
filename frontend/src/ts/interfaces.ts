@@ -1,4 +1,4 @@
-import {AdjectiveCases, Lang, NounCases} from "./enums";
+import {AdjectiveCases, AdverbCases, Lang, NounCases} from "./enums";
 
 export interface WordData {
     translations: TranslationItem[],
@@ -23,7 +23,7 @@ type InternalStatus = {
 
 export interface WordItem {
     word: string,
-    caseName: NounCases | AdjectiveCases, // the type on noun stored in "word" property
+    caseName: NounCases | AdjectiveCases | AdverbCases, // the type on noun stored in "word" property
 }
 
 export interface SearchResults {

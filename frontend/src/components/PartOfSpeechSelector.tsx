@@ -12,7 +12,7 @@ interface partOfSpeechSelectorProps{
 }
 
 export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
-    const implementedForms = ["Noun", "Adjective"]
+    const implementedForms = ["Noun", "Adjective", "Adverb"]
     const containerRef = React.useRef(null)
 
     const componentStyles = {

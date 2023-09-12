@@ -5,7 +5,7 @@ import {Grid} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {TextInputFormWithHook} from "../../TextInputFormHook";
 import {WordItem, TranslationItem} from "../../../ts/interfaces";
-import {AdjectiveCases, Lang, NounCases} from "../../../ts/enums";
+import {AdjectiveCases, Lang} from "../../../ts/enums";
 import {getDisabledInputFieldDisplayLogic, getWordByCase} from "../commonFunctions";
 
 interface AdjectiveFormEEProps {

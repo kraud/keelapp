@@ -85,6 +85,20 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
                     }
                 }
             }
+            case ("Adverb"): {
+                switch (translation.language){
+                    case ("English"): {
+                        return({
+                            dataEN: (translation.cases.find(wordCase => (wordCase.caseName === 'adverbEN'))).word,
+                        })
+                    }
+
+                    default: {
+                        res.status(400)
+                        throw new Error("Language not found for this part of speech (Adverb)")
+                    }
+                }
+            }
             case ("Adjective"): {
                 switch (translation.language){
                     case ("English"): {
