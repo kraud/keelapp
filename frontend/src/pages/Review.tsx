@@ -106,10 +106,10 @@ export function Review(){
             partOfSpeech: PartOfSpeech.noun,
         },
         {
-            id: 'PoSVerb',
+            id: 'PoSAdverb',
             type: 'PoS',
-            filterValue: 'Verb',
-            partOfSpeech: PartOfSpeech.verb,
+            filterValue: 'Adverb',
+            partOfSpeech: PartOfSpeech.adverb,
         },
         {
             id: 'PoSAdjective',

@@ -1,3 +1,4 @@
+
 import * as Yup from "yup";
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup/dist/yup";
@@ -8,13 +9,13 @@ import {WordItem, TranslationItem} from "../../../ts/interfaces";
 import {AdverbCases, Lang} from "../../../ts/enums";
 import {getDisabledInputFieldDisplayLogic, getWordByCase} from "../commonFunctions";
 
-interface AdverbFormENProps {
+interface AdverbFormESProps {
     currentTranslationData: TranslationItem,
     updateFormData: (formData: TranslationItem) => void
     displayOnly?: boolean
 }
 // Displays the fields required to add the english translation of a noun (and handles the validations)
-export function AdverbFormEN(props: AdverbFormENProps) {
+export function AdverbFormES(props: AdverbFormESProps) {
 
     const { currentTranslationData } = props
 
@@ -59,20 +60,20 @@ export function AdverbFormEN(props: AdverbFormENProps) {
     useEffect(() => {
         const currentCases: WordItem[] = [
             {
-                caseName: AdverbCases.adverbEN,
+                caseName: AdverbCases.adverbES,
                 word: adjective.adverb
             },
             {
-                caseName: AdverbCases.comparativeEN,
+                caseName: AdverbCases.comparativeES,
                 word: adjective.comparative
             },
             {
-                caseName: AdverbCases.superlativeEN,
+                caseName: AdverbCases.superlativeES,
                 word: adjective.superlative
             }
         ]
         props.updateFormData({
-            language: Lang.EN,
+            language: Lang.ES,
             cases: currentCases,
             completionState: isValid,
             isDirty: isDirty
@@ -83,9 +84,9 @@ export function AdverbFormEN(props: AdverbFormENProps) {
     // we use it to populate the form fields with the previously added information
     useEffect(() => {
         if(currentTranslationData.cases!){
-            const adverbValue: string = getWordByCase(AdverbCases.adverbEN, currentTranslationData)
-            const comparativeValue: string = getWordByCase(AdverbCases.comparativeEN, currentTranslationData)
-            const superlativeValue: string = getWordByCase(AdverbCases.superlativeEN, currentTranslationData)
+            const adverbValue: string = getWordByCase(AdverbCases.adverbES, currentTranslationData)
+            const comparativeValue: string = getWordByCase(AdverbCases.comparativeES, currentTranslationData)
+            const superlativeValue: string = getWordByCase(AdverbCases.superlativeES, currentTranslationData)
             setValue(
                 'adverb',
                 adverbValue,
@@ -141,7 +142,7 @@ export function AdverbFormEN(props: AdverbFormENProps) {
                         >
                             <TextInputFormWithHook
                                 control={control}
-                                label={"Adverb"}
+                                label={"Adverbio"}
                                 name={"adverb"}
                                 defaultValue={""}
                                 fullWidth={true}
@@ -161,7 +162,7 @@ export function AdverbFormEN(props: AdverbFormENProps) {
                         >
                             <TextInputFormWithHook
                                 control={control}
-                                label={"Comparative"}
+                                label={"Comparativo"}
                                 name={"comparative"}
                                 defaultValue={""}
                                 fullWidth={true}
@@ -181,7 +182,7 @@ export function AdverbFormEN(props: AdverbFormENProps) {
                         >
                             <TextInputFormWithHook
                                 control={control}
-                                label={"Superlative"}
+                                label={"Superlativo"}
                                 name={"superlative"}
                                 defaultValue={""}
                                 fullWidth={true}

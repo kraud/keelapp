@@ -92,6 +92,11 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
                             dataEN: (translation.cases.find(wordCase => (wordCase.caseName === 'adverbEN'))).word,
                         })
                     }
+                    case ("Spanish"): {
+                        return({
+                            dataES: (translation.cases.find(wordCase => (wordCase.caseName === 'adverbES'))).word,
+                        })
+                    }
 
                     default: {
                         res.status(400)

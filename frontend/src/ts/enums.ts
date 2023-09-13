@@ -41,6 +41,11 @@ export enum AdverbCases {
     adverbEN = "adverbEN",
     comparativeEN = "comparativeEN",
     superlativeEN = "superlativeEN",
+
+    // SPANISH
+    adverbES = "adverbES",
+    comparativeES = "comparativeES",
+    superlativeES = "superlativeES",
 }
 
 export enum AdjectiveCases {

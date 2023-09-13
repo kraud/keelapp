@@ -238,6 +238,22 @@ export function TableDataCell(props: TableDataCellProps){
                 }
             }
             break
+            case PartOfSpeech.adverb: {
+                switch (props.language) {
+                    case Lang.EN: {
+                        maxAmountOfCases = 3
+                        break
+                    }
+                    case Lang.ES: {
+                        maxAmountOfCases = 3
+                        break
+                    }
+                    default:
+                        maxAmountOfCases = 99
+                        break
+                }
+            }
+            break
             case PartOfSpeech.adjective: {
                 switch (props.language) {
                     case Lang.EN: {
