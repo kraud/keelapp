@@ -478,6 +478,7 @@ export function WordForm(props: TranslationFormProps) {
                                                     tags: results
                                                 })
                                             }}
+                                            allowNewOptions={true}
                                         />
                                     </Grid>
                                 </Grid>

@@ -34,9 +34,9 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
                 }
             }
             case 'tag': {
-                // TODO: specify and implement
                 return {
-                    "user": req.user.id,
+                    "tags": {$regex: `${filter.filterValue}`, $options: "i"},
+                    user: req.user.id
                 }
             }
             case 'PoS': {

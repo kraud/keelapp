@@ -14,6 +14,7 @@ import {routeVariantsAnimation} from "./management/RoutesWithAnimation";
 import {TableFilters} from "../components/TableFilters";
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
+import {AutocompleteMultiple} from "../components/AutocompleteMultiple";
 
 export function Review(){
     const navigate = useNavigate()
@@ -119,6 +120,7 @@ export function Review(){
         },
     ]
 
+    const [currentTagFilters, setCurrentTagFilters] = useState<FilterItem[]>([])
     const [currentGenderFilters, setCurrentGenderFilters] = useState<FilterItem[]>([])
     const [currentPoSFilters, setCurrentPoSFilters] = useState<FilterItem[]>([])
 
@@ -126,9 +128,10 @@ export function Review(){
         // @ts-ignore
         dispatch(getWordsSimplified([
             ...currentPoSFilters,
-            ...currentGenderFilters
+            ...currentGenderFilters,
+            ...currentTagFilters,
         ]))
-    }, [currentPoSFilters, currentGenderFilters])
+    }, [currentPoSFilters, currentGenderFilters, currentTagFilters])
 
     return(
         <Grid
@@ -319,6 +322,29 @@ export function Review(){
                                     applyFilters={(filters) => {
                                         setCurrentPoSFilters(filters)
                                     }}
+                                />
+                            </Grid>
+                            <Grid
+                                item={true}
+                            >
+                                <AutocompleteMultiple
+                                    values={currentTagFilters.map((tag: FilterItem) => tag.filterValue)}
+                                    saveResults={(results: string[]) => {
+                                        setCurrentTagFilters(results.map((result: string) => {
+                                            console.log({
+                                                type: 'tag',
+                                                id: "tag-"+result,
+                                                filterValue: result,
+                                            })
+                                            return({
+                                                type: 'tag',
+                                                id: "tag-"+result,
+                                                filterValue: result,
+                                            })
+                                        }))
+                                    }}
+                                    limitTags={1}
+                                    allowNewOptions={false}
                                 />
                             </Grid>
                         </Grid>

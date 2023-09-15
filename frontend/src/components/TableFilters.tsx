@@ -2,7 +2,6 @@ import {Chip, Grid} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
-import {Lang, NounCases} from "../ts/enums";
 import globalTheme from "../theme/theme";
 import {FilterItem} from "../features/words/wordSlice";
 

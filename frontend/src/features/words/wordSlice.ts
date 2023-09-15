@@ -1,7 +1,7 @@
 import {createSlice, createAsyncThunk, PayloadAction} from "@reduxjs/toolkit"
 import wordService from "./wordService"
 import {SearchResult, WordData, WordDataBE} from "../../ts/interfaces";
-import {Lang, NounCases, PartOfSpeech} from "../../ts/enums";
+import {AdjectiveCases, AdverbCases, Lang, NounCases, PartOfSpeech} from "../../ts/enums";
 
 interface worldSliceState {
     // list with full translation info for all words might not be needed?
@@ -39,13 +39,13 @@ export type FilterItem = {
 
 type CaseFilter = {
     type: 'gender'
-    caseName: NounCases | string, // TODO: as we add new PartOfSpeech, we should add the other interfaces too (VerbConjugations, PronounCases, etc.)
+    caseName: NounCases | AdverbCases | AdjectiveCases | string, // TODO: as we add new PartOfSpeech, we should add the other interfaces too (VerbConjugations, PronounCases, etc.)
     language: Lang,
 }
 
 type TagFilter = {
     type: 'tag'
-    tagIds: string[],
+    // tagIds: string[],
 }
 
 type PartOfSpeechFilter = {

@@ -10,6 +10,8 @@ import {useNavigate} from "react-router-dom";
 interface AutocompleteMultipleProps {
     values: string[],
     saveResults: (results: string[]) => void
+    limitTags?: number
+    allowNewOptions?: boolean
     // saveResults: (results: SearchResult[]) => void
     // searchQuery: (inputValue: string) => void
 }
@@ -54,30 +56,27 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
             // dispatch search for inputValue and when results are updated, set them in options
             // @ts-ignore
             dispatch(searchAllTags(inputValue))
-            // props.searchQuery(inputValue)
         }, 400)
 
         return () => clearTimeout(timeout)
     }, [inputValue])
 
     useEffect(() => {
-        console.log("update results")
         setOptions(searchResults)
     },[searchResults])
 
     // this triggers once we select something from the list
     useEffect(() => {
         props.saveResults(values)
-        // navigate(`/word/${value.id}`) // should we somehow check if value.id is something valid?
-        // setOpen(false)
-        // setValue(null)
+        setOpen(false)
     }, [values])
 
     // @ts-ignore
     return(
         <Autocomplete
             multiple={true}
-            freeSolo={true}
+            freeSolo={props.allowNewOptions!!}
+            limitTags={props.limitTags}
             filterSelectedOptions
 
             open={open}
@@ -133,7 +132,7 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
                                         },
                                     }}
                                 >
-                                    {(loadingLocal || isSearchLoading)
+                                    {((loadingLocal || isSearchLoading) && open)
                                         //@ts-ignore
                                         ? <CircularProgress color={"allWhite"}/>
                                         //@ts-ignore

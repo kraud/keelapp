@@ -80,10 +80,6 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
             noOptionsText={(loadingLocal || isSearchLoading) ?"Loading..." :"No matches"}
             onChange={(event: any, newValue: SearchResult | null) => {
                 setValue(newValue)
-                // if(newValue !== null){
-                //     navigate(`/word/${newValue.id}`)
-                //     setOpen(false)
-                // }
             }}
             onInputChange={(event, newInputValue) => {
                 if (newInputValue.length === 0) {
@@ -118,7 +114,7 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                                             },
                                         }}
                                     >
-                                        {(loadingLocal || isSearchLoading)
+                                        {((loadingLocal || isSearchLoading) && open)
                                             //@ts-ignore
                                             ? <CircularProgress color={"allWhite"}/>
                                             //@ts-ignore
