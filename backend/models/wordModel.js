@@ -24,7 +24,10 @@ const wordSchema = mongoose.Schema(
         },
         clue: {
             type: String,
-        }
+        },
+        tags: [{
+            type: String
+        }]
     },
     {
         timestamps: true,

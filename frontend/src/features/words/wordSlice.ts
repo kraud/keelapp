@@ -1,6 +1,6 @@
 import {createSlice, createAsyncThunk, PayloadAction} from "@reduxjs/toolkit"
 import wordService from "./wordService"
-import {SearchResults, WordData, WordDataBE} from "../../ts/interfaces";
+import {SearchResult, WordData, WordDataBE} from "../../ts/interfaces";
 import {Lang, NounCases, PartOfSpeech} from "../../ts/enums";
 
 interface worldSliceState {
@@ -9,7 +9,7 @@ interface worldSliceState {
     words: WordData[],
     wordsSimple: any[],
     word?: WordData,
-    searchResults: SearchResults[],
+    searchResults: SearchResult[],
     isError: boolean,
     isSuccess: boolean,
     isLoading: boolean,
@@ -174,6 +174,25 @@ export const searchWordByAnyTranslation = createAsyncThunk(`words/searchWord`, a
     }
 })
 
+
+// Get a word data by its id
+export const searchAllTags = createAsyncThunk(`words/searchAllTags`, async (query: string, thunkAPI) => {
+    try {
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await wordService.searchTag(token, query)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
 export const wordSlice = createSlice({
     name: 'word',
     initialState,
@@ -264,6 +283,19 @@ export const wordSlice = createSlice({
                 state.searchResults = (action.payload)
             })
             .addCase(searchWordByAnyTranslation.rejected, (state, action) => {
+                state.isSearchLoading = false
+                state.isError = true
+                state.message = action.payload as string
+            })
+            .addCase(searchAllTags.pending, (state) => {
+                state.isSearchLoading = true
+            })
+            .addCase(searchAllTags.fulfilled, (state, action) => {
+                state.isSearchLoading = false
+                state.isSuccess = true
+                state.searchResults = (action.payload)
+            })
+            .addCase(searchAllTags.rejected, (state, action) => {
                 state.isSearchLoading = false
                 state.isError = true
                 state.message = action.payload as string

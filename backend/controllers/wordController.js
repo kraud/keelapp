@@ -327,6 +327,31 @@ const getWordById = asyncHandler(async (req, res) => {
     res.status(200).json(word)
 })
 
+// @desc    Get Words
+// @route   GET /api/words
+// @access  Private
+const getTags = asyncHandler(async (req, res) => {
+    const tags = await Word.find(
+        {
+            "tags": {$regex: `${req.query.query}`, $options: "i"},
+            user: req.user.id
+        },
+        {
+            tags: 1, _id: 0
+        }
+    )
+    let filteredTags = new Set();
+    (tags).forEach((tagArray) => {
+        (tagArray.tags).forEach((tagString) => {
+            if(tagString.includes(req.query.query)){
+                filteredTags.add(tagString)
+            }
+        })
+    })
+    res.status(200).json(Array.from(filteredTags))
+})
+
+
 // @desc    Set Word
 // @route   POST /api/words
 // @access  Private
@@ -343,6 +368,7 @@ const setWord = asyncHandler(async (req, res) => {
         partOfSpeech: req.body.partOfSpeech,
         translations: req.body.translations, // TranslationItem array
         clue: req.body.clue,
+        tags: req.body.tags,
         user: req.user.id
     })
     res.status(200).json(word)
@@ -478,4 +504,5 @@ module.exports = {
     updateWord,
     deleteWords,
     filterWordByAnyTranslation,
+    getTags,
 }

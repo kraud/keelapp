@@ -107,6 +107,7 @@ export function DisplayWord(props: DisplayWordProps){
                         const updatedWordData = {
                             id: wordId,
                             clue: wordData.clue,
+                            tags: wordData.tags,
                             partOfSpeech: wordData.partOfSpeech,
                             translations: wordData.translations,
                         }

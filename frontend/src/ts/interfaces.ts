@@ -4,12 +4,14 @@ export interface WordData {
     translations: TranslationItem[],
     partOfSpeech?: string,
     clue?: string,
+    tags?: string[],
 }
 export interface WordDataBE {
     id: string,
     translations: TranslationItem[],
     partOfSpeech?: string,
     clue?: string,
+    tags?: string[],
 }
 export type TranslationItem = {
     language: Lang,
@@ -26,8 +28,16 @@ export interface WordItem {
     caseName: NounCases | AdjectiveCases | AdverbCases, // the type on noun stored in "word" property
 }
 
-export interface SearchResults {
+export type SearchResult = {
     id: string,
     label: string,
+} & (WordSearch | TagSearch)
+
+type WordSearch = {
+    type: "word"
     language: Lang,
+}
+
+type TagSearch = {
+    type: "tag"
 }

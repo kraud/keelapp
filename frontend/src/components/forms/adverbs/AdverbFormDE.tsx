@@ -172,7 +172,6 @@ export function AdverbFormDE(props: AdverbFormDEProps) {
                             }}
                             fullWidth={true}
                             disabled={props.displayOnly}
-                            singleOptionBehaviour={true}
                         />
                     </Grid>
                     {(getDisabledInputFieldDisplayLogic(props.displayOnly!, adjective.adverb)) &&

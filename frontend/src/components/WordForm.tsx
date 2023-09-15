@@ -8,6 +8,7 @@ import LinearIndeterminate from "./Spinner";
 import {toast, Flip} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {PartOfSpeechSelector} from "./PartOfSpeechSelector";
+import {AutocompleteMultiple} from "./AutocompleteMultiple";
 
 interface TranslationFormProps {
     onSave: (wordData: WordData) => void,
@@ -58,7 +59,8 @@ export function WordForm(props: TranslationFormProps) {
                     })
                 }),
                 partOfSpeech: props.initialState.partOfSpeech,
-                clue: props.initialState.clue
+                clue: props.initialState.clue,
+                tags: props.initialState.tags
             })
             if(props.initialState.partOfSpeech !== undefined){
                 setPartOfSpeech(props.initialState.partOfSpeech as PartOfSpeech)
@@ -461,6 +463,21 @@ export function WordForm(props: TranslationFormProps) {
                                             }}
                                             fullWidth={true}
                                             disabled={disabledForms}
+                                        />
+                                    </Grid>
+                                    <Grid
+                                        item={true}
+                                        xs={12}
+                                        md={4}
+                                    >
+                                        <AutocompleteMultiple
+                                            values={(completeWordData.tags) ? completeWordData.tags : []}
+                                            saveResults={(results: string[]) => {
+                                                setCompleteWordData({
+                                                    ...completeWordData,
+                                                    tags: results
+                                                })
+                                            }}
                                         />
                                     </Grid>
                                 </Grid>
