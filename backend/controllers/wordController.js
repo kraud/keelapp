@@ -34,10 +34,24 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
                 }
             }
             case 'tag': {
-                return {
-                    "tags": {$regex: `${filter.filterValue}`, $options: "i"},
-                    user: req.user.id
+                // NB! in this case, filter.tagIds for type === "tag" will be an array of strings
+                // so each filter further restricts the results when included
+                if(filter.tagIds !== undefined && filter.tagIds.length > 0){
+                    return {
+                        "tags": { $all: filter.tagIds},// This would force to only get items that have all the tags in filter.value
+                        user: req.user.id
+                    }
+                } else {
+                    // NB! in this case, filter.value for type === "tag" will be a single string
+                    // so each filter gives additive results when included
+                    if ((filter.filterValue !== undefined) && (filter.filterValue !== "")) {
+                        return {
+                            "tags": {$regex: `${filter.filterValue}`, $options: "i"},
+                            user: req.user.id
+                        }
+                    }
                 }
+                break
             }
             case 'PoS': {
                 return {
@@ -331,6 +345,7 @@ const getWordById = asyncHandler(async (req, res) => {
 // @route   GET /api/words
 // @access  Private
 const getTags = asyncHandler(async (req, res) => {
+    // first we get all tag arrays from stored words, where at least 1 matches the query
     const tags = await Word.find(
         {
             "tags": {$regex: `${req.query.query}`, $options: "i"},
@@ -341,6 +356,7 @@ const getTags = asyncHandler(async (req, res) => {
         }
     )
     let filteredTags = new Set();
+    // we iterate through all the arrays in tags, and from each we only retrieve the (unique) matching strings
     (tags).forEach((tagArray) => {
         (tagArray.tags).forEach((tagString) => {
             if(tagString.includes(req.query.query)){
@@ -348,6 +364,7 @@ const getTags = asyncHandler(async (req, res) => {
             }
         })
     })
+    // TODO: should we return this in the "FilterItem" format for tag?
     res.status(200).json(Array.from(filteredTags))
 })
 
@@ -473,7 +490,8 @@ const filterWordByAnyTranslation = asyncHandler(async (req, res) => {
                             fullWord.push({
                                 id: word.id,
                                 language: translation.language,
-                                label: wordCase.word
+                                label: wordCase.word,
+                                type: "word",
                             })
                             found = true
                         }

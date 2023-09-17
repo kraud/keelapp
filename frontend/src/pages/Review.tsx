@@ -284,6 +284,7 @@ export function Review(){
                         container={true}
                         direction={"column"}
                         alignItems={"center"}
+                        rowSpacing={2}
                     >
                         <Grid
                             item={true}
@@ -324,25 +325,21 @@ export function Review(){
                                     }}
                                 />
                             </Grid>
+                        </Grid>
+                        <Grid
+                            item={true}
+                            container={true}
+                            justifyContent={"center"}
+                        >
                             <Grid
                                 item={true}
                             >
                                 <AutocompleteMultiple
                                     values={currentTagFilters.map((tag: FilterItem) => tag.filterValue)}
-                                    saveResults={(results: string[]) => {
-                                        setCurrentTagFilters(results.map((result: string) => {
-                                            console.log({
-                                                type: 'tag',
-                                                id: "tag-"+result,
-                                                filterValue: result,
-                                            })
-                                            return({
-                                                type: 'tag',
-                                                id: "tag-"+result,
-                                                filterValue: result,
-                                            })
-                                        }))
+                                    saveResults={(results: FilterItem[]) => {
+                                        setCurrentTagFilters(results)
                                     }}
+                                    matchAll={true}
                                     limitTags={1}
                                     allowNewOptions={false}
                                 />

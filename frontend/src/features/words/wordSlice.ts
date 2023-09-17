@@ -39,13 +39,13 @@ export type FilterItem = {
 
 type CaseFilter = {
     type: 'gender'
-    caseName: NounCases | AdverbCases | AdjectiveCases | string, // TODO: as we add new PartOfSpeech, we should add the other interfaces too (VerbConjugations, PronounCases, etc.)
+    caseName: NounCases | string,
     language: Lang,
 }
 
 type TagFilter = {
     type: 'tag'
-    // tagIds: string[],
+    tagIds?: string[],
 }
 
 type PartOfSpeechFilter = {

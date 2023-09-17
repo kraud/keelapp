@@ -1,23 +1,29 @@
-import {Autocomplete, CircularProgress, Grid, InputAdornment, TextField, Typography} from "@mui/material";
+import {Autocomplete, Chip, CircularProgress, Grid, InputAdornment, TextField, Typography} from "@mui/material";
 import React, {useEffect, useState} from "react";
-import {searchAllTags} from "../features/words/wordSlice";
+import {FilterItem, searchAllTags} from "../features/words/wordSlice";
 import {useDispatch, useSelector} from "react-redux";
 import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from '@mui/icons-material/Search';
 import globalTheme from "../theme/theme";
-import {useNavigate} from "react-router-dom";
+import {SxProps} from "@mui/system";
+import {Theme} from "@mui/material/styles";
+import {toast} from "react-toastify";
 
 interface AutocompleteMultipleProps {
-    values: string[],
-    saveResults: (results: string[]) => void
+    values: string[], // type is simply "string" array, since we get this info from the stored word, and there we only keep its "name"
+    saveResults: (results: FilterItem[]) => void
+    // saveResults: (results: string[]) => void
     limitTags?: number
     allowNewOptions?: boolean
+    disabled?: boolean
+    matchAll?: boolean // this will change how the filters are returned on saveResults.
+    sxProps?: SxProps<Theme>,
+    // To either have a single filter with an array or many filters with a single value each
     // saveResults: (results: SearchResult[]) => void
     // searchQuery: (inputValue: string) => void
 }
 
 export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
-    const navigate = useNavigate()
     const [values, setValues] = useState<string[]>([])
     // const [values, setValues] = useState<SearchResult[]>([])
     const [inputValue, setInputValue] = useState<string>('')
@@ -62,27 +68,56 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
     }, [inputValue])
 
     useEffect(() => {
+        // TODO: searchResults should have the FilterItem format, and we unwind that into array of strings
         setOptions(searchResults)
     },[searchResults])
 
     // this triggers once we select something from the list
     useEffect(() => {
-        props.saveResults(values)
+        if(values.length > 0){
+            // TODO: "type"-value and "tagIds"-property-name should be configurable by props OR "tagIds" made generic?
+            // Depending on type of filtering, the filter-array created changes
+            if(props.matchAll!!){ // all tags go in a single array
+                props.saveResults([{
+                    type: 'tag',
+                    id: "tag-"+(values.length),
+                    tagIds: values,
+                    filterValue: (values.length).toString(),
+                }])
+            } else {
+                props.saveResults( // each tag goes in its own filter
+                    values.map((result: string) => {
+                        return({
+                            type: 'tag',
+                            id: "tag-"+result,
+                            filterValue: result,
+                        })
+                    })
+                )
+            }
+        } else {
+            props.saveResults([])
+        }
         setOpen(false)
     }, [values])
 
-    // @ts-ignore
     return(
         <Autocomplete
+            disabled={props.disabled}
             multiple={true}
             freeSolo={props.allowNewOptions!!}
             limitTags={props.limitTags}
             filterSelectedOptions
+            disableClearable
 
             open={open}
             forcePopupIcon={false}
             clearIcon={<ClearIcon />}
-            sx={{ width: 250 }}
+            sx={{
+                minWidth: "300px",
+                background: 'white',
+                ...props.sxProps
+            }}
             getOptionLabel={(option: string) => option}
             // getOptionLabel={(option: SearchResult) => option.label}
             isOptionEqualToValue={(option, value) => option === value}
@@ -91,12 +126,12 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
             options={(loadingLocal || isSearchLoading) ?[] :options}
             autoComplete
             includeInputInList
+
             value={values}
             noOptionsText={(loadingLocal || isSearchLoading) ?"Loading..." :"No matches"}
             //@ts-ignore
             // onChange={(event: any, newValue: SearchResult) => {
             onChange={(event: any, newValue) => {
-                // TODO: this should actually check if already on value list and remove if necessary
                 setValues(newValue)
             }}
             onInputChange={(event, newInputValue) => {
@@ -112,13 +147,26 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
                 }
                 setInputValue(newInputValue)
             }}
+            renderTags={(value: string[], getTagProps) =>
+                value.map((option: string, index: number) => (
+                    <Chip
+                        variant="outlined"
+                        label={option}
+                        color={"secondary"}
+                        {...getTagProps({ index })}
+                    />
+                ))
+            }
             renderInput={(params) => {
                 return (
                     <TextField
                         {...params}
                         InputProps={{
                             ...params.InputProps,
-                            sx: ({color: 'black'}),
+                            sx: ({
+                                color: 'black',
+                                height: '45px',
+                            }),
                             endAdornment: (
                                 <InputAdornment
                                     position="end"
@@ -136,20 +184,29 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
                                         //@ts-ignore
                                         ? <CircularProgress color={"allWhite"}/>
                                         //@ts-ignore
-                                        : <SearchIcon color={'allWhite'}/>
+                                        :
+                                        <SearchIcon
+                                            color={'secondary'}
+                                            // onClick={() => {
+                                            //     return null
+                                            // TODO: add logic to allow changing the "allowNewOptions" prop?
+                                            //  Icon should change accordingly
+                                            // }}
+                                        />
                                     }
                                 </InputAdornment>
                             )
                         }}
-                        placeholder={"Search..."}
+                        placeholder={"Search tags..."}
                         fullWidth
                         sx={{
                             '& .MuiAutocomplete-inputRoot': {
-                                // borderBottom: '2px white solid',
-                                border: '2px black solid',
+                                border: '1px black solid',
+                                borderRadius: '3px',
                                 "& ::placeholder": {
-                                    color: "white",
-                                    opacity: 1,
+                                    color: "black",
+                                    opacity: 0.75,
+                                    paddingLeft: '1em',
                                 },
                             }
                         }}

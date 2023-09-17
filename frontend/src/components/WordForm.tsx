@@ -9,6 +9,7 @@ import {toast, Flip} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {PartOfSpeechSelector} from "./PartOfSpeechSelector";
 import {AutocompleteMultiple} from "./AutocompleteMultiple";
+import {FilterItem} from "../features/words/wordSlice";
 
 interface TranslationFormProps {
     onSave: (wordData: WordData) => void,
@@ -240,6 +241,8 @@ export function WordForm(props: TranslationFormProps) {
             })
         })
         setRecentlyModified(true)
+        setClueRecentlyModified(false)
+        setTagsRecentlyModified(false)
         props.onSave({
             ...completeWordData, // optional fields like: clue, askedToReviseSoon, etc.
             translations: cleanData,
@@ -256,6 +259,9 @@ export function WordForm(props: TranslationFormProps) {
     useEffect(() => {
         setHideView(false)
     }, [hideView])
+
+    const [clueRecentlyModified, setClueRecentlyModified] = useState(false)
+    const [tagsRecentlyModified, setTagsRecentlyModified] = useState(false)
 
     return(
         <>
@@ -356,9 +362,15 @@ export function WordForm(props: TranslationFormProps) {
                                         ||
                                         (disabledForms)
                                         ||
-                                        !(((completeWordData.translations).filter((selectedLang) => {
-                                            return (selectedLang.isDirty)
-                                        })).length > 0)
+                                        !(
+                                            (
+                                                ((completeWordData.translations).filter((selectedLang) => {
+                                                    return (selectedLang.isDirty)
+                                                })).length > 0
+                                            )
+                                            ||
+                                            (clueRecentlyModified || tagsRecentlyModified)
+                                        )
                                     }
                                 >
                                     Submit
@@ -460,11 +472,21 @@ export function WordForm(props: TranslationFormProps) {
                                                     ...completeWordData,
                                                     clue: e.target.value
                                                 })
+                                                setClueRecentlyModified(true)
                                             }}
                                             fullWidth={true}
                                             disabled={disabledForms}
                                         />
                                     </Grid>
+                                </Grid>
+                            }
+                            {/* TAGS */}
+                            {(!disabledForms || (disabledForms && completeWordData.tags!!)) &&
+                                <Grid
+                                    item={true}
+                                    container={true}
+                                    justifyContent={"center"}
+                                >
                                     <Grid
                                         item={true}
                                         xs={12}
@@ -472,13 +494,24 @@ export function WordForm(props: TranslationFormProps) {
                                     >
                                         <AutocompleteMultiple
                                             values={(completeWordData.tags) ? completeWordData.tags : []}
-                                            saveResults={(results: string[]) => {
+                                            saveResults={(results: FilterItem[]) => {
                                                 setCompleteWordData({
                                                     ...completeWordData,
-                                                    tags: results
+                                                    tags: (results.length > 0)
+                                                        ?
+                                                            (
+                                                                (results[0].type === "tag") &&
+                                                                (results[0].tagIds !== undefined)
+                                                            )
+                                                                ? (results[0].tagIds)
+                                                                : (results.map(result => result.filterValue))
+                                                        :
+                                                        []
                                                 })
+                                                setTagsRecentlyModified(true)
                                             }}
                                             allowNewOptions={true}
+                                            disabled={disabledForms}
                                         />
                                     </Grid>
                                 </Grid>

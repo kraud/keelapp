@@ -26,7 +26,7 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
             padding: globalTheme.spacing(1),
             border: '2px solid black',
             borderRadius: '10px',
-            margin: globalTheme.spacing(2),
+            marginX: globalTheme.spacing(2),
             marginTop: '0',
             marginLeft: '0',
             minWidth: '150px',
