@@ -28,6 +28,7 @@ type TableWordData = {
     creationDate?: string,
     lastUpdate?: string,
     partOfSpeech: PartOfSpeech,
+    tags: string[],
 
     singularNimetavEE?: string, // only required field for Estonian
     registeredCasesEE?: number // amount of cases with data for this language
@@ -331,7 +332,35 @@ export function TranslationsTable(props: TranslationsTableProps) {
                     )},
                     enableColumnFilter: false,
                 }),
-                ...newlySortedColumns
+                ...newlySortedColumns,
+                newColumnHelper.accessor('tags', {
+                    header: () =>
+                        <TableHeaderCell
+                            content={"Tags"}
+                            sxProps={{
+                                cursor: 'default',
+                                background: 'white',
+                                zIndex: 1000,
+                                position: 'relative',
+                            }}
+                        />,
+                    cell: (info) => {return(
+                        (info.getValue() !== undefined)
+                            ?
+                            <TableDataCell
+                                content={info.getValue()}
+                                type={"array"}
+                                textAlign={"center"}
+                                onlyForDisplay={true}
+                                sxProps={{
+                                    minWidth: "50px"
+                                }}
+                            />
+                            :
+                            ""
+                    )},
+                    enableColumnFilter: false,
+                }),
             ]
         )
     }
@@ -402,7 +431,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
         if(
             // TODO: this should be an array and we check if 'includes' column number
             (columnBeingDragged !== 0) && (columnBeingDragged !== 1)
-        ){ // to avoid moving the "type" column.
+        ){ // to avoid moving the "checkbox-select" or "type" column.
             const newPosition = Number(e.currentTarget.dataset.columnIndex)
             if(
                 // TODO: this should be an array and we check if 'includes' column number

@@ -1,4 +1,4 @@
-import {Button, Checkbox, CircularProgress, Grid, Modal, Typography} from "@mui/material";
+import {Button, Checkbox, Chip, CircularProgress, Grid, Modal, Typography} from "@mui/material";
 import React, {HTMLProps, useEffect, useState} from "react";
 import globalTheme from "../../theme/theme";
 import {SxProps} from "@mui/system";
@@ -62,7 +62,7 @@ export function TableHeaderCell(props: TableHeaderCellProps){
 
 interface TableDataCellProps {
     content: any
-    type: "number" | "text" | "other"
+    type: "number" | "text" | "array" | "other"
     textAlign?: 'center' | 'inherit' | 'justify' | 'left' | 'right'
     sxProps?: SxProps<Theme>
 
@@ -291,30 +291,44 @@ export function TableDataCell(props: TableDataCellProps){
         return ((amount/maxAmountOfCases)*100)
     }
 
-    return(
-        <>
-            <Grid
-                sx={{
-                    paddingX: globalTheme.spacing(3),
-                    paddingY: globalTheme.spacing(1),
-                    height: '100%',
-                    marginTop: 'auto',
-                    marginBottom: 'auto',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignContent: 'center',
-                    flexDirection: 'column',
-                    ...props.sxProps
-                }}
-                onMouseOver={() => setIsHovering(true)}
-                onTouchStart={() => setIsHovering(true)}
-                onMouseOut={() => setIsHovering(false)}
-                onTouchEnd={() => setIsHovering(false)}
-            >
-                {(props.type === "other")
-                    ?
-                    props.content // i.e: button icon
-                    :
+    const getDisplayComponent = () => {
+        switch (props.type){
+            case ("other"): {
+                return(props.content)
+            }
+            case ("array"): {
+                return(
+                    <Grid
+                        container={true}
+                        spacing={1}
+                        justifyContent={"center"}
+                    >
+                        {props.content.map((item: string, index: number) => {
+                            return(
+                                <Grid
+                                    item={true}
+                                >
+                                    <Chip
+                                        variant="outlined"
+                                        label={item}
+                                        color={"secondary"}
+                                        key={index}
+                                        sx={{
+                                            maxWidth: "max-content",
+                                            background: "white",
+                                        }}
+                                        onClick={() => {
+                                            toast.info("This will filter the current table by this tag.")
+                                        }}
+                                    />
+                                </Grid>
+                            )
+                        })}
+                    </Grid>
+                )
+            }
+            case ("text"): {
+                return(
                     (props.content !== undefined)
                         ?
                         <Typography
@@ -327,9 +341,7 @@ export function TableDataCell(props: TableDataCellProps){
                             textAlign={
                                 (props.textAlign !== undefined)
                                     ? props.textAlign
-                                    : (props.type === "number")
-                                        ? "right"
-                                        : "left"
+                                    : "left"
                             }
                             fontWeight={500}
                             sx={componentStyles.text}
@@ -362,14 +374,14 @@ export function TableDataCell(props: TableDataCellProps){
                                     }}
                                 >
                                     {((props.amount!!) && (getPercentage(props.amount) < 100)) &&
-                                    <span
-                                        className={"completePercentageCircle"}
-                                        style={{
-                                            height: '30px',
-                                            width: '30px',
-                                            position: 'absolute',
-                                        }}
-                                    >
+                                        <span
+                                            className={"completePercentageCircle"}
+                                            style={{
+                                                height: '30px',
+                                                width: '30px',
+                                                position: 'absolute',
+                                            }}
+                                        >
                                         <CircularProgress
                                             variant="determinate"
                                             value={100}
@@ -440,7 +452,163 @@ export function TableDataCell(props: TableDataCellProps){
                         >
                             <AddIcon color={"primary"} fontSize={'inherit'}/>
                         </IconButton>
-                }
+                )
+            }
+            default: return(props.content)
+        }
+    }
+
+    return(
+        <>
+            <Grid
+                sx={{
+                    paddingX: globalTheme.spacing(3),
+                    paddingY: globalTheme.spacing(1),
+                    height: '100%',
+                    marginTop: 'auto',
+                    marginBottom: 'auto',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignContent: 'center',
+                    flexDirection: 'column',
+                    ...props.sxProps
+                }}
+                onMouseOver={() => setIsHovering(true)}
+                onTouchStart={() => setIsHovering(true)}
+                onMouseOut={() => setIsHovering(false)}
+                onTouchEnd={() => setIsHovering(false)}
+            >
+                {getDisplayComponent()}
+                {/*{(props.type === "other")*/}
+                {/*    ?*/}
+                {/*    props.content // i.e: button icon*/}
+                {/*    :*/}
+                {/*    (props.content !== undefined)*/}
+                {/*        ?*/}
+                {/*        <Typography*/}
+                {/*            onClick={() => {*/}
+                {/*                if (!props.onlyForDisplay!) {*/}
+                {/*                    openModal()*/}
+                {/*                }*/}
+                {/*            }}*/}
+                {/*            variant={'subtitle1'}*/}
+                {/*            textAlign={*/}
+                {/*                (props.textAlign !== undefined)*/}
+                {/*                    ? props.textAlign*/}
+                {/*                    : (props.type === "number")*/}
+                {/*                        ? "right"*/}
+                {/*                        : "left"*/}
+                {/*            }*/}
+                {/*            fontWeight={500}*/}
+                {/*            sx={componentStyles.text}*/}
+                {/*        >*/}
+                {/*            /!* GENDER *!/*/}
+                {/*            {*/}
+                {/*                (*/}
+                {/*                    (props.displayWordGender!) && (props.wordGender)*/}
+                {/*                ) &&*/}
+                {/*                props.wordGender*/}
+                {/*            }*/}
+                {/*            {" "}*/}
+                {/*            /!* WORD *!/*/}
+                {/*            {props.content}*/}
+                {/*            {" "}*/}
+                {/*            /!* AMOUNT OF STORED CASES *!/*/}
+                {/*            {*/}
+                {/*                (*/}
+                {/*                    (*/}
+                {/*                        props.displayAmount!*/}
+                {/*                        ||*/}
+                {/*                        (props.onlyDisplayAmountOnHover! && isHovering)*/}
+                {/*                    ) &&*/}
+                {/*                    (props.amount!)*/}
+                {/*                ) &&*/}
+                {/*                <span*/}
+                {/*                    style={{*/}
+                {/*                        float: 'right',*/}
+                {/*                        marginRight: '35px',*/}
+                {/*                    }}*/}
+                {/*                >*/}
+                {/*                    {((props.amount!!) && (getPercentage(props.amount) < 100)) &&*/}
+                {/*                    <span*/}
+                {/*                        className={"completePercentageCircle"}*/}
+                {/*                        style={{*/}
+                {/*                            height: '30px',*/}
+                {/*                            width: '30px',*/}
+                {/*                            position: 'absolute',*/}
+                {/*                        }}*/}
+                {/*                    >*/}
+                {/*                        <CircularProgress*/}
+                {/*                            variant="determinate"*/}
+                {/*                            value={100}*/}
+                {/*                            color={"secondary"}*/}
+                {/*                            sx={{*/}
+                {/*                                zIndex: 100,*/}
+                {/*                                marginTop: '-11px',*/}
+                {/*                                marginLeft: '10px',*/}
+                {/*                                color: 'grey !important',*/}
+                {/*                            }}*/}
+                {/*                        />*/}
+                {/*                    </span>*/}
+                {/*                    }*/}
+                {/*                    <span*/}
+                {/*                        className={"completePercentageCircle"}*/}
+                {/*                        style={{*/}
+                {/*                            height: '30px',*/}
+                {/*                            width: '30px',*/}
+                {/*                            position: 'absolute',*/}
+                {/*                        }}*/}
+                {/*                    >*/}
+                {/*                        <CircularProgress*/}
+                {/*                            variant="determinate"*/}
+                {/*                            color={((props.amount!!) && (getPercentage(props.amount) >= 100)) ?"success" :"primary"}*/}
+                {/*                            value={(props.amount!!) ?getPercentage(props.amount) :0}*/}
+                {/*                            sx={{*/}
+                {/*                                zIndex: 1000,*/}
+                {/*                                marginTop: '-11px',*/}
+                {/*                                marginLeft: '10px',*/}
+                {/*                            }}*/}
+                {/*                        />*/}
+                {/*                    </span>*/}
+                {/*                    {((props.amount!!) && (getPercentage(props.amount) >= 100)) &&*/}
+                {/*                        <span*/}
+                {/*                            className={"smallerIconCompletePercentage"}*/}
+                {/*                            style={{*/}
+                {/*                                position: 'absolute',*/}
+                {/*                            }}*/}
+                {/*                        >*/}
+                {/*                            <DoneIcon*/}
+                {/*                                sx={{*/}
+                {/*                                    marginTop: '2px',*/}
+                {/*                                    marginLeft: '12px',*/}
+                {/*                                    color: 'green',*/}
+                {/*                                    fontSize: '10px',*/}
+                {/*                                }}*/}
+                {/*                            />*/}
+                {/*                        </span>*/}
+                {/*                    }*/}
+                {/*                </span>*/}
+                {/*            }*/}
+                {/*        </Typography>*/}
+                {/*        :*/}
+                {/*        <IconButton*/}
+                {/*            onClick={() => {*/}
+                {/*                if (!props.onlyForDisplay!) {*/}
+                {/*                    // setOpen(true)*/}
+                {/*                    openModal()*/}
+                {/*                    setDisplayOnly(false)*/}
+                {/*                    setSelectedTranslationData({*/}
+                {/*                        language: props.language!,*/}
+                {/*                        cases: [],*/}
+                {/*                        completionState: false,*/}
+                {/*                        isDirty: false,*/}
+                {/*                    })*/}
+                {/*                }*/}
+                {/*            }}*/}
+                {/*        >*/}
+                {/*            <AddIcon color={"primary"} fontSize={'inherit'}/>*/}
+                {/*        </IconButton>*/}
+                {/*}*/}
             </Grid>
             <Modal
                 open={open}

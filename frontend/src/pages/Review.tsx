@@ -333,6 +333,7 @@ export function Review(){
                         >
                             <Grid
                                 item={true}
+                                xs={10}
                             >
                                 <AutocompleteMultiple
                                     values={currentTagFilters.map((tag: FilterItem) => tag.filterValue)}
@@ -340,7 +341,7 @@ export function Review(){
                                         setCurrentTagFilters(results)
                                     }}
                                     matchAll={true}
-                                    limitTags={1}
+                                    limitTags={3}
                                     allowNewOptions={false}
                                 />
                             </Grid>

@@ -293,6 +293,7 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
         processedResults.forEach((completeWord) => {
             // we must go through all the languages listed on "translations" and create simplified versions of each
             let simplifiedWord = {
+                tags: completeWord.tags,
                 partOfSpeech: completeWord.partOfSpeech,
                 createdAt: completeWord.createdAt,
                 updatedAt: completeWord.updatedAt,
