@@ -403,7 +403,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
 
     //@ts-ignore
     const onDragStart = (e: DragEvent<HTMLElement>): void => {
-
+        // TODO: check dragged column here and do nothing if its column 0/1/last?
         let image: JSX.Element = (<>
             <Button
                 variant={"outlined"}
@@ -427,17 +427,24 @@ export function TranslationsTable(props: TranslationsTableProps) {
 
     //@ts-ignore
     const onDrop = (e: DragEvent<HTMLElement>): void => {
+        const lastColumnIndex = ((props.sortedAndSelectedLanguages).length + 2)
         e.preventDefault()
         if(
             // TODO: this should be an array and we check if 'includes' column number
-            (columnBeingDragged !== 0) && (columnBeingDragged !== 1)
+            (columnBeingDragged !== 0) &&
+            (columnBeingDragged !== 1) &&
+            // this refers to the last column ("tags"). We only do +1, because index for columnBeingDragged starts at 0
+            (columnBeingDragged !== lastColumnIndex)
         ){ // to avoid moving the "checkbox-select" or "type" column.
             const newPosition = Number(e.currentTarget.dataset.columnIndex)
             if(
                 // TODO: this should be an array and we check if 'includes' column number
-                (newPosition !== 0) && (newPosition !== 1)
-            ){ // to avoid moving INTO the type column
+                (newPosition !== 0) &&
+                (newPosition !== 1) &&
+                (newPosition !== lastColumnIndex)
+            ){ // to avoid moving INTO the select/type/tag column
                 const currentCols = table.getVisibleLeafColumns().map((c) => c.id)
+                // TODO: do something with the last column here?
                 const colToBeMoved = currentCols.splice(columnBeingDragged, 1)
                 currentCols.splice(newPosition, 0, colToBeMoved[0])
                 props.setAllSelectedItems(currentCols) // this will change the order outside the table, on the DnD selector

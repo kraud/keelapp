@@ -53,12 +53,11 @@ export function Review(){
 
     // allows column dragging from table to work with DnDLanguageSelector
     const changeLanguageOrderFromTable = (newList: string[]) => {
-        const updatedOrderList =
-            (newList.slice(2)). // we start at 2, since 0 it's always the select checkbox and 1 is the "type" column
-                map((language: string) => {
-                    // @ts-ignore
-                    return(Lang[language.slice(-2)]) // we need the LAST 2 letters, to identify the language
-                })
+        const updatedOrderList = (newList.slice(2)).slice(0, -1). // we start at 2, since 0 it's always the select checkbox and 1 is the "type" column. -1 to remove Tags (last column)
+            map((language: string) => {
+                // @ts-ignore
+                return(Lang[language.slice(-2)]) // we need the LAST 2 letters, to identify the language
+            })
         setAllSelectedLanguages(updatedOrderList)
     }
 

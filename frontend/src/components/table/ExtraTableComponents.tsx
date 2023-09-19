@@ -307,15 +307,14 @@ export function TableDataCell(props: TableDataCellProps){
                             return(
                                 <Grid
                                     item={true}
+                                    key={index}
                                 >
                                     <Chip
-                                        variant="outlined"
+                                        variant="filled"
                                         label={item}
                                         color={"secondary"}
-                                        key={index}
                                         sx={{
                                             maxWidth: "max-content",
-                                            background: "white",
                                         }}
                                         onClick={() => {
                                             toast.info("This will filter the current table by this tag.")

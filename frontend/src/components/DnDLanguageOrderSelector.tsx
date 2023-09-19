@@ -140,7 +140,7 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                             {props.allSelectedItems.map((item: string, index: number) => {
                                 return (
                                     <DnDSortableItem
-                                        key={item}
+                                        key={index}
                                         id={item}
                                         direction={props.direction}
                                         index={index}
