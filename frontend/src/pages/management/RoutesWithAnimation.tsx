@@ -52,7 +52,7 @@ export function RoutesWithAnimation() {
                 }
             />
             <Route
-                path='/review'
+                path='/review/:filtersURL?'
                 element={
                     <Review/>
                 }

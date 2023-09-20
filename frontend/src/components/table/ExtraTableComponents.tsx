@@ -7,7 +7,7 @@ import {TranslationItem} from "../../ts/interfaces";
 import {Lang, PartOfSpeech} from "../../ts/enums";
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
-import {clearWord, getWordById, getWordsSimplified, updateWordById} from "../../features/words/wordSlice";
+import {clearResults, clearWord, getWordById, getWordsSimplified, updateWordById} from "../../features/words/wordSlice";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from '@mui/icons-material/Add';
 import LinearIndeterminate from "../Spinner";
@@ -15,6 +15,7 @@ import Box from "@mui/material/Box";
 import {WordFormSelector} from "../forms/WordFormSelector";
 import {SortDirection} from "@tanstack/table-core/build/lib/features/Sorting";
 import DoneIcon from "@mui/icons-material/Done";
+import {useNavigate, useSearchParams} from "react-router-dom";
 
 interface TableHeaderCellProps {
     content: any
@@ -53,6 +54,9 @@ export function TableHeaderCell(props: TableHeaderCellProps){
                 variant={'h6'}
                 fontWeight={"bold"}
                 display={"inline"}
+                sx={{
+                    userSelect: 'none',
+                }}
             >
                 {props.content}
             </Typography>
@@ -99,6 +103,7 @@ export function TableDataCell(props: TableDataCellProps){
         }
     }
     const dispatch = useDispatch()
+    let  [searchParams, setSearchParams]  = useSearchParams();
     const [isHovering, setIsHovering] = useState(false)
     const [open, setOpen] = useState(false)
     const [selectedTranslationData, setSelectedTranslationData] = useState<TranslationItem>()
@@ -317,7 +322,8 @@ export function TableDataCell(props: TableDataCellProps){
                                             maxWidth: "max-content",
                                         }}
                                         onClick={() => {
-                                            toast.info("This will filter the current table by this tag.")
+                                            setSearchParams({"tags": item}) // also acts as navigate
+                                            // dispatch(clearResults())
                                         }}
                                     />
                                 </Grid>

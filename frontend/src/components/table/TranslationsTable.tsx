@@ -308,9 +308,10 @@ export function TranslationsTable(props: TranslationsTableProps) {
                     ),
                 },
                 newColumnHelper.accessor('partOfSpeech', {
-                    header: () =>
+                    header: ({column}) =>
                         <TableHeaderCell
                             content={"Type"}
+                            column={column}
                             sxProps={{
                                 cursor: 'default',
                                 background: 'white',
@@ -360,6 +361,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
                             ""
                     )},
                     enableColumnFilter: false,
+                    enableSorting: false,
                 }),
             ]
         )
@@ -403,24 +405,24 @@ export function TranslationsTable(props: TranslationsTableProps) {
 
     //@ts-ignore
     const onDragStart = (e: DragEvent<HTMLElement>): void => {
-        // TODO: check dragged column here and do nothing if its column 0/1/last?
-        let image: JSX.Element = (<>
-            <Button
-                variant={"outlined"}
-            >
-                DROP ME
-            </Button>
-        </>)
-
-        let ghost = document.createElement('div')
-        ghost.id = "ghost-ID"
-        ghost.style.transform = "translate(-10000px, -10000px)"
-        ghost.style.position = "absolute"
-        document.body.appendChild(ghost)
-        e.dataTransfer.setDragImage(ghost, 50, 30)
-        //@ts-ignore
-        const root = ReactDOM.createRoot(ghost)
-        root.render(image)
+        // TODO: replace dragging image?
+        // let image: JSX.Element = (<>
+        //     <Button
+        //         variant={"outlined"}
+        //     >
+        //         DROP ME
+        //     </Button>
+        // </>)
+        //
+        // let ghost = document.createElement('div')
+        // ghost.id = "ghost-ID"
+        // ghost.style.transform = "translate(-10000px, -10000px)"
+        // ghost.style.position = "absolute"
+        // document.body.appendChild(ghost)
+        // e.dataTransfer.setDragImage(ghost, 50, 30)
+        // //@ts-ignore
+        // const root = ReactDOM.createRoot(ghost)
+        // root.render(image)
 
         columnBeingDragged = Number(e.currentTarget.dataset.columnIndex);
     }
@@ -643,7 +645,11 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                         !table.getState().columnSizingInfo.isResizingColumn
                                         &&
                                         // TODO: tie this to a table prop
-                                        index !== 0 // to avoid moving the "type" column
+                                        index !== 0 // to avoid moving the "select" column
+                                        &&
+                                        index !== 1 // to avoid moving the "type" column
+                                        &&
+                                        index !== (((props.sortedAndSelectedLanguages).length + 2)) // idem tags
                                     }
                                     data-column-index={header.index}
                                     onDragStart={(e) => {

@@ -1,7 +1,7 @@
 import {Grid, Slide, Typography} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import globalTheme from "../theme/theme";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams, useSearchParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
 import {FilterItem, getWordsSimplified} from "../features/words/wordSlice";
@@ -27,6 +27,9 @@ export function Review(){
     const [displayFilers, setDisplayFilers] = useState(true)
 
     const {wordsSimple, isLoading, isError, message} = useSelector((state: any) => state.words)
+    // @ts-ignore
+    // const { filtersURL } = useParams<RouterWordProps>()
+    let [searchParams, setSearchParams]  = useSearchParams();
 
     useEffect(() => {
         if(isError){
@@ -40,7 +43,21 @@ export function Review(){
 
     useEffect(() => {
         //@ts-ignore
-        dispatch(getWordsSimplified())
+        let {size} = searchParams
+        if(size !== 0){
+            if(searchParams.getAll("tags").length > 0){
+                setCurrentTagFilters([{
+                    type: 'tag',
+                    id: "tag-"+((searchParams.getAll("tags")).length),
+                    tagIds: searchParams.getAll("tags"),
+                    filterValue: (searchParams.getAll("tags")).toString(),
+                }])
+            }
+        }
+        else {
+            //@ts-ignore
+            dispatch(getWordsSimplified())
+        }
     }, [])
 
     useEffect(() => {
@@ -123,13 +140,31 @@ export function Review(){
     const [currentGenderFilters, setCurrentGenderFilters] = useState<FilterItem[]>([])
     const [currentPoSFilters, setCurrentPoSFilters] = useState<FilterItem[]>([])
 
+    // useEffect(() => {
+    //     console.log("filters changed")
+    //     // @ts-ignore
+    //     const promise = dispatch(getWordsSimplified([
+    //         ...currentPoSFilters,
+    //         ...currentGenderFilters,
+    //         ...currentTagFilters,
+    //     ]))
+    //     return () => {
+    //         // `createAsyncThunk` attaches an `abort()` method to the promise
+    //         promise.abort()
+    //     }
+    // }, [currentPoSFilters, currentGenderFilters, currentTagFilters])
+
     useEffect(() => {
+        const timeout = setTimeout(() => {
         // @ts-ignore
         dispatch(getWordsSimplified([
             ...currentPoSFilters,
             ...currentGenderFilters,
             ...currentTagFilters,
-        ]))
+            ]))
+        }, 10)
+
+        return () => clearTimeout(timeout)
     }, [currentPoSFilters, currentGenderFilters, currentTagFilters])
 
     return(
@@ -338,6 +373,7 @@ export function Review(){
                                     values={currentTagFilters.map((tag: FilterItem) => tag.filterValue)}
                                     saveResults={(results: FilterItem[]) => {
                                         setCurrentTagFilters(results)
+                                        // TODO: this should modify the URL to add each filter separately
                                     }}
                                     matchAll={true}
                                     limitTags={3}

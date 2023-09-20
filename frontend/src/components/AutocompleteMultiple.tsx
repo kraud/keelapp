@@ -24,7 +24,7 @@ interface AutocompleteMultipleProps {
 }
 
 export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
-    const [values, setValues] = useState<string[]>([])
+    // const [values, setValues] = useState<string[]>([])
     // const [values, setValues] = useState<SearchResult[]>([])
     const [inputValue, setInputValue] = useState<string>('')
     // const [options, setOptions] = useState<SearchResult[]>([])
@@ -35,11 +35,13 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
     const {searchResults, isSearchLoading} = useSelector((state: any) => state.words)
 
     // in case we have initial values
-    useEffect(() => {
-        if(props.values!! && props.values.length > 0){
-            setValues(props.values)
-        }
-    }, [])
+    // useEffect(() => {
+    //     if(props.values!! && props.values.length > 0){
+    //         console.log("init set values")
+    //         console.log(props.values)
+    //         // setValues(props.values) TODO: check
+    //     }
+    // }, [])
 
     // if we simply depend on isLoading, the text on the first option reads "no matches" for a second, before "Loading.."
     useEffect(() => {
@@ -55,7 +57,7 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
     // this triggers when we type something on the search field
     useEffect(() => {
         if (inputValue === '') {
-            setOptions(values)
+            // setOptions(values) TODO: check? not sure what this does
             return undefined;
         }
         const timeout = setTimeout(() => {
@@ -72,34 +74,41 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
         setOptions(searchResults)
     },[searchResults])
 
+    // useEffect(() => {
+    //     console.log("Values check")
+    //     console.log(values)
+    // },[values])
+
+    // NB: this is not necessary anymore? We translated the source of truth for the filter to the parent component? TODO: check
     // this triggers once we select something from the list
-    useEffect(() => {
-        if(values.length > 0){
-            // TODO: "type"-value and "tagIds"-property-name should be configurable by props OR "tagIds" made generic?
-            // Depending on type of filtering, the filter-array created changes
-            if(props.matchAll!!){ // all tags go in a single array
-                props.saveResults([{
-                    type: 'tag',
-                    id: "tag-"+(values.length),
-                    tagIds: values,
-                    filterValue: (values.length).toString(),
-                }])
-            } else {
-                props.saveResults( // each tag goes in its own filter
-                    values.map((result: string) => {
-                        return({
-                            type: 'tag',
-                            id: "tag-"+result,
-                            filterValue: result,
-                        })
-                    })
-                )
-            }
-        } else {
-            props.saveResults([])
-        }
-        setOpen(false)
-    }, [values])
+    // useEffect(() => {
+    //     // if(values.length > 0){
+    //     if(props.values.length > 0){
+    //         // TODO: "type"-value and "tagIds"-property-name should be configurable by props OR "tagIds" made generic?
+    //         // Depending on type of filtering, the filter-array created changes
+    //         if(props.matchAll!!){ // all tags go in a single array
+    //             props.saveResults([{
+    //                 type: 'tag',
+    //                 id: "tag-"+(props.values.length),
+    //                 tagIds: pros.values,
+    //                 filterValue: (props.values.length).toString(),
+    //             }])
+    //         } else {
+    //             props.saveResults( // each tag goes in its own filter
+    //                 props.values.map((result: string) => {
+    //                     return({
+    //                         type: 'tag',
+    //                         id: "tag-"+result,
+    //                         filterValue: result,
+    //                     })
+    //                 })
+    //             )
+    //         }
+    //     } else if(props.values !== []){
+    //         props.saveResults([])
+    //     }
+    //     setOpen(false)
+    // }, [props.values])
 
     return(
         <Autocomplete
@@ -127,12 +136,35 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
             autoComplete
             includeInputInList
 
-            value={values}
+            defaultValue={props.values}
+            value={props.values}
             noOptionsText={(loadingLocal || isSearchLoading) ?"Loading..." :"No matches"}
             //@ts-ignore
             // onChange={(event: any, newValue: SearchResult) => {
             onChange={(event: any, newValue) => {
-                setValues(newValue)
+                // setValues(newValue) //NB: moved info to parent component? TODO: check
+                if(newValue.length > 0) {
+                    if(props.matchAll!!){ // all tags go in a single array
+                        props.saveResults([{
+                            type: 'tag',
+                            id: "tag-"+(props.values.length),
+                            tagIds: newValue,
+                            filterValue: (props.values.length).toString(),
+                        }])
+                    } else {
+                        props.saveResults( // each tag goes in its own filter
+                            newValue.map((value: string) => {
+                                return({
+                                    type: 'tag',
+                                    id: "tag-"+value,
+                                    filterValue: value,
+                                })
+                            })
+                        )
+                    }
+                } else {
+                    props.saveResults([])
+                }
             }}
             onInputChange={(event, newInputValue) => {
                 if (newInputValue.length === 0) {
