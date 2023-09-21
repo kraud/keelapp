@@ -334,72 +334,49 @@ export function TableDataCell(props: TableDataCellProps){
             }
             case ("text"): {
                 return(
-                    (props.content !== undefined)
-                        ?
-                        <Typography
-                            onClick={() => {
-                                if (!props.onlyForDisplay!) {
-                                    openModal()
-                                }
-                            }}
-                            variant={'subtitle1'}
-                            textAlign={
-                                (props.textAlign !== undefined)
-                                    ? props.textAlign
-                                    : "left"
+                    <Typography
+                        onClick={() => {
+                            if (!props.onlyForDisplay!) {
+                                openModal()
                             }
-                            fontWeight={500}
-                            sx={componentStyles.text}
-                        >
-                            {/* GENDER */}
-                            {
+                        }}
+                        variant={'subtitle1'}
+                        textAlign={
+                            (props.textAlign !== undefined)
+                                ? props.textAlign
+                                : "left"
+                        }
+                        fontWeight={500}
+                        sx={componentStyles.text}
+                    >
+                        {/* GENDER */}
+                        {
+                            (
+                                (props.displayWordGender!) && (props.wordGender)
+                            ) &&
+                            props.wordGender
+                        }
+                        {" "}
+                        {/* WORD */}
+                        {props.content}
+                        {" "}
+                        {/* AMOUNT OF STORED CASES */}
+                        {
+                            (
                                 (
-                                    (props.displayWordGender!) && (props.wordGender)
+                                    props.displayAmount!
+                                    ||
+                                    (props.onlyDisplayAmountOnHover! && isHovering)
                                 ) &&
-                                props.wordGender
-                            }
-                            {" "}
-                            {/* WORD */}
-                            {props.content}
-                            {" "}
-                            {/* AMOUNT OF STORED CASES */}
-                            {
-                                (
-                                    (
-                                        props.displayAmount!
-                                        ||
-                                        (props.onlyDisplayAmountOnHover! && isHovering)
-                                    ) &&
-                                    (props.amount!)
-                                ) &&
-                                <span
-                                    style={{
-                                        float: 'right',
-                                        marginRight: '35px',
-                                    }}
-                                >
-                                    {((props.amount!!) && (getPercentage(props.amount) < 100)) &&
-                                        <span
-                                            className={"completePercentageCircle"}
-                                            style={{
-                                                height: '30px',
-                                                width: '30px',
-                                                position: 'absolute',
-                                            }}
-                                        >
-                                        <CircularProgress
-                                            variant="determinate"
-                                            value={100}
-                                            color={"secondary"}
-                                            sx={{
-                                                zIndex: 100,
-                                                marginTop: '-11px',
-                                                marginLeft: '10px',
-                                                color: 'grey !important',
-                                            }}
-                                        />
-                                    </span>
-                                    }
+                                (props.amount!)
+                            ) &&
+                            <span
+                                style={{
+                                    float: 'right',
+                                    marginRight: '35px',
+                                }}
+                            >
+                                {((props.amount!!) && (getPercentage(props.amount) < 100)) &&
                                     <span
                                         className={"completePercentageCircle"}
                                         style={{
@@ -408,55 +385,58 @@ export function TableDataCell(props: TableDataCellProps){
                                             position: 'absolute',
                                         }}
                                     >
-                                        <CircularProgress
-                                            variant="determinate"
-                                            color={((props.amount!!) && (getPercentage(props.amount) >= 100)) ?"success" :"primary"}
-                                            value={(props.amount!!) ?getPercentage(props.amount) :0}
+                                    <CircularProgress
+                                        variant="determinate"
+                                        value={100}
+                                        color={"secondary"}
+                                        sx={{
+                                            zIndex: 100,
+                                            marginTop: '-11px',
+                                            marginLeft: '10px',
+                                            color: 'grey !important',
+                                        }}
+                                    />
+                                </span>
+                                }
+                                <span
+                                    className={"completePercentageCircle"}
+                                    style={{
+                                        height: '30px',
+                                        width: '30px',
+                                        position: 'absolute',
+                                    }}
+                                >
+                                    <CircularProgress
+                                        variant="determinate"
+                                        color={((props.amount!!) && (getPercentage(props.amount) >= 100)) ?"success" :"primary"}
+                                        value={(props.amount!!) ?getPercentage(props.amount) :0}
+                                        sx={{
+                                            zIndex: 1000,
+                                            marginTop: '-11px',
+                                            marginLeft: '10px',
+                                        }}
+                                    />
+                                </span>
+                                {((props.amount!!) && (getPercentage(props.amount) >= 100)) &&
+                                    <span
+                                        className={"smallerIconCompletePercentage"}
+                                        style={{
+                                            position: 'absolute',
+                                        }}
+                                    >
+                                        <DoneIcon
                                             sx={{
-                                                zIndex: 1000,
-                                                marginTop: '-11px',
-                                                marginLeft: '10px',
+                                                marginTop: '2px',
+                                                marginLeft: '12px',
+                                                color: 'green',
+                                                fontSize: '10px',
                                             }}
                                         />
                                     </span>
-                                    {((props.amount!!) && (getPercentage(props.amount) >= 100)) &&
-                                        <span
-                                            className={"smallerIconCompletePercentage"}
-                                            style={{
-                                                position: 'absolute',
-                                            }}
-                                        >
-                                            <DoneIcon
-                                                sx={{
-                                                    marginTop: '2px',
-                                                    marginLeft: '12px',
-                                                    color: 'green',
-                                                    fontSize: '10px',
-                                                }}
-                                            />
-                                        </span>
-                                    }
-                                </span>
-                            }
-                        </Typography>
-                        :
-                        <IconButton
-                            onClick={() => {
-                                if (!props.onlyForDisplay!) {
-                                    // setOpen(true)
-                                    openModal()
-                                    setDisplayOnly(false)
-                                    setSelectedTranslationData({
-                                        language: props.language!,
-                                        cases: [],
-                                        completionState: false,
-                                        isDirty: false,
-                                    })
                                 }
-                            }}
-                        >
-                            <AddIcon color={"primary"} fontSize={'inherit'}/>
-                        </IconButton>
+                            </span>
+                        }
+                    </Typography>
                 )
             }
             default: return(props.content)
@@ -483,137 +463,40 @@ export function TableDataCell(props: TableDataCellProps){
                 onMouseOut={() => setIsHovering(false)}
                 onTouchEnd={() => setIsHovering(false)}
             >
-                {getDisplayComponent()}
-                {/*{(props.type === "other")*/}
-                {/*    ?*/}
-                {/*    props.content // i.e: button icon*/}
-                {/*    :*/}
-                {/*    (props.content !== undefined)*/}
-                {/*        ?*/}
-                {/*        <Typography*/}
-                {/*            onClick={() => {*/}
-                {/*                if (!props.onlyForDisplay!) {*/}
-                {/*                    openModal()*/}
-                {/*                }*/}
-                {/*            }}*/}
-                {/*            variant={'subtitle1'}*/}
-                {/*            textAlign={*/}
-                {/*                (props.textAlign !== undefined)*/}
-                {/*                    ? props.textAlign*/}
-                {/*                    : (props.type === "number")*/}
-                {/*                        ? "right"*/}
-                {/*                        : "left"*/}
-                {/*            }*/}
-                {/*            fontWeight={500}*/}
-                {/*            sx={componentStyles.text}*/}
-                {/*        >*/}
-                {/*            /!* GENDER *!/*/}
-                {/*            {*/}
-                {/*                (*/}
-                {/*                    (props.displayWordGender!) && (props.wordGender)*/}
-                {/*                ) &&*/}
-                {/*                props.wordGender*/}
-                {/*            }*/}
-                {/*            {" "}*/}
-                {/*            /!* WORD *!/*/}
-                {/*            {props.content}*/}
-                {/*            {" "}*/}
-                {/*            /!* AMOUNT OF STORED CASES *!/*/}
-                {/*            {*/}
-                {/*                (*/}
-                {/*                    (*/}
-                {/*                        props.displayAmount!*/}
-                {/*                        ||*/}
-                {/*                        (props.onlyDisplayAmountOnHover! && isHovering)*/}
-                {/*                    ) &&*/}
-                {/*                    (props.amount!)*/}
-                {/*                ) &&*/}
-                {/*                <span*/}
-                {/*                    style={{*/}
-                {/*                        float: 'right',*/}
-                {/*                        marginRight: '35px',*/}
-                {/*                    }}*/}
-                {/*                >*/}
-                {/*                    {((props.amount!!) && (getPercentage(props.amount) < 100)) &&*/}
-                {/*                    <span*/}
-                {/*                        className={"completePercentageCircle"}*/}
-                {/*                        style={{*/}
-                {/*                            height: '30px',*/}
-                {/*                            width: '30px',*/}
-                {/*                            position: 'absolute',*/}
-                {/*                        }}*/}
-                {/*                    >*/}
-                {/*                        <CircularProgress*/}
-                {/*                            variant="determinate"*/}
-                {/*                            value={100}*/}
-                {/*                            color={"secondary"}*/}
-                {/*                            sx={{*/}
-                {/*                                zIndex: 100,*/}
-                {/*                                marginTop: '-11px',*/}
-                {/*                                marginLeft: '10px',*/}
-                {/*                                color: 'grey !important',*/}
-                {/*                            }}*/}
-                {/*                        />*/}
-                {/*                    </span>*/}
-                {/*                    }*/}
-                {/*                    <span*/}
-                {/*                        className={"completePercentageCircle"}*/}
-                {/*                        style={{*/}
-                {/*                            height: '30px',*/}
-                {/*                            width: '30px',*/}
-                {/*                            position: 'absolute',*/}
-                {/*                        }}*/}
-                {/*                    >*/}
-                {/*                        <CircularProgress*/}
-                {/*                            variant="determinate"*/}
-                {/*                            color={((props.amount!!) && (getPercentage(props.amount) >= 100)) ?"success" :"primary"}*/}
-                {/*                            value={(props.amount!!) ?getPercentage(props.amount) :0}*/}
-                {/*                            sx={{*/}
-                {/*                                zIndex: 1000,*/}
-                {/*                                marginTop: '-11px',*/}
-                {/*                                marginLeft: '10px',*/}
-                {/*                            }}*/}
-                {/*                        />*/}
-                {/*                    </span>*/}
-                {/*                    {((props.amount!!) && (getPercentage(props.amount) >= 100)) &&*/}
-                {/*                        <span*/}
-                {/*                            className={"smallerIconCompletePercentage"}*/}
-                {/*                            style={{*/}
-                {/*                                position: 'absolute',*/}
-                {/*                            }}*/}
-                {/*                        >*/}
-                {/*                            <DoneIcon*/}
-                {/*                                sx={{*/}
-                {/*                                    marginTop: '2px',*/}
-                {/*                                    marginLeft: '12px',*/}
-                {/*                                    color: 'green',*/}
-                {/*                                    fontSize: '10px',*/}
-                {/*                                }}*/}
-                {/*                            />*/}
-                {/*                        </span>*/}
-                {/*                    }*/}
-                {/*                </span>*/}
-                {/*            }*/}
-                {/*        </Typography>*/}
-                {/*        :*/}
-                {/*        <IconButton*/}
-                {/*            onClick={() => {*/}
-                {/*                if (!props.onlyForDisplay!) {*/}
-                {/*                    // setOpen(true)*/}
-                {/*                    openModal()*/}
-                {/*                    setDisplayOnly(false)*/}
-                {/*                    setSelectedTranslationData({*/}
-                {/*                        language: props.language!,*/}
-                {/*                        cases: [],*/}
-                {/*                        completionState: false,*/}
-                {/*                        isDirty: false,*/}
-                {/*                    })*/}
-                {/*                }*/}
-                {/*            }}*/}
-                {/*        >*/}
-                {/*            <AddIcon color={"primary"} fontSize={'inherit'}/>*/}
-                {/*        </IconButton>*/}
-                {/*}*/}
+                {(
+                    (
+                        (props.type === "text") &&
+                        (props.content !== undefined)
+                    )
+                    ||
+                    (
+                        (props.type === "array") &&
+                        (props.content!.length > 0)
+                    )
+                    ||
+                    (
+                        (props.type === "other")
+                    )
+                )
+                    ? getDisplayComponent()
+                    :
+                    <IconButton
+                        onClick={() => {
+                            if (!props.onlyForDisplay!) {
+                                openModal()
+                                setDisplayOnly(false)
+                                setSelectedTranslationData({
+                                    language: props.language!,
+                                    cases: [],
+                                    completionState: false,
+                                    isDirty: false,
+                                })
+                            }
+                        }}
+                    >
+                        <AddIcon color={"primary"} fontSize={'inherit'}/>
+                    </IconButton>
+                }
             </Grid>
             <Modal
                 open={open}
