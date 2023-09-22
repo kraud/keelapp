@@ -7,15 +7,16 @@ import {TranslationItem} from "../../ts/interfaces";
 import {Lang, PartOfSpeech} from "../../ts/enums";
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
-import {clearResults, clearWord, getWordById, getWordsSimplified, updateWordById} from "../../features/words/wordSlice";
+import {clearWord, getWordById, getWordsSimplified, updateWordById} from "../../features/words/wordSlice";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from '@mui/icons-material/Add';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import LinearIndeterminate from "../Spinner";
 import Box from "@mui/material/Box";
 import {WordFormSelector} from "../forms/WordFormSelector";
 import {SortDirection} from "@tanstack/table-core/build/lib/features/Sorting";
 import DoneIcon from "@mui/icons-material/Done";
-import {useNavigate, useSearchParams} from "react-router-dom";
+import {useSearchParams} from "react-router-dom";
 
 interface TableHeaderCellProps {
     content: any
@@ -306,29 +307,112 @@ export function TableDataCell(props: TableDataCellProps){
                     <Grid
                         container={true}
                         spacing={1}
-                        justifyContent={"center"}
+                        justifyContent={"space-between"}
                     >
-                        {props.content.map((item: string, index: number) => {
-                            return(
-                                <Grid
-                                    item={true}
-                                    key={index}
+                        <Grid
+                            container={true}
+                            item={true}
+                            xs
+                            spacing={1}
+                            justifyContent={"flex-start"}
+                        >
+                            {props.content.map((item: string, index: number) => {
+                                switch(true){
+                                    case(index == 2): {
+                                        return(
+                                            <Grid
+                                                item={true}
+                                                key={index}
+                                            >
+                                                <Chip
+                                                    variant={"outlined"}
+                                                    label={"+ "+(props.content.length -1)}
+                                                    color={"secondary"}
+                                                    sx={{
+                                                        maxWidth: "max-content",
+                                                    }}
+                                                    onClick={() => {
+                                                        openModal()
+                                                        // TODO: this should open the modal with the AutocompleteMultiple
+                                                        // setDisplayOnly(false)
+                                                        // setSelectedTranslationData({
+                                                        //     language: props.language!,
+                                                        //     cases: [],
+                                                        //     completionState: false,
+                                                        //     isDirty: false,
+                                                        // })
+                                                    }}
+                                                />
+                                            </Grid>
+                                        )
+                                    }
+                                    case(index > 2): {
+                                        return null
+                                    }
+                                    case(index < 2): {
+                                        return(
+                                            <Grid
+                                                item={true}
+                                                key={index}
+                                            >
+                                                <Chip
+                                                    variant="filled"
+                                                    label={item}
+                                                    color={"secondary"}
+                                                    sx={{
+                                                        maxWidth: "max-content",
+                                                    }}
+                                                    onClick={() => {
+                                                        setSearchParams({"tags": item}) // also acts as navigate
+                                                        // dispatch(clearResults())
+                                                    }}
+                                                />
+                                            </Grid>
+                                        )
+                                    }
+                                }
+                            })}
+                        </Grid>
+                        <Grid
+                            item={true}
+                        >
+                            <span
+                                style={{
+                                    float: 'right',
+                                    marginRight: '25px',
+                                    marginLeft: '10px',
+                                }}
+                            >
+                                <span
+                                    className={"completePercentageCircle"}
+                                    style={{
+                                        position: 'absolute',
+                                    }}
                                 >
-                                    <Chip
-                                        variant="filled"
-                                        label={item}
-                                        color={"secondary"}
+                                    <InfoOutlinedIcon
+                                        color={"primary"}
                                         sx={{
-                                            maxWidth: "max-content",
+                                            // NB! Done this way to maintain the layout of the other components inside the cell
+                                            display: (props.onlyDisplayAmountOnHover! && isHovering)
+                                                ? "initial"
+                                                : "none",
+                                            cursor: 'pointer',
                                         }}
                                         onClick={() => {
-                                            setSearchParams({"tags": item}) // also acts as navigate
-                                            // dispatch(clearResults())
+                                            openModal()
+                                            // TODO: this should open the modal with the AutocompleteMultiple
+                                            // setDisplayOnly(false)
+                                            // setSelectedTranslationData({
+                                            //     language: props.language!,
+                                            //     cases: [],
+                                            //     completionState: false,
+                                            //     isDirty: false,
+                                            // })
                                         }}
                                     />
-                                </Grid>
-                            )
-                        })}
+                                </span>
+                            </span>
+                        </Grid>
                     </Grid>
                 )
             }
@@ -377,14 +461,14 @@ export function TableDataCell(props: TableDataCellProps){
                                 }}
                             >
                                 {((props.amount!!) && (getPercentage(props.amount) < 100)) &&
-                                    <span
-                                        className={"completePercentageCircle"}
-                                        style={{
-                                            height: '30px',
-                                            width: '30px',
-                                            position: 'absolute',
-                                        }}
-                                    >
+                                <span
+                                    className={"completePercentageCircle"}
+                                    style={{
+                                        height: '30px',
+                                        width: '30px',
+                                        position: 'absolute',
+                                    }}
+                                >
                                     <CircularProgress
                                         variant="determinate"
                                         value={100}
@@ -396,8 +480,7 @@ export function TableDataCell(props: TableDataCellProps){
                                             color: 'grey !important',
                                         }}
                                     />
-                                </span>
-                                }
+                                </span>}
                                 <span
                                     className={"completePercentageCircle"}
                                     style={{
@@ -480,6 +563,7 @@ export function TableDataCell(props: TableDataCellProps){
                 )
                     ? getDisplayComponent()
                     :
+                    // TODO: should this become an autocompleteMultiple when clicked, on the tags column?
                     <IconButton
                         onClick={() => {
                             if (!props.onlyForDisplay!) {

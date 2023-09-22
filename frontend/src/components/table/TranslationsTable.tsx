@@ -352,10 +352,11 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                 content={info.getValue()}
                                 type={"array"}
                                 textAlign={"center"}
-                                onlyForDisplay={true}
+                                onlyForDisplay={false}
                                 sxProps={{
                                     minWidth: "50px"
                                 }}
+                                onlyDisplayAmountOnHover={true}
                             />
                             :
                             ""
