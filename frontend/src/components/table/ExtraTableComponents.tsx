@@ -3,11 +3,11 @@ import React, {HTMLProps, useEffect, useState} from "react";
 import globalTheme from "../../theme/theme";
 import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
-import {TranslationItem} from "../../ts/interfaces";
+import {InternalStatus, TranslationItem} from "../../ts/interfaces";
 import {Lang, PartOfSpeech} from "../../ts/enums";
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
-import {clearWord, getWordById, getWordsSimplified, updateWordById} from "../../features/words/wordSlice";
+import {clearWord, FilterItem, getWordById, getWordsSimplified, updateWordById} from "../../features/words/wordSlice";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from '@mui/icons-material/Add';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -17,6 +17,8 @@ import {WordFormSelector} from "../forms/WordFormSelector";
 import {SortDirection} from "@tanstack/table-core/build/lib/features/Sorting";
 import DoneIcon from "@mui/icons-material/Done";
 import {useSearchParams} from "react-router-dom";
+import {AutocompleteMultiple} from "../AutocompleteMultiple";
+import {extractTagsArrayFromUnknownFormat} from "../generalUseFunctions";
 
 interface TableHeaderCellProps {
     content: any
@@ -67,7 +69,8 @@ export function TableHeaderCell(props: TableHeaderCellProps){
 
 interface TableDataCellProps {
     content: any
-    type: "number" | "text" | "array" | "other"
+    // TODO: change type options to represent their use? word-tags-etc.?
+    type: "text" | "array" | "other" // other doesn't have an assigned modal component to display
     textAlign?: 'center' | 'inherit' | 'justify' | 'left' | 'right'
     sxProps?: SxProps<Theme>
 
@@ -78,7 +81,7 @@ interface TableDataCellProps {
     displayAmount?: boolean
     onlyDisplayAmountOnHover?: boolean
 
-    onlyForDisplay?: boolean // Will not change the cursor to pointer and if it's text, it won't be clickable.
+    onlyForDisplay?: boolean //  Will not change the cursor to pointer and if it's text, it won't be clickable.
 
     wordId?: string,
     language?: Lang,
@@ -103,11 +106,16 @@ export function TableDataCell(props: TableDataCellProps){
             cursor: (! props.onlyForDisplay!) ?"pointer" : "default",
         }
     }
+    type TagsData = {
+        tags: string[]
+    } & InternalStatus
+
     const dispatch = useDispatch()
     let  [searchParams, setSearchParams]  = useSearchParams();
     const [isHovering, setIsHovering] = useState(false)
     const [open, setOpen] = useState(false)
     const [selectedTranslationData, setSelectedTranslationData] = useState<TranslationItem>()
+    const [selectedWordTagsData, setSelectedWordTagsData] = useState<TagsData>({tags: []})
     const {word, isLoading, isError, message} = useSelector((state: any) => state.words)
     const [displayOnly, setDisplayOnly] = useState(true)
     const [finishedUpdating, setFinishedUpdating] = useState(true)
@@ -162,17 +170,32 @@ export function TableDataCell(props: TableDataCellProps){
 
     // set data on variable to feed the form displayed inside modal
     useEffect(() => {
-        if(
-            (word.translations.length > 0) &&
-            open &&
-            (props.content !== undefined) // to avoid setting a value when opening an empty form (i.e. a translation that doesn't yet exist)
-        ){
-            setSelectedTranslationData({
-                ...(word.translations.find((translation: TranslationItem) => translation.language === props.language)),
-                // we set this manually, because completion state is not saved on BE - to save the data, it must already be validated
-                completionState: true, // changes in word mean that BE was updated, and that should only happen if the validation was complete
-                isDirty: false,
-            })
+        switch (props.type){
+            case ("array"): {
+                // TODO: need logic to check before saving?
+                setSelectedWordTagsData({
+                    tags: word.tags,
+                    isDirty: false,
+                    completionState: true,
+                })
+            }
+            break
+            case ("text"): {
+                if(
+                    (word.translations.length > 0) &&
+                    open &&
+                    (props.content !== undefined) // to avoid setting a value when opening an empty form (i.e. a translation that doesn't yet exist)
+                ){
+                    setSelectedTranslationData({
+                        ...(word.translations.find((translation: TranslationItem) => translation.language === props.language)),
+                        // we set this manually, because completion state is not saved on BE - to save the data, it must already be validated
+                        completionState: true, // changes in word mean that BE was updated, and that should only happen if the validation was complete
+                        isDirty: false,
+                    })
+                }
+            }
+            break
+            default: return
         }
     }, [word, open])
 
@@ -297,7 +320,7 @@ export function TableDataCell(props: TableDataCellProps){
         return ((amount/maxAmountOfCases)*100)
     }
 
-    const getDisplayComponent = () => {
+    const getCellComponent = () => {
         switch (props.type){
             case ("other"): {
                 return(props.content)
@@ -526,6 +549,130 @@ export function TableDataCell(props: TableDataCellProps){
         }
     }
 
+    const getModalComponent = () => {
+        switch (props.type){
+            case ("array"): {
+                return(
+                    <AutocompleteMultiple
+                        values={((selectedWordTagsData.tags !== undefined)&&((selectedWordTagsData.tags).length > 0)) ? selectedWordTagsData.tags : []}
+                        saveResults={(results: FilterItem[]) => {
+                            setSelectedWordTagsData({
+                                tags: extractTagsArrayFromUnknownFormat(results),
+                                isDirty: true,
+                                completionState: true,
+                            })
+                        }}
+                        allowNewOptions={true}
+                        disabled={displayOnly}
+                    />
+                )
+            }
+            case ("text"): {
+                return(
+                    <WordFormSelector
+                        currentLang={props.language!} // TODO: this data should come from "selectedTranslationData
+                        currentTranslationData={selectedTranslationData!}
+                        partOfSpeech={props.partOfSpeech}
+                        updateFormData={(formData: TranslationItem) => {
+                            if(!displayOnly && !(isLoading)){ // && (formData.isDirty) for extra security?
+                                setSelectedTranslationData({
+                                    ...formData,
+                                    // To avoid saving empty cases,
+                                    cases: formData.cases.filter((nounCase) => (nounCase.word !== "")),
+                                })
+                            }
+                        }}
+                        displayOnly={displayOnly}
+                    />
+                )
+            }
+            default: return null
+        }
+    }
+
+    const editSaveChangesOnClick = () => {
+        switch (props.type){
+            case ("array"): {
+                if(displayOnly){
+                    setDisplayOnly(false)
+                } else {
+
+                }
+            }
+            break
+            case ("text"): {
+                if(selectedTranslationData !== undefined){
+                    if(displayOnly){
+                        setDisplayOnly(false)
+                    } else {
+                        if(selectedTranslationData.isDirty){
+                            let updatedList: TranslationItem[]
+                            if(checkCurrentLanguageIncludedInTranslations()){
+                                updatedList = appendUpdatedTranslation(selectedTranslationData)
+                            } else {
+                                updatedList = [
+                                    ...word.translations,
+                                    {
+                                        // this way, we don't save the InternalStatus info (completionState, isDirty, etc.)
+                                        language: selectedTranslationData.language,
+                                        cases: selectedTranslationData.cases,
+                                    }
+                                ]
+                            }
+                            // append changes to full word translation
+                            // TODO: check if it's ok to send whole 'word' data (dates, user ids, etc.)
+                            const updatedWordData = {
+                                id: props.wordId,
+                                clue: word.clue,
+                                partOfSpeech: word.partOfSpeech,
+                                translations: updatedList
+                                // TODO TAGS: this should have the tags as well?
+                            }
+                            // save changes to translation
+                            //@ts-ignore
+                            dispatch(updateWordById(updatedWordData))
+                            setFinishedUpdating(false)
+                            setDisplayOnly(true)
+                        } else {
+                            setDisplayOnly(true)
+                        }
+                    }
+                }
+            }
+            break
+            default: return null
+        }
+    }
+
+    const deleteOnClick = () => {
+        switch (props.type){
+            case ("array"): {
+
+            }
+            break
+            case ("text"): {
+                // check if at least 2 more translations are saved
+                if(word.translations.length > 2){
+                    // delete all data for this language on this word
+                    // TODO: check if it's ok to send whole 'word' data (dates, user ids, etc.)
+                    const updatedWordData = {
+                        id: props.wordId,
+                        clue: word.clue,
+                        partOfSpeech: word.partOfSpeech,
+                        translations: deleteCurrentTranslationFromWordData(props.language!)
+                        // TODO TAGS: this should have the tags as well?
+                    }
+                    // save changes to translation
+                    //@ts-ignore
+                    dispatch(updateWordById(updatedWordData))
+                    setFinishedDeleting(false)
+                }
+            }
+            break
+            default: return null
+        }
+    }
+
     return(
         <>
             <Grid
@@ -561,9 +708,8 @@ export function TableDataCell(props: TableDataCellProps){
                         (props.type === "other")
                     )
                 )
-                    ? getDisplayComponent()
+                    ? getCellComponent()
                     :
-                    // TODO: should this become an autocompleteMultiple when clicked, on the tags column?
                     <IconButton
                         onClick={() => {
                             if (!props.onlyForDisplay!) {
@@ -618,7 +764,17 @@ export function TableDataCell(props: TableDataCellProps){
                                     </Typography>
                                 </Grid>
                             </Grid>
-                        : (selectedTranslationData !== undefined) &&
+                        : (
+                            (
+                                (selectedTranslationData !== undefined) &&
+                                (props.type === "text")
+                            )
+                            ||
+                            (
+                                (selectedWordTagsData !== undefined) &&
+                                (props.type === "array")
+                            )
+                        ) &&
                         <Grid
                             item={true}
                             container={true}
@@ -650,29 +806,20 @@ export function TableDataCell(props: TableDataCellProps){
                                     <Button
                                         variant={"outlined"}
                                         color={"warning"}
-                                        onClick={() => {
-                                            // check if at least 2 more translations are saved
-                                            if(word.translations.length > 2){
-                                                // delete all data for this language on this word
-                                                // TODO: check if it's ok to send whole 'word' data (dates, user ids, etc.)
-                                                const updatedWordData = {
-                                                    id: props.wordId,
-                                                    clue: word.clue,
-                                                    partOfSpeech: word.partOfSpeech,
-                                                    translations: deleteCurrentTranslationFromWordData(props.language!)
-                                                }
-                                                // save changes to translation
-                                                //@ts-ignore
-                                                dispatch(updateWordById(updatedWordData))
-                                                setFinishedDeleting(false)
-                                            }
-                                        }}
+                                        onClick={() => deleteOnClick()}
                                         disabled={
-                                            (word.translations.length < 3)
-                                            ||
-                                            !(checkCurrentLanguageIncludedInTranslations()) // if not included => we can simply click away, no need to delete
-                                    }
+                                            (props.type === "text") &&
+                                            (
+                                                (word.translations.length < 3)
+                                                ||
+                                                !(checkCurrentLanguageIncludedInTranslations()) // if not included => we can simply click away, no need to delete
+                                            )
+                                        }
+                                        sx={{
+                                            display: (props.type === "array") ?"none" :"initial"
+                                        }}
                                     >
+                                        {/* TODO: add double check before deleting? */}
                                         Delete
                                     </Button>
                                 </Grid>
@@ -682,68 +829,39 @@ export function TableDataCell(props: TableDataCellProps){
                                     <Button
                                         variant={"outlined"}
                                         color={"secondary"}
-                                        disabled={((!displayOnly) && (!selectedTranslationData.completionState!))}
-                                        onClick={() => {
-                                            if(displayOnly){
-                                                setDisplayOnly(false)
-                                            } else {
-                                                if(selectedTranslationData.isDirty){
-                                                    let updatedList: TranslationItem[]
-                                                    if(checkCurrentLanguageIncludedInTranslations()){
-                                                       updatedList = appendUpdatedTranslation(selectedTranslationData)
-                                                    } else {
-                                                        updatedList = [
-                                                            ...word.translations,
-                                                            {
-                                                                // this way, we don't save the InternalStatus info (completionState, isDirty, etc.)
-                                                                language: selectedTranslationData.language,
-                                                                cases: selectedTranslationData.cases,
-                                                            }
-                                                        ]
-                                                    }
-                                                    // append changes to full word translation
-                                                    // TODO: check if it's ok to send whole 'word' data (dates, user ids, etc.)
-                                                    const updatedWordData = {
-                                                        id: props.wordId,
-                                                        clue: word.clue,
-                                                        partOfSpeech: word.partOfSpeech,
-                                                        translations: updatedList
-                                                    }
-                                                    // save changes to translation
-                                                    //@ts-ignore
-                                                    dispatch(updateWordById(updatedWordData))
-                                                    setFinishedUpdating(false)
-                                                    setDisplayOnly(true)
-                                                } else {
-                                                    setDisplayOnly(true)
-                                                }
-                                            }
-                                        }}
+                                        disabled={(
+                                            (!displayOnly) &&
+                                            (
+                                                (
+                                                    props.type === "text" &&
+                                                    !selectedTranslationData!.completionState! // (!) selectedTranslationData will never be undefined when type === "text"
+                                                )
+                                                ||
+                                                (props.type === "array") // it should always be allowed to edit/cancel/save any tags
+                                            )
+                                        )}
+                                        onClick={() => editSaveChangesOnClick()}
                                     >
                                         {(displayOnly)
                                             ? "Edit"
-                                            : (selectedTranslationData.isDirty)
+                                            : (
+                                                (
+                                                    props.type === "text" &&
+                                                    (selectedTranslationData!.isDirty) // (!) selectedTranslationData will never be undefined when type === "text"
+                                                )
+                                                ||
+                                                (
+                                                    props.type === "array" &&
+                                                    (selectedWordTagsData.isDirty) // TODO: wrong. Comparing arrays not valid?
+                                                )
+                                            )
                                                 ?"Save changes"
                                                 :"Cancel"
                                         }
                                     </Button>
                                 </Grid>
                             </Grid>
-                            <WordFormSelector
-                                currentLang={props.language!} // TODO: this data should come from "selectedTranslationData
-                                currentTranslationData={selectedTranslationData!}
-                                partOfSpeech={props.partOfSpeech}
-                                updateFormData={(formData: TranslationItem) => {
-                                    if(!displayOnly && !(isLoading)){ // && (formData.isDirty) for extra security?
-                                        setSelectedTranslationData({
-                                            ...formData,
-                                            // To avoid saving empty cases,
-                                            cases: formData.cases.filter((nounCase) => (nounCase.word !== "")),
-                                        })
-                                    }
-                                }}
-                                displayOnly={displayOnly}
-                            />
+                            {getModalComponent()}
                         </Grid>
                     }
                 </Box>

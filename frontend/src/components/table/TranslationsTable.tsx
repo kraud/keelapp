@@ -151,7 +151,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
                 displayWordGender?: boolean,
                 amount?: string,  // i.e. info.row.original.*registeredCasesDE*
                 onlyDisplayAmountOnHover?: boolean,
-                type: "number" | "text" | "other",
+                type: "array" | "text" | "other",
                 sxProps?: SxProps<Theme>,
                 enableColumnFilter?: boolean,
                 sortingFn?: (prev: Row<TableWordData>, curr: Row<TableWordData>, columnId: string) => void
@@ -350,6 +350,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
                             ?
                             <TableDataCell
                                 content={info.getValue()}
+                                wordId={info.row.original.id}
                                 type={"array"}
                                 textAlign={"center"}
                                 onlyForDisplay={false}
