@@ -18,7 +18,7 @@ import {SortDirection} from "@tanstack/table-core/build/lib/features/Sorting";
 import DoneIcon from "@mui/icons-material/Done";
 import {useSearchParams} from "react-router-dom";
 import {AutocompleteMultiple} from "../AutocompleteMultiple";
-import {extractTagsArrayFromUnknownFormat} from "../generalUseFunctions";
+import {checkEqualArrayContent, extractTagsArrayFromUnknownFormat} from "../generalUseFunctions";
 
 interface TableHeaderCellProps {
     content: any
@@ -172,7 +172,6 @@ export function TableDataCell(props: TableDataCellProps){
     useEffect(() => {
         switch (props.type){
             case ("array"): {
-                // TODO: need logic to check before saving?
                 setSelectedWordTagsData({
                     tags: word.tags,
                     isDirty: false,
@@ -349,21 +348,13 @@ export function TableDataCell(props: TableDataCellProps){
                                             >
                                                 <Chip
                                                     variant={"outlined"}
-                                                    label={"+ "+(props.content.length -1)}
+                                                    label={"+ "+(props.content.length -2)}
                                                     color={"secondary"}
                                                     sx={{
                                                         maxWidth: "max-content",
                                                     }}
                                                     onClick={() => {
                                                         openModal()
-                                                        // TODO: this should open the modal with the AutocompleteMultiple
-                                                        // setDisplayOnly(false)
-                                                        // setSelectedTranslationData({
-                                                        //     language: props.language!,
-                                                        //     cases: [],
-                                                        //     completionState: false,
-                                                        //     isDirty: false,
-                                                        // })
                                                     }}
                                                 />
                                             </Grid>
@@ -387,7 +378,6 @@ export function TableDataCell(props: TableDataCellProps){
                                                     }}
                                                     onClick={() => {
                                                         setSearchParams({"tags": item}) // also acts as navigate
-                                                        // dispatch(clearResults())
                                                     }}
                                                 />
                                             </Grid>
@@ -423,14 +413,6 @@ export function TableDataCell(props: TableDataCellProps){
                                         }}
                                         onClick={() => {
                                             openModal()
-                                            // TODO: this should open the modal with the AutocompleteMultiple
-                                            // setDisplayOnly(false)
-                                            // setSelectedTranslationData({
-                                            //     language: props.language!,
-                                            //     cases: [],
-                                            //     completionState: false,
-                                            //     isDirty: false,
-                                            // })
                                         }}
                                     />
                                 </span>
@@ -558,12 +540,13 @@ export function TableDataCell(props: TableDataCellProps){
                         saveResults={(results: FilterItem[]) => {
                             setSelectedWordTagsData({
                                 tags: extractTagsArrayFromUnknownFormat(results),
-                                isDirty: true,
+                                isDirty: !checkEqualArrayContent(props.content, extractTagsArrayFromUnknownFormat(results)),
                                 completionState: true,
                             })
                         }}
                         allowNewOptions={true}
                         disabled={displayOnly}
+                        limitTags={3}
                     />
                 )
             }
@@ -590,13 +573,25 @@ export function TableDataCell(props: TableDataCellProps){
         }
     }
 
-    const editSaveChangesOnClick = () => {
+    const editSaveCancelChangesOnClick = () => {
         switch (props.type){
             case ("array"): {
                 if(displayOnly){
                     setDisplayOnly(false)
                 } else {
-
+                    if(selectedWordTagsData.isDirty){
+                        const updatedWordData = {
+                            id: props.wordId,
+                            tags: selectedWordTagsData.tags,
+                        }
+                        // save changes to translation
+                        //@ts-ignore
+                        dispatch(updateWordById(updatedWordData))
+                        setFinishedUpdating(false)
+                        setDisplayOnly(true)
+                    } else {
+                        setDisplayOnly(true)
+                    }
                 }
             }
             break
@@ -625,8 +620,8 @@ export function TableDataCell(props: TableDataCellProps){
                                 id: props.wordId,
                                 clue: word.clue,
                                 partOfSpeech: word.partOfSpeech,
+                                tags: word.tags,
                                 translations: updatedList
-                                // TODO TAGS: this should have the tags as well?
                             }
                             // save changes to translation
                             //@ts-ignore
@@ -646,10 +641,6 @@ export function TableDataCell(props: TableDataCellProps){
 
     const deleteOnClick = () => {
         switch (props.type){
-            case ("array"): {
-
-            }
-            break
             case ("text"): {
                 // check if at least 2 more translations are saved
                 if(word.translations.length > 2){
@@ -660,7 +651,6 @@ export function TableDataCell(props: TableDataCellProps){
                         clue: word.clue,
                         partOfSpeech: word.partOfSpeech,
                         translations: deleteCurrentTranslationFromWordData(props.language!)
-                        // TODO TAGS: this should have the tags as well?
                     }
                     // save changes to translation
                     //@ts-ignore
@@ -738,7 +728,8 @@ export function TableDataCell(props: TableDataCellProps){
                 >
                     {(
                         isLoading &&
-                        !(selectedTranslationData !== undefined) // to display form while isLoading is true, because we're saving changes
+                        !(selectedTranslationData !== undefined) && // to display form while isLoading is true, because we're saving changes
+                        !(selectedWordTagsData.completionState !== undefined)
                     )
                         ?
                             <Grid
@@ -837,10 +828,13 @@ export function TableDataCell(props: TableDataCellProps){
                                                     !selectedTranslationData!.completionState! // (!) selectedTranslationData will never be undefined when type === "text"
                                                 )
                                                 ||
-                                                (props.type === "array") // it should always be allowed to edit/cancel/save any tags
+                                                (
+                                                    (props.type === "array") &&
+                                                    (selectedWordTagsData.completionState === undefined) // TODO: fix logic to hide cancel button on new tags
+                                                ) // it should always be allowed to edit/cancel/save any tags
                                             )
                                         )}
-                                        onClick={() => editSaveChangesOnClick()}
+                                        onClick={() => editSaveCancelChangesOnClick()}
                                     >
                                         {(displayOnly)
                                             ? "Edit"
@@ -852,7 +846,7 @@ export function TableDataCell(props: TableDataCellProps){
                                                 ||
                                                 (
                                                     props.type === "array" &&
-                                                    (selectedWordTagsData.isDirty) // TODO: wrong. Comparing arrays not valid?
+                                                    (selectedWordTagsData.isDirty)
                                                 )
                                             )
                                                 ?"Save changes"

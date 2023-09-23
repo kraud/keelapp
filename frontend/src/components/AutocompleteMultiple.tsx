@@ -18,30 +18,15 @@ interface AutocompleteMultipleProps {
     disabled?: boolean
     matchAll?: boolean // this will change how the filters are returned on saveResults.
     sxProps?: SxProps<Theme>,
-    // To either have a single filter with an array or many filters with a single value each
-    // saveResults: (results: SearchResult[]) => void
-    // searchQuery: (inputValue: string) => void
 }
 
 export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
-    // const [values, setValues] = useState<string[]>([])
-    // const [values, setValues] = useState<SearchResult[]>([])
     const [inputValue, setInputValue] = useState<string>('')
-    // const [options, setOptions] = useState<SearchResult[]>([])
     const [options, setOptions] = useState<string[]>([])
     const [open, setOpen] = useState(false)
     const [loadingLocal, setLoadingLocal] = useState(false)
     const dispatch = useDispatch()
     const {searchResults, isSearchLoading} = useSelector((state: any) => state.words)
-
-    // in case we have initial values
-    // useEffect(() => {
-    //     if(props.values!! && props.values.length > 0){
-    //         console.log("init set values")
-    //         console.log(props.values)
-    //         // setValues(props.values) TODO: check
-    //     }
-    // }, [])
 
     // if we simply depend on isLoading, the text on the first option reads "no matches" for a second, before "Loading.."
     useEffect(() => {
@@ -57,7 +42,6 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
     // this triggers when we type something on the search field
     useEffect(() => {
         if (inputValue === '') {
-            // setOptions(values) TODO: check? not sure what this does
             return undefined;
         }
         const timeout = setTimeout(() => {
@@ -73,42 +57,6 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
         // TODO: searchResults should have the FilterItem format, and we unwind that into array of strings
         setOptions(searchResults)
     },[searchResults])
-
-    // useEffect(() => {
-    //     console.log("Values check")
-    //     console.log(values)
-    // },[values])
-
-    // NB: this is not necessary anymore? We translated the source of truth for the filter to the parent component? TODO: check
-    // this triggers once we select something from the list
-    // useEffect(() => {
-    //     // if(values.length > 0){
-    //     if(props.values.length > 0){
-    //         // TODO: "type"-value and "tagIds"-property-name should be configurable by props OR "tagIds" made generic?
-    //         // Depending on type of filtering, the filter-array created changes
-    //         if(props.matchAll!!){ // all tags go in a single array
-    //             props.saveResults([{
-    //                 type: 'tag',
-    //                 id: "tag-"+(props.values.length),
-    //                 tagIds: pros.values,
-    //                 filterValue: (props.values.length).toString(),
-    //             }])
-    //         } else {
-    //             props.saveResults( // each tag goes in its own filter
-    //                 props.values.map((result: string) => {
-    //                     return({
-    //                         type: 'tag',
-    //                         id: "tag-"+result,
-    //                         filterValue: result,
-    //                     })
-    //                 })
-    //             )
-    //         }
-    //     } else if(props.values !== []){
-    //         props.saveResults([])
-    //     }
-    //     setOpen(false)
-    // }, [props.values])
 
     return(
         <Autocomplete

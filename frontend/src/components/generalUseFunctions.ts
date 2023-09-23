@@ -33,3 +33,14 @@ export const extractTagsArrayFromUnknownFormat = (originalArray: FilterItem[]) =
                 []
     )
 }
+
+export const checkEqualArrayContent = (original: unknown[], copy: unknown[]) => {
+    let allIncluded = (original.length === copy.length)
+    if (allIncluded){
+        original.every((originalItem: unknown) => {
+            allIncluded = copy.includes(originalItem)
+            return allIncluded
+        })
+    }
+    return allIncluded
+}
