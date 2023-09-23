@@ -373,7 +373,6 @@ export function Review(){
                                     values={currentTagFilters.map((tag: FilterItem) => tag.filterValue)}
                                     saveResults={(results: FilterItem[]) => {
                                         setCurrentTagFilters(results)
-                                        // TODO: this should modify the URL to add each filter separately
                                     }}
                                     matchAll={true}
                                     limitTags={3}

@@ -81,10 +81,13 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
             // isOptionEqualToValue={(option, value) => option.id === value.id}
             filterOptions={(x: any) => x} // necessary to implement filter on server
             options={(loadingLocal || isSearchLoading) ?[] :options}
-            autoComplete
             includeInputInList
+            // NB! issues when clearing on blur where triggering reset reason at onInputChange on every character- temp fix?
+            clearOnBlur={false}
+            onBlur={() => {
+                setOpen(false)
+            }}
 
-            defaultValue={props.values}
             value={props.values}
             noOptionsText={(loadingLocal || isSearchLoading) ?"Loading..." :"No matches"}
             //@ts-ignore
@@ -138,7 +141,7 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
                 ))
             }
             renderInput={(params) => {
-                return (
+                return(
                     <TextField
                         {...params}
                         InputProps={{
