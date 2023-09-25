@@ -370,7 +370,16 @@ export function Review(){
                                 xs={10}
                             >
                                 <AutocompleteMultiple
-                                    values={currentTagFilters.map((tag: FilterItem) => tag.filterValue)}
+                                    // values={currentTagFilters.map((tag: FilterItem) => tag.filterValue)}
+                                    values={
+                                        (
+                                            (currentTagFilters[0] !== undefined) &&
+                                            (currentTagFilters[0].type === 'tag') &&
+                                            (currentTagFilters[0].tagIds !== undefined)
+                                        )
+                                            ? currentTagFilters[0].tagIds
+                                            : []
+                                    }
                                     saveResults={(results: FilterItem[]) => {
                                         setCurrentTagFilters(results)
                                     }}

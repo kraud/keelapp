@@ -77,8 +77,10 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
             }}
             getOptionLabel={(option: string) => option}
             // getOptionLabel={(option: SearchResult) => option.label}
-            isOptionEqualToValue={(option, value) => option === value}
-            // isOptionEqualToValue={(option, value) => option.id === value.id}
+            // isOptionEqualToValue={(option, value) => option === value}
+            // isOptionEqualToValue={(option, value) => {
+            //     return true
+            // }}
             filterOptions={(x: any) => x} // necessary to implement filter on server
             options={(loadingLocal || isSearchLoading) ?[] :options}
             includeInputInList
