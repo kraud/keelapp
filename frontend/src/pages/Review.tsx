@@ -174,7 +174,8 @@ export function Review(){
             initial="initial"
             animate="final"
             container={true}
-            justifyContent={'center'}
+            justifyContent={'space-around'}
+            alignItems={"start"}
             sx={{
                 marginTop: globalTheme.spacing(4),
             }}
@@ -189,8 +190,7 @@ export function Review(){
                     justifyContent={'center'}
                     item={true}
                 >
-                    {(isLoading)
-                        ?
+                    {(isLoading) &&
                         <Grid
                             item={true}
                         >
@@ -202,43 +202,11 @@ export function Review(){
                             >
                                 Fetching word data
                             </Typography>
+                            <LinearIndeterminate/>
                         </Grid>
-                        :
-                        <>
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <Typography
-                                    variant={'h4'}
-                                    sx={{
-                                        textDecoration: 'underline'
-                                    }}
-                                    align={"center"}
-                                >
-                                    {(wordsSimple.amount > 0)
-                                        ? `You have saved ${wordsSimple.amount} translations`
-                                        : "You haven't saved any words yet."
-                                    }
-                                </Typography>
-                            </Grid>
-                            <Grid
-                                item={true}
-                            >
-                                {(wordsSimple.amount > 0) &&
-                                    <Typography
-                                        variant={'subtitle1'}
-                                        align={"center"}
-                                    >
-                                        Review and edit them from here.
-                                    </Typography>
-                                }
-                            </Grid>
-                        </>
                     }
                 </Grid>
             </Grid>
-            {(isLoading) && <LinearIndeterminate/>}
             {/*
                 TODO: refactor later into single table component with DnD language selector included
                  & add frame, pagination, filters, toggles for extra data, etc.
@@ -254,7 +222,10 @@ export function Review(){
                     border: '1px solid black',
                     borderRadius: '25px',
                     width: 'max-content',
+                    height: 'max-content',
                 }}
+                xs={12}
+                lg={3}
             >
                 {/* Show/hide filter button */}
                 <Grid
@@ -274,6 +245,7 @@ export function Review(){
                         borderRadius: '0 0 15px 0',
                         borderBottom: '1px solid black',
                         borderRight: '1px solid black',
+                        height: 'max-content',
                     }}
                 >
                     <Grid
@@ -378,7 +350,7 @@ export function Review(){
                                             (currentTagFilters[0].tagIds !== undefined)
                                         )
                                             ? currentTagFilters[0].tagIds
-                                            : []
+                                            : [] // TODO: should replace with map through the items in currentTagFilters?
                                     }
                                     saveResults={(results: FilterItem[]) => {
                                         setCurrentTagFilters(results)
@@ -398,6 +370,10 @@ export function Review(){
                 justifyContent={"center"}
                 item={true}
                 xs={12}
+                lg={9}
+                sx={{
+                    paddingLeft: globalTheme.spacing(2)
+                }}
             >
                 <TranslationsTable
                     sortedAndSelectedLanguages={allSelectedLanguages}
