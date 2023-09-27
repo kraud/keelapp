@@ -3,6 +3,8 @@ import {CSS} from "@dnd-kit/utilities"
 import {Button, Grid} from "@mui/material";
 import React from "react";
 import globalTheme from "../theme/theme";
+import {SxProps} from "@mui/system";
+import {Theme} from "@mui/material/styles";
 
 interface DnDSortableItemProps{
     id: string,
@@ -10,6 +12,7 @@ interface DnDSortableItemProps{
     index?: number
     invisible?: boolean
     disableAll?: boolean
+    sxProps?: SxProps<Theme>
 }
 
 export function DnDSortableItem(props: DnDSortableItemProps){
@@ -38,7 +41,10 @@ export function DnDSortableItem(props: DnDSortableItemProps){
             sx={{
                 touchAction: 'none', // to avoid lag on touch devices and Chrome DevTools
                 paddingRight: globalTheme.spacing(1),
+                paddingTop: globalTheme.spacing(1),
+                paddingBottom: globalTheme.spacing(1),
                 cursor: 'pointer',
+                ...props.sxProps
             }}
         >
             {!(props.invisible === true) &&

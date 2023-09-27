@@ -2,7 +2,7 @@ import {closestCenter, DndContext} from "@dnd-kit/core";
 import {
     arrayMove,
     SortableContext,
-    horizontalListSortingStrategy, verticalListSortingStrategy
+    rectSortingStrategy
 } from "@dnd-kit/sortable";
 import React from "react";
 import {DnDSortableItem} from "./DnDSortableItem";
@@ -126,7 +126,7 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                     <SortableContext
                         id={"selected"}
                         items={props.allSelectedItems}
-                        strategy={props.direction === "horizontal" ? horizontalListSortingStrategy :verticalListSortingStrategy}
+                        strategy={rectSortingStrategy}
                     >
                         <Grid
                             item={true}
@@ -144,6 +144,13 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                                         id={item}
                                         direction={props.direction}
                                         index={index}
+                                        sxProps={(index === (props.allSelectedItems.length -1))
+                                            ?
+                                                {
+                                                    paddingRight: '0px',
+                                                }
+                                            : undefined
+                                    }
                                     />
                                 )
                             })}
@@ -170,7 +177,7 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                     <SortableContext
                         id={"other"}
                         items={props.otherItems}
-                        strategy={props.direction === "horizontal" ? horizontalListSortingStrategy :verticalListSortingStrategy}
+                        strategy={rectSortingStrategy}
                     >
                         <Grid
                             item={true}

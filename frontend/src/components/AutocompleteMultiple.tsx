@@ -12,7 +12,6 @@ import {toast} from "react-toastify";
 interface AutocompleteMultipleProps {
     values: string[], // type is simply "string" array, since we get this info from the stored word, and there we only keep its "name"
     saveResults: (results: FilterItem[]) => void
-    // saveResults: (results: string[]) => void
     limitTags?: number
     allowNewOptions?: boolean
     disabled?: boolean
@@ -167,7 +166,7 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
                                 >
                                     {((loadingLocal || isSearchLoading) && open)
                                         //@ts-ignore
-                                        ? <CircularProgress color={"allWhite"}/>
+                                        ? <CircularProgress color={"secondary"}/>
                                         //@ts-ignore
                                         :
                                         <SearchIcon

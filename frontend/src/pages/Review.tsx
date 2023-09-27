@@ -342,7 +342,6 @@ export function Review(){
                                 xs={10}
                             >
                                 <AutocompleteMultiple
-                                    // values={currentTagFilters.map((tag: FilterItem) => tag.filterValue)}
                                     values={
                                         (
                                             (currentTagFilters[0] !== undefined) &&

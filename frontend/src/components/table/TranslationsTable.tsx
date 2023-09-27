@@ -529,6 +529,10 @@ export function TranslationsTable(props: TranslationsTableProps) {
             <Grid
                 container={true}
                 item={true}
+                direction={{
+                    xs: "row",
+                    lg: "row-reverse",
+                }}
                 justifyContent={"flex-end"}
                 spacing={2}
             >
