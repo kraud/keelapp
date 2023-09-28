@@ -6,6 +6,7 @@ import Login from "../Login";
 import Register from "../Register";
 import React from "react";
 import {DisplayWord} from "../DisplayWord";
+import {UserData} from "../UserData";
 
 export const routeVariantsAnimation = {
     initial: {
@@ -67,6 +68,12 @@ export function RoutesWithAnimation() {
                 path='/register'
                 element={
                     <Register/>
+                }
+            />
+            <Route
+                path='/user'
+                element={
+                    <UserData/>
                 }
             />
             <Route

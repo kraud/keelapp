@@ -20,7 +20,7 @@ import {AutocompleteSearch} from "./AutocompleteSearch";
 import globalTheme from "../theme/theme";
 
 const pages = ['Add word', 'Practice', 'Review'];
-const settings = ['Dashboard', 'Logout'];
+const settings = ['Account', 'Dashboard', 'Logout'];
 
 
 function ResponsiveAppBar() {
@@ -85,6 +85,10 @@ function ResponsiveAppBar() {
             }
             case "Dashboard": {
                 navigate('/')
+                break
+            }
+            case "Account": {
+                navigate('/user')
                 break
             }
             default: {

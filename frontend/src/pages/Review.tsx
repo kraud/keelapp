@@ -174,7 +174,7 @@ export function Review(){
             initial="initial"
             animate="final"
             container={true}
-            justifyContent={'space-around'}
+            justifyContent={(displayFilers) ?'space-around' :"flex-start"}
             alignItems={"start"}
             sx={{
                 marginTop: globalTheme.spacing(4),
@@ -225,7 +225,7 @@ export function Review(){
                     height: 'max-content',
                 }}
                 xs={12}
-                lg={3}
+                lg={displayFilers ?3 :"auto"}
             >
                 {/* Show/hide filter button */}
                 <Grid
@@ -371,7 +371,10 @@ export function Review(){
                 xs={12}
                 lg={9}
                 sx={{
-                    paddingLeft: globalTheme.spacing(2)
+                    paddingLeft: {
+                        xs: 0,
+                        lg: globalTheme.spacing(2),
+                    }
                 }}
             >
                 <TranslationsTable
