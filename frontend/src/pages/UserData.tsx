@@ -10,6 +10,10 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import {searchAllTags} from "../features/words/wordSlice";
 import {useNavigate, useSearchParams} from "react-router-dom";
 import LinearIndeterminate from "../components/Spinner";
+import IconButton from "@mui/material/IconButton";
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import {deepOrange} from "@mui/material/colors";
+import PersonIcon from '@mui/icons-material/Person';
 
 interface UserDataProps {
 
@@ -199,6 +203,7 @@ export const UserData = (props: UserDataProps) => {
                 <Grid
                     item={true}
                     container={true}
+                    spacing={1}
                 >
                     {(isSearchLoading)
                         ?
@@ -234,7 +239,7 @@ export const UserData = (props: UserDataProps) => {
                 justifyContent={"center"}
                 item={true}
                 xs={12}
-                spacing={2}
+                rowSpacing={2}
             >
                 <Grid
                     item={true}
@@ -256,6 +261,7 @@ export const UserData = (props: UserDataProps) => {
                 <Grid
                     item={true}
                     container={true}
+                    xs={12}
                 >
                     {
                         (friendList.map((friend: string, index: number) => {
@@ -268,32 +274,74 @@ export const UserData = (props: UserDataProps) => {
                                     sx={{
                                         background: (index % 2 === 0) ?"#c7c7c7" :undefined,
                                         paddingY: globalTheme.spacing(1),
-                                        borderBottom: (index === friendList.length -1) ?'1px solid black' :"none",
+                                        borderRight: '1px solid black',
+                                        borderLeft: '1px solid black',
+                                        borderTop: (index === 0) ?'1px solid black' :"none",
+                                        borderBottom: "1px solid black",
                                     }}
                                 >
                                     <Grid
+                                        container={true}
                                         item={true}
-                                        sx={{
-                                            borderRight: '1px solid black',
-                                        }}
+                                        justifyContent={"center"}
+                                        xs={"auto"} // width: max-content
                                     >
-                                        <Typography
-                                            sx={{
-                                                typography: {
-                                                    xs: 'h5',
-                                                    sm: 'h4',
-                                                    md: 'h3',
-                                                },
-                                                textTransform: "capitalize"
-                                            }}
+                                        <Grid
+                                            item={true}
                                         >
-                                            {friend}
-                                        </Typography>
+                                            <Avatar
+                                                alt="User photo"
+                                                src={(index % 2 === 0) ? "" : "/"}
+                                                color={"primary"}
+                                                sx={{
+                                                    width: '45px',
+                                                    height: '45px',
+                                                    margin: globalTheme.spacing(1),
+                                                    bgcolor: "#0072CE"
+                                                }}
+                                            >
+                                                <PersonIcon/>
+                                            </Avatar>
+                                        </Grid>
                                     </Grid>
                                     <Grid
+                                        container={true}
+                                        alignItems={"center"}
                                         item={true}
+                                        xs // width: all-available
                                     >
-
+                                        <Grid
+                                            item={true}
+                                        >
+                                            <Typography
+                                                sx={{
+                                                    typography: {
+                                                        xs: 'h5',
+                                                        sm: 'h4',
+                                                        md: 'h3',
+                                                    },
+                                                    textTransform: "capitalize"
+                                                }}
+                                            >
+                                                {friend}
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
+                                    <Grid
+                                        container={true}
+                                        alignItems={"center"}
+                                        item={true}
+                                        xs={"auto"} // width: max-content
+                                    >
+                                        <Grid
+                                            item={true}
+                                        >
+                                            <IconButton
+                                                color={"primary"}
+                                            >
+                                                <ArrowForwardIosIcon/>
+                                            </IconButton>
+                                        </Grid>
                                     </Grid>
                                 </Grid>
                             )
