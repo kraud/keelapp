@@ -10,11 +10,15 @@ interface worldSliceState {
     wordsSimple: any[],
     word?: WordData,
     searchResults: SearchResult[],
+    tags: string[], // TODO: change this to TagData[] eventually
+
+    // state-tracking properties
     isError: boolean,
     isSuccess: boolean,
     isLoading: boolean,
     // different loading status for search, since it's displayed simultaneously with other components that depend on isLoading
     isSearchLoading: boolean,
+    isTagSearchLoading: boolean,
     message: string,
 }
 
@@ -25,10 +29,12 @@ const initialState: worldSliceState = {
         translations: []
     },
     searchResults: [],
+    tags: [],
     isError: false,
     isSuccess: false,
     isLoading: false,
     isSearchLoading: false,
+    isTagSearchLoading: false,
     message: "",
 }
 
@@ -294,15 +300,15 @@ export const wordSlice = createSlice({
                 state.message = action.payload as string
             })
             .addCase(searchAllTags.pending, (state) => {
-                state.isSearchLoading = true
+                state.isTagSearchLoading = true
             })
             .addCase(searchAllTags.fulfilled, (state, action) => {
-                state.isSearchLoading = false
+                state.isTagSearchLoading = false
                 state.isSuccess = true
-                state.searchResults = (action.payload)
+                state.tags = (action.payload)
             })
             .addCase(searchAllTags.rejected, (state, action) => {
-                state.isSearchLoading = false
+                state.isTagSearchLoading = false
                 state.isError = true
                 state.message = action.payload as string
             })

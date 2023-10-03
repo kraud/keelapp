@@ -1,12 +1,26 @@
 import {createSlice, createAsyncThunk} from "@reduxjs/toolkit"
 import authService from "./authService";
 import {IFormInput} from "../../pages/Register";
+import {SearchResult} from "../../ts/interfaces";
+import wordService from "../words/wordService";
 
 // Get user from localStorage
 const user = JSON.parse(localStorage.getItem('user')! )
 
-const initialState = {
+interface UserSliceState {
+    user: any,
+    userList: SearchResult[]
+
+    isError: boolean,
+    isSuccess: boolean,
+    isLoading: boolean,
+    message: string,
+}
+
+const initialState: UserSliceState = {
     user: user ? user : null,
+    userList: [],
+
     isError: false,
     isSuccess: false,
     isLoading: false,
@@ -43,6 +57,22 @@ export const logout = createAsyncThunk('auth/logout', async () => {
     await authService.logout()
 })
 
+export const searchUser = createAsyncThunk('auth/searchUser', async (query: string, thunkAPI) => {
+    try {
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await authService.getUsersBy(token, query)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
 
 export const authSlice = createSlice({
     name: 'auth',
@@ -87,6 +117,20 @@ export const authSlice = createSlice({
             })
             .addCase(logout.fulfilled, (state) => {
                 state.user = null
+            })
+            .addCase(searchUser.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(searchUser.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.userList = action.payload
+            })
+            .addCase(searchUser.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload as string
+                state.userList = []
             })
     }
 })

@@ -72,6 +72,54 @@ const getMe = asyncHandler(async(req, res) => {
     res.status(200).json(req.user)
 })
 
+// @desc    Get user data
+// @route   POST /api/users/me
+// @access  Private
+const getUsersBy = asyncHandler(async(req, res) => {
+    if (!(req.query)) {
+        res.status(400)
+        throw new Error("Missing search query text")
+    }
+
+    // Check for user
+    if (!req.user) {
+        res.status(401)
+        throw new Error('User not found')
+    }
+
+    await User.find({
+        $or: [
+            {
+                "name": {$regex: `${req.query.query}`, $options: "i"},
+            },
+            {
+                "email": {$regex: `${req.query.query}`, $options: "i"},
+            },
+        ]
+    }).then((data) => {
+        if (data) {
+            let simpleResults = []
+            data.forEach((user) => {
+                simpleResults.push({
+                    id: user._id,
+                    type: "user",
+                    label: user.name,
+                    email: user.email,
+                })
+            })
+            // sort simpleResults by alphabetical order
+            // simpleResults.sort((a, b) => a.label.localeCompare(b.label))
+            res.status(200).json(simpleResults)
+        } else {
+            res.status(404).json({
+                text: "No user matches for this search",
+                error: err
+            })
+        }
+    })
+})
+
+
 // Generate JWT
 const generateToken = (id) => {
     return jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: '30d'})
@@ -81,4 +129,5 @@ module.exports = {
     registerUser,
     loginUser,
     getMe,
+    getUsersBy,
 }

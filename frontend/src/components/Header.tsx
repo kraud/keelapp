@@ -18,6 +18,8 @@ import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
 import {AutocompleteSearch} from "./AutocompleteSearch";
 import globalTheme from "../theme/theme";
+import {searchWordByAnyTranslation} from "../features/words/wordSlice";
+import {SearchResult} from "../ts/interfaces";
 
 const pages = ['Add word', 'Practice', 'Review'];
 const settings = ['Account', 'Dashboard', 'Logout'];
@@ -28,6 +30,7 @@ function ResponsiveAppBar() {
     const dispatch = useDispatch()
 
     const {user} = useSelector((state: any) => state.auth)
+    const {searchResults, isSearchLoading} = useSelector((state: any) => state.words)
 
     const componentStyles = {
         appBar: {
@@ -224,7 +227,17 @@ function ResponsiveAppBar() {
                             marginRight: globalTheme.spacing(6)
                         }}
                     >
-                        <AutocompleteSearch/>
+                        <AutocompleteSearch
+                            options={searchResults}
+                            getOptions={(inputValue: string) => {
+                                // @ts-ignore
+                                dispatch(searchWordByAnyTranslation(inputValue))
+                            }}
+                            onSelect={(selection: SearchResult) => {
+                                navigate(`/word/${selection.id}`) // should we somehow check if value.id is something valid?
+                            }}
+                            isSearchLoading={isSearchLoading}
+                        />
                     </Box>
                     {/* USER ICON */}
                     <Box sx={{ flexGrow: 0 }}>

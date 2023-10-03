@@ -25,18 +25,18 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
     const [open, setOpen] = useState(false)
     const [loadingLocal, setLoadingLocal] = useState(false)
     const dispatch = useDispatch()
-    const {searchResults, isSearchLoading} = useSelector((state: any) => state.words)
+    const {tags, isTagSearchLoading} = useSelector((state: any) => state.words)
 
     // if we simply depend on isLoading, the text on the first option reads "no matches" for a second, before "Loading.."
     useEffect(() => {
-        if(!isSearchLoading && loadingLocal){ // only valid once isLoading catches up with loadingLocal, and then finishes
+        if(!isTagSearchLoading && loadingLocal){ // only valid once isLoading catches up with loadingLocal, and then finishes
             setLoadingLocal(false)
         } else {
-            if(isSearchLoading){
+            if(isTagSearchLoading){
                 setOptions([])
             }
         }
-    }, [isSearchLoading])
+    }, [isTagSearchLoading])
 
     // this triggers when we type something on the search field
     useEffect(() => {
@@ -54,8 +54,8 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
 
     useEffect(() => {
         // TODO: searchResults should have the FilterItem format, and we unwind that into array of strings
-        setOptions(searchResults)
-    },[searchResults])
+        setOptions(tags)
+    },[tags])
 
     return(
         <Autocomplete
@@ -81,7 +81,7 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
             //     return true
             // }}
             filterOptions={(x: any) => x} // necessary to implement filter on server
-            options={(loadingLocal || isSearchLoading) ?[] :options}
+            options={(loadingLocal || isTagSearchLoading) ?[] :options}
             includeInputInList
             // NB! issues when clearing on blur where triggering reset reason at onInputChange on every character- temp fix?
             clearOnBlur={false}
@@ -90,7 +90,7 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
             }}
 
             value={props.values}
-            noOptionsText={(loadingLocal || isSearchLoading) ?"Loading..." :"No matches"}
+            noOptionsText={(loadingLocal || isTagSearchLoading) ?"Loading..." :"No matches"}
             //@ts-ignore
             // onChange={(event: any, newValue: SearchResult) => {
             onChange={(event: any, newValue) => {
@@ -164,7 +164,7 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
                                         },
                                     }}
                                 >
-                                    {((loadingLocal || isSearchLoading) && open)
+                                    {((loadingLocal || isTagSearchLoading) && open)
                                         //@ts-ignore
                                         ? <CircularProgress color={"secondary"}/>
                                         //@ts-ignore

@@ -1,39 +1,43 @@
 import {Autocomplete, CircularProgress, Grid, InputAdornment, TextField, Typography} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {SearchResult} from "../ts/interfaces";
-import {searchWordByAnyTranslation} from "../features/words/wordSlice";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from '@mui/icons-material/Search';
 import globalTheme from "../theme/theme";
 import {CountryFlag} from "./GeneralUseComponents";
 import {useNavigate} from "react-router-dom";
-import {Lang} from "../ts/enums";
+import PersonIcon from "@mui/icons-material/Person";
+import Avatar from "@mui/material/Avatar";
+import {SxProps} from "@mui/system";
+import {Theme} from "@mui/material/styles";
 
 interface AutocompleteSearchProps {
+    options: SearchResult[]
+    getOptions: (inputValue: string) => void
+    onSelect: (selection: SearchResult) => void
 
+    isSearchLoading: boolean
+    sxProps?: SxProps<Theme>
 }
 
 export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
-    const navigate = useNavigate()
     const [value, setValue] = useState<SearchResult|null>(null)
     const [inputValue, setInputValue] = useState<string>('')
     const [options, setOptions] = useState<SearchResult[]>([])
     const [open, setOpen] = useState(false)
     const [loadingLocal, setLoadingLocal] = useState(false)
-    const dispatch = useDispatch()
-    const {searchResults, isSearchLoading} = useSelector((state: any) => state.words)
 
     // if we simply depend on isLoading, the text on the first option reads "no matches" for a second, before "Loading.."
     useEffect(() => {
-        if(!isSearchLoading && loadingLocal){ // only valid once isLoading catches up with loadingLocal, and then finishes
+        if(!props.isSearchLoading && loadingLocal){ // only valid once isLoading catches up with loadingLocal, and then finishes
             setLoadingLocal(false)
         } else {
-            if(isSearchLoading){
+            if(props.isSearchLoading){
                 setOptions([])
             }
         }
-    }, [isSearchLoading])
+    }, [props.isSearchLoading])
 
     // this triggers when we type something on the search field
     useEffect(() => {
@@ -43,41 +47,83 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
         }
         const timeout = setTimeout(() => {
             // dispatch search for inputValue and when results are updated, set them in options
-            // @ts-ignore
-            dispatch(searchWordByAnyTranslation(inputValue))
+            props.getOptions(inputValue)
         }, 400)
 
         return () => clearTimeout(timeout)
     }, [inputValue])
 
     useEffect(() => {
-        setOptions(searchResults)
-    },[searchResults])
+        setOptions(props.options)
+    },[props.options])
 
     // this triggers once we select something from the list
     useEffect(() => {
         if(value !== null){
-            navigate(`/word/${value.id}`) // should we somehow check if value.id is something valid?
+            props.onSelect(value)
             setOpen(false)
             setValue(null)
         }
     }, [value])
+
+    const getOptionIcon = (option: SearchResult) => {
+        switch (option.type) {
+            case ("word"): {
+                return(
+                    <Grid
+                        item={true}
+                    >
+                        <CountryFlag
+                            country={option.language} // we default to english
+                            border={true}
+                        />
+                    </Grid>
+                )
+            }
+            case ("user"): {
+                return(
+                    <Grid
+                        item={true}
+                    >
+                        <Avatar
+                            alt="User photo"
+                            color={"primary"}
+                            sx={{
+                                width: '25px',
+                                height: '25px',
+                                margin: globalTheme.spacing(1),
+                                bgcolor: "#0072CE"
+                            }}
+                        >
+                            <PersonIcon/>
+                        </Avatar>
+                    </Grid>
+                )
+            }
+            default: {
+                return null
+            }
+        }
+    }
 
     return(
         <Autocomplete
             open={open}
             forcePopupIcon={false}
             clearIcon={<ClearIcon />}
-            sx={{ width: 250 }}
+            sx={{
+                width: 250,
+                ...props.sxProps
+        }}
             getOptionLabel={(option: SearchResult) => option.label}
             isOptionEqualToValue={(option, value) => option.id === value.id}
             filterOptions={(x: any) => x} // necessary to implement filter on server
-            options={(loadingLocal || isSearchLoading) ?[] :options}
+            options={(loadingLocal || props.isSearchLoading) ?[] :options}
             autoComplete
             includeInputInList
             filterSelectedOptions
             value={value}
-            noOptionsText={(loadingLocal || isSearchLoading) ?"Loading..." :"No matches"}
+            noOptionsText={(loadingLocal || props.isSearchLoading) ?"Loading..." :"No matches"}
             onChange={(event: any, newValue: SearchResult | null) => {
                 setValue(newValue)
             }}
@@ -114,7 +160,7 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                                             },
                                         }}
                                     >
-                                        {((loadingLocal || isSearchLoading) && open)
+                                        {((loadingLocal || props.isSearchLoading) && open)
                                             //@ts-ignore
                                             ? <CircularProgress color={"allWhite"}/>
                                             //@ts-ignore
@@ -142,7 +188,7 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                 return (
                     <li
                         //@ts-ignore
-                        key={props['data-option-index'] as number}
+                        key={(props['data-option-index'] as number).toString()+"-"+option.label}
                         style={{
                             paddingTop: 0,
                             paddingBottom: 0,
@@ -162,14 +208,7 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                                 paddingLeft: '10px',
                             }}
                         >
-                            <Grid
-                                item={true}
-                            >
-                                <CountryFlag
-                                    country={option.type === "word" ?option.language : Lang.EN} // we default to english
-                                    border={true}
-                                />
-                            </Grid>
+                            {getOptionIcon(option)}
                             <Grid
                                 item={true}
                                 sx={{

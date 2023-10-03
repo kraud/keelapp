@@ -31,7 +31,7 @@ export interface WordItem {
 export type SearchResult = {
     id: string,
     label: string,
-} & (WordSearch | TagSearch)
+} & (WordSearch | TagSearch | UserSearch)
 
 type WordSearch = {
     type: "word"
@@ -40,4 +40,10 @@ type WordSearch = {
 
 type TagSearch = {
     type: "tag"
+}
+
+type UserSearch = {
+    type: "user",
+    email: string,
+    // eventually, add profile picture info
 }

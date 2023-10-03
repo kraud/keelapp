@@ -14,6 +14,7 @@ import IconButton from "@mui/material/IconButton";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import PersonIcon from '@mui/icons-material/Person';
 import {toast} from "react-toastify";
+import {FriendSearchModal} from "../components/FriendSearchModal";
 
 interface UserDataProps {
 
@@ -23,14 +24,17 @@ export const UserData = (props: UserDataProps) => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const {user} = useSelector((state: any) => state.auth)
-    const {searchResults, isSearchLoading} = useSelector((state: any) => state.words)
+    const {tags, isTagSearchLoading} = useSelector((state: any) => state.words)
     const [allTags, setAllTags] = useState<string[]>([])
+    const [openFriendsModal, setOpenFriendsModal] = useState(false)
 
+    // const friendList: string[] = []
+    // const friendList = ["friendo"]
     const friendList = ["friend1", "friend2", "friend3", "friend4","friend5", "friend6"]
 
     useEffect(() => {
-        setAllTags(searchResults)
-    },[searchResults])
+        setAllTags(tags)
+    },[tags])
 
     useEffect(() => {
         // @ts-ignore
@@ -58,7 +62,7 @@ export const UserData = (props: UserDataProps) => {
                 item={true}
                 xs={12}
                 sx={{
-                    border: '1px solid black',
+                    border: '2px solid #0072CE',
                     borderRadius: '25px',
                     padding: globalTheme.spacing(2),
                 }}
@@ -163,7 +167,7 @@ export const UserData = (props: UserDataProps) => {
                     <Button
                         variant={"contained"}
                         color={"primary"}
-                        onClick={() => null}
+                        onClick={() => setOpenFriendsModal(true)}
                         fullWidth={true}
                         startIcon={<PersonAddIcon />}
                     >
@@ -216,7 +220,7 @@ export const UserData = (props: UserDataProps) => {
                     spacing={1}
                     justifyContent={"center"}
                 >
-                    {(isSearchLoading)
+                    {(isTagSearchLoading)
                         ?
                         <LinearIndeterminate/>
                         :
@@ -224,7 +228,7 @@ export const UserData = (props: UserDataProps) => {
                             return(
                                 <Grid
                                     item={true}
-                                    key={index}
+                                    key={index.toString()+'-'+tag}
                                 >
                                     <Chip
                                         variant="filled"
@@ -275,124 +279,139 @@ export const UserData = (props: UserDataProps) => {
                     container={true}
                     xs={12}
                 >
-                    {
-                        (friendList.length === 0)
-                            ?
+                    {(friendList.length === 0)
+                        ?
+                        <Grid
+                            container={true}
+                            item={true}
+                            justifyContent={"center"}
+                        >
                             <Grid
-                                container={true}
                                 item={true}
-                                justifyContent={"center"}
                             >
-                                <Grid
-                                    item={true}
+                                <Typography
+                                    variant={"h6"}
                                 >
-                                    <Typography
-                                        variant={"h6"}
-                                    >
-                                        You don't have any friends yet.
-                                    </Typography>
-                                    <Typography
-                                        variant={"body2"}
-                                        onClick={() => {
-                                            toast.info("Open friend search")
-                                        }}
-                                        color={'primary'}
-                                        textAlign={"center"}
-                                        sx={{
-                                            cursor: "pointer"
-                                        }}
-                                        fontWeight={"bold"}
-                                    >
-                                        Click here to search and add new friends!
-                                    </Typography>
-                                </Grid>
+                                    You don't have any friends yet.
+                                </Typography>
+                                <Typography
+                                    variant={"body2"}
+                                    onClick={() => {
+                                        setOpenFriendsModal(true)
+                                        // toast.info("Open friend search")
+                                    }}
+                                    color={'primary'}
+                                    textAlign={"center"}
+                                    sx={{
+                                        cursor: "pointer"
+                                    }}
+                                    fontWeight={"bold"}
+                                >
+                                    Click here to search and add new friends!
+                                </Typography>
                             </Grid>
-                            :
-                            (friendList.map((friend: string, index: number) => {
-                                return(
+                        </Grid>
+                        :
+                        (friendList.map((friend: string, index: number) => {
+                            return(
+                                <Grid
+                                    container={true}
+                                    item={true}
+                                    xs={12}
+                                    key={index}
+                                    sx={{
+                                        background: (index % 2 === 0) ?"#c7c7c7" :undefined,
+                                        paddingY: globalTheme.spacing(1),
+                                        borderRight: '1px solid black',
+                                        borderLeft: '1px solid black',
+                                        borderTop: (index === 0) ?'1px solid black' :"none",
+                                        borderBottom: "1px solid black",
+                                        borderRadius: (index === 0)
+                                            ? "25px 25px 0 0"
+                                            : (index === (friendList.length -1))
+                                                ? " 0 0 25px 25px"
+                                                : undefined
+                                    }}
+                                >
+                                    {/* AVATAR */}
                                     <Grid
                                         container={true}
                                         item={true}
-                                        xs={12}
-                                        key={index}
+                                        justifyContent={"center"}
+                                        xs={"auto"} // width: max-content
                                         sx={{
-                                            background: (index % 2 === 0) ?"#c7c7c7" :undefined,
-                                            paddingY: globalTheme.spacing(1),
-                                            borderRight: '1px solid black',
-                                            borderLeft: '1px solid black',
-                                            borderTop: (index === 0) ?'1px solid black' :"none",
-                                            borderBottom: "1px solid black",
+                                            paddingX: globalTheme.spacing(1),
                                         }}
                                     >
                                         <Grid
-                                            container={true}
                                             item={true}
-                                            justifyContent={"center"}
-                                            xs={"auto"} // width: max-content
                                         >
-                                            <Grid
-                                                item={true}
+                                            <Avatar
+                                                alt="User photo"
+                                                src={(index % 2 === 0) ? "" : "/"}
+                                                color={"primary"}
+                                                sx={{
+                                                    width: '45px',
+                                                    height: '45px',
+                                                    margin: globalTheme.spacing(1),
+                                                    bgcolor: "#0072CE"
+                                                }}
                                             >
-                                                <Avatar
-                                                    alt="User photo"
-                                                    src={(index % 2 === 0) ? "" : "/"}
-                                                    color={"primary"}
-                                                    sx={{
-                                                        width: '45px',
-                                                        height: '45px',
-                                                        margin: globalTheme.spacing(1),
-                                                        bgcolor: "#0072CE"
-                                                    }}
-                                                >
-                                                    <PersonIcon/>
-                                                </Avatar>
-                                            </Grid>
-                                        </Grid>
-                                        <Grid
-                                            container={true}
-                                            alignItems={"center"}
-                                            item={true}
-                                            xs // width: all-available
-                                        >
-                                            <Grid
-                                                item={true}
-                                            >
-                                                <Typography
-                                                    sx={{
-                                                        typography: {
-                                                            xs: 'h5',
-                                                            sm: 'h4',
-                                                            md: 'h3',
-                                                        },
-                                                        textTransform: "capitalize"
-                                                    }}
-                                                >
-                                                    {friend}
-                                                </Typography>
-                                            </Grid>
-                                        </Grid>
-                                        <Grid
-                                            container={true}
-                                            alignItems={"center"}
-                                            item={true}
-                                            xs={"auto"} // width: max-content
-                                        >
-                                            <Grid
-                                                item={true}
-                                            >
-                                                <IconButton
-                                                    color={"primary"}
-                                                >
-                                                    <ArrowForwardIosIcon/>
-                                                </IconButton>
-                                            </Grid>
+                                                <PersonIcon/>
+                                            </Avatar>
                                         </Grid>
                                     </Grid>
-                                )
-                            }))
+                                    {/* FRIEND'S NAME */}
+                                    <Grid
+                                        container={true}
+                                        alignItems={"center"}
+                                        item={true}
+                                        xs // width: all-available
+                                    >
+                                        <Grid
+                                            item={true}
+                                        >
+                                            <Typography
+                                                sx={{
+                                                    typography: {
+                                                        xs: 'h5',
+                                                        sm: 'h4',
+                                                        md: 'h3',
+                                                    },
+                                                    textTransform: "capitalize"
+                                                }}
+                                            >
+                                                {friend}
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
+                                    {/* ACTION BUTTON */}
+                                    <Grid
+                                        container={true}
+                                        alignItems={"center"}
+                                        item={true}
+                                        xs={"auto"} // width: max-content
+                                    >
+                                        <Grid
+                                            item={true}
+                                        >
+                                            <IconButton
+                                                color={"primary"}
+                                            >
+                                                <ArrowForwardIosIcon/>
+                                            </IconButton>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                            )
+                        }))
                     }
                 </Grid>
             </Grid>
+            <FriendSearchModal
+                open={openFriendsModal}
+                setOpen={(value: boolean) => setOpenFriendsModal(value)}
+            />
         </Grid>
     )
 }

@@ -29,10 +29,24 @@ const logout = () => {
     localStorage.removeItem('user')
 }
 
+const getUsersBy = async (token: any, query: string) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        },
+        params: {
+            query: query,
+        }
+    }
+    const response = await axios.get(`${API_URL}/searchUser`, config)
+    return(response.data)
+}
+
 const authService = {
     register,
     logout,
-    login
+    login,
+    getUsersBy,
 }
 
 export default authService

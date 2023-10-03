@@ -27,7 +27,7 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
                             // "word": {$in: ['der', 'die']}, // this works
                             // it's an array to allow searching by more than 1 gender at a time => doesn't work at the moment
                             "word": {$in: `${[filter.filterValue]}`}, // this doesn't work => only 1 filter at a time
-                            "caseName": {$regex: "^gender"},
+                            "caseName": {$regex: "^gender"}, // TODO: add check for other fields like "gradable" in adverb
                         }
                     },
                     "user": req.user.id,
@@ -465,7 +465,10 @@ const filterWordByAnyTranslation = asyncHandler(async (req, res) => {
         "translations.cases": {
             $elemMatch: {
                 "word": {$regex: `${req.query.query}`, $options: "i"},
-                "caseName": {$not: {$regex: "^gender", $options: "i"}}, // To avoid filtering by word gender
+                "caseName": {
+                    $not: {$regex: "^gender", $options: "i"},
+                    $not: {$regex: "^gradable", $options: "i"}
+                }, // To avoid filtering by fields that don't represent translation-data
             }
         },
         "user": req.user
@@ -485,6 +488,8 @@ const filterWordByAnyTranslation = asyncHandler(async (req, res) => {
                             ((wordCase.word).toLowerCase()).includes((req.query.query).toLowerCase())
                             &&
                             !(wordCase.caseName.match(/^gender/i))
+                            &&
+                            !(wordCase.caseName.match(/^gradable/i))
                             &&
                             (!found) // TODO: change this to a specific case? to always display the "easiest" case if multiple do match
                         ){
