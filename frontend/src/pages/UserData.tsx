@@ -12,8 +12,8 @@ import {useNavigate, useSearchParams} from "react-router-dom";
 import LinearIndeterminate from "../components/Spinner";
 import IconButton from "@mui/material/IconButton";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import {deepOrange} from "@mui/material/colors";
 import PersonIcon from '@mui/icons-material/Person';
+import {toast} from "react-toastify";
 
 interface UserDataProps {
 
@@ -22,7 +22,6 @@ interface UserDataProps {
 export const UserData = (props: UserDataProps) => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    let  [searchParams, setSearchParams]  = useSearchParams();
     const {user} = useSelector((state: any) => state.auth)
     const {searchResults, isSearchLoading} = useSelector((state: any) => state.words)
     const [allTags, setAllTags] = useState<string[]>([])
@@ -45,11 +44,14 @@ export const UserData = (props: UserDataProps) => {
             initial="initial"
             animate="final"
             container={true}
+            item={true}
             sx={{
                 marginTop: globalTheme.spacing(4),
             }}
             rowSpacing={2}
+            md={4}
         >
+            {/* USER DATA */}
             <Grid
                 container={true}
                 justifyContent={"flex-start"}
@@ -76,7 +78,7 @@ export const UserData = (props: UserDataProps) => {
                                 typography: {
                                     xs: 'h4',
                                     sm: 'h3',
-                                    md: 'h1',
+                                    md: 'h2',
                                 },
                                 textTransform: "capitalize"
                             }}
@@ -93,7 +95,7 @@ export const UserData = (props: UserDataProps) => {
                                 typography: {
                                     xs: 'h6',
                                     sm: 'h5',
-                                    md: 'h2',
+                                    md: 'h4',
                                     textTransform: "capitalize"
                                 },
                             }}
@@ -111,7 +113,7 @@ export const UserData = (props: UserDataProps) => {
                                 typography: {
                                     xs: 'body1',
                                     sm: 'h6',
-                                    md: 'h3',
+                                    md: 'h5',
                                     textTransform: "all-lowercase"
                                 },
                             }}
@@ -134,13 +136,20 @@ export const UserData = (props: UserDataProps) => {
                             alt="User photo"
                             src={(user) ? "" : "/"}
                             sx={{
-                                width: '75px',
-                                height: '75px',
+                                width: {
+                                    xs:'75px',
+                                    md:'125px',
+                                },
+                                height: {
+                                    xs:'75px',
+                                    md:'125px',
+                                },
                             }}
                         />
                     </Grid>
                 </Grid>
             </Grid>
+            {/* BUTTONS */}
             <Grid
                 container={true}
                 justifyContent={"space-around"}
@@ -176,6 +185,7 @@ export const UserData = (props: UserDataProps) => {
                     </Button>
                 </Grid>
             </Grid>
+            {/* TAGS */}
             <Grid
                 container={true}
                 justifyContent={"center"}
@@ -204,6 +214,7 @@ export const UserData = (props: UserDataProps) => {
                     item={true}
                     container={true}
                     spacing={1}
+                    justifyContent={"center"}
                 >
                     {(isSearchLoading)
                         ?
@@ -234,6 +245,7 @@ export const UserData = (props: UserDataProps) => {
                     }
                 </Grid>
             </Grid>
+            {/* FRIENDS */}
             <Grid
                 container={true}
                 justifyContent={"center"}
@@ -264,88 +276,120 @@ export const UserData = (props: UserDataProps) => {
                     xs={12}
                 >
                     {
-                        (friendList.map((friend: string, index: number) => {
-                            return(
+                        (friendList.length === 0)
+                            ?
+                            <Grid
+                                container={true}
+                                item={true}
+                                justifyContent={"center"}
+                            >
                                 <Grid
-                                    container={true}
                                     item={true}
-                                    xs={12}
-                                    key={index}
-                                    sx={{
-                                        background: (index % 2 === 0) ?"#c7c7c7" :undefined,
-                                        paddingY: globalTheme.spacing(1),
-                                        borderRight: '1px solid black',
-                                        borderLeft: '1px solid black',
-                                        borderTop: (index === 0) ?'1px solid black' :"none",
-                                        borderBottom: "1px solid black",
-                                    }}
                                 >
-                                    <Grid
-                                        container={true}
-                                        item={true}
-                                        justifyContent={"center"}
-                                        xs={"auto"} // width: max-content
+                                    <Typography
+                                        variant={"h6"}
                                     >
-                                        <Grid
-                                            item={true}
-                                        >
-                                            <Avatar
-                                                alt="User photo"
-                                                src={(index % 2 === 0) ? "" : "/"}
-                                                color={"primary"}
-                                                sx={{
-                                                    width: '45px',
-                                                    height: '45px',
-                                                    margin: globalTheme.spacing(1),
-                                                    bgcolor: "#0072CE"
-                                                }}
-                                            >
-                                                <PersonIcon/>
-                                            </Avatar>
-                                        </Grid>
-                                    </Grid>
-                                    <Grid
-                                        container={true}
-                                        alignItems={"center"}
-                                        item={true}
-                                        xs // width: all-available
+                                        You don't have any friends yet.
+                                    </Typography>
+                                    <Typography
+                                        variant={"body2"}
+                                        onClick={() => {
+                                            toast.info("Open friend search")
+                                        }}
+                                        color={'primary'}
+                                        textAlign={"center"}
+                                        sx={{
+                                            cursor: "pointer"
+                                        }}
+                                        fontWeight={"bold"}
                                     >
-                                        <Grid
-                                            item={true}
-                                        >
-                                            <Typography
-                                                sx={{
-                                                    typography: {
-                                                        xs: 'h5',
-                                                        sm: 'h4',
-                                                        md: 'h3',
-                                                    },
-                                                    textTransform: "capitalize"
-                                                }}
-                                            >
-                                                {friend}
-                                            </Typography>
-                                        </Grid>
-                                    </Grid>
-                                    <Grid
-                                        container={true}
-                                        alignItems={"center"}
-                                        item={true}
-                                        xs={"auto"} // width: max-content
-                                    >
-                                        <Grid
-                                            item={true}
-                                        >
-                                            <IconButton
-                                                color={"primary"}
-                                            >
-                                                <ArrowForwardIosIcon/>
-                                            </IconButton>
-                                        </Grid>
-                                    </Grid>
+                                        Click here to search and add new friends!
+                                    </Typography>
                                 </Grid>
-                            )
-                        }))
+                            </Grid>
+                            :
+                            (friendList.map((friend: string, index: number) => {
+                                return(
+                                    <Grid
+                                        container={true}
+                                        item={true}
+                                        xs={12}
+                                        key={index}
+                                        sx={{
+                                            background: (index % 2 === 0) ?"#c7c7c7" :undefined,
+                                            paddingY: globalTheme.spacing(1),
+                                            borderRight: '1px solid black',
+                                            borderLeft: '1px solid black',
+                                            borderTop: (index === 0) ?'1px solid black' :"none",
+                                            borderBottom: "1px solid black",
+                                        }}
+                                    >
+                                        <Grid
+                                            container={true}
+                                            item={true}
+                                            justifyContent={"center"}
+                                            xs={"auto"} // width: max-content
+                                        >
+                                            <Grid
+                                                item={true}
+                                            >
+                                                <Avatar
+                                                    alt="User photo"
+                                                    src={(index % 2 === 0) ? "" : "/"}
+                                                    color={"primary"}
+                                                    sx={{
+                                                        width: '45px',
+                                                        height: '45px',
+                                                        margin: globalTheme.spacing(1),
+                                                        bgcolor: "#0072CE"
+                                                    }}
+                                                >
+                                                    <PersonIcon/>
+                                                </Avatar>
+                                            </Grid>
+                                        </Grid>
+                                        <Grid
+                                            container={true}
+                                            alignItems={"center"}
+                                            item={true}
+                                            xs // width: all-available
+                                        >
+                                            <Grid
+                                                item={true}
+                                            >
+                                                <Typography
+                                                    sx={{
+                                                        typography: {
+                                                            xs: 'h5',
+                                                            sm: 'h4',
+                                                            md: 'h3',
+                                                        },
+                                                        textTransform: "capitalize"
+                                                    }}
+                                                >
+                                                    {friend}
+                                                </Typography>
+                                            </Grid>
+                                        </Grid>
+                                        <Grid
+                                            container={true}
+                                            alignItems={"center"}
+                                            item={true}
+                                            xs={"auto"} // width: max-content
+                                        >
+                                            <Grid
+                                                item={true}
+                                            >
+                                                <IconButton
+                                                    color={"primary"}
+                                                >
+                                                    <ArrowForwardIosIcon/>
+                                                </IconButton>
+                                            </Grid>
+                                        </Grid>
+                                    </Grid>
+                                )
+                            }))
                     }
                 </Grid>
             </Grid>
