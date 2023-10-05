@@ -15,6 +15,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import PersonIcon from '@mui/icons-material/Person';
 import {toast} from "react-toastify";
 import {FriendSearchModal} from "../components/FriendSearchModal";
+import {UserBadge} from "../components/UserBadge";
 
 interface UserDataProps {
 
@@ -53,106 +54,18 @@ export const UserData = (props: UserDataProps) => {
                 marginTop: globalTheme.spacing(4),
             }}
             rowSpacing={2}
-            md={4}
+            xs={12}
+            md={6}
+            lg={4}
         >
             {/* USER DATA */}
-            <Grid
-                container={true}
-                justifyContent={"flex-start"}
-                item={true}
-                xs={12}
-                sx={{
-                    border: '2px solid #0072CE',
-                    borderRadius: '25px',
-                    padding: globalTheme.spacing(2),
+            <UserBadge
+                userData={{
+                    id: user?._id,
+                    name: user?.name,
+                    email: user?.email
                 }}
-            >
-                <Grid
-                    container={true}
-                    item={true}
-                    alignItems={"center"}
-                    xs={9}
-                >
-                    <Grid
-                        item={true}
-                        xs={12}
-                    >
-                        <Typography
-                            sx={{
-                                typography: {
-                                    xs: 'h4',
-                                    sm: 'h3',
-                                    md: 'h2',
-                                },
-                                textTransform: "capitalize"
-                            }}
-                        >
-                            {user?.name}
-                        </Typography>
-                    </Grid>
-                    <Grid
-                        item={true}
-                        xs={12}
-                    >
-                        <Typography
-                            sx={{
-                                typography: {
-                                    xs: 'h6',
-                                    sm: 'h5',
-                                    md: 'h4',
-                                    textTransform: "capitalize"
-                                },
-                            }}
-                        >
-                            {/*{user?.name}*/}
-                            Username
-                        </Typography>
-                    </Grid>
-                    <Grid
-                        item={true}
-                        xs={12}
-                    >
-                        <Typography
-                            sx={{
-                                typography: {
-                                    xs: 'body1',
-                                    sm: 'h6',
-                                    md: 'h5',
-                                    textTransform: "all-lowercase"
-                                },
-                            }}
-                        >
-                            {user?.email}
-                        </Typography>
-                    </Grid>
-                </Grid>
-                <Grid
-                    container={true}
-                    item={true}
-                    xs={3}
-                    justifyContent={"center"}
-                    alignItems={"center"}
-                >
-                    <Grid
-                        item={true}
-                    >
-                        <Avatar
-                            alt="User photo"
-                            src={(user) ? "" : "/"}
-                            sx={{
-                                width: {
-                                    xs:'75px',
-                                    md:'125px',
-                                },
-                                height: {
-                                    xs:'75px',
-                                    md:'125px',
-                                },
-                            }}
-                        />
-                    </Grid>
-                </Grid>
-            </Grid>
+            />
             {/* BUTTONS */}
             <Grid
                 container={true}
