@@ -237,6 +237,7 @@ function ResponsiveAppBar() {
                                 navigate(`/word/${selection.id}`) // should we somehow check if value.id is something valid?
                             }}
                             isSearchLoading={isSearchLoading}
+                            textColor={'white'}
                         />
                     </Box>
                     {/* USER ICON */}

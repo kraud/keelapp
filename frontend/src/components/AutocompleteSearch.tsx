@@ -11,14 +11,31 @@ import PersonIcon from "@mui/icons-material/Person";
 import Avatar from "@mui/material/Avatar";
 import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
+import {OverridableStringUnion} from "@mui/types";
+import {SvgIconPropsColorOverrides} from "@mui/material/SvgIcon/SvgIcon";
 
 interface AutocompleteSearchProps {
     options: SearchResult[]
     getOptions: (inputValue: string) => void
     onSelect: (selection: SearchResult) => void
+    placeholder?: string
 
     isSearchLoading: boolean
-    sxProps?: SxProps<Theme>
+
+    sxPropsAutocomplete?: SxProps<Theme>
+    sxPropsInput?: SxProps<Theme>
+    textColor?: string // both placeholder and input
+    iconColor?: OverridableStringUnion<
+        | 'inherit'
+        | 'action'
+        | 'disabled'
+        | 'primary'
+        | 'secondary'
+        | 'error'
+        | 'info'
+        | 'success'
+        | 'warning'
+        >
 }
 
 export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
@@ -113,7 +130,8 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
             clearIcon={<ClearIcon />}
             sx={{
                 width: 250,
-                ...props.sxProps
+                ...props.sxPropsAutocomplete,
+                color: (props.textColor !== undefined) ? props.textColor : undefined,
         }}
             getOptionLabel={(option: SearchResult) => option.label}
             isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -146,7 +164,10 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                         {...params}
                         InputProps={{
                             ...params.InputProps,
-                            sx: ({color: 'white'}),
+                            sx: ({
+                                ...props.sxPropsInput,
+                                color: (props.textColor !== undefined) ? props.textColor : undefined,
+                            }),
                             endAdornment: (
                                     <InputAdornment
                                         position="end"
@@ -162,20 +183,21 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                                     >
                                         {((loadingLocal || props.isSearchLoading) && open)
                                             //@ts-ignore
-                                            ? <CircularProgress color={"allWhite"}/>
+                                            ? <CircularProgress color={(props.iconColor !== undefined) ?props.iconColor :"allWhite"}/>
                                             //@ts-ignore
-                                            : <SearchIcon color={'allWhite'}/>
+                                            : <SearchIcon color={(props.iconColor !== undefined) ?props.iconColor :"allWhite"}/>
                                         }
                                     </InputAdornment>
                             )
                         }}
-                        placeholder={"Search..."}
+                        placeholder={(props.placeholder !== undefined) ?props.placeholder :"Search..."}
                         fullWidth
                         sx={{
                             '& .MuiAutocomplete-inputRoot': {
                                 borderBottom: '2px white solid',
+                                paddingLeft: globalTheme.spacing(1),
                                 "& ::placeholder": {
-                                    color: "white",
+                                    color: (props.textColor !== undefined) ? props.textColor : undefined,
                                     opacity: 1,
                                 },
                             }

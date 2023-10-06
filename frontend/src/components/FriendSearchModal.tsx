@@ -74,10 +74,14 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                     setSelectedUser(selection)
                                 }}
                                 isSearchLoading={isLoading}
-                                sxProps={{
-                                    background: 'grey',
-                                    // color: 'black',
+                                sxPropsAutocomplete={{
+                                    background: '#c7c7c7',
                                 }}
+                                sxPropsInput={{
+                                    color: 'black',
+                                }}
+                                placeholder={"Search for friends..."}
+                                iconColor={"primary"}
                             />
                         </Grid>
                         :

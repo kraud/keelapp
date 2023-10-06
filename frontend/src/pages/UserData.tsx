@@ -211,7 +211,6 @@ export const UserData = (props: UserDataProps) => {
                                     variant={"body2"}
                                     onClick={() => {
                                         setOpenFriendsModal(true)
-                                        // toast.info("Open friend search")
                                     }}
                                     color={'primary'}
                                     textAlign={"center"}

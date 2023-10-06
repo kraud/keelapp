@@ -187,10 +187,10 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
                             '& .MuiAutocomplete-inputRoot': {
                                 border: '1px black solid',
                                 borderRadius: '3px',
+                                paddingLeft: globalTheme.spacing(1),
                                 "& ::placeholder": {
                                     color: "black",
                                     opacity: 0.75,
-                                    paddingLeft: '1em',
                                 },
                             }
                         }}
