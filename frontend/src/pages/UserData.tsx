@@ -16,6 +16,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import {toast} from "react-toastify";
 import {FriendSearchModal} from "../components/FriendSearchModal";
 import {UserBadge} from "../components/UserBadge";
+import {TagInfoModal} from "../components/TagInfoModal";
 
 interface UserDataProps {
 
@@ -23,15 +24,22 @@ interface UserDataProps {
 
 export const UserData = (props: UserDataProps) => {
     const dispatch = useDispatch()
-    const navigate = useNavigate()
     const {user} = useSelector((state: any) => state.auth)
     const {tags, isTagSearchLoading} = useSelector((state: any) => state.words)
     const [allTags, setAllTags] = useState<string[]>([])
     const [openFriendsModal, setOpenFriendsModal] = useState(false)
+    const [openTagModal, setOpenTagModal] = useState(false)
+    const [selectedTag, setSelectedTag] = useState("")
 
     // const friendList: string[] = []
     // const friendList = ["friendo"]
     const friendList = ["friend1", "friend2", "friend3", "friend4","friend5", "friend6"]
+
+    useEffect(() => {
+        if(selectedTag !== ""){
+            setOpenTagModal(true)
+        }
+    },[selectedTag])
 
     useEffect(() => {
         setAllTags(tags)
@@ -153,7 +161,8 @@ export const UserData = (props: UserDataProps) => {
                                         onClick={() => {
                                             // TODO: temporary function? It should open modal with list of words
                                             //  + options to hide the tag from friends, send tag to friend, etc?
-                                            navigate('/review/tags?tags='+tag)
+                                            // navigate('/review/tags?tags='+tag)
+                                            setSelectedTag(tag)
                                         }}
                                     />
                                 </Grid>
@@ -323,6 +332,16 @@ export const UserData = (props: UserDataProps) => {
             <FriendSearchModal
                 open={openFriendsModal}
                 setOpen={(value: boolean) => setOpenFriendsModal(value)}
+            />
+            <TagInfoModal
+                open={openTagModal}
+                setOpen={(value: boolean) => {
+                    if(!value){
+                        setSelectedTag("")
+                    }
+                    setOpenTagModal(value)
+                }}
+                tagId={selectedTag}
             />
         </Grid>
     )
