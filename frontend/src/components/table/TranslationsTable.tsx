@@ -536,6 +536,9 @@ export function TranslationsTable(props: TranslationsTableProps) {
                 justifyContent={"flex-end"}
                 spacing={2}
             >
+                {/* TODO: Make the "create exercises", "Detailed view" and "Delete selected" buttons auto-generated
+                     according to props
+                    */}
                 {(Object.keys(rowSelection).length > 1) &&
                 <Grid
                     item={true}
@@ -596,6 +599,8 @@ export function TranslationsTable(props: TranslationsTableProps) {
                     </Grid>
                 </Grid>
                 }
+                {/* TODO: hide if no words of type "noun" are included on the list to be displayed?
+                     Add a list of partOfSpeech in every response from BE.  */}
                 <Grid
                     item={true}
                     container={true}
@@ -617,6 +622,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
                         />
                     </Grid>
                 </Grid>
+                {/* TODO: add toggle by prop, to display/hide global search?*/}
                 <Grid
                     item={true}
                 >

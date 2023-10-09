@@ -1,4 +1,4 @@
-import {AdjectiveCases, AdverbCases, NounCases} from "../../ts/enums";
+import {AdjectiveCases, AdverbCases, NounCases, PartOfSpeech} from "../../ts/enums";
 import {WordItem, TranslationItem} from "../../ts/interfaces";
 
 export function getWordByCase(searchCase: NounCases | AdjectiveCases | AdverbCases, currentTranslationData: TranslationItem) {
@@ -21,4 +21,31 @@ export function getDisabledInputFieldDisplayLogic(disabled: boolean, fieldValue:
             (disabled) && (fieldValue !== "")
         )
     )
+}
+
+export function getPartOfSpeechAbbreviated(partOfSpeech: PartOfSpeech){
+    switch (partOfSpeech){
+        case("Noun"):{
+            return("n.")
+        }
+        case("Pronoun"):{
+            return("pron.")
+        }
+        case("Verb"):{
+            return("v.")
+        }
+        case("Adjective"):{
+            return("adj.")
+        }
+        case("Adverb"):{
+            return("adv.")
+        }
+        case("Preposition"):{
+            return("prep.")
+        }
+        case("Conjunction"):{
+            return("conj.")
+        }
+        default: return("-")
+    }
 }

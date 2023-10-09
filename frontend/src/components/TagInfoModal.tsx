@@ -1,7 +1,10 @@
 import globalTheme from "../theme/theme";
-import {Grid, Modal, Typography} from "@mui/material";
+import {Button, Grid, Modal, Switch, Typography} from "@mui/material";
 import Box from "@mui/material/Box";
-import React from "react";
+import React, {useState} from "react";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import SendIcon from '@mui/icons-material/Send';
+import ClearIcon from '@mui/icons-material/Clear';
 
 
 interface FriendSearchModalProps {
@@ -26,6 +29,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
         },
 
     }
+    const [isPublic, setIsPublic] = useState(true) // so Friends can see this tag on your profile and add it to their account
 
     const handleOnClose = () => {
         props.setOpen(false)
@@ -40,7 +44,6 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
             <Box
                 sx={componentStyles.mainContainer}
             >
-
                 <Grid
                     container={true}
                     item={true}
@@ -51,18 +54,95 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                         item={true}
                         container={true}
                         rowSpacing={2}
-                        sx={{
-                            // marginTop: globalTheme.spacing(1)
-                        }}
                     >
                         <Grid
                             item={true}
+                            xs={12}
                         >
                             <Typography
-                                variant={"h4"}
+                                variant={"h3"}
+                                display={{
+                                    xs: undefined,
+                                    md: "inline"
+                                }}
                             >
                                 {props.tagId}
                             </Typography>
+                            <Typography
+                                variant={"h6"}
+                                display={{
+                                    xs: undefined,
+                                    md: "inline"
+                                }}
+                                sx={{
+                                    paddingLeft: {
+                                        md: globalTheme.spacing(3)
+                                    }
+                                }}
+                            >
+                                X words
+                            </Typography>
+                        </Grid>
+                        <Grid
+                            item={true}
+                            xs={12}
+                        >
+                            <FormControlLabel
+                                value={isPublic}
+                                control={<Switch checked={isPublic} color="primary" />}
+                                label={"Public"}
+                                labelPlacement={"end"}
+                                onChange={() => setIsPublic(!isPublic)}
+                                sx={{
+                                    marginLeft: 0,
+                                }}
+                            />
+                        </Grid>
+                        <Grid
+                            container={true}
+                            justifyContent={"flex-start"}
+                            item={true}
+                            xs={12}
+                            md={10}
+                            rowSpacing={{
+                                xs: 1,
+                                md: 0,
+                            }}
+                            spacing={{
+                                xs: 0,
+                                md: 2,
+                            }}
+                        >
+                            <Grid
+                                item={true}
+                                xs={12}
+                                md={5}
+                            >
+                                <Button
+                                    variant={"contained"}
+                                    color={"primary"}
+                                    onClick={() => null}
+                                    fullWidth={true}
+                                    startIcon={<SendIcon />}
+                                >
+                                    Send to friends
+                                </Button>
+                            </Grid>
+                            <Grid
+                                item={true}
+                                xs={12}
+                                md={5}
+                            >
+                                <Button
+                                    variant={"contained"}
+                                    color={"warning"}
+                                    onClick={() => null}
+                                    fullWidth={true}
+                                    endIcon={<ClearIcon />}
+                                >
+                                    Delete all words
+                                </Button>
+                            </Grid>
                         </Grid>
                     </Grid>
                 </Grid>

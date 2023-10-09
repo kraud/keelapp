@@ -496,6 +496,7 @@ const filterWordByAnyTranslation = asyncHandler(async (req, res) => {
                             fullWord.push({
                                 id: word.id,
                                 language: translation.language,
+                                partOfSpeech: word.partOfSpeech,
                                 label: wordCase.word,
                                 type: "word",
                             })

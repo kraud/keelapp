@@ -369,7 +369,7 @@ export function Review(){
                 justifyContent={"center"}
                 item={true}
                 xs={12}
-                lg={9}
+                lg={(displayFilers) ?9 : "auto"}
                 sx={{
                     paddingLeft: {
                         xs: 0,

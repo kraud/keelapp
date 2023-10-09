@@ -1,4 +1,4 @@
-import {AdjectiveCases, AdverbCases, Lang, NounCases} from "./enums";
+import {AdjectiveCases, AdverbCases, Lang, NounCases, PartOfSpeech} from "./enums";
 
 export interface WordData {
     translations: TranslationItem[],
@@ -36,6 +36,7 @@ export type SearchResult = {
 type WordSearch = {
     type: "word"
     language: Lang,
+    partOfSpeech: PartOfSpeech,
 }
 
 type TagSearch = {

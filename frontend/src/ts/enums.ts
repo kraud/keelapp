@@ -103,8 +103,8 @@ export enum GenderDE {
 }
 
 export enum PartOfSpeech {
-    noun = "Noun" ,
-    pronoun = "Pronoun" ,
+    noun = "Noun",
+    pronoun = "Pronoun",
     verb = "Verb",
     adjective = "Adjective",
     adverb = "Adverb",

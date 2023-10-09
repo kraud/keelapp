@@ -13,6 +13,7 @@ import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
 import {OverridableStringUnion} from "@mui/types";
 import {SvgIconPropsColorOverrides} from "@mui/material/SvgIcon/SvgIcon";
+import {getPartOfSpeechAbbreviated} from "./forms/commonFunctions";
 
 interface AutocompleteSearchProps {
     options: SearchResult[]
@@ -248,6 +249,19 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                                 >
                                     {option.label}
                                 </Typography>
+                                {(option.type === "word") &&
+                                    <Typography
+                                        variant={'body2'}
+                                        color={'primary'}
+                                        alignSelf={"left"}
+                                        sx={{
+                                            display: 'inline',
+                                            paddingLeft: globalTheme.spacing(1),
+                                        }}
+                                    >
+                                        {getPartOfSpeechAbbreviated(option.partOfSpeech)}
+                                    </Typography>
+                                }
                             </Grid>
                         </Grid>
                     </li>
