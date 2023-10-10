@@ -373,17 +373,13 @@ const getTags = asyncHandler(async (req, res) => {
 // @route   GET /api/tagsAmount
 // @access  Private
 const getAmountByTag = asyncHandler(async (req, res) => {
-    const amountByTag = Word.runCommand(
+    const amountByTag = await Word.countDocuments(
         {
-            count: 'tags',
-            query: {
-                "tags": {$regex: `${req.query.query}`, $options: "i"},
-                user: req.user.id
-            }
+            "tags": {$regex: `${req.query.query}`, $options: "i"},
+            user: req.user.id
         }
     )
-
-    res.status(200).json(Array.from(amountByTag))
+    res.status(200).json(amountByTag)
 })
 
 // @desc    Set Word

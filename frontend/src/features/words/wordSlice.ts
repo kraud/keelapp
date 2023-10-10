@@ -11,6 +11,7 @@ interface worldSliceState {
     word?: WordData,
     searchResults: SearchResult[],
     tags: string[], // TODO: change this to TagData[] eventually
+    currentTagAmount: number,
 
     // state-tracking properties
     isError: boolean,
@@ -30,6 +31,7 @@ const initialState: worldSliceState = {
     },
     searchResults: [],
     tags: [],
+    currentTagAmount: 0,
     isError: false,
     isSuccess: false,
     isLoading: false,
@@ -327,6 +329,19 @@ export const wordSlice = createSlice({
                 state.tags = (action.payload)
             })
             .addCase(searchAllTags.rejected, (state, action) => {
+                state.isTagSearchLoading = false
+                state.isError = true
+                state.message = action.payload as string
+            })
+            .addCase(getAmountByTag.pending, (state) => {
+                state.isTagSearchLoading = true
+            })
+            .addCase(getAmountByTag.fulfilled, (state, action) => {
+                state.isTagSearchLoading = false
+                state.isSuccess = true
+                state.currentTagAmount = (action.payload)
+            })
+            .addCase(getAmountByTag.rejected, (state, action) => {
                 state.isTagSearchLoading = false
                 state.isError = true
                 state.message = action.payload as string

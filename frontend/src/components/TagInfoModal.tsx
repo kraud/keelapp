@@ -1,12 +1,12 @@
 import globalTheme from "../theme/theme";
-import {Button, Grid, Modal, Switch, Typography} from "@mui/material";
+import {Button, CircularProgress, Grid, Modal, Switch, Typography} from "@mui/material";
 import Box from "@mui/material/Box";
 import React, {useEffect, useState} from "react";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import SendIcon from '@mui/icons-material/Send';
 import ClearIcon from '@mui/icons-material/Clear';
 import {getAmountByTag} from "../features/words/wordSlice";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 
 
 interface FriendSearchModalProps {
@@ -32,6 +32,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
 
     }
     const dispatch = useDispatch()
+    const {currentTagAmount, isTagSearchLoading} = useSelector((state: any) => state.words)
     const [isPublic, setIsPublic] = useState(true) // so Friends can see this tag on your profile and add it to their account
 
     const handleOnClose = () => {
@@ -39,9 +40,11 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
     }
 
     useEffect(() => {
-        // @ts-ignore
-        dispatch(getAmountByTag(props.tagId))
-    },[props.open])
+        if(props.tagId!!){
+            // @ts-ignore
+            dispatch(getAmountByTag(props.tagId))
+        }
+    },[props.tagId])
 
     return (
         <Modal
@@ -70,26 +73,35 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                             <Typography
                                 variant={"h3"}
                                 display={{
-                                    xs: undefined,
                                     md: "inline"
                                 }}
                             >
                                 {props.tagId}
                             </Typography>
-                            <Typography
-                                variant={"h6"}
-                                display={{
-                                    xs: undefined,
-                                    md: "inline"
-                                }}
-                                sx={{
-                                    paddingLeft: {
-                                        md: globalTheme.spacing(3)
-                                    }
-                                }}
-                            >
-                                X words
-                            </Typography>
+                            {(isTagSearchLoading)
+                                ?
+                                <CircularProgress
+                                    sx={{
+                                        marginLeft: {
+                                            md: globalTheme.spacing(3)
+                                        }
+                                    }}
+                                />
+                                :
+                                <Typography
+                                    variant={"h6"}
+                                    display={{
+                                        md: "inline"
+                                    }}
+                                    sx={{
+                                        paddingLeft: {
+                                            md: globalTheme.spacing(3)
+                                        }
+                                    }}
+                                >
+                                    {currentTagAmount} {(currentTagAmount > 1) ?"words" :"word"}
+                                </Typography>
+                            }
                         </Grid>
                         <Grid
                             item={true}
@@ -110,8 +122,8 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                             container={true}
                             justifyContent={"flex-start"}
                             item={true}
-                            xs={12}
-                            md={10}
+                            // xs={12}
+                            // md={10}
                             rowSpacing={{
                                 xs: 1,
                                 md: 0,
