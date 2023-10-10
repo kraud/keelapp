@@ -342,8 +342,8 @@ const getWordById = asyncHandler(async (req, res) => {
     res.status(200).json(word)
 })
 
-// @desc    Get Words
-// @route   GET /api/words
+// @desc    Get Tags
+// @route   GET /api/tags
 // @access  Private
 const getTags = asyncHandler(async (req, res) => {
     // first we get all tag arrays from stored words, where at least 1 matches the query
@@ -369,6 +369,22 @@ const getTags = asyncHandler(async (req, res) => {
     res.status(200).json(Array.from(filteredTags))
 })
 
+// @desc    Get Amount of items for a Tags
+// @route   GET /api/tagsAmount
+// @access  Private
+const getAmountByTag = asyncHandler(async (req, res) => {
+    const amountByTag = Word.runCommand(
+        {
+            count: 'tags',
+            query: {
+                "tags": {$regex: `${req.query.query}`, $options: "i"},
+                user: req.user.id
+            }
+        }
+    )
+
+    res.status(200).json(Array.from(amountByTag))
+})
 
 // @desc    Set Word
 // @route   POST /api/words
@@ -530,4 +546,5 @@ module.exports = {
     deleteWords,
     filterWordByAnyTranslation,
     getTags,
+    getAmountByTag
 }

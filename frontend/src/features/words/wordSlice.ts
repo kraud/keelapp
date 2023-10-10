@@ -180,7 +180,6 @@ export const searchWordByAnyTranslation = createAsyncThunk(`words/searchWord`, a
     }
 })
 
-
 // Get a word data by its id
 export const searchAllTags = createAsyncThunk(`words/searchAllTags`, async (query: string, thunkAPI) => {
     try {
@@ -196,6 +195,26 @@ export const searchAllTags = createAsyncThunk(`words/searchAllTags`, async (quer
             || error.message
             || error.toString()
         return thunkAPI.rejectWithValue(message)
+    }
+})
+
+
+// Get a word data by its id
+export const getAmountByTag = createAsyncThunk(`words/getAmountByTag`, async (query: string, thunkAPI) => {
+    try {
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await wordService.getAmountByTag(token, query)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+
     }
 })
 

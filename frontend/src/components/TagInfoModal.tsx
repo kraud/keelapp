@@ -1,10 +1,12 @@
 import globalTheme from "../theme/theme";
 import {Button, Grid, Modal, Switch, Typography} from "@mui/material";
 import Box from "@mui/material/Box";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import SendIcon from '@mui/icons-material/Send';
 import ClearIcon from '@mui/icons-material/Clear';
+import {getAmountByTag} from "../features/words/wordSlice";
+import {useDispatch} from "react-redux";
 
 
 interface FriendSearchModalProps {
@@ -29,11 +31,17 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
         },
 
     }
+    const dispatch = useDispatch()
     const [isPublic, setIsPublic] = useState(true) // so Friends can see this tag on your profile and add it to their account
 
     const handleOnClose = () => {
         props.setOpen(false)
     }
+
+    useEffect(() => {
+        // @ts-ignore
+        dispatch(getAmountByTag(props.tagId))
+    },[props.open])
 
     return (
         <Modal

@@ -1,6 +1,9 @@
 const express = require('express')
 const router = express.Router()
-const { getWords, setWord, updateWord, deleteWords, getWordsSimplified, getWordById, filterWordByAnyTranslation, getTags} = require('../controllers/wordController')
+const {
+    getWords, setWord, updateWord, deleteWords, getWordsSimplified, getWordById, filterWordByAnyTranslation, getTags,
+    getAmountByTag
+} = require('../controllers/wordController')
 const {protect} = require('../middleware/authMiddleware')
 
 router.get('/', protect, getWords)
@@ -10,6 +13,8 @@ router.get('/simple', protect, getWordsSimplified)
 router.get('/searchWord', protect, filterWordByAnyTranslation)
 
 router.get('/searchTag', protect, getTags)
+
+router.get('/getAmountByTag', protect, getAmountByTag)
 
 router.get('/:id', protect,  getWordById)
 
