@@ -13,7 +13,6 @@ import LinearIndeterminate from "../components/Spinner";
 import IconButton from "@mui/material/IconButton";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import PersonIcon from '@mui/icons-material/Person';
-import {toast} from "react-toastify";
 import {FriendSearchModal} from "../components/FriendSearchModal";
 import {UserBadge} from "../components/UserBadge";
 import {TagInfoModal} from "../components/TagInfoModal";

@@ -48,3 +48,17 @@ type UserSearch = {
     email: string,
     // eventually, add profile picture info
 }
+
+export interface PropsButtonData {
+    id: string
+    variant?: "contained" | "outlined" | "text"
+    color?: 'inherit' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning'
+    disabled?: boolean
+    // TODO: add a calculateVisible, in case data needed to calculate if it should be displayed comes from where the button is being used
+    // for situations where the data needed to calculate if it should be disabled comes from where the button is being used
+    calculateDisabled?: (values: any) => boolean
+    label?: string
+    icon?: any
+    onClick: any
+    isVisible?: boolean
+}

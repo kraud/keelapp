@@ -167,6 +167,14 @@ export function Review(){
         return () => clearTimeout(timeout)
     }, [currentPoSFilters, currentGenderFilters, currentTagFilters])
 
+    const goToDetailedView = (rowSelection: unknown[]) => {
+        // rowSelection format:
+        // { selectedRowIndex: true }
+        // TODO: CHANGE TO saving the row info instead of index
+        navigate(`/word/${wordsSimple.words[parseInt(Object.keys(rowSelection)[0])].id}`)
+    }
+
+
     return(
         <Grid
             component={motion.div} // to implement animations with Framer Motion
@@ -381,6 +389,32 @@ export function Review(){
                     sortedAndSelectedLanguages={allSelectedLanguages}
                     data={wordsSimple.words}
                     setAllSelectedItems={(languages: string[]) => changeLanguageOrderFromTable(languages)}
+                    customButtonList={[
+                        {
+                            id: "create-exercises",
+                            variant: "outlined",
+                            color: "secondary",
+                            disabled: true, // TODO: be be implemented soon, will redirect to a version of the Practice screen
+                            label: "Create exercises",
+                            onClick: () => null,
+                        },
+                        {
+                            id: "detailed-view",
+                            variant: "outlined",
+                            color: "error",
+                            disabled: false, // TODO: be be implemented soon, will redirect to a version of the Practice screen
+                            label: "Detailed View",
+                            onClick: (rowSelection: unknown[]) => goToDetailedView(rowSelection),
+                        },
+                        {
+                            id: "delete-selected",
+                            variant: "outlined",
+                            color: "error",
+                            disabled: false, // TODO: be be implemented soon, will redirect to a version of the Practice screen
+                            label: "Delete selected",
+                            onClick: (rowSelection: unknown[]) => goToDetailedView(rowSelection),
+                        }
+                    ]}
                 />
             </Grid>
         </Grid>

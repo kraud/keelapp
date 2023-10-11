@@ -22,6 +22,7 @@ import {Theme} from "@mui/material/styles";
 import {SxProps} from "@mui/system";
 import {getCurrentLangTranslated} from "../generalUseFunctions";
 import {useNavigate} from "react-router-dom";
+import {PropsButtonData} from "../../ts/interfaces";
 
 type TableWordData = {
     id: string,
@@ -49,6 +50,8 @@ interface TranslationsTableProps {
     sortedAndSelectedLanguages: string[]
     data: any
     setAllSelectedItems: (items: string[]) => void
+
+    customButtonList?: PropsButtonData[]
 }
 
 export function TranslationsTable(props: TranslationsTableProps) {
@@ -536,6 +539,35 @@ export function TranslationsTable(props: TranslationsTableProps) {
                 justifyContent={"flex-end"}
                 spacing={2}
             >
+                {(Object.keys(rowSelection).length > 1) && (props.customButtonList !== undefined) &&
+                    (props.customButtonList).map((button: PropsButtonData, index: number) => {
+                        if (button.isVisible !== false) {
+                            return(
+                                <Grid
+                                    key={index}
+                                    item={true}
+                                    container={true}
+                                    alignContent={"center"}
+                                    xs={"auto"}
+                                >
+                                    <Button
+                                        variant={(!! button.variant) ?button.variant :"contained"}
+                                        color={(!! button.color) ?button.color :"primary"}
+                                        //
+                                        disabled={(button.calculateDisabled !== undefined)
+                                            ? button.calculateDisabled(rowSelection)
+                                            : false
+                                        }
+                                        fullWidth={true}
+                                        onClick={() => button.onClick!(rowSelection)}
+                                    >
+                                        {button.label}
+                                    </Button>
+                                </Grid>
+                            )
+                        }
+                    })
+                }
                 {/* TODO: Make the "create exercises", "Detailed view" and "Delete selected" buttons auto-generated
                      according to props
                     */}
