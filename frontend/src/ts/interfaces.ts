@@ -61,4 +61,5 @@ export interface PropsButtonData {
     icon?: any
     onClick: any
     isVisible?: boolean
+    displayBySelectionAmount?: (amountSelected: number) => boolean, // greater than number => display
 }

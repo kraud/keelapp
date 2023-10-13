@@ -539,9 +539,20 @@ export function TranslationsTable(props: TranslationsTableProps) {
                 justifyContent={"flex-end"}
                 spacing={2}
             >
-                {(Object.keys(rowSelection).length > 1) && (props.customButtonList !== undefined) &&
+                {/*{(Object.keys(rowSelection).length > 1) && (props.customButtonList !== undefined) &&*/}
+                {(props.customButtonList !== undefined) &&
                     (props.customButtonList).map((button: PropsButtonData, index: number) => {
-                        if (button.isVisible !== false) {
+                        if (
+                            (button.isVisible !== false) &&
+                            (
+                                (button.displayBySelectionAmount === undefined)
+                                ||
+                                (
+                                    (button.displayBySelectionAmount !== undefined) &&
+                                    (button.displayBySelectionAmount(Object.keys(rowSelection).length))
+                                )
+                            )
+                        ) {
                             return(
                                 <Grid
                                     key={index}
@@ -556,7 +567,9 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                         //
                                         disabled={(button.calculateDisabled !== undefined)
                                             ? button.calculateDisabled(rowSelection)
-                                            : false
+                                            : (button.disabled !== undefined)
+                                                ? button.disabled
+                                                : false
                                         }
                                         fullWidth={true}
                                         onClick={() => button.onClick!(rowSelection)}
@@ -567,69 +580,6 @@ export function TranslationsTable(props: TranslationsTableProps) {
                             )
                         }
                     })
-                }
-                {/* TODO: Make the "create exercises", "Detailed view" and "Delete selected" buttons auto-generated
-                     according to props
-                    */}
-                {(Object.keys(rowSelection).length > 1) &&
-                <Grid
-                    item={true}
-                    container={true}
-                    alignContent={"center"}
-                    xs={"auto"}
-                >
-                    <Grid
-                        item={true}
-                    >
-                        <Button
-                            variant={"outlined"}
-                            onClick={() => null}
-                            color={"secondary"}
-                            disabled={true} // TODO: be be implemented soon, will redirect to a version of the Practice screen
-                        >
-                            Create exercises
-                        </Button>
-                    </Grid>
-                </Grid>
-                }
-                {(Object.keys(rowSelection).length === 1) &&
-                <Grid
-                    item={true}
-                    container={true}
-                    alignContent={"center"}
-                    xs={"auto"}
-                >
-                    <Grid
-                        item={true}
-                    >
-                        <Button
-                            variant={"outlined"}
-                            onClick={() => goToDetailedView()}
-                        >
-                            Detailed View
-                        </Button>
-                    </Grid>
-                </Grid>
-                }
-                {(Object.keys(rowSelection).length > 0) &&
-                <Grid
-                    item={true}
-                    container={true}
-                    alignContent={"center"}
-                    xs={"auto"}
-                >
-                    <Grid
-                        item={true}
-                    >
-                        <Button
-                            variant={"outlined"}
-                            color={"error"}
-                            onClick={() => deleteSelectedRows()}
-                        >
-                            Delete selected
-                        </Button>
-                    </Grid>
-                </Grid>
                 }
                 {/* TODO: hide if no words of type "noun" are included on the list to be displayed?
                      Add a list of partOfSpeech in every response from BE.  */}

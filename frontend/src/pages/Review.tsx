@@ -4,7 +4,7 @@ import globalTheme from "../theme/theme";
 import {useNavigate, useParams, useSearchParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
-import {FilterItem, getWordsSimplified} from "../features/words/wordSlice";
+import {deleteWordById, FilterItem, getWordsSimplified} from "../features/words/wordSlice";
 import LinearIndeterminate from "../components/Spinner";
 import {DnDLanguageOrderSelector} from "../components/DnDLanguageOrderSelector";
 import {Lang, NounCases, PartOfSpeech} from "../ts/enums";
@@ -25,6 +25,7 @@ export function Review(){
     // Languages currently not displayed as columns on the table
     const [otherLanguages, setOtherLanguages] = useState<string[]>([])
     const [displayFilers, setDisplayFilers] = useState(true)
+    const [finishedDeleting, setFinishedDeleting] = useState(true)
 
     const {wordsSimple, isLoading, isError, message} = useSelector((state: any) => state.words)
     // @ts-ignore
@@ -173,6 +174,33 @@ export function Review(){
         // TODO: CHANGE TO saving the row info instead of index
         navigate(`/word/${wordsSimple.words[parseInt(Object.keys(rowSelection)[0])].id}`)
     }
+
+    const deleteSelectedRows = (rowSelection: unknown[]) => {
+        // rowSelection format:
+        // { selectedRowIndex: true } // TODO: should we change it to saving the row info instead?
+        Object.keys(rowSelection).forEach((selectionDataIndex: string) => {
+            const rowData = wordsSimple.words[parseInt(selectionDataIndex)]
+            //@ts-ignore
+            dispatch(deleteWordById(rowData.id)) // deletes whole word
+            // setFinishedDeleting(false)
+        })
+    }
+
+    useEffect(() => {
+        // isLoading switches back to false once the response from backend is set on redux
+        // finishedDeleting will only be false while waiting for a response from backend
+        if(!finishedDeleting && !isLoading){
+            // closeModal
+            toast.success(`Word was deleted successfully`, {
+                toastId: "click-on-modal"
+            })
+            // we reverse to the original state, before sending data to update
+            setFinishedDeleting(true)
+            //@ts-ignore
+            dispatch(getWordsSimplified()) // to update the list of words displayed on the table
+            // setRowSelection({}) // TODO: implement prop on TranslationsTable to reset selections from parent component
+        }
+    }, [isLoading, finishedDeleting])
 
 
     return(
@@ -397,22 +425,31 @@ export function Review(){
                             disabled: true, // TODO: be be implemented soon, will redirect to a version of the Practice screen
                             label: "Create exercises",
                             onClick: () => null,
+                            displayBySelectionAmount: (amountSelected: number) => {
+                                return (amountSelected > 1)
+                            },
                         },
                         {
                             id: "detailed-view",
                             variant: "outlined",
                             color: "error",
-                            disabled: false, // TODO: be be implemented soon, will redirect to a version of the Practice screen
+                            disabled: false,
                             label: "Detailed View",
                             onClick: (rowSelection: unknown[]) => goToDetailedView(rowSelection),
+                            displayBySelectionAmount: (amountSelected: number) => {
+                                return (amountSelected === 1)
+                            },
                         },
                         {
                             id: "delete-selected",
                             variant: "outlined",
                             color: "error",
-                            disabled: false, // TODO: be be implemented soon, will redirect to a version of the Practice screen
+                            disabled: false,
                             label: "Delete selected",
-                            onClick: (rowSelection: unknown[]) => goToDetailedView(rowSelection),
+                            onClick: (rowSelection: unknown[]) => deleteSelectedRows(rowSelection),
+                            displayBySelectionAmount: (amountSelected: number) => {
+                                return (amountSelected > 0)
+                            },
                         }
                     ]}
                 />
