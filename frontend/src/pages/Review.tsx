@@ -168,21 +168,25 @@ export function Review(){
         return () => clearTimeout(timeout)
     }, [currentPoSFilters, currentGenderFilters, currentTagFilters])
 
-    const goToDetailedView = (rowSelection: unknown[]) => {
+    const goToDetailedView = (rowSelection: unknown) => {
         // rowSelection format:
         // { selectedRowIndex: true }
-        // TODO: CHANGE TO saving the row info instead of index
-        navigate(`/word/${wordsSimple.words[parseInt(Object.keys(rowSelection)[0])].id}`)
+        if(rowSelection !== {}){
+            // TODO: CHANGE TO saving the row info instead of index
+            // @ts-ignore
+            navigate(`/word/${wordsSimple.words[parseInt(Object.keys(rowSelection)[0])].id}`)
+        }
     }
 
-    const deleteSelectedRows = (rowSelection: unknown[]) => {
+    const deleteSelectedRows = (rowSelection: unknown) => {
         // rowSelection format:
         // { selectedRowIndex: true } // TODO: should we change it to saving the row info instead?
+        // @ts-ignore
         Object.keys(rowSelection).forEach((selectionDataIndex: string) => {
             const rowData = wordsSimple.words[parseInt(selectionDataIndex)]
             //@ts-ignore
             dispatch(deleteWordById(rowData.id)) // deletes whole word
-            // setFinishedDeleting(false)
+            setFinishedDeleting(false)
         })
     }
 
@@ -435,7 +439,7 @@ export function Review(){
                             color: "error",
                             disabled: false,
                             label: "Detailed View",
-                            onClick: (rowSelection: unknown[]) => goToDetailedView(rowSelection),
+                            onClick: (rowSelection: unknown) => goToDetailedView(rowSelection),
                             displayBySelectionAmount: (amountSelected: number) => {
                                 return (amountSelected === 1)
                             },
@@ -446,7 +450,12 @@ export function Review(){
                             color: "error",
                             disabled: false,
                             label: "Delete selected",
-                            onClick: (rowSelection: unknown[]) => deleteSelectedRows(rowSelection),
+                            setSelectionOnClick: true, //
+                            onClick: (rowSelection: unknown) => {
+                                deleteSelectedRows(rowSelection)
+                                // setSelectionOnClick is true => we must return value that will be set as rowSelection
+                                return({}) // TODO: fix row selection data in TranslationTable => change unknown to unknown[] ? // now to reset set {}
+                            },
                             displayBySelectionAmount: (amountSelected: number) => {
                                 return (amountSelected > 0)
                             },

@@ -133,9 +133,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
     const [data, setData] = useState<TableWordData[]>(() => [])
     const [globalFilter, setGlobalFilter] = useState("")
     const [rowSelection, setRowSelection] = React.useState({})
-    const dispatch = useDispatch()
     const {isLoading, isError, message} = useSelector((state: any) => state.words)
-    const navigate = useNavigate()
 
     useEffect(() => {
         setData(props.data)
@@ -470,40 +468,6 @@ export function TranslationsTable(props: TranslationsTableProps) {
             element.remove()
         }
     }
-    const [finishedDeleting, setFinishedDeleting] = useState(true)
-
-    const deleteSelectedRows = () => {
-        // rowSelection format:
-        // { selectedRowIndex: true } // TODO: should we change it to saving the row info instead?
-        Object.keys(rowSelection).forEach((selectionDataIndex: string) => {
-            const rowData = data[parseInt(selectionDataIndex)]
-            //@ts-ignore
-            dispatch(deleteWordById(rowData.id)) // deletes whole word
-            setFinishedDeleting(false)
-        })
-    }
-
-    const goToDetailedView = () => {
-        // rowSelection format:
-        // { selectedRowIndex: true } // TODO: should we change it to saving the row info instead?
-        navigate(`/word/${data[parseInt(Object.keys(rowSelection)[0])].id}`)
-    }
-
-    useEffect(() => {
-        // isLoading switches back to false once the response from backend is set on redux
-        // finishedDeleting will only be false while waiting for a response from backend
-        if(!finishedDeleting && !isLoading){
-            // closeModal
-            toast.success(`Word was deleted successfully`, {
-                toastId: "click-on-modal"
-            })
-            // we reverse to the original state, before sending data to update
-            setFinishedDeleting(true)
-            //@ts-ignore
-            dispatch(getWordsSimplified()) // to update the list of words displayed on the table
-            setRowSelection({})
-        }
-    }, [isLoading, finishedDeleting])
 
     useEffect(() => {
         if(isError){
@@ -572,7 +536,17 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                                 : false
                                         }
                                         fullWidth={true}
-                                        onClick={() => button.onClick!(rowSelection)}
+                                        onClick={() => {
+                                            if(button.setSelectionOnClick!!){
+                                                // if setSelectionOnClick is true then:
+                                                // after performing onClick function, return value must be set as selectedRows
+                                                // @ts-ignore
+                                                setRowSelection(button.onClick!(rowSelection))
+                                            } else {
+                                                // if setSelectionOnClick is undefined => we simply perform onClick function
+                                                button.onClick!(rowSelection)
+                                            }
+                                        }}
                                     >
                                         {button.label}
                                     </Button>
