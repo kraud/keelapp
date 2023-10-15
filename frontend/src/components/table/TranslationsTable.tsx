@@ -16,12 +16,10 @@ import {toast} from "react-toastify";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import ReactDOM from 'react-dom/client';
 import {DebouncedTextField} from "./DebouncedTextField";
-import {useDispatch, useSelector} from "react-redux";
-import {deleteWordById, getWordsSimplified} from "../../features/words/wordSlice";
+import {useSelector} from "react-redux";
 import {Theme} from "@mui/material/styles";
 import {SxProps} from "@mui/system";
 import {getCurrentLangTranslated} from "../generalUseFunctions";
-import {useNavigate} from "react-router-dom";
 import {PropsButtonData} from "../../ts/interfaces";
 
 type TableWordData = {
@@ -48,9 +46,11 @@ type TableWordData = {
 
 interface TranslationsTableProps {
     sortedAndSelectedLanguages: string[]
-    data: any
+    rowData: any
     setAllSelectedItems: (items: string[]) => void
 
+    displayGlobalSearch?: boolean
+    partsOfSpeech?: string[]
     customButtonList?: PropsButtonData[]
 }
 
@@ -136,8 +136,8 @@ export function TranslationsTable(props: TranslationsTableProps) {
     const {isLoading, isError, message} = useSelector((state: any) => state.words)
 
     useEffect(() => {
-        setData(props.data)
-    }, [props.data, isLoading])
+        setData(props.rowData)
+    }, [props.rowData, isLoading])
 
     const newColumnHelper = createColumnHelper<TableWordData>()
 
@@ -477,6 +477,11 @@ export function TranslationsTable(props: TranslationsTableProps) {
         }
     }, [isError, message])
 
+    useEffect(() => {
+        console.log("props.partsOfSpeech")
+        console.log(props.partsOfSpeech)
+    }, [props.partsOfSpeech])
+
     return(
         <Grid
             container={true}
@@ -555,40 +560,42 @@ export function TranslationsTable(props: TranslationsTableProps) {
                         }
                     })
                 }
-                {/* TODO: hide if no words of type "noun" are included on the list to be displayed?
-                     Add a list of partOfSpeech in every response from BE.  */}
-                <Grid
-                    item={true}
-                    container={true}
-                    alignContent={"center"}
-                    xs={"auto"}
-                >
+                {((props.partsOfSpeech !== undefined) && (props.partsOfSpeech.includes("Noun"))) &&
+                    <Grid
+                        item={true}
+                        container={true}
+                        alignContent={"center"}
+                        xs={"auto"}
+                    >
+                        <Grid
+                            item={true}
+                        >
+                            <FormControlLabel
+                                value={displayGender}
+                                control={<Switch checked={displayGender} color="primary" />}
+                                label={"Display gender"}
+                                labelPlacement={"start"}
+                                onChange={() => setDisplayGender(!displayGender)}
+                                sx={{
+                                    marginLeft: 0,
+                                }}
+                            />
+                        </Grid>
+                    </Grid>
+                }
+                {/* TODO: add toggle by prop, to display/hide global search?*/}
+                {(props.displayGlobalSearch!!) &&
                     <Grid
                         item={true}
                     >
-                        <FormControlLabel
-                            value={displayGender}
-                            control={<Switch checked={displayGender} color="primary" />}
-                            label={"Display gender"}
-                            labelPlacement={"start"}
-                            onChange={() => setDisplayGender(!displayGender)}
-                            sx={{
-                                marginLeft: 0,
-                            }}
+                        <DebouncedTextField
+                            value={globalFilter}
+                            onChange={(e: any) => setGlobalFilter(e)}
+                            debounce={750}
+                            placeholder={"Search all columns..."}
                         />
                     </Grid>
-                </Grid>
-                {/* TODO: add toggle by prop, to display/hide global search?*/}
-                <Grid
-                    item={true}
-                >
-                    <DebouncedTextField
-                        value={globalFilter}
-                        onChange={(e: any) => setGlobalFilter(e)}
-                        debounce={750}
-                        placeholder={"Search all columns..."}
-                    />
-                </Grid>
+                }
             </Grid>
             {/* TABLE COMPONENT */}
             <Grid

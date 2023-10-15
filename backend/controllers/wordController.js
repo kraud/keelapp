@@ -288,6 +288,7 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
             })
         }
     }
+    const partsOfSpeech = new Set()
     // Filtering complete => setting up format to be displayed on table
     if((processedResults !== undefined) && (processedResults.length > 0)){
         processedResults.forEach((completeWord) => {
@@ -299,6 +300,7 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
                 updatedAt: completeWord.updatedAt,
                 id: completeWord.id,
             }
+            partsOfSpeech.add(completeWord.partOfSpeech)
             // from each translated language, we only retrieve the necessary data
             completeWord.translations.forEach((translation) => {
                 simplifiedWord = {
@@ -312,6 +314,7 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
     }
     const result = {
         amount: wordsSimplified.length, // the total amount of words saved for this user
+        partsOfSpeechIncluded: Array.from(partsOfSpeech),
         words: wordsSimplified // the data corresponding to those words, reduced to only the most necessary fields
     }
     res.status(200).json(result)

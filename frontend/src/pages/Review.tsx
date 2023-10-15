@@ -418,8 +418,10 @@ export function Review(){
                 }}
             >
                 <TranslationsTable
+                    displayGlobalSearch={true}
                     sortedAndSelectedLanguages={allSelectedLanguages}
-                    data={wordsSimple.words}
+                    rowData={wordsSimple.words}
+                    partsOfSpeech={wordsSimple.partsOfSpeechIncluded}
                     setAllSelectedItems={(languages: string[]) => changeLanguageOrderFromTable(languages)}
                     customButtonList={[
                         {
