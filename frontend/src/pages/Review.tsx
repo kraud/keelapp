@@ -15,6 +15,7 @@ import {TableFilters} from "../components/TableFilters";
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import {AutocompleteMultiple} from "../components/AutocompleteMultiple";
+import {createColumnsReviewTable} from "../components/table/columns/ReviewTableColumns";
 
 export function Review(){
     const navigate = useNavigate()
@@ -420,8 +421,11 @@ export function Review(){
                     displayGlobalSearch={true}
                     sortedAndSelectedLanguages={allSelectedLanguages}
                     rowData={wordsSimple.words}
+                    calculateColumns={(displayGender: boolean) => {
+                        return(createColumnsReviewTable(allSelectedLanguages, displayGender))
+                    }}
                     partsOfSpeech={wordsSimple.partsOfSpeechIncluded}
-                    setAllSelectedItems={(languages: string[]) => changeLanguageOrderFromTable(languages)}
+                    setOrderColumns={(languages: string[]) => changeLanguageOrderFromTable(languages)}
                     customButtonList={[
                         {
                             id: "create-exercises",

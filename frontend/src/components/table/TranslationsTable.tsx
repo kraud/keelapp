@@ -19,7 +19,8 @@ import {createColumnsReviewTable, TableWordData} from "./columns/ReviewTableColu
 interface TranslationsTableProps {
     sortedAndSelectedLanguages: string[]
     rowData: any
-    setAllSelectedItems: (items: string[]) => void
+    calculateColumns: (displayGender: boolean) => unknown[]
+    setOrderColumns: (items: string[]) => void
 
     displayGlobalSearch?: boolean
     partsOfSpeech?: string[]
@@ -143,7 +144,8 @@ export function TranslationsTable(props: TranslationsTableProps) {
         // this is necessary in order to override a possible new column order,
         // set by moving the columns manually before (check onDrop function)
         table.resetColumnOrder()
-        setColumns(createColumnsReviewTable(props.sortedAndSelectedLanguages, displayGender))
+        setColumns(props.calculateColumns(displayGender))
+        // setColumns(createColumnsReviewTable(props.sortedAndSelectedLanguages, displayGender))
     },[props.sortedAndSelectedLanguages, displayGender])
 
 
@@ -195,7 +197,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
                 // TODO: do something with the last column here?
                 const colToBeMoved = currentCols.splice(columnBeingDragged, 1)
                 currentCols.splice(newPosition, 0, colToBeMoved[0])
-                props.setAllSelectedItems(currentCols) // this will change the order outside the table, on the DnD selector
+                props.setOrderColumns(currentCols) // this will change the order outside the table, on the DnD selector
                 // TODO: more testing on edge cases for column order? Next line might be redundant
                 // table.setColumnOrder(currentCols) // this will change the internal column order
             }
