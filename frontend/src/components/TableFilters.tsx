@@ -1,6 +1,6 @@
 import {Chip, Grid} from "@mui/material";
 import React, {useEffect, useState} from "react";
-import DoneIcon from '@mui/icons-material/Done';
+import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import globalTheme from "../theme/theme";
 import {FilterItem} from "../features/words/wordSlice";
@@ -84,7 +84,7 @@ export function TableFilters(props: TableFilterProps) {
                                 variant={(isChipSelected(filter.id)) ?'filled' :"outlined"}
                                 color={(isChipSelected(filter.id)) ?"success" :"error"}
                                 onDelete={() => handleOnClick(filter.id)}
-                                deleteIcon={(isChipSelected(filter.id)) ? <DoneIcon /> : <CloseIcon />}
+                                deleteIcon={(isChipSelected(filter.id)) ? <CloseIcon /> : <AddIcon />}
                                 label={filter.filterValue}
                                 sx={{
                                     background: (isChipSelected(filter.id)) ?undefined :'white',

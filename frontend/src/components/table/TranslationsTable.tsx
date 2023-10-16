@@ -1,48 +1,20 @@
 import {
     ColumnSort,
-    createColumnHelper,
     flexRender,
     getCoreRowModel,
     getFilteredRowModel, getSortedRowModel,
-    Row,
     useReactTable,
 } from '@tanstack/react-table'
 import React, {useEffect, useState} from "react";
-import {Lang, PartOfSpeech} from "../../ts/enums";
 import {Button, Grid, Slide, Switch, Typography} from "@mui/material";
 import globalTheme from "../../theme/theme";
-import {IndeterminateCheckbox, TableDataCell, TableHeaderCell} from "./ExtraTableComponents";
 import {toast} from "react-toastify";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import ReactDOM from 'react-dom/client';
 import {DebouncedTextField} from "./DebouncedTextField";
 import {useSelector} from "react-redux";
-import {Theme} from "@mui/material/styles";
-import {SxProps} from "@mui/system";
-import {getCurrentLangTranslated} from "../generalUseFunctions";
 import {PropsButtonData} from "../../ts/interfaces";
-
-type TableWordData = {
-    id: string,
-    creationDate?: string,
-    lastUpdate?: string,
-    partOfSpeech: PartOfSpeech,
-    tags: string[],
-
-    singularNimetavEE?: string, // only required field for Estonian
-    registeredCasesEE?: number // amount of cases with data for this language
-
-    singularEN?: string, // only required field for English
-    registeredCasesEN?: number
-
-    genderDE?: string, // Only required fields for German
-    singularNominativDE?: string,
-    registeredCasesDE?: number
-
-    genderES?: string, // Only required fields for German
-    singularES?: string,
-    registeredCasesES?: number
-}
+import {createColumnsReviewTable, TableWordData} from "./columns/ReviewTableColumns";
 
 interface TranslationsTableProps {
     sortedAndSelectedLanguages: string[]
@@ -130,252 +102,23 @@ export function TranslationsTable(props: TranslationsTableProps) {
             }
         },
     }
-    const [data, setData] = useState<TableWordData[]>(() => [])
+    const [rowData, setRowData] = useState<TableWordData[]>(() => [])
     const [globalFilter, setGlobalFilter] = useState("")
     const [rowSelection, setRowSelection] = React.useState({})
     const {isLoading, isError, message} = useSelector((state: any) => state.words)
 
     useEffect(() => {
-        setData(props.rowData)
+        setRowData(props.rowData)
     }, [props.rowData, isLoading])
 
-    const newColumnHelper = createColumnHelper<TableWordData>()
 
     const [columns, setColumns] = useState<any[]>([])
-    // As the order of selected languages changes, so should the order they are displayed on the table
-    const createColumns = (selectedLanguagesList: string[]) => {
-        const newlySortedColumns = selectedLanguagesList.map((language: string) => {
-            let currentLanguageData: {
-                accessor: string,
-                language: Lang,
-                wordGender?: string, // i.e. info.row.original.*genderDE*
-                displayWordGender?: boolean,
-                amount?: string,  // i.e. info.row.original.*registeredCasesDE*
-                onlyDisplayAmountOnHover?: boolean,
-                type: "array" | "text" | "other",
-                sxProps?: SxProps<Theme>,
-                enableColumnFilter?: boolean,
-                sortingFn?: (prev: Row<TableWordData>, curr: Row<TableWordData>, columnId: string) => void
-            }
-
-            switch (language){
-                case Lang.DE: {
-                    currentLanguageData = {
-                        accessor: 'dataDE',
-                        language: Lang.DE,
-                        wordGender: 'genderDE', // i.e. info.row.original.*genderDE*
-                        displayWordGender: displayGender,
-                        amount: 'registeredCasesDE',  // i.e. info.row.original.*registeredCasesDE*
-                        onlyDisplayAmountOnHover: true,
-                        type: "text",
-                        sxProps: {
-                            width: '200px',
-                        },
-                        enableColumnFilter: false,
-                    }
-                    break
-                }
-                case Lang.EE: {
-                    currentLanguageData = {
-                        accessor: 'dataEE',
-                        language: Lang.EE,
-                        amount: 'registeredCasesEE',  // i.e. info.row.original.*registeredCasesDE*
-                        onlyDisplayAmountOnHover: true,
-                        type: "text",
-                        sxProps: {
-                            width: '200px',
-                        },
-                        enableColumnFilter: false,
-                    }
-                    break
-                }
-
-                case Lang.EN: {
-                    currentLanguageData = {
-                        accessor: 'dataEN',
-                        language: Lang.EN,
-                        amount: 'registeredCasesEN',  // i.e. info.row.original.*registeredCasesDE*
-                        onlyDisplayAmountOnHover: true,
-                        type: "text",
-                        sxProps: {
-                            width: '200px',
-                        },
-                        enableColumnFilter: false,
-                    }
-                    break
-                }
-
-                case Lang.ES: {
-                    currentLanguageData = {
-                        accessor: 'dataES',
-                        language: Lang.ES,
-                        wordGender: 'genderES', // i.e. info.row.original.*genderDE*
-                        displayWordGender: displayGender,
-                        amount: 'registeredCasesES',  // i.e. info.row.original.*registeredCasesDE*
-                        onlyDisplayAmountOnHover: true,
-                        type: "text",
-                        sxProps: {
-                            width: '200px',
-                        },
-                        enableColumnFilter: false,
-                    }
-                    break
-                }
-
-                default: {
-                    currentLanguageData = {
-                        accessor: 'missing-data',
-                        language: Lang.EN,
-                        type: "other",
-                    }
-                }
-            }
-
-            return(
-                //@ts-ignore
-                newColumnHelper.accessor(currentLanguageData.accessor,{
-                    header: (info) =>
-                        <TableHeaderCell
-                            content={getCurrentLangTranslated(currentLanguageData.language)}
-                            column={info.column}
-                            sxProps={{
-                                background: 'white',
-                                zIndex: 1000,
-                                position: 'relative',
-                            }}
-
-                        />,
-                    cell: (info) => {return(
-                            <TableDataCell
-                                language={currentLanguageData.language}
-                                partOfSpeech={info.row.original.partOfSpeech}
-                                wordId={info.row.original.id}
-                                content={info.getValue()}
-                                wordGender={(currentLanguageData.wordGender !== undefined)
-                                    //@ts-ignore
-                                    ? info.row.original[currentLanguageData.wordGender]
-                                    : undefined
-                                }
-                                displayWordGender={currentLanguageData.displayWordGender!}
-                                //@ts-ignore
-                                amount={(currentLanguageData.amount !== undefined) ?info.row.original[currentLanguageData.amount] :undefined}
-                                onlyDisplayAmountOnHover={currentLanguageData.onlyDisplayAmountOnHover!}
-                                type={currentLanguageData.type}
-                                sxProps={currentLanguageData.sxProps}
-                            />
-                    )},
-                    enableColumnFilter: currentLanguageData.enableColumnFilter!,
-                })
-            )
-        })
-        return (
-            [
-                {
-                    id: 'select',
-                    // @ts-ignore
-                    header: ({ table }) => (
-                        <TableDataCell
-                            content={
-                                <IndeterminateCheckbox
-                                    {...{
-                                        checked: table.getIsAllRowsSelected(),
-                                        indeterminate: table.getIsSomeRowsSelected(),
-                                        onChange: table.getToggleAllRowsSelectedHandler(),
-                                    }}
-                                />
-                            }
-                            type={"other"}
-                            textAlign={"center"}
-                            onlyForDisplay={true}
-                        />
-                    ),
-                    // @ts-ignore
-                    cell: ({ row }) => (
-                        <TableDataCell
-                            content={
-                                <IndeterminateCheckbox
-                                    {...{
-                                        checked: row.getIsSelected(),
-                                        disabled: !row.getCanSelect(),
-                                        indeterminate: row.getIsSomeSelected(),
-                                        onChange: row.getToggleSelectedHandler(),
-                                    }}
-                                />
-                            }
-                            type={"other"}
-                            textAlign={"center"}
-                            onlyForDisplay={true}
-                        />
-                    ),
-                },
-                newColumnHelper.accessor('partOfSpeech', {
-                    header: ({column}) =>
-                        <TableHeaderCell
-                            content={"Type"}
-                            column={column}
-                            sxProps={{
-                                cursor: 'default',
-                                background: 'white',
-                                zIndex: 1000,
-                                position: 'relative',
-                            }}
-                        />,
-                    cell: (info) => {return(
-                        (info.getValue() !== undefined)
-                            ?
-                            <TableDataCell
-                                content={info.getValue()}
-                                type={"text"}
-                                textAlign={"center"}
-                                onlyForDisplay={true}
-                            />
-                            :
-                            ""
-                    )},
-                    enableColumnFilter: false,
-                }),
-                ...newlySortedColumns,
-                newColumnHelper.accessor('tags', {
-                    header: () =>
-                        <TableHeaderCell
-                            content={"Tags"}
-                            sxProps={{
-                                cursor: 'default',
-                                background: 'white',
-                                zIndex: 1000,
-                                position: 'relative',
-                            }}
-                        />,
-                    cell: (info) => {return(
-                        (info.getValue() !== undefined)
-                            ?
-                            <TableDataCell
-                                content={info.getValue()}
-                                wordId={info.row.original.id}
-                                type={"array"}
-                                textAlign={"center"}
-                                onlyForDisplay={false}
-                                sxProps={{
-                                    minWidth: "50px"
-                                }}
-                                onlyDisplayAmountOnHover={true}
-                            />
-                            :
-                            ""
-                    )},
-                    enableColumnFilter: false,
-                    enableSorting: false,
-                }),
-            ]
-        )
-    }
-
     const [sorting, setSorting] = useState<ColumnSort[]>([])
     const [columnFiltersState, setColumnFiltersState] = useState<{ id: string, value: unknown }[]>([])
 
     const table = useReactTable(
         {
-            data,
+            data: rowData,
             columns,
             state: {
                 globalFilter: globalFilter,
@@ -400,7 +143,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
         // this is necessary in order to override a possible new column order,
         // set by moving the columns manually before (check onDrop function)
         table.resetColumnOrder()
-        setColumns(createColumns(props.sortedAndSelectedLanguages))
+        setColumns(createColumnsReviewTable(props.sortedAndSelectedLanguages, displayGender))
     },[props.sortedAndSelectedLanguages, displayGender])
 
 
@@ -477,11 +220,6 @@ export function TranslationsTable(props: TranslationsTableProps) {
         }
     }, [isError, message])
 
-    useEffect(() => {
-        console.log("props.partsOfSpeech")
-        console.log(props.partsOfSpeech)
-    }, [props.partsOfSpeech])
-
     return(
         <Grid
             container={true}
@@ -508,7 +246,6 @@ export function TranslationsTable(props: TranslationsTableProps) {
                 justifyContent={"flex-end"}
                 spacing={2}
             >
-                {/*{(Object.keys(rowSelection).length > 1) && (props.customButtonList !== undefined) &&*/}
                 {(props.customButtonList !== undefined) &&
                     (props.customButtonList).map((button: PropsButtonData, index: number) => {
                         if (
@@ -516,10 +253,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
                             (
                                 (button.displayBySelectionAmount === undefined)
                                 ||
-                                (
-                                    (button.displayBySelectionAmount !== undefined) &&
-                                    (button.displayBySelectionAmount(Object.keys(rowSelection).length))
-                                )
+                                (button.displayBySelectionAmount(Object.keys(rowSelection).length))
                             )
                         ) {
                             return(

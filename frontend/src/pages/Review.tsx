@@ -202,7 +202,6 @@ export function Review(){
             setFinishedDeleting(true)
             //@ts-ignore
             dispatch(getWordsSimplified()) // to update the list of words displayed on the table
-            // setRowSelection({}) // TODO: implement prop on TranslationsTable to reset selections from parent component
         }
     }, [isLoading, finishedDeleting])
 
@@ -438,7 +437,7 @@ export function Review(){
                         {
                             id: "detailed-view",
                             variant: "outlined",
-                            color: "error",
+                            color: "secondary",
                             disabled: false,
                             label: "Detailed View",
                             onClick: (rowSelection: unknown) => goToDetailedView(rowSelection),
