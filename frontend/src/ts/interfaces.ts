@@ -46,6 +46,7 @@ type TagSearch = {
 type UserSearch = {
     type: "user",
     email: string,
+    username: string,
     // eventually, add profile picture info
 }
 

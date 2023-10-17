@@ -319,7 +319,6 @@ export function TranslationsTable(props: TranslationsTableProps) {
                         </Grid>
                     </Grid>
                 }
-                {/* TODO: add toggle by prop, to display/hide global search?*/}
                 {(props.displayGlobalSearch!!) &&
                     <Grid
                         item={true}
@@ -409,7 +408,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
                         timeout={650}
                     >
                         <tbody>
-                        {table.getRowModel().rows.map((row, index) => (
+                        {table.getRowModel().rows.map((row) => (
                             <tr
                                 key={row.id}
                             >

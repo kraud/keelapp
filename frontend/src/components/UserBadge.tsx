@@ -64,8 +64,10 @@ export const UserBadge = (props: UserBadgeProps) => {
                             },
                         }}
                     >
-                        {/*{user?.name}*/}
-                        Username
+                        {(props.userData.username !== undefined)
+                            ? props.userData.username
+                            : "-username"
+                        }
                     </Typography>
                 </Grid>
                 <Grid

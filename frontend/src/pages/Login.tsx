@@ -114,6 +114,7 @@ export function Login() {
                         <Grid
                             item={true}
                         >
+                            {/* TODO: should this also allow login in with username? */}
                             <TextInputFormWithHook
                                 control={control}
                                 label={"E-mail"}

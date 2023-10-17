@@ -7,18 +7,24 @@ const User = require('../models/userModel')
 // @route   POST /api/users
 // @access  Public
 const registerUser = asyncHandler(async(req, res) => {
-    const { name, email, password } = req.body
+    const { name, email, username, password } = req.body
 
-    if(!name || !email || !password){
+    if(!name || !email || !username || !password){
        res.status(400)
        throw new Error('Please add all fields')
     }
 
-    const userExists = await User.findOne({email: email})
+    const emailExists = await User.findOne({email: email})
+    const usernameExists = await User.findOne({username: username})
 
-    if(userExists){
+    if(emailExists){
         res.status(400)
-        throw new Error('User already exists')
+        throw new Error('Email already in use')
+    }
+
+    if(usernameExists){
+        res.status(400)
+        throw new Error('Username already in use')
     }
 
     // Hash password
@@ -29,6 +35,7 @@ const registerUser = asyncHandler(async(req, res) => {
     const user = await User.create({
         name,
         email,
+        username,
         password: hashedPassword
     })
 
@@ -37,6 +44,7 @@ const registerUser = asyncHandler(async(req, res) => {
             _id: user.id,
             name: user.name,
             email: user.email,
+            username: user.username,
             token: generateToken(user._id)
         })
     } else {
@@ -87,6 +95,7 @@ const getUsersBy = asyncHandler(async(req, res) => {
         throw new Error('User not found')
     }
 
+    {/* TODO: should this also allow login in with username? */}
     await User.find({
         $or: [
             {
@@ -104,6 +113,7 @@ const getUsersBy = asyncHandler(async(req, res) => {
                     id: user._id,
                     type: "user",
                     label: user.name,
+                    username: user.username,
                     email: user.email,
                 })
             })

@@ -142,28 +142,14 @@ export function Review(){
     const [currentGenderFilters, setCurrentGenderFilters] = useState<FilterItem[]>([])
     const [currentPoSFilters, setCurrentPoSFilters] = useState<FilterItem[]>([])
 
-    // useEffect(() => {
-    //     console.log("filters changed")
-    //     // @ts-ignore
-    //     const promise = dispatch(getWordsSimplified([
-    //         ...currentPoSFilters,
-    //         ...currentGenderFilters,
-    //         ...currentTagFilters,
-    //     ]))
-    //     return () => {
-    //         // `createAsyncThunk` attaches an `abort()` method to the promise
-    //         promise.abort()
-    //     }
-    // }, [currentPoSFilters, currentGenderFilters, currentTagFilters])
-
     useEffect(() => {
         const timeout = setTimeout(() => {
-        // @ts-ignore
-        dispatch(getWordsSimplified([
-            ...currentPoSFilters,
-            ...currentGenderFilters,
-            ...currentTagFilters,
-            ]))
+            // @ts-ignore
+            dispatch(getWordsSimplified([
+                ...currentPoSFilters,
+                ...currentGenderFilters,
+                ...currentTagFilters,
+                ]))
         }, 10)
 
         return () => clearTimeout(timeout)

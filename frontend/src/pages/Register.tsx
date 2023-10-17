@@ -15,10 +15,11 @@ import {motion} from "framer-motion";
 import {childVariantsAnimation, routeVariantsAnimation} from "./management/RoutesWithAnimation";
 
 export interface IFormInput {
-    name: string;
-    email: string;
-    password: string;
-    password2?: string;
+    name: string
+    username: string
+    email: string
+    password: string
+    password2?: string
 }
 
 
@@ -35,11 +36,12 @@ export function Register() {
     }
 
     const validationSchema = Yup.object().shape({
-    name: Yup.string().required("Name is required"),
-    email: Yup.string().required("E-mail is required").email("Valid e-mail is required"),
-    password: Yup.string().required("Password is required"),
-    password2: Yup.string().required("Password2 is required")
-        .oneOf([Yup.ref('password')], "Passwords don't match"),
+        name: Yup.string().required("Name is required"),
+        email: Yup.string().required("E-mail is required").email("Valid e-mail is required"),
+        username: Yup.string().required("Username is required"), // TODO: later check if username is not already registered
+        password: Yup.string().required("Password is required"),
+        password2: Yup.string().required("Password2 is required")
+            .oneOf([Yup.ref('password')], "Passwords don't match"),
     })
 
     const {
@@ -53,6 +55,7 @@ export function Register() {
     const onSubmit = (data: IFormInput) => {
         const userData: IFormInput = {
             name: data.name,
+            username: data.username,
             email: data.email,
             password: data.password
         }
@@ -143,6 +146,18 @@ export function Register() {
                                 defaultValue={""}
                                 errors={errors.email}
                                 type={"email"}
+                                fullWidth={true}
+                            />
+                        </Grid>
+                        <Grid
+                            item={true}
+                        >
+                            <TextInputFormWithHook
+                                control={control}
+                                label={"Username"}
+                                name={"username"}
+                                defaultValue={""}
+                                errors={errors.username}
                                 fullWidth={true}
                             />
                         </Grid>
