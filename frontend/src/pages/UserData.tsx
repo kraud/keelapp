@@ -16,9 +16,17 @@ import PersonIcon from '@mui/icons-material/Person';
 import {FriendSearchModal} from "../components/FriendSearchModal";
 import {UserBadge} from "../components/UserBadge";
 import {TagInfoModal} from "../components/TagInfoModal";
+import {toast} from "react-toastify";
 
 interface UserDataProps {
 
+}
+
+interface UserData {
+    id: string,
+    name: string,
+    username?: string,
+    email: string
 }
 
 export const UserData = (props: UserDataProps) => {
@@ -29,6 +37,9 @@ export const UserData = (props: UserDataProps) => {
     const [openFriendsModal, setOpenFriendsModal] = useState(false)
     const [openTagModal, setOpenTagModal] = useState(false)
     const [selectedTag, setSelectedTag] = useState("")
+    const [isEditing, setIsEditing] = useState(false)
+    const [localUserData, setLocalUserData] = useState<{username: string, name: string}| null>(null)
+    const [userData, setUserData] = useState<UserData| null>(null)
 
     // const friendList: string[] = []
     // const friendList = ["friendo"]
@@ -43,6 +54,10 @@ export const UserData = (props: UserDataProps) => {
     useEffect(() => {
         setAllTags(tags)
     },[tags])
+
+    useEffect(() => {
+        setUserData(user)
+    },[user])
 
     useEffect(() => {
         // @ts-ignore
@@ -67,11 +82,19 @@ export const UserData = (props: UserDataProps) => {
         >
             {/* USER DATA */}
             <UserBadge
-                userData={{
-                    id: user?._id,
-                    name: user?.name,
-                    username: user?.username,
-                    email: user?.email
+                userData={(userData!!) ?userData :{
+                    id: "",
+                    name: "",
+                    email: "",
+                    username: ""
+                }}
+                isEditing={isEditing}
+                returnFieldsData={(updatedData) => {
+                    // setLocalUserData({
+                    //     ...localUserData,
+                    //     username: updatedData.username,
+                    //     name: updatedData.name,
+                    // })
                 }}
             />
             {/* BUTTONS */}
@@ -102,7 +125,16 @@ export const UserData = (props: UserDataProps) => {
                     <Button
                         variant={"contained"}
                         color={"secondary"}
-                        onClick={() => null}
+                        onClick={() => {
+                            if(isEditing){
+                                // TODO: change user data on BE and update UI
+                                toast.info("User data will be updated")
+                                console.log(localUserData)
+                                setLocalUserData(null)
+                            } else {
+                                setIsEditing(true)
+                            }
+                        }}
                         fullWidth={true}
                         endIcon={<SettingsIcon />}
                     >
@@ -235,6 +267,7 @@ export const UserData = (props: UserDataProps) => {
                         :
                         (friendList.map((friend: string, index: number) => {
                             return(
+                                // TODO: make this into a separate component - to list users
                                 <Grid
                                     container={true}
                                     item={true}

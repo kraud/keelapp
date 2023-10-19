@@ -59,12 +59,14 @@ const registerUser = asyncHandler(async(req, res) => {
 const loginUser = asyncHandler(async(req, res) => {
     const {email, password} = req.body
 
+    {/* TODO: should this also allow login in with username? */}
     const user = await User.findOne({email: email})
     if(user && (await bcrypt.compare(password, user.password))){
         res.json({
             _id: user.id,
             name: user.name,
             email: user.email,
+            username: user.username,
             token: generateToken(user._id)
         })
     } else {
@@ -95,14 +97,13 @@ const getUsersBy = asyncHandler(async(req, res) => {
         throw new Error('User not found')
     }
 
-    {/* TODO: should this also allow login in with username? */}
     await User.find({
         $or: [
             {
                 "name": {$regex: `${req.query.query}`, $options: "i"},
             },
             {
-                "email": {$regex: `${req.query.query}`, $options: "i"},
+                "username": {$regex: `${req.query.query}`, $options: "i"},
             },
         ]
     }).then((data) => {
@@ -117,8 +118,7 @@ const getUsersBy = asyncHandler(async(req, res) => {
                     email: user.email,
                 })
             })
-            // sort simpleResults by alphabetical order
-            // simpleResults.sort((a, b) => a.label.localeCompare(b.label))
+            simpleResults.sort((a, b) => a.label.localeCompare(b.label))
             res.status(200).json(simpleResults)
         } else {
             res.status(404).json({

@@ -1,9 +1,19 @@
 import globalTheme from "../theme/theme";
-import {Grid, Typography} from "@mui/material";
+import {Grid, TextField, Typography} from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import React from "react";
 
-interface UserBadgeProps {
+type EditingProps = {
+    isEditing?: boolean // when true => user and username become TextFields
+    returnFieldsData?:
+        (fieldsData: {
+            username?: string,
+            name?: string
+            // later it will be possible to change currently active languages and others
+        }) => void
+}
+
+type UserBadgeProps = {
     userData: {
         id: string,
         name: string,
@@ -11,7 +21,7 @@ interface UserBadgeProps {
         username?: string
         // eventually add data about profile picture
     }
-}
+} & EditingProps
 
 export const UserBadge = (props: UserBadgeProps) => {
 
@@ -54,21 +64,34 @@ export const UserBadge = (props: UserBadgeProps) => {
                     item={true}
                     xs={12}
                 >
-                    <Typography
-                        sx={{
-                            typography: {
-                                xs: 'h6',
-                                sm: 'h5',
-                                md: 'h4',
-                                textTransform: "capitalize"
-                            },
-                        }}
-                    >
-                        {(props.userData.username !== undefined)
-                            ? props.userData.username
-                            : "-username"
-                        }
-                    </Typography>
+                    {(props.isEditing!!)
+                        ?
+                        <TextField
+                            label={"Username"}
+                            type={"text"}
+                            fullWidth={true}
+                            value={props.userData.username}
+                            // onChange={(value) => props.returnFieldsData({
+                            //     username: value.target.value,
+                            // })}
+                        />
+                        :
+                        <Typography
+                            sx={{
+                                typography: {
+                                    xs: 'h6',
+                                    sm: 'h5',
+                                    md: 'h4',
+                                    textTransform: "capitalize"
+                                },
+                            }}
+                        >
+                            {(props.userData.username !== undefined)
+                                ? props.userData.username
+                                : "-username"
+                            }
+                        </Typography>
+                    }
                 </Grid>
                 <Grid
                     item={true}
