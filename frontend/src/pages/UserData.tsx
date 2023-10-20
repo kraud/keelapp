@@ -22,7 +22,7 @@ interface UserDataProps {
 
 }
 
-interface UserData {
+export interface UserBadgeData {
     id: string,
     name: string,
     username?: string,
@@ -38,8 +38,7 @@ export const UserData = (props: UserDataProps) => {
     const [openTagModal, setOpenTagModal] = useState(false)
     const [selectedTag, setSelectedTag] = useState("")
     const [isEditing, setIsEditing] = useState(false)
-    const [localUserData, setLocalUserData] = useState<{username: string, name: string}| null>(null)
-    const [userData, setUserData] = useState<UserData| null>(null)
+    const [localUserData, setLocalUserData] = useState<UserBadgeData | null>(null)
 
     // const friendList: string[] = []
     // const friendList = ["friendo"]
@@ -56,7 +55,7 @@ export const UserData = (props: UserDataProps) => {
     },[tags])
 
     useEffect(() => {
-        setUserData(user)
+        setLocalUserData(user)
     },[user])
 
     useEffect(() => {
@@ -82,7 +81,7 @@ export const UserData = (props: UserDataProps) => {
         >
             {/* USER DATA */}
             <UserBadge
-                userData={(userData!!) ?userData :{
+                userData={(localUserData!!) ?localUserData :{
                     id: "",
                     name: "",
                     email: "",
@@ -92,7 +91,7 @@ export const UserData = (props: UserDataProps) => {
                 returnFieldsData={(updatedData) => {
                     // setLocalUserData({
                     //     ...localUserData,
-                    //     username: updatedData.username,
+                    //     username: updatedData.username!,
                     //     name: updatedData.name,
                     // })
                 }}
@@ -131,6 +130,7 @@ export const UserData = (props: UserDataProps) => {
                                 toast.info("User data will be updated")
                                 console.log(localUserData)
                                 setLocalUserData(null)
+                                setIsEditing(false)
                             } else {
                                 setIsEditing(true)
                             }
