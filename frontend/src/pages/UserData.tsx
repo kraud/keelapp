@@ -13,6 +13,8 @@ import LinearIndeterminate from "../components/Spinner";
 import IconButton from "@mui/material/IconButton";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import PersonIcon from '@mui/icons-material/Person';
+import CheckIcon from '@mui/icons-material/Check';
+import ClearIcon from '@mui/icons-material/Clear';
 import {FriendSearchModal} from "../components/FriendSearchModal";
 import {UserBadge} from "../components/UserBadge";
 import {TagInfoModal} from "../components/TagInfoModal";
@@ -25,7 +27,7 @@ interface UserDataProps {
 export interface UserBadgeData {
     id: string,
     name: string,
-    username?: string,
+    username: string,
     email: string
 }
 
@@ -89,11 +91,13 @@ export const UserData = (props: UserDataProps) => {
                 }}
                 isEditing={isEditing}
                 returnFieldsData={(updatedData) => {
-                    // setLocalUserData({
-                    //     ...localUserData,
-                    //     username: updatedData.username!,
-                    //     name: updatedData.name,
-                    // })
+                    if(localUserData !== null){
+                        setLocalUserData({
+                            ...localUserData,
+                            username: updatedData.username!,
+                            name: updatedData.name,
+                        })
+                    }
                 }}
             />
             {/* BUTTONS */}
@@ -118,28 +122,77 @@ export const UserData = (props: UserDataProps) => {
                     </Button>
                 </Grid>
                 <Grid
+                    container={true}
+                    justifyContent={"center"}
                     item={true}
                     xs={5}
+                    spacing={1}
                 >
-                    <Button
-                        variant={"contained"}
-                        color={"secondary"}
-                        onClick={() => {
-                            if(isEditing){
-                                // TODO: change user data on BE and update UI
-                                toast.info("User data will be updated")
-                                console.log(localUserData)
-                                setLocalUserData(null)
-                                setIsEditing(false)
-                            } else {
-                                setIsEditing(true)
-                            }
-                        }}
-                        fullWidth={true}
-                        endIcon={<SettingsIcon />}
+                    <Grid
+                        item={true}
+                        xs
                     >
-                        Edit profile
-                    </Button>
+                        <Button
+                            variant={"contained"}
+                            color={(isEditing) ?"success" :"secondary"}
+                            onClick={() => {
+                                if(isEditing){
+                                    // TODO: change user data on BE and update UI
+                                    toast.info("User data will be updated")
+                                    console.log(localUserData)
+                                    setIsEditing(false)
+                                } else {
+                                    setIsEditing(true)
+                                }
+                            }}
+                            fullWidth={true}
+                            endIcon={(isEditing) ?<CheckIcon /> :<SettingsIcon />}
+                            disabled={
+                                (
+                                    (isEditing) &&
+                                    (localUserData !== null) &&
+                                    (
+                                        (
+                                            (localUserData.username === "")
+                                            ||
+                                            // TODO: username is missing on some early users
+                                            //  !== undefined check will not be necessary in the future
+                                            (localUserData.username === undefined)
+                                            ||
+                                            ((localUserData.username !== undefined) && localUserData.username.length < 3)
+                                        )
+                                        ||
+                                        (
+                                            (localUserData.name === "")
+                                            ||
+                                            (localUserData.name.length < 3)
+                                        )
+                                    )
+                                )
+                            }
+                        >
+                            {(isEditing) ?"Save" :"Edit profile"}
+                        </Button>
+                    </Grid>
+                    {(isEditing) &&
+                        <Grid
+                            item={true}
+                            xs
+                        >
+                            <Button
+                                variant={"contained"}
+                                color={"error"}
+                                onClick={() => {
+                                    setLocalUserData(user)
+                                    setIsEditing(false)
+                                }}
+                                fullWidth={true}
+                                endIcon={<ClearIcon/>}
+                            >
+                                Cancel
+                            </Button>
+                        </Grid>
+                    }
                 </Grid>
             </Grid>
             {/* TAGS */}

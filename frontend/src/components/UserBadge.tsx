@@ -32,20 +32,22 @@ export const UserBadge = (props: UserBadgeProps) => {
                 item={true}
                 alignItems={"center"}
                 xs={9}
+                rowSpacing={props.isEditing!! ?2 :undefined}
             >
                 <Grid
                     item={true}
-                    xs={12}
+                    xs={props.isEditing!! ?10 :12}
                 >
                     {(props.isEditing!!)
                         ?
                         <TextField
-                            label={"Username"}
+                            label={"Name"}
                             type={"text"}
                             fullWidth={true}
                             value={props.userData.name}
                             onChange={(value) => {
                                 if(props.returnFieldsData !== undefined){
+                                    console.log("onChange name")
                                     props.returnFieldsData({
                                         ...props.userData,
                                         name: value.target.value,
@@ -70,7 +72,7 @@ export const UserBadge = (props: UserBadgeProps) => {
                 </Grid>
                 <Grid
                     item={true}
-                    xs={12}
+                    xs={props.isEditing!! ?10 :12}
                 >
                     {(props.isEditing!!)
                         ?
@@ -81,6 +83,7 @@ export const UserBadge = (props: UserBadgeProps) => {
                             value={props.userData.username}
                             onChange={(value) => {
                                 if(props.returnFieldsData !== undefined){
+                                    console.log("onChange username")
                                     props.returnFieldsData({
                                         ...props.userData,
                                         username: value.target.value,

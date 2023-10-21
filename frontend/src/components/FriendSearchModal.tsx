@@ -98,6 +98,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                     id: selectedUser?.id,
                                     name: selectedUser?.label,
                                     email: (selectedUser.type === "user") ?selectedUser?.email : "",
+                                    username: (selectedUser.type === "user") ?selectedUser?.username : "",
                                 }}
                             />
                             <Grid
