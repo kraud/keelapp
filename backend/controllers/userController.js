@@ -75,7 +75,26 @@ const loginUser = asyncHandler(async(req, res) => {
     }
 })
 
-// @desc    Get user data
+// @desc    Change an existing user's data
+// @route   PUT /api/users/updateUser
+// @access  Public
+const updateUser = asyncHandler(async(req, res) => {
+    const {email, name, username} = req.body
+
+    const userData = await User.findOne({email: email})
+    if(userData.id === req.user.id){
+        const updatedUser = await User.findByIdAndUpdate(userData.id,{
+            name: name,
+            username: username,
+        },{new: true}).select({ password: 0, createdAt: 0 , updatedAt: 0, __v: 0 })
+        res.status(200).json(updatedUser)
+    } else {
+        res.status(400)
+        throw new Error('Invalid credentials')
+    }
+})
+
+// @desc    Get currently logged-in user data
 // @route   POST /api/users/me
 // @access  Private
 const getMe = asyncHandler(async(req, res) => {
@@ -140,4 +159,5 @@ module.exports = {
     loginUser,
     getMe,
     getUsersBy,
+    updateUser
 }

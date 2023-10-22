@@ -210,8 +210,6 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
             renderOption={(props, option) => {
                 return (
                     <li
-                        //@ts-ignore
-                        key={(props['data-option-index'] as number).toString()+"-"+option.label}
                         style={{
                             paddingTop: 0,
                             paddingBottom: 0,
@@ -219,6 +217,8 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                             paddingRight: 0,
                         }}
                         {...props}
+                        //@ts-ignore
+                        key={(props['data-option-index'] as number).toString()+"-"+option.label}
                     >
                         <Grid
                             container={true}

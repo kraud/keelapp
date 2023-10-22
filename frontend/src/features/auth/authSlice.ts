@@ -2,7 +2,6 @@ import {createSlice, createAsyncThunk} from "@reduxjs/toolkit"
 import authService from "./authService";
 import {IFormInput} from "../../pages/Register";
 import {SearchResult} from "../../ts/interfaces";
-import wordService from "../words/wordService";
 
 // Get user from localStorage
 const user = JSON.parse(localStorage.getItem('user')! )
@@ -39,8 +38,6 @@ export const register = createAsyncThunk('auth/register', async (user: IFormInpu
 
 })
 
-//TODO: give proper type to user
-
 // Login user
 export const login = createAsyncThunk('auth/login', async (user: any, thunkAPI) => {
     try {
@@ -51,6 +48,28 @@ export const login = createAsyncThunk('auth/login', async (user: any, thunkAPI) 
         return thunkAPI.rejectWithValue(message)
     }
 
+})
+
+// Update user
+export const updateUser = createAsyncThunk('auth/updateUser', async (user: any, thunkAPI) => {
+    try {
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        console.log("thunkAPI.getState()")
+        console.log(thunkAPI.getState())
+        console.log("token")
+        console.log(token)
+        return await authService.updateUser(token, user)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
 })
 
 export const logout = createAsyncThunk('auth/logout', async () => {
@@ -110,6 +129,23 @@ export const authSlice = createSlice({
                 state.user = action.payload
             })
             .addCase(login.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload as string
+                state.user = null
+            })
+            .addCase(updateUser.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(updateUser.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.user = {
+                    ...action.payload,
+                    token: state.user.token
+                }
+            })
+            .addCase(updateUser.rejected, (state, action) => {
                 state.isLoading = false
                 state.isError = true
                 state.message = action.payload as string

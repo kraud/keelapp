@@ -19,6 +19,7 @@ import {FriendSearchModal} from "../components/FriendSearchModal";
 import {UserBadge} from "../components/UserBadge";
 import {TagInfoModal} from "../components/TagInfoModal";
 import {toast} from "react-toastify";
+import {updateUser} from "../features/auth/authSlice";
 
 interface UserDataProps {
 
@@ -64,6 +65,11 @@ export const UserData = (props: UserDataProps) => {
         // @ts-ignore
         dispatch(searchAllTags(""))
     },[])
+
+    const onSaveChanges = (newLocalUserData: UserBadgeData) => {
+        // @ts-ignore
+        dispatch(updateUser(newLocalUserData))
+    }
 
     return(
         <Grid
@@ -136,10 +142,8 @@ export const UserData = (props: UserDataProps) => {
                             variant={"contained"}
                             color={(isEditing) ?"success" :"secondary"}
                             onClick={() => {
-                                if(isEditing){
-                                    // TODO: change user data on BE and update UI
-                                    toast.info("User data will be updated")
-                                    console.log(localUserData)
+                                if(isEditing && (localUserData !== null)){
+                                    onSaveChanges(localUserData)
                                     setIsEditing(false)
                                 } else {
                                     setIsEditing(true)

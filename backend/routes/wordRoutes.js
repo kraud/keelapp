@@ -16,12 +16,12 @@ router.get('/searchTag', protect, getTags)
 
 router.get('/getAmountByTag', protect, getAmountByTag)
 
-router.get('/:id', protect,  getWordById)
+router.get('/:id', protect, getWordById)
 
-router.post('/', protect,  setWord)
+router.post('/', protect, setWord)
 
-router.put('/:id', protect,  updateWord)
+router.put('/:id', protect, updateWord)
 
-router.delete('/:id', protect,  deleteWords)
+router.delete('/:id', protect, deleteWords)
 
 module.exports = router

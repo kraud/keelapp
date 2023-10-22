@@ -47,7 +47,6 @@ export const UserBadge = (props: UserBadgeProps) => {
                             value={props.userData.name}
                             onChange={(value) => {
                                 if(props.returnFieldsData !== undefined){
-                                    console.log("onChange name")
                                     props.returnFieldsData({
                                         ...props.userData,
                                         name: value.target.value,
@@ -83,7 +82,6 @@ export const UserBadge = (props: UserBadgeProps) => {
                             value={props.userData.username}
                             onChange={(value) => {
                                 if(props.returnFieldsData !== undefined){
-                                    console.log("onChange username")
                                     props.returnFieldsData({
                                         ...props.userData,
                                         username: value.target.value,
