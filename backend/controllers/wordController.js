@@ -1,7 +1,6 @@
 const asyncHandler = require('express-async-handler')
 
 const Word = require('../models/wordModel')
-const User = require('../models/userModel')
 
 // @desc    Get Words
 // @route   GET /api/words

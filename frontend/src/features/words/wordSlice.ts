@@ -1,7 +1,7 @@
 import {createSlice, createAsyncThunk, PayloadAction} from "@reduxjs/toolkit"
 import wordService from "./wordService"
 import {SearchResult, WordData, WordDataBE} from "../../ts/interfaces";
-import {AdjectiveCases, AdverbCases, Lang, NounCases, PartOfSpeech} from "../../ts/enums";
+import {Lang, NounCases, PartOfSpeech} from "../../ts/enums";
 
 interface worldSliceState {
     // list with full translation info for all words might not be needed?

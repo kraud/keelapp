@@ -34,7 +34,8 @@ const updateUser = async (token: any, userData: any) => {
     const response = await axios.put(API_URL+'updateUser', userData, config)
 
     if(response.data) {
-        localStorage.setItem('user', JSON.stringify(response.data))
+        localStorage.removeItem('user')
+        localStorage.setItem('user', JSON.stringify({...response.data, token: token}))
     }
 
     return response.data
