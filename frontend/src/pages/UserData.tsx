@@ -34,7 +34,7 @@ export interface UserBadgeData {
 
 export const UserData = (props: UserDataProps) => {
     const dispatch = useDispatch()
-    const {user} = useSelector((state: any) => state.auth)
+    const {user, isLoading, isSuccess} = useSelector((state: any) => state.auth)
     const {tags, isTagSearchLoading} = useSelector((state: any) => state.words)
     const [allTags, setAllTags] = useState<string[]>([])
     const [openFriendsModal, setOpenFriendsModal] = useState(false)
@@ -65,6 +65,12 @@ export const UserData = (props: UserDataProps) => {
         // @ts-ignore
         dispatch(searchAllTags(""))
     },[])
+
+    useEffect(() => {
+        if(!isLoading && isSuccess){
+            toast.info("User data updated successfully!")
+        }
+    },[isLoading, isSuccess])
 
     const onSaveChanges = (newLocalUserData: UserBadgeData) => {
         // @ts-ignore
@@ -105,6 +111,7 @@ export const UserData = (props: UserDataProps) => {
                         })
                     }
                 }}
+                isLoading={isLoading}
             />
             {/* BUTTONS */}
             <Grid

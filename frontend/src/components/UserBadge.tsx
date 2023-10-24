@@ -1,5 +1,5 @@
 import globalTheme from "../theme/theme";
-import {Grid, TextField, Typography} from "@mui/material";
+import {CircularProgress, Grid, TextField, Typography} from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import React from "react";
 import {UserBadgeData} from "../pages/UserData";
@@ -7,6 +7,7 @@ import {UserBadgeData} from "../pages/UserData";
 type EditingProps = {
     isEditing?: boolean // when true => user and username become TextFields
     returnFieldsData?: (fieldsData: UserBadgeData) => void
+    isLoading?: boolean
 }
 
 type UserBadgeProps = {
@@ -148,6 +149,35 @@ export const UserBadge = (props: UserBadgeProps) => {
                             },
                         }}
                     />
+                    {(props.isLoading) &&
+                        <span
+                            className={"completePercentageCircle"}
+                            style={{
+                                position: 'absolute',
+                                // width: '135px',
+                                // height: '135px',
+                            }}
+                        >
+                            <CircularProgress
+                                color={"secondary"}
+                                sx={{
+                                    zIndex: 100,
+                                    marginTop: '-60px',
+                                    marginLeft: '60px',
+                                    // width: '135px',
+                                    // height: '135px',
+                                    // width: {
+                                    //     xs:'85px',
+                                    //     md:'135px',
+                                    // },
+                                    // height: {
+                                    //     xs:'85px',
+                                    //     md:'135px',
+                                    // },
+                                    // color: 'grey !important',
+                                }}
+                            />
+                        </span>}
                 </Grid>
             </Grid>
         </Grid>
