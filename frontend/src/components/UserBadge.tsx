@@ -3,6 +3,8 @@ import {CircularProgress, Grid, TextField, Typography} from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import React from "react";
 import {UserBadgeData} from "../pages/UserData";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import {useTheme} from "@mui/material/styles";
 
 type EditingProps = {
     isEditing?: boolean // when true => user and username become TextFields
@@ -15,6 +17,8 @@ type UserBadgeProps = {
 } & EditingProps
 
 export const UserBadge = (props: UserBadgeProps) => {
+    const theme = useTheme()
+    const lessThanMd = useMediaQuery(theme.breakpoints.down("md"))
 
     return(
         <Grid
@@ -60,7 +64,6 @@ export const UserBadge = (props: UserBadgeProps) => {
                             sx={{
                                 typography: {
                                     xs: 'h4',
-                                    sm: 'h3',
                                     md: 'h2',
                                 },
                                 textTransform: "capitalize"
@@ -95,7 +98,6 @@ export const UserBadge = (props: UserBadgeProps) => {
                             sx={{
                                 typography: {
                                     xs: 'h6',
-                                    sm: 'h5',
                                     md: 'h4',
                                     textTransform: "capitalize"
                                 },
@@ -116,7 +118,6 @@ export const UserBadge = (props: UserBadgeProps) => {
                         sx={{
                             typography: {
                                 xs: 'body1',
-                                sm: 'h6',
                                 md: 'h5',
                                 textTransform: "all-lowercase"
                             },
@@ -154,30 +155,35 @@ export const UserBadge = (props: UserBadgeProps) => {
                             className={"completePercentageCircle"}
                             style={{
                                 position: 'absolute',
-                                // width: '135px',
-                                // height: '135px',
+                                top: 0,
+                                width: (lessThanMd) ?'85px' :'200px',
+                                height: (lessThanMd) ?'85px' :'200px',
                             }}
                         >
                             <CircularProgress
                                 color={"secondary"}
                                 sx={{
                                     zIndex: 100,
-                                    marginTop: '-60px',
-                                    marginLeft: '60px',
-                                    // width: '135px',
-                                    // height: '135px',
-                                    // width: {
-                                    //     xs:'85px',
-                                    //     md:'135px',
-                                    // },
-                                    // height: {
-                                    //     xs:'85px',
-                                    //     md:'135px',
-                                    // },
-                                    // color: 'grey !important',
+                                    marginTop: {
+                                        xs:'25px',
+                                        md:'16px',
+                                    },
+                                    marginLeft: {
+                                        xs:'-5px',
+                                        md:'-13px',
+                                    },
+                                    width: {
+                                        xs:'85px !important',
+                                        md:'150px !important',
+                                    },
+                                    height: {
+                                        xs:'85px !important',
+                                        md:'150px !important',
+                                    },
                                 }}
                             />
-                        </span>}
+                        </span>
+                    }
                 </Grid>
             </Grid>
         </Grid>
