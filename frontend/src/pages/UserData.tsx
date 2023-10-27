@@ -8,7 +8,6 @@ import Avatar from "@mui/material/Avatar";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SettingsIcon from '@mui/icons-material/Settings';
 import {searchAllTags} from "../features/words/wordSlice";
-import {useNavigate, useSearchParams} from "react-router-dom";
 import LinearIndeterminate from "../components/Spinner";
 import IconButton from "@mui/material/IconButton";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';

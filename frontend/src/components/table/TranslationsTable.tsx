@@ -15,6 +15,8 @@ import {DebouncedTextField} from "./DebouncedTextField";
 import {useSelector} from "react-redux";
 import {PropsButtonData} from "../../ts/interfaces";
 import {createColumnsReviewTable, TableWordData} from "./columns/ReviewTableColumns";
+import LinearIndeterminate from "../Spinner";
+import LinearProgress from "@mui/material/LinearProgress";
 
 interface TranslationsTableProps {
     sortedAndSelectedLanguages: string[]
@@ -25,6 +27,8 @@ interface TranslationsTableProps {
     displayGlobalSearch?: boolean
     partsOfSpeech?: string[]
     customButtonList?: PropsButtonData[]
+
+    rowDataIsLoading?: boolean
 }
 
 export function TranslationsTable(props: TranslationsTableProps) {
@@ -400,6 +404,14 @@ export function TranslationsTable(props: TranslationsTableProps) {
                         </tr>
                     ))}
                     </thead>
+                    {(props.rowDataIsLoading!!) &&
+                        <LinearProgress
+                            sx={{
+                                display: 'table-caption',
+                                bottom: '-77px' // header height
+                            }}
+                        />
+                    }
                     <Slide
                         in={(table.getRowModel().rows.length > 0)}
                         direction="down"

@@ -7,7 +7,7 @@ import {InternalStatus, TranslationItem} from "../../ts/interfaces";
 import {Lang, PartOfSpeech} from "../../ts/enums";
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
-import {clearWord, FilterItem, getWordById, getWordsSimplified, updateWordById} from "../../features/words/wordSlice";
+import {clearWord, clearWordsSimple, FilterItem, getWordById, getWordsSimplified, updateWordById} from "../../features/words/wordSlice";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from '@mui/icons-material/Add';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -378,6 +378,7 @@ export function TableDataCell(props: TableDataCellProps){
                                                     }}
                                                     onClick={() => {
                                                         setSearchParams({"tags": item}) // also acts as navigate
+                                                        dispatch(clearWordsSimple())
                                                     }}
                                                 />
                                             </Grid>

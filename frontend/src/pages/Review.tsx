@@ -206,33 +206,6 @@ export function Review(){
                 marginTop: globalTheme.spacing(4),
             }}
         >
-            <Grid
-                item={true}
-                container={true}
-                justifyContent={'center'}
-            >
-                <Grid
-                    container={true}
-                    justifyContent={'center'}
-                    item={true}
-                >
-                    {(isLoading) &&
-                        <Grid
-                            item={true}
-                        >
-                            <Typography
-                                variant={'h4'}
-                                sx={{
-                                    textDecoration: 'underline'
-                                }}
-                            >
-                                Fetching word data
-                            </Typography>
-                            <LinearIndeterminate/>
-                        </Grid>
-                    }
-                </Grid>
-            </Grid>
             {/*
                 TODO: refactor later into single table component with DnD language selector included
                  & add frame, pagination, filters, toggles for extra data, etc.
@@ -404,6 +377,7 @@ export function Review(){
                 }}
             >
                 <TranslationsTable
+                    rowDataIsLoading={isLoading}
                     displayGlobalSearch={true}
                     sortedAndSelectedLanguages={allSelectedLanguages}
                     rowData={wordsSimple.words}

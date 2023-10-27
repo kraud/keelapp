@@ -236,6 +236,12 @@ export const wordSlice = createSlice({
                 ...state,
                 searchResults: initialState.searchResults
             })
+        },
+        clearWordsSimple: (state: any) => {
+            return ({
+                ...state,
+                wordsSimple: initialState.wordsSimple
+            })
         }
     },
     extraReducers: (builder) => {
@@ -349,5 +355,5 @@ export const wordSlice = createSlice({
     }
 })
 
-export const {reset, clearWord, clearResults} = wordSlice.actions
+export const {reset, clearWord, clearResults, clearWordsSimple} = wordSlice.actions
 export default wordSlice.reducer
