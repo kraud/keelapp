@@ -249,8 +249,18 @@ function ResponsiveAppBar() {
                                 sx={{ p: 0 }}
                             >
                                 <Badge
+                                    // variant="dot"
+                                    overlap="circular"
+                                    color="error"
                                     badgeContent={4}
-                                    color="primary"
+                                    anchorOrigin={{
+                                        vertical: 'bottom',
+                                        horizontal: 'left',
+                                    }}
+                                    invisible={false}
+                                    sx={{
+                                        // position: 'absolute',
+                                    }}
                                 >
                                     <Avatar
                                         alt="User photo"
