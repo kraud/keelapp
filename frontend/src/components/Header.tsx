@@ -20,9 +20,10 @@ import {AutocompleteSearch} from "./AutocompleteSearch";
 import globalTheme from "../theme/theme";
 import {searchWordByAnyTranslation} from "../features/words/wordSlice";
 import {SearchResult} from "../ts/interfaces";
+import {Badge} from "@mui/material";
 
 const pages = ['Add word', 'Practice', 'Review'];
-const settings = ['Account', 'Dashboard', 'Logout'];
+const settings = ['Notifications', 'Account', 'Dashboard', 'Logout'];
 
 
 function ResponsiveAppBar() {
@@ -247,10 +248,15 @@ function ResponsiveAppBar() {
                                 onClick={handleOpenUserMenu}
                                 sx={{ p: 0 }}
                             >
-                                <Avatar
-                                    alt="User photo"
-                                    src={(user) ? "" : "/"}
-                                />
+                                <Badge
+                                    badgeContent={4}
+                                    color="primary"
+                                >
+                                    <Avatar
+                                        alt="User photo"
+                                        src={(user) ? "" : "/"}
+                                    />
+                                </Badge>
                             </IconButton>
                         </Tooltip>
                         <Menu
