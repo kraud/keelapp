@@ -7,6 +7,7 @@ import Register from "../Register";
 import React from "react";
 import {DisplayWord} from "../DisplayWord";
 import {UserData} from "../UserData";
+import {NotificationHub} from "../NotificationHub";
 
 export const routeVariantsAnimation = {
     initial: {
@@ -68,6 +69,12 @@ export function RoutesWithAnimation() {
                 path='/register'
                 element={
                     <Register/>
+                }
+            />
+            <Route
+                path='/user/:userId?/notifications'
+                element={
+                    <NotificationHub/>
                 }
             />
             <Route

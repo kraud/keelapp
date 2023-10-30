@@ -95,6 +95,10 @@ function ResponsiveAppBar() {
                 navigate('/user')
                 break
             }
+            case "Notifications": {
+                navigate('/user/'+user._id+'/notifications')
+                break
+            }
             default: {
                 if(typeof option === 'string'){ // for options no yet implemented
                     toast.error("Something went wrong, try again.")
