@@ -50,6 +50,21 @@ type UserSearch = {
     // eventually, add profile picture info
 }
 
+export type NotificationData = {
+    notificationId: string,
+    userId: string,
+
+    // Notification's state:
+    // DISMISSED: false => not read => badge on avatar (initial state)
+    // DISMISSED: true => read => NO badge on avatar (ignored, but NOT deleted)
+    // if accepted => we delete notification
+    dismissed: boolean,
+} & FriendRequestData
+
+type FriendRequestData = {
+    variant: "friendRequest" // TODO: add other types as new notifications are created
+    friendId: string
+}
 export interface PropsButtonData {
     id: string
     variant?: "contained" | "outlined" | "text"
