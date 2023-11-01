@@ -1,7 +1,7 @@
 import globalTheme from "../theme/theme";
 import {Button, Grid, Modal} from "@mui/material";
 import Box from "@mui/material/Box";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import React from "react";
 import {AutocompleteSearch} from "./AutocompleteSearch";
 import {searchUser} from "../features/auth/authSlice";
@@ -11,6 +11,8 @@ import {UserBadge} from "./UserBadge";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ClearIcon from '@mui/icons-material/Clear';
 import {toast} from "react-toastify";
+import LinearIndeterminate from "./Spinner";
+import {createNotification, getNotifications} from "../features/notifications/notificationSlice";
 
 interface FriendSearchModalProps {
     open: boolean
@@ -34,13 +36,32 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
 
     }
     const dispatch = useDispatch()
-    const {userList, isLoading} = useSelector((state: any) => state.auth)
+    const {user, userList, isLoading} = useSelector((state: any) => state.auth)
+    const {isLoadingNotifications, isSuccessNotifications} = useSelector((state: any) => state.notifications)
     const [selectedUser, setSelectedUser] = useState<SearchResult | null>(null)
 
 
     const handleOnClose = () => {
         props.setOpen(false)
         setSelectedUser(null)
+    }
+
+    useEffect(() => {
+        if(isSuccessNotifications){
+            toast.info("Friend request sent")
+        }
+    }, [isSuccessNotifications])
+
+    const sendNotification = (selectedUser: SearchResult) => {
+        const newNotification = {
+            user: selectedUser.id, // user to be notified
+            variant: "friendRequest",
+            content: {
+                requesterId: user._id // user that created the request
+            }
+        }
+        // @ts-ignore
+        dispatch(createNotification(newNotification))
     }
 
     return (
@@ -107,6 +128,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                 item={true}
                                 xs={12}
                             >
+                                {(isLoadingNotifications) && <LinearIndeterminate/>}
                                 <Grid
                                     item={true}
                                     xs={5}
@@ -114,7 +136,9 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                     <Button
                                         variant={"contained"}
                                         color={"primary"}
-                                        onClick={() => toast.info("WIP: friend request sent")}
+                                        onClick={() => {
+                                            sendNotification(selectedUser)
+                                        }}
                                         fullWidth={true}
                                         startIcon={<PersonAddIcon />}
                                     >

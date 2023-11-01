@@ -1,5 +1,5 @@
 import axios from "axios";
-import {NotificationData, WordDataBE} from "../../ts/interfaces";
+import {NotificationData} from "../../ts/interfaces";
 
 const API_URL = '/api/notifications/'
 
@@ -19,7 +19,7 @@ const getNotifications = async (token: any) => {
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.get(API_URL, config)
+    const response = await axios.get(API_URL+'getNotifications', config)
     return(response.data)
 }
 
@@ -39,7 +39,7 @@ const updateNotificationById = async (token: any, updatedData: NotificationData)
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.put(`${API_URL}/${updatedData.notificationId}`, updatedData, config)
+    const response = await axios.put(`${API_URL}/${updatedData.id}`, updatedData, config)
     return(response.data)
 }
 

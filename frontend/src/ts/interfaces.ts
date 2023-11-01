@@ -34,7 +34,7 @@ export type SearchResult = {
 } & (WordSearch | TagSearch | UserSearch)
 
 type WordSearch = {
-    type: "word"
+    type: "word",
     language: Lang,
     partOfSpeech: PartOfSpeech,
 }
@@ -51,8 +51,8 @@ type UserSearch = {
 }
 
 export type NotificationData = {
-    notificationId: string,
-    userId: string,
+    id: string,
+    user: string,
 
     // Notification's state:
     // DISMISSED: false => not read => badge on avatar (initial state)
@@ -63,7 +63,9 @@ export type NotificationData = {
 
 type FriendRequestData = {
     variant: "friendRequest" // TODO: add other types as new notifications are created
-    friendId: string
+    content: {
+        requesterId: string
+    }
 }
 export interface PropsButtonData {
     id: string

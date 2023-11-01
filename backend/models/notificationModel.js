@@ -21,10 +21,10 @@ const notificationSchema = mongoose.Schema({
         type: Boolean,
         required: [true, 'Please specify if notification is dismissed'],
     },
-    content: [{
+    content: {
         // this array will include different properties depending on the value of variant => e.g. (requestingUserId: string) for friendRequests
         type: mongoose.Schema.Types.Mixed
-    }]
+    }
 },
 {
     timestamps: true

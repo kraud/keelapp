@@ -2,13 +2,201 @@ import {motion} from "framer-motion";
 import {routeVariantsAnimation} from "./management/RoutesWithAnimation";
 import globalTheme from "../theme/theme";
 import {Grid, Typography} from "@mui/material";
-import React from "react";
+import React, {useEffect} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import {NotificationData} from "../ts/interfaces";
+import Avatar from "@mui/material/Avatar";
+import PersonIcon from "@mui/icons-material/Person";
+import IconButton from "@mui/material/IconButton";
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import ClearIcon from '@mui/icons-material/Clear';
+import NotificationsOffIcon from '@mui/icons-material/NotificationsOff';
+import {getNotifications} from "../features/notifications/notificationSlice";
+import LinearIndeterminate from "../components/Spinner";
 
 interface NotificationHubProps {
 
 }
 
 export const NotificationHub = (props: NotificationHubProps) => {
+    const dispatch = useDispatch()
+    const {notifications, isLoading} = useSelector((state: any) => state.notifications)
+    useEffect(() => {
+        // @ts-ignore
+        dispatch(getNotifications())
+    }, [])
+
+    const getDescription = (notification: NotificationData) => {
+        switch (notification.variant) {
+            case("friendRequest"): {
+                const friendId: string = notification.content.requesterId
+                return (
+                    <Typography
+                        sx={{
+                            typography: {
+                                xs: 'body2',
+                                sm: 'body1',
+                                md: 'h6',
+                            },
+                            textTransform: "capitalize"
+                        }}
+                    >
+                        {friendId.slice(0,4)}... sent a friend request
+                    </Typography>
+                )
+            }
+            default:
+                return (
+                    <Typography
+                        sx={{
+                            typography: {
+                                xs: 'h5',
+                                sm: 'h4',
+                                md: 'h3',
+                            },
+                            textTransform: "capitalize"
+                        }}
+                    >
+                        - there was an unexpected error -
+                    </Typography>
+                )
+        }
+    }
+
+    const getListOfNotification = () => {
+        if(notifications!!){
+            return(
+                <Grid
+                    container={true}
+                    item={true}
+                >
+                    {(notifications).map((notification: NotificationData, index: number) => {
+                        return (
+                            <Grid
+                                container={true}
+                                item={true}
+                                xs={12}
+                                key={index}
+                                sx={{
+                                    background: (index % 2 === 0) ? "#c7c7c7" : undefined,
+                                    paddingY: globalTheme.spacing(1),
+                                    borderRight: '1px solid black',
+                                    borderLeft: '1px solid black',
+                                    borderTop: (index === 0) ? '1px solid black' : "none",
+                                    borderBottom: "1px solid black",
+                                    borderRadius:
+                                        (notifications.length === 1)
+                                            ? '25px'
+                                            : (index === 0)
+                                                ? "25px 25px 0 0"
+                                                : (index === (notifications.length - 1))
+                                                    ? " 0 0 25px 25px"
+                                                : undefined
+                                }}
+                            >
+                                {/* AVATAR */}
+                                <Grid
+                                    container={true}
+                                    item={true}
+                                    justifyContent={"center"}
+                                    xs={"auto"} // width: max-content
+                                    sx={{
+                                        paddingX: globalTheme.spacing(1),
+                                    }}
+                                >
+                                    <Grid
+                                        item={true}
+                                    >
+                                        <Avatar
+                                            alt="User photo"
+                                            src={(index % 2 === 0) ? "" : "/"}
+                                            color={"primary"}
+                                            sx={{
+                                                width: '45px',
+                                                height: '45px',
+                                                margin: globalTheme.spacing(1),
+                                                bgcolor: "#0072CE"
+                                            }}
+                                        >
+                                            {/* TODO: this should have the initials of the requester */}
+                                            <PersonIcon/>
+                                        </Avatar>
+                                    </Grid>
+                                </Grid>
+                                {/* DESCRIPTION */}
+                                <Grid
+                                    container={true}
+                                    alignItems={"center"}
+                                    item={true}
+                                    xs // width: all-available
+                                >
+                                    <Grid
+                                        item={true}
+                                    >
+                                        {getDescription(notification)}
+                                    </Grid>
+                                </Grid>
+                                {/* ACTION BUTTON */}
+                                <Grid
+                                    container={true}
+                                    alignItems={"center"}
+                                    item={true}
+                                    xs={"auto"} // width: max-content
+                                >
+                                    <Grid
+                                        item={true}
+                                    >
+                                        <IconButton
+                                            onClick={() => null}
+                                            color={"primary"}
+                                        >
+                                            <PersonAddIcon/>
+                                        </IconButton>
+                                    </Grid>
+                                </Grid>
+                                <Grid
+                                    container={true}
+                                    alignItems={"center"}
+                                    item={true}
+                                    xs={"auto"} // width: max-content
+                                >
+                                    <Grid
+                                        item={true}
+                                    >
+                                        <IconButton
+                                            onClick={() => null}
+                                            color={"primary"}
+                                        >
+                                            <ClearIcon/>
+                                        </IconButton>
+                                    </Grid>
+                                </Grid>
+                                <Grid
+                                    container={true}
+                                    alignItems={"center"}
+                                    item={true}
+                                    xs={"auto"} // width: max-content
+                                >
+                                    <Grid
+                                        item={true}
+                                    >
+                                        <IconButton
+                                            onClick={() => null}
+                                            color={"primary"}
+                                        >
+                                            <NotificationsOffIcon/>
+                                        </IconButton>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        )
+                    })}
+                </Grid>
+            )
+        } else  {
+            return null
+        }
+    }
 
     return(
         <Grid
@@ -26,46 +214,52 @@ export const NotificationHub = (props: NotificationHubProps) => {
             md={6}
             lg={4}
         >
-        <Grid
-            container={true}
-            justifyContent={"center"}
-            item={true}
-            xs={12}
-            spacing={2}
-        >
             <Grid
+                container={true}
+                justifyContent={"center"}
                 item={true}
+                xs={12}
+                spacing={2}
             >
-                <Typography
-                    sx={{
-                        typography: {
-                            xs: 'h3',
-                            sm: 'h2',
-                            md: 'h1',
-                        },
-                        textTransform: "uppercase",
-                        textDecoration: "underline"
-                    }}
+                <Grid
+                    item={true}
                 >
-                    Notifications:
-                </Typography>
+                    <Typography
+                        sx={{
+                            typography: {
+                                xs: 'h3',
+                                sm: 'h2',
+                                md: 'h1',
+                            },
+                            textTransform: "uppercase",
+                            textDecoration: "underline"
+                        }}
+                    >
+                        Notifications:
+                    </Typography>
+                </Grid>
+                {(isLoading) && <LinearIndeterminate/>}
+                {(notifications.length > 0)
+                    ?
+                    getListOfNotification()
+                    :
+                        <Grid
+                            item={true}
+                        >
+                            <Typography
+                                sx={{
+                                    typography: {
+                                        xs: 'body2',
+                                        sm: 'h6',
+                                        md: 'h5',
+                                    },
+                                }}
+                            >
+                                Nothing to see here (yet!)...
+                            </Typography>
+                        </Grid>
+                }
             </Grid>
-            <Grid
-                item={true}
-            >
-                <Typography
-                    sx={{
-                        typography: {
-                            xs: 'body2',
-                            sm: 'h6',
-                            md: 'h5',
-                        },
-                    }}
-                >
-                    Nothing to see here (yet!)...
-                </Typography>
-            </Grid>
-        </Grid>
         </Grid>
     )
 

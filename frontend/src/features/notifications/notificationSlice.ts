@@ -5,16 +5,16 @@ import {NotificationData} from "../../ts/interfaces";
 interface notificationSliceState {
     notifications: any[],
     isError: boolean,
-    isSuccess: boolean,
-    isLoading: boolean,
+    isSuccessNotifications: boolean,
+    isLoadingNotifications: boolean,
     message: string,
 }
 
 const initialState: notificationSliceState = {
     notifications: [],
     isError: false,
-    isSuccess: false,
-    isLoading: false,
+    isSuccessNotifications: false,
+    isLoadingNotifications: false,
     message: "",
 }
 
@@ -63,15 +63,27 @@ export const notificationSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(getNotifications.pending, (state) => {
-                state.isLoading = true
+                state.isLoadingNotifications = true
             })
             .addCase(getNotifications.fulfilled, (state, action) => {
-                state.isLoading = false
-                state.isSuccess = true
+                state.isLoadingNotifications = false
+                state.isSuccessNotifications = true
                 state.notifications = (action.payload)
             })
             .addCase(getNotifications.rejected, (state, action) => {
-                state.isLoading = false
+                state.isLoadingNotifications = false
+                state.isError = true
+                state.message = action.payload as string
+            })
+            .addCase(createNotification.pending, (state) => {
+                state.isLoadingNotifications = true
+            })
+            .addCase(createNotification.fulfilled, (state, action) => {
+                state.isLoadingNotifications = false
+                state.isSuccessNotifications = true
+            })
+            .addCase(createNotification.rejected, (state, action) => {
+                state.isLoadingNotifications = false
                 state.isError = true
                 state.message = action.payload as string
             })
