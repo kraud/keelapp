@@ -14,6 +14,7 @@ app.use(express.urlencoded({extended: false}))
 
 app.use('/api/words', require('./routes/wordRoutes'))
 app.use('/api/users', require('./routes/userRoutes'))
+app.use('/api/notifications', require('./routes/notificationsRoutes'))
 
 app.use(errorHandler)
 
