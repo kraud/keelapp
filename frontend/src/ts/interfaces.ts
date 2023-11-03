@@ -51,7 +51,7 @@ type UserSearch = {
 }
 
 export type NotificationData = {
-    id: string,
+    _id: string,
     user: string,
 
     // Notification's state:

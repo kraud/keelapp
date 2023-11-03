@@ -39,7 +39,7 @@ const updateNotificationById = async (token: any, updatedData: NotificationData)
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.put(`${API_URL}/${updatedData.id}`, updatedData, config)
+    const response = await axios.put(`${API_URL}/${updatedData._id}`, updatedData, config)
     return(response.data)
 }
 

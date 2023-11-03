@@ -2,7 +2,7 @@ import {motion} from "framer-motion";
 import {routeVariantsAnimation} from "./management/RoutesWithAnimation";
 import globalTheme from "../theme/theme";
 import {Grid, Typography} from "@mui/material";
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {NotificationData} from "../ts/interfaces";
 import Avatar from "@mui/material/Avatar";
@@ -11,7 +11,7 @@ import IconButton from "@mui/material/IconButton";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import ClearIcon from '@mui/icons-material/Clear';
 import NotificationsOffIcon from '@mui/icons-material/NotificationsOff';
-import {getNotifications} from "../features/notifications/notificationSlice";
+import {updateNotification, getNotifications, deleteNotification} from "../features/notifications/notificationSlice";
 import LinearIndeterminate from "../components/Spinner";
 
 interface NotificationHubProps {
@@ -20,11 +20,20 @@ interface NotificationHubProps {
 
 export const NotificationHub = (props: NotificationHubProps) => {
     const dispatch = useDispatch()
-    const {notifications, isLoading} = useSelector((state: any) => state.notifications)
+    const [changedNotificationList, setChangedNotificationList] = useState(false)
+    const {notifications, isLoadingNotifications, isSuccessNotifications} = useSelector((state: any) => state.notifications)
     useEffect(() => {
         // @ts-ignore
         dispatch(getNotifications())
     }, [])
+
+    useEffect(() => {
+        if(isSuccessNotifications && changedNotificationList && !isLoadingNotifications){
+            // @ts-ignore
+            dispatch(getNotifications())
+            setChangedNotificationList(false)
+        }
+    }, [isSuccessNotifications, changedNotificationList, isLoadingNotifications])
 
     const getDescription = (notification: NotificationData) => {
         switch (notification.variant) {
@@ -38,7 +47,6 @@ export const NotificationHub = (props: NotificationHubProps) => {
                                 sm: 'body1',
                                 md: 'h6',
                             },
-                            textTransform: "capitalize"
                         }}
                     >
                         {friendId.slice(0,4)}... sent a friend request
@@ -75,15 +83,17 @@ export const NotificationHub = (props: NotificationHubProps) => {
                             <Grid
                                 container={true}
                                 item={true}
+                                // spacing={1}
                                 xs={12}
                                 key={index}
                                 sx={{
+                                    paddingX: globalTheme.spacing(3),
                                     background: (index % 2 === 0) ? "#c7c7c7" : undefined,
-                                    paddingY: globalTheme.spacing(1),
-                                    borderRight: '1px solid black',
-                                    borderLeft: '1px solid black',
-                                    borderTop: (index === 0) ? '1px solid black' : "none",
-                                    borderBottom: "1px solid black",
+                                    paddingY: globalTheme.spacing(2),
+                                    borderRight: '3px solid black',
+                                    borderLeft: '3px solid black',
+                                    borderTop: (index === 0) ? '3px solid black' : "none",
+                                    borderBottom: "3px solid black",
                                     borderRadius:
                                         (notifications.length === 1)
                                             ? '25px'
@@ -91,7 +101,8 @@ export const NotificationHub = (props: NotificationHubProps) => {
                                                 ? "25px 25px 0 0"
                                                 : (index === (notifications.length - 1))
                                                     ? " 0 0 25px 25px"
-                                                : undefined
+                                                : undefined,
+                                    borderColor: (notification.dismissed) ?"black" :"#0072CE",
                                 }}
                             >
                                 {/* AVATAR */}
@@ -100,9 +111,6 @@ export const NotificationHub = (props: NotificationHubProps) => {
                                     item={true}
                                     justifyContent={"center"}
                                     xs={"auto"} // width: max-content
-                                    sx={{
-                                        paddingX: globalTheme.spacing(1),
-                                    }}
                                 >
                                     <Grid
                                         item={true}
@@ -114,8 +122,8 @@ export const NotificationHub = (props: NotificationHubProps) => {
                                             sx={{
                                                 width: '45px',
                                                 height: '45px',
-                                                margin: globalTheme.spacing(1),
-                                                bgcolor: "#0072CE"
+                                                // margin: globalTheme.spacing(1),
+                                                bgcolor: (notification.dismissed) ?"black" :"#0072CE"
                                             }}
                                         >
                                             {/* TODO: this should have the initials of the requester */}
@@ -129,6 +137,9 @@ export const NotificationHub = (props: NotificationHubProps) => {
                                     alignItems={"center"}
                                     item={true}
                                     xs // width: all-available
+                                    sx={{
+                                        paddingLeft: globalTheme.spacing(2),
+                                    }}
                                 >
                                     <Grid
                                         item={true}
@@ -147,7 +158,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
                                         item={true}
                                     >
                                         <IconButton
-                                            onClick={() => null}
+                                            onClick={() => onClickAccept(notification)}
                                             color={"primary"}
                                         >
                                             <PersonAddIcon/>
@@ -171,6 +182,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
                                         </IconButton>
                                     </Grid>
                                 </Grid>
+                                {/* SNOOZE */}
                                 <Grid
                                     container={true}
                                     alignItems={"center"}
@@ -181,7 +193,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
                                         item={true}
                                     >
                                         <IconButton
-                                            onClick={() => null}
+                                            onClick={() => onClickSnooze(notification)}
                                             color={"primary"}
                                         >
                                             <NotificationsOffIcon/>
@@ -196,6 +208,23 @@ export const NotificationHub = (props: NotificationHubProps) => {
         } else  {
             return null
         }
+    }
+
+    const onClickAccept = (notification: NotificationData) => {
+        // TODO: create friendship on BE and then delete the notification
+        setChangedNotificationList(true)
+        // @ts-ignore
+        dispatch(deleteNotification(notification._id))
+    }
+
+    const onClickSnooze = (notification: NotificationData) => {
+        const updatedNotificationData = {
+            _id: notification._id,
+            dismissed: !(notification.dismissed)
+        }
+        setChangedNotificationList(true)
+        // @ts-ignore
+        dispatch(updateNotification(updatedNotificationData))
     }
 
     return(
@@ -238,10 +267,10 @@ export const NotificationHub = (props: NotificationHubProps) => {
                         Notifications:
                     </Typography>
                 </Grid>
-                {(isLoading) && <LinearIndeterminate/>}
+                {(isLoadingNotifications) && <LinearIndeterminate/>}
                 {(notifications.length > 0)
                     ?
-                    getListOfNotification()
+                        getListOfNotification()
                     :
                         <Grid
                             item={true}

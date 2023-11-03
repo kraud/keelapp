@@ -256,7 +256,7 @@ function ResponsiveAppBar() {
                                     // variant="dot"
                                     overlap="circular"
                                     color="error"
-                                    badgeContent={4}
+                                    badgeContent={4} // TODO: amount notifications should depend on real data
                                     anchorOrigin={{
                                         vertical: 'bottom',
                                         horizontal: 'left',

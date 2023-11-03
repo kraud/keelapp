@@ -54,6 +54,41 @@ export const createNotification = createAsyncThunk('notifications/createNotifica
     }
 })
 
+// Update a notification data by its id
+export const updateNotification = createAsyncThunk(`notification/updateNotificationById`, async (updatedData: NotificationData, thunkAPI) => {
+    try {
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await notificationService.updateNotificationById(token, updatedData)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+export const deleteNotification = createAsyncThunk(`notifications/updateNotificationById`, async (notificationId: string, thunkAPI) => {
+    try {
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await notificationService.deleteNotificationById(token, notificationId)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
 export const notificationSlice = createSlice({
     name: 'notification',
     initialState,
@@ -83,6 +118,30 @@ export const notificationSlice = createSlice({
                 state.isSuccessNotifications = true
             })
             .addCase(createNotification.rejected, (state, action) => {
+                state.isLoadingNotifications = false
+                state.isError = true
+                state.message = action.payload as string
+            })
+            .addCase(updateNotification.pending, (state) => {
+                state.isLoadingNotifications = true
+            })
+            .addCase(updateNotification.fulfilled, (state) => {
+                state.isLoadingNotifications = false
+                state.isSuccessNotifications = true
+            })
+            .addCase(updateNotification.rejected, (state, action) => {
+                state.isLoadingNotifications = false
+                state.isError = true
+                state.message = action.payload as string
+            })
+            .addCase(deleteNotification.pending, (state) => {
+                state.isLoadingNotifications = true
+            })
+            .addCase(deleteNotification.fulfilled, (state) => {
+                state.isLoadingNotifications = false
+                state.isSuccessNotifications = true
+            })
+            .addCase(deleteNotification.rejected, (state, action) => {
                 state.isLoadingNotifications = false
                 state.isError = true
                 state.message = action.payload as string
