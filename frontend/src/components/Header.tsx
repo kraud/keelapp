@@ -19,7 +19,7 @@ import {toast} from "react-toastify";
 import {AutocompleteSearch} from "./AutocompleteSearch";
 import globalTheme from "../theme/theme";
 import {searchWordByAnyTranslation} from "../features/words/wordSlice";
-import {SearchResult} from "../ts/interfaces";
+import {NotificationData, SearchResult} from "../ts/interfaces";
 import {Badge} from "@mui/material";
 
 const pages = ['Add word', 'Practice', 'Review'];
@@ -32,6 +32,7 @@ function ResponsiveAppBar() {
 
     const {user} = useSelector((state: any) => state.auth)
     const {searchResults, isSearchLoading} = useSelector((state: any) => state.words)
+    const {notifications, isLoadingNotifications, isSuccessNotifications} = useSelector((state: any) => state.notifications)
 
     const componentStyles = {
         appBar: {
@@ -106,6 +107,14 @@ function ResponsiveAppBar() {
             }
         }
         setAnchorElUser(null)
+    }
+
+    const getUnreadNotifications = () => {
+        return(
+            notifications.filter((notification: NotificationData) => {
+                return(!(notification.dismissed!!))
+            })
+        )
     }
 
     return (
@@ -256,12 +265,12 @@ function ResponsiveAppBar() {
                                     // variant="dot"
                                     overlap="circular"
                                     color="error"
-                                    badgeContent={4} // TODO: amount notifications should depend on real data
+                                    invisible={(getUnreadNotifications().length === 0)}
+                                    badgeContent={getUnreadNotifications().length}
                                     anchorOrigin={{
                                         vertical: 'bottom',
                                         horizontal: 'left',
                                     }}
-                                    invisible={false}
                                     sx={{
                                         // position: 'absolute',
                                     }}

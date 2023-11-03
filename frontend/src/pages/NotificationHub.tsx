@@ -35,6 +35,8 @@ export const NotificationHub = (props: NotificationHubProps) => {
         }
     }, [isSuccessNotifications, changedNotificationList, isLoadingNotifications])
 
+    // TODO: if id in URL does not match currently logged-in user => change URL to match? go back dashboard?
+
     const getDescription = (notification: NotificationData) => {
         switch (notification.variant) {
             case("friendRequest"): {
@@ -175,7 +177,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
                                         item={true}
                                     >
                                         <IconButton
-                                            onClick={() => null}
+                                            onClick={() => onClickDelete(notification)}
                                             color={"primary"}
                                         >
                                             <ClearIcon/>
@@ -208,6 +210,12 @@ export const NotificationHub = (props: NotificationHubProps) => {
         } else  {
             return null
         }
+    }
+
+    const onClickDelete = (notification: NotificationData) => {
+        setChangedNotificationList(true)
+        // @ts-ignore
+        dispatch(deleteNotification(notification._id))
     }
 
     const onClickAccept = (notification: NotificationData) => {
