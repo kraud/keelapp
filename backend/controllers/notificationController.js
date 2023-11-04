@@ -39,6 +39,9 @@ const createNotification = asyncHandler(async (req, res) => {
         res.status(400)
         throw new Error("Please specify the type (variant) of notification.")
     }
+
+    // TODO: if it's friendRequest => should check if request already exists? also should check on frontend
+
     const notification = await Notification.create({
         user: req.body.user,
         variant: req.body.variant,

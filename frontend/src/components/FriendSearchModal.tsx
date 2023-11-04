@@ -57,7 +57,8 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
             user: selectedUser.id, // user to be notified
             variant: "friendRequest",
             content: {
-                requesterId: user._id // user that created the request
+                requesterId: user._id, // user that created the request
+                requesterUsername: user.username // user that created the request
             }
         }
         // @ts-ignore
@@ -114,6 +115,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                 marginTop: globalTheme.spacing(1)
                             }}
                         >
+                            {/* TODO: should check if friend is on logged-in user friend list => display different buttons */}
                             <UserBadge
                                 userData={{
                                     id: selectedUser?.id,

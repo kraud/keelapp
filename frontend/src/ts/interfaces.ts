@@ -64,7 +64,8 @@ export type NotificationData = {
 type FriendRequestData = {
     variant: "friendRequest" // TODO: add other types as new notifications are created
     content: {
-        requesterId: string
+        requesterId: string,
+        requesterUsername: string,
     }
 }
 export interface PropsButtonData {

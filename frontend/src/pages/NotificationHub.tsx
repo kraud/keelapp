@@ -40,7 +40,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
     const getDescription = (notification: NotificationData) => {
         switch (notification.variant) {
             case("friendRequest"): {
-                const friendId: string = notification.content.requesterId
+                const friendUsername: string = notification.content.requesterUsername
                 return (
                     <Typography
                         sx={{
@@ -51,7 +51,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
                             },
                         }}
                     >
-                        {friendId.slice(0,4)}... sent a friend request
+                        {friendUsername} sent a friend request
                     </Typography>
                 )
             }
