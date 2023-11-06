@@ -19,6 +19,7 @@ import {UserBadge} from "../components/UserBadge";
 import {TagInfoModal} from "../components/TagInfoModal";
 import {toast} from "react-toastify";
 import {updateUser} from "../features/auth/authSlice";
+import {useNavigate} from "react-router-dom";
 
 interface UserDataProps {
 
@@ -32,6 +33,7 @@ export interface UserBadgeData {
 }
 
 export const UserData = (props: UserDataProps) => {
+    const navigate = useNavigate()
     const dispatch = useDispatch()
     const {user, isLoading, isSuccess} = useSelector((state: any) => state.auth)
     const {tags, isTagSearchLoading} = useSelector((state: any) => state.words)
@@ -42,9 +44,9 @@ export const UserData = (props: UserDataProps) => {
     const [isEditing, setIsEditing] = useState(false)
     const [localUserData, setLocalUserData] = useState<UserBadgeData | null>(null)
 
-    // const friendList: string[] = []
+    const friendList: string[] = []
     // const friendList = ["friendo"]
-    const friendList = ["friend1", "friend2", "friend3", "friend4","friend5", "friend6"]
+    // const friendList = ["friend1", "friend2", "friend3", "friend4","friend5", "friend6"]
 
     useEffect(() => {
         if(selectedTag !== ""){
@@ -240,29 +242,53 @@ export const UserData = (props: UserDataProps) => {
                         ?
                         <LinearIndeterminate/>
                         :
-                        (allTags.map((tag: string, index: number) => {
-                            return(
-                                <Grid
-                                    item={true}
-                                    key={index.toString()+'-'+tag}
+                        (allTags.length > 0)
+                            ?
+                            (allTags.map((tag: string, index: number) => {
+                                return(
+                                    <Grid
+                                        item={true}
+                                        key={index.toString()+'-'+tag}
+                                    >
+                                        <Chip
+                                            variant="filled"
+                                            label={tag}
+                                            color={"secondary"}
+                                            sx={{
+                                                maxWidth: "max-content",
+                                            }}
+                                            onClick={() => {
+                                                // TODO: temporary function? It should open modal with list of words
+                                                //  + options to hide the tag from friends, send tag to friend, etc?
+                                                // navigate('/review/tags?tags='+tag)
+                                                setSelectedTag(tag)
+                                            }}
+                                        />
+                                    </Grid>
+                                )
+                            }))
+                            :
+                            <>
+                                <Typography
+                                    sx={{
+                                        typography: {
+                                            xs: 'body2',
+                                            sm: 'h6',
+                                            md: 'h5',
+                                        },
+                                    }}
                                 >
-                                    <Chip
-                                        variant="filled"
-                                        label={tag}
-                                        color={"secondary"}
-                                        sx={{
-                                            maxWidth: "max-content",
-                                        }}
-                                        onClick={() => {
-                                            // TODO: temporary function? It should open modal with list of words
-                                            //  + options to hide the tag from friends, send tag to friend, etc?
-                                            // navigate('/review/tags?tags='+tag)
-                                            setSelectedTag(tag)
-                                        }}
-                                    />
-                                </Grid>
-                            )
-                        }))
+                                    You haven't added tags to any words yet.
+                                </Typography>
+                                <Button
+                                    variant="text"
+                                    size="small"
+                                    color={"primary"}
+                                    onClick={() => navigate('/review')}
+                                >
+                                    Click here to go review your saved words and add tags!
+                                </Button>
+                            </>
                     }
                 </Grid>
             </Grid>

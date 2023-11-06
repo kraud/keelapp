@@ -46,13 +46,16 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
         setSelectedUser(null)
     }
 
+    const [sentRequest, setSentRequest] = useState(false)
     useEffect(() => {
-        if(isSuccessNotifications){
+        if(isSuccessNotifications && sentRequest){
             toast.info("Friend request sent")
+            setSentRequest(false)
         }
-    }, [isSuccessNotifications])
+    }, [isSuccessNotifications, sentRequest])
 
     const sendNotification = (selectedUser: SearchResult) => {
+        setSentRequest(false)
         const newNotification = {
             user: selectedUser.id, // user to be notified
             variant: "friendRequest",
