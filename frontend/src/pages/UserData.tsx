@@ -68,7 +68,7 @@ export const UserData = (props: UserDataProps) => {
     },[])
 
     useEffect(() => {
-        if(!isLoading && isSuccess){
+        if(!isLoading && isSuccess && !openFriendsModal){
             toast.info("User data updated successfully!")
         }
     },[isLoading, isSuccess])
@@ -112,7 +112,7 @@ export const UserData = (props: UserDataProps) => {
                         })
                     }
                 }}
-                isLoading={isLoading}
+                isLoading={isLoading && !(openFriendsModal || openTagModal)}
             />
             {/* BUTTONS */}
             <Grid
