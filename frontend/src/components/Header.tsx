@@ -21,6 +21,7 @@ import globalTheme from "../theme/theme";
 import {searchWordByAnyTranslation} from "../features/words/wordSlice";
 import {NotificationData, SearchResult} from "../ts/interfaces";
 import {Badge} from "@mui/material";
+import {stringAvatar} from "./generalUseFunctions";
 
 const pages = ['Add word', 'Practice', 'Review'];
 const settings = ['Notifications', 'Account', 'Dashboard', 'Logout'];
@@ -278,6 +279,7 @@ function ResponsiveAppBar() {
                                     <Avatar
                                         alt="User photo"
                                         src={(user) ? "" : "/"}
+                                        {...stringAvatar(user.name)}
                                     />
                                 </Badge>
                             </IconButton>

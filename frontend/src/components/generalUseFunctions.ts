@@ -44,3 +44,59 @@ export const checkEqualArrayContent = (original: unknown[], copy: unknown[]) => 
     }
     return allIncluded
 }
+
+function stringToColor(string: string) {
+    let hash = 0;
+    let i;
+
+    /* eslint-disable no-bitwise */
+    for (i = 0; i < string.length; i += 1) {
+        hash = string.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    let color = '#';
+
+    for (i = 0; i < 3; i += 1) {
+        const value = (hash >> (i * 8)) & 0xff;
+        color += `00${value.toString(16)}`.slice(-2);
+    }
+    /* eslint-enable no-bitwise */
+
+    return color;
+}
+
+export function stringAvatar(name: string, onlyOne?: "color"|"children") {
+
+    const returnInitials = () => {
+        let initials = ""
+        name.split(' ').forEach((word: string) => {
+            initials = initials.concat((word)[0].toUpperCase())
+        })
+        return(initials)
+    }
+
+    if(onlyOne !== undefined){
+        switch (onlyOne){
+            case("color"):{
+                return({
+                    sx: {
+                        bgcolor: stringToColor(name),
+                    }
+                })
+            }
+            case("children"):{
+                return({
+                    children: returnInitials()
+                })
+            }
+        }
+    } else {
+        return {
+            sx: {
+                bgcolor: stringToColor(name),
+            },
+            children: returnInitials()
+        }
+    }
+
+}

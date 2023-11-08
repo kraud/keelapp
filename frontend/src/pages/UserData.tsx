@@ -20,6 +20,7 @@ import {TagInfoModal} from "../components/TagInfoModal";
 import {toast} from "react-toastify";
 import {updateUser} from "../features/auth/authSlice";
 import {useNavigate} from "react-router-dom";
+import {stringAvatar} from "../components/generalUseFunctions";
 
 interface UserDataProps {
 
@@ -44,9 +45,9 @@ export const UserData = (props: UserDataProps) => {
     const [isEditing, setIsEditing] = useState(false)
     const [localUserData, setLocalUserData] = useState<UserBadgeData | null>(null)
 
-    const friendList: string[] = []
+    // const friendList: string[] = []
     // const friendList = ["friendo"]
-    // const friendList = ["friend1", "friend2", "friend3", "friend4","friend5", "friend6"]
+    const friendList = ["Friendo One", "Amigou Dos", "Sõbra kolm neli", "Freundy vier", "Another Dude", "friend6"]
 
     useEffect(() => {
         if(selectedTag !== ""){
@@ -397,11 +398,11 @@ export const UserData = (props: UserDataProps) => {
                                                     width: '45px',
                                                     height: '45px',
                                                     margin: globalTheme.spacing(1),
-                                                    bgcolor: "#0072CE"
+                                                    bgcolor: "#0072CE",
+                                                    ...((stringAvatar(friend, "color")).sx),
                                                 }}
-                                            >
-                                                <PersonIcon/>
-                                            </Avatar>
+                                                {...stringAvatar(friend, "children")}
+                                            />
                                         </Grid>
                                     </Grid>
                                     {/* FRIEND'S NAME */}

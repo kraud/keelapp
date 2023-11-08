@@ -13,6 +13,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import NotificationsOffIcon from '@mui/icons-material/NotificationsOff';
 import {updateNotification, getNotifications, deleteNotification} from "../features/notifications/notificationSlice";
 import LinearIndeterminate from "../components/Spinner";
+import Tooltip from "@mui/material/Tooltip";
 
 interface NotificationHubProps {
 
@@ -150,58 +151,80 @@ export const NotificationHub = (props: NotificationHubProps) => {
                                     </Grid>
                                 </Grid>
                                 {/* ACTION BUTTON */}
-                                <Grid
-                                    container={true}
-                                    alignItems={"center"}
-                                    item={true}
-                                    xs={"auto"} // width: max-content
+                                <Tooltip
+                                    title={"Accept friendship request"}
                                 >
                                     <Grid
+                                        container={true}
+                                        alignItems={"center"}
                                         item={true}
+                                        xs={"auto"} // width: max-content
                                     >
-                                        <IconButton
-                                            onClick={() => onClickAccept(notification)}
-                                            color={"primary"}
+                                        <Grid
+                                            item={true}
                                         >
-                                            <PersonAddIcon/>
-                                        </IconButton>
+                                            <IconButton
+                                                onClick={() => onClickAccept(notification)}
+                                                color={"primary"}
+                                                sx={{
+                                                    color: (notification.dismissed) ?"black" :"#0072CE"
+                                                }}
+                                            >
+                                                <PersonAddIcon/>
+                                            </IconButton>
+                                        </Grid>
                                     </Grid>
-                                </Grid>
-                                <Grid
-                                    container={true}
-                                    alignItems={"center"}
-                                    item={true}
-                                    xs={"auto"} // width: max-content
+                                </Tooltip>
+                                {/* DELETE */}
+                                <Tooltip
+                                    title={"Delete notification"}
                                 >
                                     <Grid
+                                        container={true}
+                                        alignItems={"center"}
                                         item={true}
+                                        xs={"auto"} // width: max-content
                                     >
-                                        <IconButton
-                                            onClick={() => onClickDelete(notification)}
-                                            color={"primary"}
+                                        <Grid
+                                            item={true}
                                         >
-                                            <ClearIcon/>
-                                        </IconButton>
+                                            <IconButton
+                                                onClick={() => onClickDelete(notification)}
+                                                color={"primary"}
+                                                sx={{
+                                                    color: (notification.dismissed) ?"black" :"#0072CE"
+                                                }}
+                                            >
+                                                <ClearIcon/>
+                                            </IconButton>
+                                        </Grid>
                                     </Grid>
-                                </Grid>
+                                </Tooltip>
                                 {/* SNOOZE */}
-                                <Grid
-                                    container={true}
-                                    alignItems={"center"}
-                                    item={true}
-                                    xs={"auto"} // width: max-content
+                                <Tooltip
+                                    title={"Set notification as read"}
                                 >
                                     <Grid
+                                        container={true}
+                                        alignItems={"center"}
                                         item={true}
+                                        xs={"auto"} // width: max-content
                                     >
-                                        <IconButton
-                                            onClick={() => onClickSnooze(notification)}
-                                            color={"primary"}
+                                        <Grid
+                                            item={true}
                                         >
-                                            <NotificationsOffIcon/>
-                                        </IconButton>
+                                            <IconButton
+                                                onClick={() => onClickSnooze(notification)}
+                                                color={"primary"}
+                                                sx={{
+                                                    color: (notification.dismissed) ?"black" :"#0072CE"
+                                                }}
+                                            >
+                                                <NotificationsOffIcon/>
+                                            </IconButton>
+                                        </Grid>
                                     </Grid>
-                                </Grid>
+                                </Tooltip>
                             </Grid>
                         )
                     })}
