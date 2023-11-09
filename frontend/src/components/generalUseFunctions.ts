@@ -67,10 +67,13 @@ function stringToColor(string: string) {
 
 export function stringAvatar(name: string, onlyOne?: "color"|"children") {
 
+    const maxAmountInitials = 3
     const returnInitials = () => {
         let initials = ""
-        name.split(' ').forEach((word: string) => {
-            initials = initials.concat((word)[0].toUpperCase())
+        name.split(' ').forEach((word: string, index: number) => {
+            if(maxAmountInitials > index){
+                initials = initials.concat((word)[0].toUpperCase())
+            }
         })
         return(initials)
     }

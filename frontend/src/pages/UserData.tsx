@@ -47,7 +47,7 @@ export const UserData = (props: UserDataProps) => {
 
     // const friendList: string[] = []
     // const friendList = ["friendo"]
-    const friendList = ["Friendo One", "Amigou Dos", "Sõbra kolm neli", "Freundy vier", "Another Dude", "friend6"]
+    const friendList = ["Friendo One", "Amigou Dos", "Sõber kolm neli", "Freundy vier", "Another Dude", "friend6"]
 
     useEffect(() => {
         if(selectedTag !== ""){
