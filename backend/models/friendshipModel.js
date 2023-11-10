@@ -14,3 +14,5 @@ const friendshipSchema = mongoose.Schema({
         }]
     }
 })
+
+module.exports = mongoose.model('Friendship',  friendshipSchema)
