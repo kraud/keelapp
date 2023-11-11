@@ -68,6 +68,13 @@ type FriendRequestData = {
         requesterUsername: string,
     }
 }
+
+export type FriendshipData = {
+    _id: string,
+    userIds: string[],
+    status: 'pending' | 'accepted' | 'blocked',
+}
+
 export interface PropsButtonData {
     id: string
     variant?: "contained" | "outlined" | "text"

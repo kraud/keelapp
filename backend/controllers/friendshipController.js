@@ -16,9 +16,10 @@ const getUserFriendshipsByParticipantId = asyncHandler(async (req, res) => {
         res.status(401)
         throw new Error('Logged-in user not found')
     }
-    // all documents where userIds is an array that contains the string in "req.query.query" as one of its elements:
+    // NB! user that made the get request does not necessarily need to be a participant of the friendship
+    // all documents where userIds is an array that contains the string in "req.query.userId" as one of its elements:
     const friendships = await Friendship.find({
-        userIds: req.query.query
+        userIds: req.query.userId
     })
 
     res.status(200).json(friendships)
@@ -30,11 +31,11 @@ const getUserFriendshipsByParticipantId = asyncHandler(async (req, res) => {
 // @route   POST /api/
 // @access  Private
 const createFriendship = asyncHandler(async (req, res) => {
-    if(!req.body.userIds){
+    if(!(req.body.userIds)){
         res.status(400)
         throw new Error("Please specify users to be part of the friendship.")
     } else {
-        if(req.body.userIds.length === 2){
+        if(!(req.body.userIds.length === 2)){
             res.status(400)
             throw new Error("Only 2 users can be part of a friendship")
         }
@@ -44,7 +45,7 @@ const createFriendship = asyncHandler(async (req, res) => {
         }
     }
 
-    if(!req.body.userIds.includes(req.user.id)){
+    if(!(req.body.userIds.includes(req.user.id))){
         res.status(401)
         throw new Error('Not allowed to create: user is not part of the friendship')
     }

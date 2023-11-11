@@ -9,6 +9,6 @@ export const store = configureStore({
     auth: authReducer,
     words: wordReducer,
     notifications: notificationReducer,
-    friendships: friendshipsReducer,
+    friendships: friendshipReducer,
   },
 });
