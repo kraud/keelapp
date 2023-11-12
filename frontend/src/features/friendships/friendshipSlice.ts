@@ -1,7 +1,5 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {NotificationData} from "../../ts/interfaces";
-import notificationService from "../notifications/notificationService";
-import {createNotification} from "../notifications/notificationSlice";
+import {FriendshipData} from "../../ts/interfaces";
 import friendshipService from "./friendshipService";
 
 interface friendshipSliceState {
@@ -20,8 +18,8 @@ const initialState: friendshipSliceState = {
     message: "",
 }
 
-// Get user friendships // TODO: change friendship from any to FriendshipData (must define inside interface.js)
-export const createFriendship = createAsyncThunk('friendship/createFriendship', async (friendship: any, thunkAPI) => {
+// Get user friendships
+export const createFriendship = createAsyncThunk('friendship/createFriendship', async (friendship: FriendshipData, thunkAPI) => {
     try {
         // @ts-ignore
         const token = thunkAPI.getState().auth.user.token
@@ -56,7 +54,7 @@ export const getFriendshipsByUserId = createAsyncThunk('friendships/getAllFriend
     }
 })
 
-export const deleteFriendship = createAsyncThunk(`friendships/updateFriendshipById`, async (friendshipId: string, thunkAPI) => {
+export const deleteFriendship = createAsyncThunk(`friendships/deleteFriendshipById`, async (friendshipId: string, thunkAPI) => {
     try {
         // @ts-ignore
         const token = thunkAPI.getState().auth.user.token
@@ -73,9 +71,8 @@ export const deleteFriendship = createAsyncThunk(`friendships/updateFriendshipBy
     }
 })
 
-// Update a frienship data by its id
-// TODO: create data type for updatedData
-export const updateFriendship = createAsyncThunk(`friendship/updateFriendshipById`, async (updatedData: any, thunkAPI) => {
+// Update a friendship data by its id
+export const updateFriendship = createAsyncThunk(`friendship/updateFriendshipById`, async (updatedData: FriendshipData, thunkAPI) => {
     try {
         // @ts-ignore
         const token = thunkAPI.getState().auth.user.token

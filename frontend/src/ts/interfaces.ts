@@ -70,9 +70,15 @@ type FriendRequestData = {
 }
 
 export type FriendshipData = {
-    _id: string,
+    _id?: string,
     userIds: string[],
     status: 'pending' | 'accepted' | 'blocked',
+    partnerships?: PartnershipsData[]
+}
+
+type PartnershipsData = {
+    mentor: string,
+    language: Lang
 }
 
 export interface PropsButtonData {

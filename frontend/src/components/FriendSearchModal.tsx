@@ -5,14 +5,15 @@ import {useEffect, useState} from "react";
 import React from "react";
 import {AutocompleteSearch} from "./AutocompleteSearch";
 import {searchUser} from "../features/auth/authSlice";
-import {SearchResult} from "../ts/interfaces";
+import {FriendshipData, SearchResult} from "../ts/interfaces";
 import {useDispatch, useSelector} from "react-redux";
 import {UserBadge} from "./UserBadge";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ClearIcon from '@mui/icons-material/Clear';
 import {toast} from "react-toastify";
 import LinearIndeterminate from "./Spinner";
-import {createNotification, getNotifications} from "../features/notifications/notificationSlice";
+import {createNotification} from "../features/notifications/notificationSlice";
+import {createFriendship} from "../features/friendships/friendshipSlice";
 
 interface FriendSearchModalProps {
     open: boolean
@@ -38,6 +39,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
     const dispatch = useDispatch()
     const {user, userList, isLoading} = useSelector((state: any) => state.auth)
     const {isLoadingNotifications, isSuccessNotifications} = useSelector((state: any) => state.notifications)
+    const {isSuccessFriendships, isLoadingFriendships, friendships} = useSelector((state: any) => state.friendships)
     const [selectedUser, setSelectedUser] = useState<SearchResult | null>(null)
 
 
@@ -48,14 +50,13 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
 
     const [sentRequest, setSentRequest] = useState(false)
     useEffect(() => {
-        if(isSuccessNotifications && sentRequest){
-            toast.info("Friend request sent")
+        if(isSuccessNotifications && isSuccessFriendships && sentRequest){
+            toast.info("Friend request sent") // TODO: message should change depending on action? Sent/cancelled?
             setSentRequest(false)
         }
-    }, [isSuccessNotifications, sentRequest])
+    }, [isSuccessFriendships, isSuccessNotifications, sentRequest])
 
     const sendNotification = (selectedUser: SearchResult) => {
-        setSentRequest(false)
         const newNotification = {
             user: selectedUser.id, // user to be notified
             variant: "friendRequest",
@@ -66,6 +67,26 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
         }
         // @ts-ignore
         dispatch(createNotification(newNotification))
+    }
+
+    const addFriendship = (selectedUser: SearchResult) => {
+        setSentRequest(true)
+        const newFriendship: FriendshipData = {
+            userIds: [user.id, selectedUser.id],
+            status: 'pending',
+        }
+        // @ts-ignore
+        dispatch(createFriendship(newFriendship))
+    }
+
+    const checkIfAlreadyFriend = (potentialFriendId: string): boolean => {
+        return(
+            friendships.filter((friendship: FriendshipData) => {
+                friendship.userIds.includes(potentialFriendId)
+                // implied that currently-logged-in user's id is present in all locally-available friendships
+                // friendship.userIds.includes(user._id)
+            }).length > 0
+        )
     }
 
     return (
@@ -118,7 +139,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                 marginTop: globalTheme.spacing(1)
                             }}
                         >
-                            {/* TODO: should check if friend is on logged-in user friend list => display different buttons */}
+                            {/* TODO: should check if friend is on logged-in user's friend list => display different buttons */}
                             <UserBadge
                                 userData={{
                                     id: selectedUser?.id,
@@ -133,7 +154,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                 item={true}
                                 xs={12}
                             >
-                                {(isLoadingNotifications) && <LinearIndeterminate/>}
+                                {(isLoadingNotifications || isLoadingFriendships) && <LinearIndeterminate/>}
                                 <Grid
                                     item={true}
                                     xs={5}
@@ -142,11 +163,18 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                         variant={"contained"}
                                         color={"primary"}
                                         onClick={() => {
-                                            sendNotification(selectedUser)
+                                            if(checkIfAlreadyFriend(selectedUser.id)){
+                                                // TODO: cancel request? accept request?
+                                            } else {
+                                                sendNotification(selectedUser)
+                                                addFriendship(selectedUser)
+                                            }
                                         }}
                                         fullWidth={true}
                                         startIcon={<PersonAddIcon />}
                                     >
+                                        {/* TODO: check if friendship already exits (pending, accepted, etc.)
+                                                and change text /onClick accordingly */}
                                         Add friend
                                     </Button>
                                 </Grid>

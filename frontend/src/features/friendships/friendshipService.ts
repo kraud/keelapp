@@ -1,9 +1,9 @@
 import axios from "axios";
-import {NotificationData, WordDataBE} from "../../ts/interfaces";
+import {FriendshipData,} from "../../ts/interfaces";
 
 const API_URL = '/api/friendships/'
 
-const createFriendship = async (friendship: NotificationData, token: any) => {
+const createFriendship = async (friendship: FriendshipData, token: any) => {
     const config = {
         headers: {
             Authorization: `Bearer ${token}`
@@ -38,14 +38,13 @@ const deleteFriendshipById = async (token: any, id: string) => {
     return(response.data)
 }
 
-// TODO: create data type for updatedData
-const updateFriendshipById = async (token: any, updatedData: any) => {
+const updateFriendshipById = async (token: any, updatedData: FriendshipData) => {
     const config = {
         headers: {
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.put(`${API_URL}/${updatedData.id}`, updatedData, config)
+    const response = await axios.put(`${API_URL}/${updatedData._id}`, updatedData, config)
     return(response.data)
 }
 
