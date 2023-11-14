@@ -72,6 +72,8 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
     const addFriendship = (selectedUser: SearchResult) => {
         setSentRequest(true)
         const newFriendship: FriendshipData = {
+            // NB! first userId on the list corresponds to the user that made the request
+            // This will be relevant when deciding on the info to display on a pending request
             userIds: [user.id, selectedUser.id],
             status: 'pending',
         }
@@ -79,14 +81,28 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
         dispatch(createFriendship(newFriendship))
     }
 
-    const checkIfAlreadyFriend = (potentialFriendId: string): boolean => {
+    const checkIfAlreadyFriend = (potentialFriendId: string): (FriendshipData | undefined) => {
         return(
-            friendships.filter((friendship: FriendshipData) => {
+            friendships.find((friendship: FriendshipData) => {
                 friendship.userIds.includes(potentialFriendId)
                 // implied that currently-logged-in user's id is present in all locally-available friendships
                 // friendship.userIds.includes(user._id)
-            }).length > 0
+            })
         )
+    }
+
+    const getFriendRequestButtonLabel = (potentialFriendId: string): string => {
+        const friendship = checkIfAlreadyFriend(potentialFriendId)
+
+        if(friendship === undefined){ // No friendship (yet!)
+            return('Add friend')
+        } else {
+            if(friendship.userIds[0] === potentialFriendId){ // potentialFriend listed first => they made the request
+                return('Accept request')
+            } else { // currently logged-in user made the request => disable button? Cancel request?
+                return('Cancel request')
+            }
+        }
     }
 
     return (
@@ -163,9 +179,14 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                         variant={"contained"}
                                         color={"primary"}
                                         onClick={() => {
-                                            if(checkIfAlreadyFriend(selectedUser.id)){
-                                                // TODO: cancel request? accept request?
-                                            } else {
+                                            const potentialFriend = checkIfAlreadyFriend(selectedUser.id)
+                                            if(potentialFriend !== undefined){
+                                                if(potentialFriend.userIds[0] === selectedUser.id){ // potentialFriend listed first => they made the request
+                                                    // accept request => delete notification (at currently logged-in user) + update friendship
+                                                } else { // currently logged-in user made the request => disable button? Cancel request?
+                                                    // cancel request => delete notification (at selectedUser.id user) + delete friendship
+                                                }
+                                            } else { // no friendship status yet => create request
                                                 sendNotification(selectedUser)
                                                 addFriendship(selectedUser)
                                             }
@@ -173,9 +194,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                         fullWidth={true}
                                         startIcon={<PersonAddIcon />}
                                     >
-                                        {/* TODO: check if friendship already exits (pending, accepted, etc.)
-                                                and change text /onClick accordingly */}
-                                        Add friend
+                                        {getFriendRequestButtonLabel(selectedUser.id)}
                                     </Button>
                                 </Grid>
                                 <Grid
