@@ -74,7 +74,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
         const newFriendship: FriendshipData = {
             // NB! first userId on the list corresponds to the user that made the request
             // This will be relevant when deciding on the info to display on a pending request
-            userIds: [user.id, selectedUser.id],
+            userIds: [user._id, selectedUser.id],
             status: 'pending',
         }
         // @ts-ignore
@@ -84,6 +84,8 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
     const checkIfAlreadyFriend = (potentialFriendId: string): (FriendshipData | undefined) => {
         return(
             friendships.find((friendship: FriendshipData) => {
+                console.log('friendship', friendship)
+                console.log('potentialFriendId', potentialFriendId)
                 friendship.userIds.includes(potentialFriendId)
                 // implied that currently-logged-in user's id is present in all locally-available friendships
                 // friendship.userIds.includes(user._id)
@@ -93,6 +95,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
 
     const getFriendRequestButtonLabel = (potentialFriendId: string): string => {
         const friendship = checkIfAlreadyFriend(potentialFriendId)
+        console.log('friendship2', friendship)
 
         if(friendship === undefined){ // No friendship (yet!)
             return('Add friend')

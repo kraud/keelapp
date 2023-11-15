@@ -13,7 +13,7 @@ const createFriendship = async (friendship: FriendshipData, token: any) => {
     return(response.data)
 }
 
-// NB! userId can be the currently-logged-in user or any other user
+// NB! userId can be the currently-logged-in user OR any other user
 // (this way we get to use the same endpoint for many use cases)
 const getFriendships = async (token: any, userId: string) => {
     const config = {

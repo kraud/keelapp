@@ -21,6 +21,7 @@ import {toast} from "react-toastify";
 import {updateUser} from "../features/auth/authSlice";
 import {useNavigate} from "react-router-dom";
 import {stringAvatar} from "../components/generalUseFunctions";
+import {getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
 
 interface UserDataProps {
 
@@ -38,6 +39,7 @@ export const UserData = (props: UserDataProps) => {
     const dispatch = useDispatch()
     const {user, isLoading, isSuccess} = useSelector((state: any) => state.auth)
     const {tags, isTagSearchLoading} = useSelector((state: any) => state.words)
+    const {friendships, isSuccessFriendships, isLoadingFriendships} = useSelector((state: any) => state.friendships)
     const [allTags, setAllTags] = useState<string[]>([])
     const [openFriendsModal, setOpenFriendsModal] = useState(false)
     const [openTagModal, setOpenTagModal] = useState(false)
@@ -59,6 +61,7 @@ export const UserData = (props: UserDataProps) => {
         setAllTags(tags)
     },[tags])
 
+    // so when we edit the profile data, it also changes the local data
     useEffect(() => {
         setLocalUserData(user)
     },[user])
@@ -66,6 +69,8 @@ export const UserData = (props: UserDataProps) => {
     useEffect(() => {
         // @ts-ignore
         dispatch(searchAllTags(""))
+        // @ts-ignore
+        dispatch(getFriendshipsByUserId(user._id))
     },[])
 
     useEffect(() => {

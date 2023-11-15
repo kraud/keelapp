@@ -44,7 +44,6 @@ const createFriendship = asyncHandler(async (req, res) => {
             throw new Error("The participants of a friendship must be 2 different users")
         }
     }
-
     if(!(req.body.userIds.includes(req.user.id))){
         res.status(401)
         throw new Error('Not allowed to create: user is not part of the friendship')
