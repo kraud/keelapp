@@ -84,9 +84,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
     const checkIfAlreadyFriend = (potentialFriendId: string): (FriendshipData | undefined) => {
         return(
             friendships.find((friendship: FriendshipData) => {
-                console.log('friendship', friendship)
-                console.log('potentialFriendId', potentialFriendId)
-                friendship.userIds.includes(potentialFriendId)
+                return(friendship.userIds.includes(potentialFriendId))
                 // implied that currently-logged-in user's id is present in all locally-available friendships
                 // friendship.userIds.includes(user._id)
             })
@@ -95,7 +93,6 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
 
     const getFriendRequestButtonLabel = (potentialFriendId: string): string => {
         const friendship = checkIfAlreadyFriend(potentialFriendId)
-        console.log('friendship2', friendship)
 
         if(friendship === undefined){ // No friendship (yet!)
             return('Add friend')
