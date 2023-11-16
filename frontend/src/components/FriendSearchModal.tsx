@@ -10,10 +10,13 @@ import {useDispatch, useSelector} from "react-redux";
 import {UserBadge} from "./UserBadge";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ClearIcon from '@mui/icons-material/Clear';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
 import {toast} from "react-toastify";
 import LinearIndeterminate from "./Spinner";
 import {createNotification} from "../features/notifications/notificationSlice";
 import {createFriendship} from "../features/friendships/friendshipSlice";
+import {OverridableStringUnion} from "@mui/types";
 
 interface FriendSearchModalProps {
     open: boolean
@@ -91,16 +94,19 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
         )
     }
 
-    const getFriendRequestButtonLabel = (potentialFriendId: string): string => {
+    const getFriendRequestButtonLabel = (potentialFriendId: string): 0|1|2  => {
         const friendship = checkIfAlreadyFriend(potentialFriendId)
 
         if(friendship === undefined){ // No friendship (yet!)
-            return('Add friend')
+            // return('Add')
+            return(0)
         } else {
             if(friendship.userIds[0] === potentialFriendId){ // potentialFriend listed first => they made the request
-                return('Accept request')
+                // return('Accept')
+                return(1)
             } else { // currently logged-in user made the request => disable button? Cancel request?
-                return('Cancel request')
+                // return('Cancel')
+                return(2)
             }
         }
     }
@@ -177,7 +183,8 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                 >
                                     <Button
                                         variant={"contained"}
-                                        color={"primary"}
+                                        // @ts-ignore
+                                        color={["primary", "success", "error"][getFriendRequestButtonLabel(selectedUser.id)]}
                                         onClick={() => {
                                             const potentialFriend = checkIfAlreadyFriend(selectedUser.id)
                                             if(potentialFriend !== undefined){
@@ -192,9 +199,9 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                             }
                                         }}
                                         fullWidth={true}
-                                        startIcon={<PersonAddIcon />}
+                                        startIcon={[<PersonAddIcon/>, <CheckCircleIcon/>, <CancelIcon/>][getFriendRequestButtonLabel(selectedUser.id)]}
                                     >
-                                        {getFriendRequestButtonLabel(selectedUser.id)}
+                                        {['Add friend', 'Accept request', 'Cancel request'][getFriendRequestButtonLabel(selectedUser.id)]}
                                     </Button>
                                 </Grid>
                                 <Grid
