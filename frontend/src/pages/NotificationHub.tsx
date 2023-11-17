@@ -4,7 +4,7 @@ import globalTheme from "../theme/theme";
 import {Grid, Typography} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import {NotificationData} from "../ts/interfaces";
+import {FriendshipData, NotificationData} from "../ts/interfaces";
 import Avatar from "@mui/material/Avatar";
 import PersonIcon from "@mui/icons-material/Person";
 import IconButton from "@mui/material/IconButton";
@@ -21,6 +21,7 @@ interface NotificationHubProps {
 
 export const NotificationHub = (props: NotificationHubProps) => {
     const dispatch = useDispatch()
+    const {isSuccessFriendships, isLoadingFriendships, friendships} = useSelector((state: any) => state.friendships)
     const [changedNotificationList, setChangedNotificationList] = useState(false)
     const {notifications, isLoadingNotifications, isSuccessNotifications} = useSelector((state: any) => state.notifications)
     useEffect(() => {
@@ -246,6 +247,18 @@ export const NotificationHub = (props: NotificationHubProps) => {
         setChangedNotificationList(true)
         // @ts-ignore
         dispatch(deleteNotification(notification._id))
+
+        switch(notification.variant){
+            case('friendRequest'):{
+                const friendship = friendships.filter((friendship: FriendshipData) => {
+                    return(friendship.userIds[0] == notification.content.requesterId)
+                })
+                // @ts-ignore
+                dispatch(deleteNotification(notification._id))
+                break
+            }
+            default: return(null)
+        }
     }
 
     const onClickSnooze = (notification: NotificationData) => {
