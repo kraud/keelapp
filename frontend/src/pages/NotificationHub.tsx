@@ -14,6 +14,8 @@ import NotificationsOffIcon from '@mui/icons-material/NotificationsOff';
 import {updateNotification, getNotifications, deleteNotification} from "../features/notifications/notificationSlice";
 import LinearIndeterminate from "../components/Spinner";
 import Tooltip from "@mui/material/Tooltip";
+import {updateFriendship, getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
+import {toast} from "react-toastify";
 
 interface NotificationHubProps {
 
@@ -21,12 +23,17 @@ interface NotificationHubProps {
 
 export const NotificationHub = (props: NotificationHubProps) => {
     const dispatch = useDispatch()
+    const {user} = useSelector((state: any) => state.auth)
     const {isSuccessFriendships, isLoadingFriendships, friendships} = useSelector((state: any) => state.friendships)
     const [changedNotificationList, setChangedNotificationList] = useState(false)
+    const [changedFriendshipList, setChangedFriendshipList] = useState(false)
     const {notifications, isLoadingNotifications, isSuccessNotifications} = useSelector((state: any) => state.notifications)
+
     useEffect(() => {
         // @ts-ignore
         dispatch(getNotifications())
+        // @ts-ignore
+        dispatch(getFriendshipsByUserId(user._id))
     }, [])
 
     useEffect(() => {
@@ -36,6 +43,14 @@ export const NotificationHub = (props: NotificationHubProps) => {
             setChangedNotificationList(false)
         }
     }, [isSuccessNotifications, changedNotificationList, isLoadingNotifications])
+
+    useEffect(() => {
+        if(isSuccessFriendships && changedFriendshipList && !isLoadingFriendships){
+            // @ts-ignore
+            dispatch(getFriendshipsByUserId(user._id))
+            setChangedFriendshipList(false)
+        }
+    }, [isLoadingFriendships, changedNotificationList])
 
     // TODO: if id in URL does not match currently logged-in user => change URL to match? go back dashboard?
 
@@ -244,17 +259,27 @@ export const NotificationHub = (props: NotificationHubProps) => {
 
     const onClickAccept = (notification: NotificationData) => {
         // TODO: create friendship on BE and then delete the notification
-        setChangedNotificationList(true)
-        // @ts-ignore
-        dispatch(deleteNotification(notification._id))
 
         switch(notification.variant){
             case('friendRequest'):{
                 const friendship = friendships.filter((friendship: FriendshipData) => {
                     return(friendship.userIds[0] == notification.content.requesterId)
-                })
-                // @ts-ignore
-                dispatch(deleteNotification(notification._id))
+                })[0]
+                if(friendship!){
+                    // TODO: this should be triggered after all cases? extract to a separate function
+                    setChangedNotificationList(true)
+                    setChangedFriendshipList(true)
+                    // @ts-ignore
+                    dispatch(deleteNotification(notification._id))
+
+                    // @ts-ignore
+                    dispatch(updateFriendship({
+                        _id: friendship._id,
+                        status: 'accepted'
+                    }))
+                } else {
+                    toast.info('There was an error processing this request (no matching friendship request.')
+                }
                 break
             }
             default: return(null)

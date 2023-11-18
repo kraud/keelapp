@@ -22,6 +22,7 @@ import {updateUser} from "../features/auth/authSlice";
 import {useNavigate} from "react-router-dom";
 import {stringAvatar} from "../components/generalUseFunctions";
 import {getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
+import {FriendshipData} from "../ts/interfaces";
 
 interface UserDataProps {
 
@@ -41,6 +42,7 @@ export const UserData = (props: UserDataProps) => {
     const {tags, isTagSearchLoading} = useSelector((state: any) => state.words)
     const {friendships, isSuccessFriendships, isLoadingFriendships} = useSelector((state: any) => state.friendships)
     const [allTags, setAllTags] = useState<string[]>([])
+    const [activeFriendships, setActiveFriendships] = useState<FriendshipData[]>([])
     const [openFriendsModal, setOpenFriendsModal] = useState(false)
     const [openTagModal, setOpenTagModal] = useState(false)
     const [selectedTag, setSelectedTag] = useState("")
@@ -50,6 +52,14 @@ export const UserData = (props: UserDataProps) => {
     // const friendList: string[] = []
     // const friendList = ["friendo"]
     const friendList = ["Friendo One", "Amigou Dos", "Sõber kolm neli", "Freundy vier", "Another Dude", "friend6"]
+
+    useEffect(() => {
+        setActiveFriendships(
+            friendships.filter((friendship: FriendshipData) => {
+                return(friendship.status === 'accepted')
+            })
+        )
+    },[friendships])
 
     useEffect(() => {
         if(selectedTag !== ""){
@@ -328,7 +338,7 @@ export const UserData = (props: UserDataProps) => {
                     container={true}
                     xs={12}
                 >
-                    {(friendList.length === 0)
+                    {(activeFriendships.length === 0)
                         ?
                         <Grid
                             container={true}
@@ -360,7 +370,10 @@ export const UserData = (props: UserDataProps) => {
                             </Grid>
                         </Grid>
                         :
-                        (friendList.map((friend: string, index: number) => {
+                        (activeFriendships.map((friend: FriendshipData, index: number) => {
+                            const friendId: string = friend.userIds.filter((friendshipMemberId: string) => {
+                                return (friendshipMemberId !== user._id)
+                            })[0]
                             return(
                                 // TODO: make this into a separate component - to list users
                                 <Grid
@@ -377,7 +390,7 @@ export const UserData = (props: UserDataProps) => {
                                         borderBottom: "1px solid black",
                                         borderRadius: (index === 0)
                                             ? "25px 25px 0 0"
-                                            : (index === (friendList.length -1))
+                                            : (index === (activeFriendships.length -1))
                                                 ? " 0 0 25px 25px"
                                                 : undefined
                                     }}
@@ -404,9 +417,9 @@ export const UserData = (props: UserDataProps) => {
                                                     height: '45px',
                                                     margin: globalTheme.spacing(1),
                                                     bgcolor: "#0072CE",
-                                                    ...((stringAvatar(friend, "color")).sx),
+                                                    ...((stringAvatar(friendId, "color")).sx),
                                                 }}
-                                                {...stringAvatar(friend, "children")}
+                                                {...stringAvatar(friendId, "children")}
                                             />
                                         </Grid>
                                     </Grid>
@@ -430,7 +443,7 @@ export const UserData = (props: UserDataProps) => {
                                                     textTransform: "capitalize"
                                                 }}
                                             >
-                                                {friend}
+                                                {friendId}
                                             </Typography>
                                         </Grid>
                                     </Grid>
