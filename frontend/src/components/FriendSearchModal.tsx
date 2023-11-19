@@ -15,7 +15,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import {toast} from "react-toastify";
 import LinearIndeterminate from "./Spinner";
 import {createNotification} from "../features/notifications/notificationSlice";
-import {createFriendship} from "../features/friendships/friendshipSlice";
+import {createFriendship, deleteFriendship, getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
 import {OverridableStringUnion} from "@mui/types";
 
 interface FriendSearchModalProps {
@@ -52,12 +52,21 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
     }
 
     const [sentRequest, setSentRequest] = useState(false)
+    const [cancelledRequest, setCancelledRequest] = useState(false)
     useEffect(() => {
-        if(isSuccessNotifications && isSuccessFriendships && sentRequest){
-            toast.info("Friend request sent") // TODO: message should change depending on action? Sent/cancelled?
+        if(isSuccessNotifications && isSuccessFriendships && (sentRequest || cancelledRequest)){
+            if(sentRequest){
+                toast.info("Friend request sent")
+            }
+            if(cancelledRequest){
+                toast.info("Friend request deleted")
+            }
             setSentRequest(false)
+            // this will update the button labels
+            // @ts-ignore
+            dispatch(getFriendshipsByUserId(user._id))
         }
-    }, [isSuccessFriendships, isSuccessNotifications, sentRequest])
+    }, [isSuccessFriendships, isSuccessNotifications, sentRequest, cancelledRequest])
 
     const sendNotification = (selectedUser: SearchResult) => {
         const newNotification = {
@@ -109,6 +118,13 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                 return(2)
             }
         }
+    }
+
+    const cancelRequest = (friendship: FriendshipData) => {
+        // @ts-ignore
+        dispatch(deleteFriendship(friendship._id))
+        setCancelledRequest(true)
+        // => delete notification (at selectedUser.id user)
     }
 
     return (
@@ -186,12 +202,12 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                         // @ts-ignore
                                         color={["primary", "success", "error"][getFriendRequestButtonLabel(selectedUser.id)]}
                                         onClick={() => {
-                                            const potentialFriend = checkIfAlreadyFriend(selectedUser.id)
-                                            if(potentialFriend !== undefined){
-                                                if(potentialFriend.userIds[0] === selectedUser.id){ // potentialFriend listed first => they made the request
+                                            const potentialFriendship = checkIfAlreadyFriend(selectedUser.id)
+                                            if(potentialFriendship !== undefined){
+                                                if(potentialFriendship.userIds[0] === selectedUser.id){ // potentialFriendship listed first => they made the request
                                                     // accept request => delete notification (at currently logged-in user) + update friendship
-                                                } else { // currently logged-in user made the request => disable button? Cancel request?
-                                                    // cancel request => delete notification (at selectedUser.id user) + delete friendship
+                                                } else { // currently logged-in user made the request => Cancel request
+                                                    cancelRequest(potentialFriendship)
                                                 }
                                             } else { // no friendship status yet => create request
                                                 sendNotification(selectedUser)
