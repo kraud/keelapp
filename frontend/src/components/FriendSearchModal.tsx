@@ -54,19 +54,20 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
     const [sentRequest, setSentRequest] = useState(false)
     const [cancelledRequest, setCancelledRequest] = useState(false)
     useEffect(() => {
-        if(isSuccessNotifications && isSuccessFriendships && (sentRequest || cancelledRequest)){
+        if((isSuccessNotifications && !isLoadingNotifications) && (isSuccessFriendships && !isLoadingFriendships) && (sentRequest || cancelledRequest)){
             if(sentRequest){
                 toast.info("Friend request sent")
+                setSentRequest(false)
             }
             if(cancelledRequest){
                 toast.info("Friend request deleted")
+                setCancelledRequest(false)
             }
-            setSentRequest(false)
             // this will update the button labels
             // @ts-ignore
             dispatch(getFriendshipsByUserId(user._id))
         }
-    }, [isSuccessFriendships, isSuccessNotifications, sentRequest, cancelledRequest])
+    }, [isSuccessFriendships, isSuccessNotifications, sentRequest, cancelledRequest, isLoadingNotifications, isLoadingFriendships])
 
     const sendNotification = (selectedUser: SearchResult) => {
         const newNotification = {
@@ -125,6 +126,13 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
         dispatch(deleteFriendship(friendship._id))
         setCancelledRequest(true)
         // => delete notification (at selectedUser.id user)
+        // get other userID from friendship
+        // get all notifications for that user (possible with current endpoints? Might be protected by middleware)
+        // find matching notification (variant: friendship, with current userId as other ID)
+        // delete notification by ID
+
+        // alternative: create full endpoint for deleting other users notifications? specify type and id/ids to match?
+
     }
 
     return (
@@ -227,7 +235,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                     <Button
                                         variant={"contained"}
                                         color={"secondary"}
-                                        onClick={() => null}
+                                        onClick={() => setSelectedUser(null)}
                                         fullWidth={true}
                                         endIcon={<ClearIcon />}
                                     >
