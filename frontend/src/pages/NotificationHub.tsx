@@ -16,6 +16,7 @@ import LinearIndeterminate from "../components/Spinner";
 import Tooltip from "@mui/material/Tooltip";
 import {updateFriendship, getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
 import {toast} from "react-toastify";
+import {stringAvatar} from "../components/generalUseFunctions";
 
 interface NotificationHubProps {
 
@@ -49,6 +50,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
             // @ts-ignore
             dispatch(getFriendshipsByUserId(user._id))
             setChangedFriendshipList(false)
+            toast.info("Friend request accepted")
         }
     }, [isLoadingFriendships, changedNotificationList])
 
@@ -142,12 +144,21 @@ export const NotificationHub = (props: NotificationHubProps) => {
                                                 width: '45px',
                                                 height: '45px',
                                                 // margin: globalTheme.spacing(1),
-                                                bgcolor: (notification.dismissed) ?"black" :"#0072CE"
+                                                bgcolor: (notification.dismissed) ?"black" :"#0072CE",
+
+                                                ...((stringAvatar(
+                                                    (notification.variant === 'friendRequest')
+                                                        ? notification.content.requesterUsername
+                                                        : 'No name',
+                                                    "color")).sx),
                                             }}
-                                        >
-                                            {/* TODO: this should have the initials of the requester */}
-                                            <PersonIcon/>
-                                        </Avatar>
+
+                                            {...stringAvatar(
+                                                (notification.variant === 'friendRequest')
+                                                ? notification.content.requesterUsername
+                                                : 'No name', "children")
+                                            }
+                                        />
                                     </Grid>
                                 </Grid>
                                 {/* DESCRIPTION */}
