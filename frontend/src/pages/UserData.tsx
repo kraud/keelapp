@@ -59,6 +59,14 @@ export const UserData = (props: UserDataProps) => {
                 return(friendship.status === 'accepted')
             })
         )
+    },[activeFriendships])
+
+    useEffect(() => {
+        setActiveFriendships(
+            friendships.filter((friendship: FriendshipData) => {
+                return(friendship.status === 'accepted')
+            })
+        )
     },[friendships])
 
     useEffect(() => {
@@ -432,6 +440,10 @@ export const UserData = (props: UserDataProps) => {
                                     >
                                         <Grid
                                             item={true}
+                                            sx={{
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis"
+                                            }}
                                         >
                                             <Typography
                                                 sx={{
@@ -442,6 +454,7 @@ export const UserData = (props: UserDataProps) => {
                                                     },
                                                     textTransform: "capitalize"
                                                 }}
+                                                noWrap={true}
                                             >
                                                 {friendId}
                                             </Typography>
