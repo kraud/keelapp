@@ -6,7 +6,7 @@ import {SearchResult} from "../../ts/interfaces";
 // Get user from localStorage
 const user = JSON.parse(localStorage.getItem('user')! )
 
-interface UserSliceState {
+interface AuthSliceState {
     user: any,
     userList: SearchResult[]
 
@@ -16,7 +16,7 @@ interface UserSliceState {
     message: string,
 }
 
-const initialState: UserSliceState = {
+const initialState: AuthSliceState = {
     user: user ? user : null,
     userList: [],
 
@@ -94,6 +94,8 @@ export const authSlice = createSlice({
     initialState,
     reducers: {
         resetState: (state) => {
+            state.user = user ? user : null,
+            state.userList = [],
             state.isLoading = false
             state.isSuccess = false
             state.isError = false
