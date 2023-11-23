@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import {useEffect, useState} from "react";
 import React from "react";
 import {AutocompleteSearch} from "./AutocompleteSearch";
-import {searchUser} from "../features/auth/authSlice";
+import {searchUser} from "../features/users/userSlice";
 import {FriendshipData, SearchResult} from "../ts/interfaces";
 import {useDispatch, useSelector} from "react-redux";
 import {UserBadge} from "./UserBadge";
@@ -16,7 +16,6 @@ import {toast} from "react-toastify";
 import LinearIndeterminate from "./Spinner";
 import {createNotification} from "../features/notifications/notificationSlice";
 import {createFriendship, deleteFriendship, getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
-import {OverridableStringUnion} from "@mui/types";
 
 interface FriendSearchModalProps {
     open: boolean

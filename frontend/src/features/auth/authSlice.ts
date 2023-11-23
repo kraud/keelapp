@@ -72,30 +72,14 @@ export const logout = createAsyncThunk('auth/logout', async () => {
     await authService.logout()
 })
 
-export const searchUser = createAsyncThunk('auth/searchUser', async (query: string, thunkAPI) => {
-    try {
-        // @ts-ignore
-        const token = thunkAPI.getState().auth.user.token
-        return await authService.getUsersBy(token, query)
-    } catch(error: any) {
-        const message = (
-                error.response &&
-                error.response.data &&
-                error.response.data.message
-            )
-            || error.message
-            || error.toString()
-        return thunkAPI.rejectWithValue(message)
-    }
-})
 
 export const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
         resetState: (state) => {
-            state.user = user ? user : null,
-            state.userList = [],
+            state.user = user ? user : null
+            state.userList = []
             state.isLoading = false
             state.isSuccess = false
             state.isError = false
@@ -151,20 +135,6 @@ export const authSlice = createSlice({
             })
             .addCase(logout.fulfilled, (state) => {
                 state.user = null
-            })
-            .addCase(searchUser.pending, (state) => {
-                state.isLoading = true
-            })
-            .addCase(searchUser.fulfilled, (state, action) => {
-                state.isLoading = false
-                state.isSuccess = true
-                state.userList = action.payload
-            })
-            .addCase(searchUser.rejected, (state, action) => {
-                state.isLoading = false
-                state.isError = true
-                state.message = action.payload as string
-                state.userList = []
             })
     }
 })

@@ -23,6 +23,7 @@ import {useNavigate} from "react-router-dom";
 import {stringAvatar} from "../components/generalUseFunctions";
 import {getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
 import {FriendshipData} from "../ts/interfaces";
+import {getUsernamesByIds, searchUser} from "../features/users/userSlice";
 
 interface UserDataProps {
 
@@ -39,6 +40,7 @@ export const UserData = (props: UserDataProps) => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const {user, isLoading, isSuccess} = useSelector((state: any) => state.auth)
+    const {userList} = useSelector((state: any) => state.user)
     const {tags, isTagSearchLoading} = useSelector((state: any) => state.words)
     const {friendships, isSuccessFriendships, isLoadingFriendships} = useSelector((state: any) => state.friendships)
     const [allTags, setAllTags] = useState<string[]>([])
@@ -54,20 +56,35 @@ export const UserData = (props: UserDataProps) => {
     const friendList = ["Friendo One", "Amigou Dos", "Sõber kolm neli", "Freundy vier", "Another Dude", "friend6"]
 
     useEffect(() => {
-        setActiveFriendships(
-            friendships.filter((friendship: FriendshipData) => {
-                return(friendship.status === 'accepted')
-            })
-        )
-    },[activeFriendships])
+        // TODO: user userList data to incorporate friend info into the activeFriendships array, so it's easy to display
+        // userList data (into) => friendships
+        setActiveFriendships(friendships)
+    },[userList])
 
     useEffect(() => {
-        setActiveFriendships(
-            friendships.filter((friendship: FriendshipData) => {
-                return(friendship.status === 'accepted')
-            })
-        )
+        const activeAmistades = friendships.filter((friendship: FriendshipData) => {
+            return(friendship.status === 'accepted')
+        })
+        // all the ids of the users that the current user is friends with
+        const userIds = activeAmistades.map((friendship: FriendshipData) => {
+            if(friendship.userIds[0] === user._id){
+                return friendship.userIds[1]
+            } else {
+                return friendship.userIds[0]
+            }
+        })
+        // @ts-ignore
+        dispatch(getUsernamesByIds(userIds))
     },[friendships])
+    // },[activeFriendships])
+
+    // useEffect(() => {
+    //     setActiveFriendships(
+    //         friendships.filter((friendship: FriendshipData) => {
+    //             return(friendship.status === 'accepted')
+    //         })
+    //     )
+    // },[friendships])
 
     useEffect(() => {
         if(selectedTag !== ""){

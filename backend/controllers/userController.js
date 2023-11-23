@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const asyncHandler = require('express-async-handler')
 const User = require('../models/userModel')
+const mongoose = require('mongoose')
 
 // @desc    Register new user
 // @route   POST /api/users
@@ -148,6 +149,52 @@ const getUsersBy = asyncHandler(async(req, res) => {
     })
 })
 
+// @desc    Get user data
+// @route   POST /api/users/me
+// @access  Private
+const getUsernamesBy = asyncHandler(async(req, res) => {
+    if (!(req.query)) {
+        res.status(400)
+        throw new Error("Missing search query array")
+    }
+
+    // Check for user
+    if (!req.user) {
+        res.status(401)
+        throw new Error('User not found')
+    }
+
+    let ids = req.query.query
+    let objectIds = []
+
+    // if we convert them into ObjectId instead of using simply string, we take advantage of indexation (should be faster)
+    ids.forEach(function(item){
+        objectIds.push(mongoose.Types.ObjectId(item));
+    })
+
+    await User.find({ _id: {$in : objectIds}}).then((data) => {
+        if (data) {
+            let results = []
+            data.forEach((user) => {
+                results.push({
+                    id: user._id,
+                    type: "user",
+                    label: user.name,
+                    username: user.username,
+                    email: user.email,
+                })
+            })
+            // TODO: return in the same order as it came in the request?
+            // results.sort((a, b) => a.label.localeCompare(b.label))
+            res.status(200).json(results)
+        } else {
+            res.status(404).json({
+                text: "No user matches for this search",
+                error: err
+            })
+        }
+    })
+})
 
 // Generate JWT
 const generateToken = (id) => {
@@ -159,5 +206,6 @@ module.exports = {
     loginUser,
     getMe,
     getUsersBy,
-    updateUser
+    updateUser,
+    getUsernamesBy
 }
