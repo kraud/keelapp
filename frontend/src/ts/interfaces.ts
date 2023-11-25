@@ -72,6 +72,7 @@ type FriendRequestData = {
 export type FriendshipData = {
     _id?: string,
     userIds: string[],
+    usernames?: string[],
     status: 'pending' | 'accepted' | 'blocked',
     partnerships?: PartnershipsData[]
 }

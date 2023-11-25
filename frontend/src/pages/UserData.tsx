@@ -22,7 +22,7 @@ import {updateUser} from "../features/auth/authSlice";
 import {useNavigate} from "react-router-dom";
 import {stringAvatar} from "../components/generalUseFunctions";
 import {getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
-import {FriendshipData} from "../ts/interfaces";
+import {FriendshipData, SearchResult} from "../ts/interfaces";
 import {getUsernamesByIds, searchUser} from "../features/users/userSlice";
 
 interface UserDataProps {
@@ -56,9 +56,35 @@ export const UserData = (props: UserDataProps) => {
     const friendList = ["Friendo One", "Amigou Dos", "Sõber kolm neli", "Freundy vier", "Another Dude", "friend6"]
 
     useEffect(() => {
-        // TODO: user userList data to incorporate friend info into the activeFriendships array, so it's easy to display
+        // TODO: move this whole logic to a separate function (should be done fully on BE maybe?)
         // userList data (into) => friendships
-        setActiveFriendships(friendships)
+        const activeAmistades = friendships.filter((friendship: FriendshipData) => {
+            return(friendship.status === 'accepted')
+        })
+        let completeFriendshipData = activeAmistades.map((amistad: FriendshipData) => {
+            const otherUserId = (amistad.userIds[0] === user._id) ?amistad.userIds[1] :amistad.userIds[0]
+            const otherUserResult = userList.filter((storedUser: SearchResult) => {
+                return(storedUser.id === otherUserId)
+            })
+            let otherUserUsername
+            // TODO: add other cases depending on the type of notification?
+            switch(otherUserResult[0].type){
+                case('user'): {
+                    // TODO: check if always single result possible? Can't be friends twice, right?
+                    otherUserUsername = otherUserResult[0].username
+                    break
+                }
+                default: {
+                    otherUserUsername = '-'
+                    break
+                }
+            }
+            return({
+                ...amistad,
+                usernames: [otherUserUsername, user.username]
+            })
+        })
+        setActiveFriendships(completeFriendshipData)
     },[userList])
 
     useEffect(() => {
@@ -76,15 +102,6 @@ export const UserData = (props: UserDataProps) => {
         // @ts-ignore
         dispatch(getUsernamesByIds(userIds))
     },[friendships])
-    // },[activeFriendships])
-
-    // useEffect(() => {
-    //     setActiveFriendships(
-    //         friendships.filter((friendship: FriendshipData) => {
-    //             return(friendship.status === 'accepted')
-    //         })
-    //     )
-    // },[friendships])
 
     useEffect(() => {
         if(selectedTag !== ""){
@@ -442,9 +459,9 @@ export const UserData = (props: UserDataProps) => {
                                                     height: '45px',
                                                     margin: globalTheme.spacing(1),
                                                     bgcolor: "#0072CE",
-                                                    ...((stringAvatar(friendId, "color")).sx),
+                                                    ...((stringAvatar(friend.usernames![0], "color")).sx),
                                                 }}
-                                                {...stringAvatar(friendId, "children")}
+                                                {...stringAvatar(friend.usernames![0], "children")}
                                             />
                                         </Grid>
                                     </Grid>
@@ -473,7 +490,8 @@ export const UserData = (props: UserDataProps) => {
                                                 }}
                                                 noWrap={true}
                                             >
-                                                {friendId}
+                                                {friend.usernames![0]}
+                                                {/*{friendId}*/}
                                             </Typography>
                                         </Grid>
                                     </Grid>
