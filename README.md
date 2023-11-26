@@ -5,7 +5,7 @@ You know how the saying goes when it comes to languages: _You either use it, or 
 The main purpose of this project is to help you revise your vocabulary in many languages at the same time, so you won't forget any of them while learning a new one.
 
 ## NB!
-At this point, we're at full development of core functions of the app. All the basic functionalities are not yet done, so we consider this a pre-alpha. Once this stage is done, we'll allow real users to interact with the app for the real Alpha stage, and eventually to a Beta. Updates will be posted here on the repository's README.
+At this point, we're at full development of core functions of the app. All the basic functionalities are not yet done, so we consider this a pre-alpha. Once this stage is done, we'll implement branches to help incorporate gradually new functionalities and allow users to interact with the app for the real Alpha stage, and eventually to a Beta. Updates will be posted here on the repository's README.
 
 ## What does it do? 
 This tool is meant for people learning a new language, so they can simultaneously revise the new vocabulary in other languages they might know, so that information won't be forgotten. Words can be organized through tags, so it's easier to aggregate related content (units on a book for example).
