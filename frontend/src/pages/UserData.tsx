@@ -56,35 +56,39 @@ export const UserData = (props: UserDataProps) => {
     const friendList = ["Friendo One", "Amigou Dos", "Sõber kolm neli", "Freundy vier", "Another Dude", "friend6"]
 
     useEffect(() => {
-        // TODO: move this whole logic to a separate function (should be done fully on BE maybe?)
-        // userList data (into) => friendships
-        const activeAmistades = friendships.filter((friendship: FriendshipData) => {
-            return(friendship.status === 'accepted')
-        })
-        let completeFriendshipData = activeAmistades.map((amistad: FriendshipData) => {
-            const otherUserId = (amistad.userIds[0] === user._id) ?amistad.userIds[1] :amistad.userIds[0]
-            const otherUserResult = userList.filter((storedUser: SearchResult) => {
-                return(storedUser.id === otherUserId)
+        if(userList!!){
+            // TODO: move this whole logic to a separate function (should be done fully on BE maybe?)
+            // userList data (into) => friendships
+            const activeAmistades = friendships.filter((friendship: FriendshipData) => {
+                return(friendship.status === 'accepted')
             })
-            let otherUserUsername
-            // TODO: add other cases depending on the type of notification?
-            switch(otherUserResult[0].type){
-                case('user'): {
-                    // TODO: check if always single result possible? Can't be friends twice, right?
-                    otherUserUsername = otherUserResult[0].username
-                    break
+            let completeFriendshipData = activeAmistades.map((amistad: FriendshipData) => {
+                const otherUserId = (amistad.userIds[0] === user._id) ?amistad.userIds[1] :amistad.userIds[0]
+                const otherUserResult = userList.filter((storedUser: SearchResult) => {
+                    return(storedUser.id === otherUserId)
+                })
+                let otherUserUsername
+                if(otherUserResult !== undefined && (otherUserResult.length > 0)){
+                    // TODO: add other cases depending on the type of notification?
+                    switch(otherUserResult[0].type){
+                        case('user'): {
+                            // TODO: check if always single result possible? Can't be friends twice, right?
+                            otherUserUsername = otherUserResult[0].username
+                            break
+                        }
+                        default: {
+                            otherUserUsername = '-'
+                            break
+                        }
+                    }
                 }
-                default: {
-                    otherUserUsername = '-'
-                    break
-                }
-            }
-            return({
-                ...amistad,
-                usernames: [otherUserUsername, user.username]
+                return({
+                    ...amistad,
+                    usernames: [otherUserUsername, user.username]
+                })
             })
-        })
-        setActiveFriendships(completeFriendshipData)
+            setActiveFriendships(completeFriendshipData)
+        }
     },[userList])
 
     useEffect(() => {
@@ -413,9 +417,9 @@ export const UserData = (props: UserDataProps) => {
                         </Grid>
                         :
                         (activeFriendships.map((friend: FriendshipData, index: number) => {
-                            const friendId: string = friend.userIds.filter((friendshipMemberId: string) => {
-                                return (friendshipMemberId !== user._id)
-                            })[0]
+                            // const friendId: string = friend.userIds.filter((friendshipMemberId: string) => {
+                            //     return (friendshipMemberId !== user._id)
+                            // })[0]
                             return(
                                 // TODO: make this into a separate component - to list users
                                 <Grid
@@ -459,9 +463,9 @@ export const UserData = (props: UserDataProps) => {
                                                     height: '45px',
                                                     margin: globalTheme.spacing(1),
                                                     bgcolor: "#0072CE",
-                                                    ...((stringAvatar(friend.usernames![0], "color")).sx),
+                                                    ...((stringAvatar((friend.usernames!!) ?friend.usernames![0] :"-", "color")).sx),
                                                 }}
-                                                {...stringAvatar(friend.usernames![0], "children")}
+                                                {...stringAvatar((friend.usernames!!) ?friend.usernames![0] :"-", "children")}
                                             />
                                         </Grid>
                                     </Grid>

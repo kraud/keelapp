@@ -39,7 +39,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
 
     }
     const dispatch = useDispatch()
-    const {user, userList, isLoading} = useSelector((state: any) => state.auth)
+    const {user, userList, isLoading} = useSelector((state: any) => state.user)
     const {isLoadingNotifications, isSuccessNotifications} = useSelector((state: any) => state.notifications)
     const {isSuccessFriendships, isLoadingFriendships, friendships} = useSelector((state: any) => state.friendships)
     const [selectedUser, setSelectedUser] = useState<SearchResult | null>(null)
@@ -52,6 +52,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
 
     const [sentRequest, setSentRequest] = useState(false)
     const [cancelledRequest, setCancelledRequest] = useState(false)
+    const [deletedRequest, setDeletedRequest] = useState(false)
     useEffect(() => {
         if((isSuccessNotifications && !isLoadingNotifications) && (isSuccessFriendships && !isLoadingFriendships) && (sentRequest || cancelledRequest)){
             if(sentRequest){
@@ -61,6 +62,10 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
             if(cancelledRequest){
                 toast.info("Friend request deleted")
                 setCancelledRequest(false)
+            }
+            if(deletedRequest){
+                toast.info("Friendship deleted")
+                setDeletedRequest(false)
             }
             // this will update the button labels
             // @ts-ignore
@@ -103,19 +108,24 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
         )
     }
 
-    const getFriendRequestButtonLabel = (potentialFriendId: string): 0|1|2  => {
+    const getFriendRequestButtonLabel = (potentialFriendId: string): 0|1|2|3  => {
         const friendship = checkIfAlreadyFriend(potentialFriendId)
 
         if(friendship === undefined){ // No friendship (yet!)
             // return('Add')
             return(0)
         } else {
-            if(friendship.userIds[0] === potentialFriendId){ // potentialFriend listed first => they made the request
-                // return('Accept')
-                return(1)
-            } else { // currently logged-in user made the request => disable button? Cancel request?
-                // return('Cancel')
-                return(2)
+            // There is a friendship and it's active
+            if(friendship.status === 'accepted'){
+                return(3) // 'Remove friend'
+            } else {// There is a friendship and it's not confirmed yet
+                if(friendship.userIds[0] === potentialFriendId){ // potentialFriend listed first => potentialFriend made the request (current user can accept)
+                    // return('Accept')
+                    return(1)
+                } else { // currently logged-in user made the request => disable button? Cancel request?
+                    // return('Cancel')
+                    return(2)
+                }
             }
         }
     }
@@ -132,6 +142,12 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
 
         // alternative: create full endpoint for deleting other users notifications? specify type and id/ids to match?
 
+    }
+
+    const deleteActiveFriendship = (friendship: FriendshipData) => {
+        // @ts-ignore
+        dispatch(deleteFriendship(friendship._id))
+        setDeletedRequest(true)
     }
 
     return (
@@ -207,14 +223,18 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                     <Button
                                         variant={"contained"}
                                         // @ts-ignore
-                                        color={["primary", "success", "error"][getFriendRequestButtonLabel(selectedUser.id)]}
+                                        color={["primary", "success", "error", "error"][getFriendRequestButtonLabel(selectedUser.id)]}
                                         onClick={() => {
                                             const potentialFriendship = checkIfAlreadyFriend(selectedUser.id)
-                                            if(potentialFriendship !== undefined){
-                                                if(potentialFriendship.userIds[0] === selectedUser.id){ // potentialFriendship listed first => they made the request
-                                                    // accept request => delete notification (at currently logged-in user) + update friendship
-                                                } else { // currently logged-in user made the request => Cancel request
-                                                    cancelRequest(potentialFriendship)
+                                            if(potentialFriendship !== undefined){// There is a friendship and it's active
+                                                if(potentialFriendship.status === 'accepted'){
+                                                    deleteActiveFriendship(potentialFriendship)
+                                                } else {
+                                                    if(potentialFriendship.userIds[0] === selectedUser.id){ // potentialFriendship listed first => they made the request
+                                                        // accept request => delete notification (at currently logged-in user) + update friendship
+                                                    } else { // currently logged-in user made the request => Cancel request
+                                                        cancelRequest(potentialFriendship)
+                                                    }
                                                 }
                                             } else { // no friendship status yet => create request
                                                 sendNotification(selectedUser)
@@ -222,9 +242,9 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                             }
                                         }}
                                         fullWidth={true}
-                                        startIcon={[<PersonAddIcon/>, <CheckCircleIcon/>, <CancelIcon/>][getFriendRequestButtonLabel(selectedUser.id)]}
+                                        startIcon={[<PersonAddIcon/>, <CheckCircleIcon/>, <CancelIcon/>, <CancelIcon/>][getFriendRequestButtonLabel(selectedUser.id)]}
                                     >
-                                        {['Add friend', 'Accept request', 'Cancel request'][getFriendRequestButtonLabel(selectedUser.id)]}
+                                        {['Add friend', 'Accept request', 'Cancel request', 'Delete Friendship'][getFriendRequestButtonLabel(selectedUser.id)]}
                                     </Button>
                                 </Grid>
                                 <Grid
