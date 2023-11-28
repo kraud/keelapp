@@ -23,7 +23,7 @@ import {useNavigate} from "react-router-dom";
 import {stringAvatar} from "../components/generalUseFunctions";
 import {getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
 import {FriendshipData, SearchResult} from "../ts/interfaces";
-import {getUsernamesByIds, searchUser} from "../features/users/userSlice";
+import {getUsernamesByIds} from "../features/users/userSlice";
 
 interface UserDataProps {
 
@@ -39,8 +39,8 @@ export interface UserBadgeData {
 export const UserData = (props: UserDataProps) => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const {user, isLoading, isSuccess} = useSelector((state: any) => state.auth)
-    const {userList} = useSelector((state: any) => state.user)
+    const {user, isLoadingAuth, isSuccess} = useSelector((state: any) => state.auth)
+    const {userList, isLoadingUser} = useSelector((state: any) => state.user)
     const {tags, isTagSearchLoading} = useSelector((state: any) => state.words)
     const {friendships, isSuccessFriendships, isLoadingFriendships} = useSelector((state: any) => state.friendships)
     const [allTags, setAllTags] = useState<string[]>([])
@@ -51,18 +51,16 @@ export const UserData = (props: UserDataProps) => {
     const [isEditing, setIsEditing] = useState(false)
     const [localUserData, setLocalUserData] = useState<UserBadgeData | null>(null)
 
-    // const friendList: string[] = []
-    // const friendList = ["friendo"]
     const friendList = ["Friendo One", "Amigou Dos", "Sõber kolm neli", "Freundy vier", "Another Dude", "friend6"]
 
     useEffect(() => {
         if(userList!!){
             // TODO: move this whole logic to a separate function (should be done fully on BE maybe?)
             // userList data (into) => friendships
-            const activeAmistades = friendships.filter((friendship: FriendshipData) => {
+            const acceptedFriendships = friendships.filter((friendship: FriendshipData) => {
                 return(friendship.status === 'accepted')
             })
-            let completeFriendshipData = activeAmistades.map((amistad: FriendshipData) => {
+            let completeFriendshipData = acceptedFriendships.map((amistad: FriendshipData) => {
                 const otherUserId = (amistad.userIds[0] === user._id) ?amistad.userIds[1] :amistad.userIds[0]
                 const otherUserResult = userList.filter((storedUser: SearchResult) => {
                     return(storedUser.id === otherUserId)
@@ -92,19 +90,21 @@ export const UserData = (props: UserDataProps) => {
     },[userList])
 
     useEffect(() => {
-        const activeAmistades = friendships.filter((friendship: FriendshipData) => {
+        const acceptedFriendships = friendships.filter((friendship: FriendshipData) => {
             return(friendship.status === 'accepted')
         })
-        // all the ids of the users that the current user is friends with
-        const userIds = activeAmistades.map((friendship: FriendshipData) => {
-            if(friendship.userIds[0] === user._id){
-                return friendship.userIds[1]
-            } else {
-                return friendship.userIds[0]
-            }
-        })
-        // @ts-ignore
-        dispatch(getUsernamesByIds(userIds))
+        if(acceptedFriendships.length > 0){ // if there are no yet-accepted friendships, then no need to get any usernames
+            // all the ids of the users that the current user is friends with
+            const userIds = acceptedFriendships.map((friendship: FriendshipData) => {
+                if(friendship.userIds[0] === user._id){
+                    return friendship.userIds[1]
+                } else {
+                    return friendship.userIds[0]
+                }
+            })
+            // @ts-ignore
+            dispatch(getUsernamesByIds(userIds))
+        }
     },[friendships])
 
     useEffect(() => {
@@ -130,10 +130,10 @@ export const UserData = (props: UserDataProps) => {
     },[])
 
     useEffect(() => {
-        if(!isLoading && isSuccess && !openFriendsModal){
+        if(!isLoadingAuth && isSuccess && !openFriendsModal){
             toast.info("User data updated successfully!")
         }
-    },[isLoading, isSuccess])
+    },[isLoadingAuth, isSuccess])
 
     const onSaveChanges = (newLocalUserData: UserBadgeData) => {
         // @ts-ignore
@@ -174,7 +174,7 @@ export const UserData = (props: UserDataProps) => {
                         })
                     }
                 }}
-                isLoading={isLoading && !(openFriendsModal || openTagModal)}
+                isLoading={isLoadingAuth && !(openFriendsModal || openTagModal)}
             />
             {/* BUTTONS */}
             <Grid
@@ -384,7 +384,10 @@ export const UserData = (props: UserDataProps) => {
                     container={true}
                     xs={12}
                 >
-                    {(activeFriendships.length === 0)
+                    {(isLoadingFriendships || isLoadingUser)
+                        ?
+                        <LinearIndeterminate/>
+                        :(activeFriendships.length === 0)
                         ?
                         <Grid
                             container={true}
@@ -416,10 +419,8 @@ export const UserData = (props: UserDataProps) => {
                             </Grid>
                         </Grid>
                         :
-                        (activeFriendships.map((friend: FriendshipData, index: number) => {
-                            // const friendId: string = friend.userIds.filter((friendshipMemberId: string) => {
-                            //     return (friendshipMemberId !== user._id)
-                            // })[0]
+                        (activeFriendships.map((friendshipItem: FriendshipData, index: number) => {
+                            // TODO: mostrar placeholders mientras cargan los useranames? dependerían de isLoadingUser
                             return(
                                 // TODO: make this into a separate component - to list users
                                 <Grid
@@ -463,9 +464,9 @@ export const UserData = (props: UserDataProps) => {
                                                     height: '45px',
                                                     margin: globalTheme.spacing(1),
                                                     bgcolor: "#0072CE",
-                                                    ...((stringAvatar((friend.usernames!!) ?friend.usernames![0] :"-", "color")).sx),
+                                                    ...((stringAvatar((friendshipItem.usernames!!) ?friendshipItem.usernames![0] :"-", "color")).sx),
                                                 }}
-                                                {...stringAvatar((friend.usernames!!) ?friend.usernames![0] :"-", "children")}
+                                                {...stringAvatar((friendshipItem.usernames!!) ?friendshipItem.usernames![0] :"-", "children")}
                                             />
                                         </Grid>
                                     </Grid>
@@ -494,7 +495,7 @@ export const UserData = (props: UserDataProps) => {
                                                 }}
                                                 noWrap={true}
                                             >
-                                                {friend.usernames![0]}
+                                                {friendshipItem.usernames![0]}
                                             </Typography>
                                         </Grid>
                                     </Grid>

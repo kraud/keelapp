@@ -12,7 +12,7 @@ interface AuthSliceState {
 
     isError: boolean,
     isSuccess: boolean,
-    isLoading: boolean,
+    isLoadingAuth: boolean,
     message: string,
 }
 
@@ -22,7 +22,7 @@ const initialState: AuthSliceState = {
 
     isError: false,
     isSuccess: false,
-    isLoading: false,
+    isLoadingAuth: false,
     message: "",
 }
 
@@ -80,7 +80,7 @@ export const authSlice = createSlice({
         resetState: (state) => {
             state.user = user ? user : null
             state.userList = []
-            state.isLoading = false
+            state.isLoadingAuth = false
             state.isSuccess = false
             state.isError = false
             state.message = ''
@@ -89,38 +89,38 @@ export const authSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(register.pending, (state) => {
-                state.isLoading = true
+                state.isLoadingAuth = true
             })
             .addCase(register.fulfilled, (state, action) => {
-                state.isLoading = false
+                state.isLoadingAuth = false
                 state.isSuccess = true
                 state.user = action.payload
             })
             .addCase(register.rejected, (state, action) => {
-                state.isLoading = false
+                state.isLoadingAuth = false
                 state.isError = true
                 state.message = action.payload as string
                 state.user = null
             })
             .addCase(login.pending, (state) => {
-                state.isLoading = true
+                state.isLoadingAuth = true
             })
             .addCase(login.fulfilled, (state, action) => {
-                state.isLoading = false
+                state.isLoadingAuth = false
                 state.isSuccess = true
                 state.user = action.payload
             })
             .addCase(login.rejected, (state, action) => {
-                state.isLoading = false
+                state.isLoadingAuth = false
                 state.isError = true
                 state.message = action.payload as string
                 state.user = null
             })
             .addCase(updateUser.pending, (state) => {
-                state.isLoading = true
+                state.isLoadingAuth = true
             })
             .addCase(updateUser.fulfilled, (state, action) => {
-                state.isLoading = false
+                state.isLoadingAuth = false
                 state.isSuccess = true
                 state.user = {
                     ...action.payload,
@@ -128,7 +128,7 @@ export const authSlice = createSlice({
                 }
             })
             .addCase(updateUser.rejected, (state, action) => {
-                state.isLoading = false
+                state.isLoadingAuth = false
                 state.isError = true
                 state.message = action.payload as string
                 state.user = null

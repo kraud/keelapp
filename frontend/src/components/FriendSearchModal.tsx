@@ -39,7 +39,8 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
 
     }
     const dispatch = useDispatch()
-    const {user, userList, isLoading} = useSelector((state: any) => state.user)
+    const {user} = useSelector((state: any) => state.auth)
+    const {userList, isLoadingUser} = useSelector((state: any) => state.user)
     const {isLoadingNotifications, isSuccessNotifications} = useSelector((state: any) => state.notifications)
     const {isSuccessFriendships, isLoadingFriendships, friendships} = useSelector((state: any) => state.friendships)
     const [selectedUser, setSelectedUser] = useState<SearchResult | null>(null)
@@ -71,7 +72,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
             // @ts-ignore
             dispatch(getFriendshipsByUserId(user._id))
         }
-    }, [isSuccessFriendships, isSuccessNotifications, sentRequest, cancelledRequest, isLoadingNotifications, isLoadingFriendships])
+    }, [isSuccessFriendships, isSuccessNotifications, isLoadingNotifications, isLoadingFriendships, sentRequest, cancelledRequest, deletedRequest])
 
     const sendNotification = (selectedUser: SearchResult) => {
         const newNotification = {
@@ -180,7 +181,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                     // navigate(`/word/${selection.id}`) // should we somehow check if value.id is something valid?
                                     setSelectedUser(selection)
                                 }}
-                                isSearchLoading={isLoading}
+                                isSearchLoading={isLoadingUser}
                                 sxPropsAutocomplete={{
                                     background: '#c7c7c7',
                                 }}

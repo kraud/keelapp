@@ -26,7 +26,7 @@ export function Login() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
-    const {user, isLoading, isError, isSuccess, message} = useSelector((state: any) => state.auth)
+    const {user, isLoadingAuth, isError, isSuccess, message} = useSelector((state: any) => state.auth)
 
     const validationSchema = Yup.object().shape({
         email: Yup.string().required("Valid e-mail is required").email("Valid e-mail is required"),
@@ -141,7 +141,7 @@ export function Login() {
                         <Grid
                             item={true}
                         >
-                            {(isLoading) && <LinearIndeterminate/>}
+                            {(isLoadingAuth) && <LinearIndeterminate/>}
                         </Grid>
                         <Grid
                             item={true}

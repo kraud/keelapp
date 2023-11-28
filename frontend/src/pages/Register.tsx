@@ -50,7 +50,7 @@ export function Register() {
         resolver: yupResolver(validationSchema),
     })
 
-    const {user, isLoading, isError, isSuccess, message} = useSelector((state: any) => state.auth)
+    const {user, isLoadingAuth, isError, isSuccess, message} = useSelector((state: any) => state.auth)
 
     const onSubmit = (data: IFormInput) => {
         const userData: IFormInput = {
@@ -190,7 +190,7 @@ export function Register() {
                         <Grid
                             item={true}
                         >
-                            {(isLoading) && <LinearIndeterminate/>}
+                            {(isLoadingAuth) && <LinearIndeterminate/>}
                         </Grid>
                         <Grid
                             item={true}

@@ -8,7 +8,7 @@ interface UserSliceState {
 
     isError: boolean,
     isSuccess: boolean,
-    isLoading: boolean,
+    isLoadingUser: boolean,
     message: string,
 }
 
@@ -17,7 +17,7 @@ const initialState: UserSliceState = {
 
     isError: false,
     isSuccess: false,
-    isLoading: false,
+    isLoadingUser: false,
     message: "",
 }
 
@@ -60,7 +60,7 @@ export const userSlice = createSlice({
     initialState,
     reducers: {
         resetState: (state) => {
-            state.isLoading = false
+            state.isLoadingUser = false
             state.isSuccess = false
             state.isError = false
             state.message = ''
@@ -69,29 +69,29 @@ export const userSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(getUsernamesByIds.pending, (state) => {
-                state.isLoading = true
+                state.isLoadingUser = true
             })
             .addCase(getUsernamesByIds.fulfilled, (state, action) => {
-                state.isLoading = false
+                state.isLoadingUser = false
                 state.isSuccess = true
                 state.userList = action.payload
             })
             .addCase(getUsernamesByIds.rejected, (state, action) => {
-                state.isLoading = false
+                state.isLoadingUser = false
                 state.isError = true
                 state.message = action.payload as string
                 state.userList = []
             })
             .addCase(searchUser.pending, (state) => {
-                state.isLoading = true
+                state.isLoadingUser = true
             })
             .addCase(searchUser.fulfilled, (state, action) => {
-                state.isLoading = false
+                state.isLoadingUser = false
                 state.isSuccess = true
                 state.userList = action.payload
             })
             .addCase(searchUser.rejected, (state, action) => {
-                state.isLoading = false
+                state.isLoadingUser = false
                 state.isError = true
                 state.message = action.payload as string
                 state.userList = []
