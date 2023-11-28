@@ -70,16 +70,19 @@ function stringToColor(string: string) {
 }
 
 export function stringAvatar(name: string, onlyOne?: "color"|"children") {
-
+    let initials = ""
     const maxAmountInitials = 3
     const returnInitials = () => {
-        let initials = ""
-        name.split(' ').forEach((word: string, index: number) => {
-            if(maxAmountInitials > index){
-                initials = initials.concat((word)[0].toUpperCase())
-            }
-        })
-        return(initials)
+        if(name!! && name.length > 0){
+            name.split(' ').forEach((word: string, index: number) => {
+                if(maxAmountInitials > index){
+                    initials = initials.concat((word)[0].toUpperCase())
+                }
+            })
+            return(initials)
+        } else {
+            initials = '-'
+        }
     }
 
     if(onlyOne !== undefined){
@@ -105,5 +108,4 @@ export function stringAvatar(name: string, onlyOne?: "color"|"children") {
             children: returnInitials()
         }
     }
-
 }

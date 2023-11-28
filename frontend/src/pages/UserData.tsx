@@ -495,7 +495,6 @@ export const UserData = (props: UserDataProps) => {
                                                 noWrap={true}
                                             >
                                                 {friend.usernames![0]}
-                                                {/*{friendId}*/}
                                             </Typography>
                                         </Grid>
                                     </Grid>
