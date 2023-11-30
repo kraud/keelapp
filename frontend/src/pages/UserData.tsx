@@ -54,38 +54,40 @@ export const UserData = (props: UserDataProps) => {
     const friendList = ["Friendo One", "Amigou Dos", "Sõber kolm neli", "Freundy vier", "Another Dude", "friend6"]
 
     useEffect(() => {
-        if(userList!!){
-            // TODO: move this whole logic to a separate function (should be done fully on BE maybe?)
-            // userList data (into) => friendships
-            const acceptedFriendships = friendships.filter((friendship: FriendshipData) => {
-                return(friendship.status === 'accepted')
-            })
-            let completeFriendshipData = acceptedFriendships.map((amistad: FriendshipData) => {
-                const otherUserId = (amistad.userIds[0] === user._id) ?amistad.userIds[1] :amistad.userIds[0]
-                const otherUserResult = userList.filter((storedUser: SearchResult) => {
-                    return(storedUser.id === otherUserId)
+        if(!openFriendsModal){
+            if(userList!!){
+                // TODO: move this whole logic to a separate function (should be done fully on BE maybe?)
+                // userList data (into) => friendships
+                const acceptedFriendships = friendships.filter((friendship: FriendshipData) => {
+                    return(friendship.status === 'accepted')
                 })
-                let otherUserUsername
-                if(otherUserResult !== undefined && (otherUserResult.length > 0)){
-                    // TODO: add other cases depending on the type of notification?
-                    switch(otherUserResult[0].type){
-                        case('user'): {
-                            // TODO: check if always single result possible? Can't be friends twice, right?
-                            otherUserUsername = otherUserResult[0].username
-                            break
-                        }
-                        default: {
-                            otherUserUsername = '-'
-                            break
+                let completeFriendshipData = acceptedFriendships.map((amistad: FriendshipData) => {
+                    const otherUserId = (amistad.userIds[0] === user._id) ?amistad.userIds[1] :amistad.userIds[0]
+                    const otherUserResult = userList.filter((storedUser: SearchResult) => {
+                        return(storedUser.id === otherUserId)
+                    })
+                    let otherUserUsername
+                    if(otherUserResult !== undefined && (otherUserResult.length > 0)){
+                        // TODO: add other cases depending on the type of notification?
+                        switch(otherUserResult[0].type){
+                            case('user'): {
+                                // TODO: check if always single result possible? Can't be friends twice, right?
+                                otherUserUsername = otherUserResult[0].username
+                                break
+                            }
+                            default: {
+                                otherUserUsername = '-'
+                                break
+                            }
                         }
                     }
-                }
-                return({
-                    ...amistad,
-                    usernames: [otherUserUsername, user.username]
+                    return({
+                        ...amistad,
+                        usernames: [otherUserUsername, user.username]
+                    })
                 })
-            })
-            setActiveFriendships(completeFriendshipData)
+                setActiveFriendships(completeFriendshipData)
+            }
         }
     },[userList])
 
@@ -384,7 +386,7 @@ export const UserData = (props: UserDataProps) => {
                     container={true}
                     xs={12}
                 >
-                    {(isLoadingFriendships || isLoadingUser)
+                    {((isLoadingFriendships || isLoadingUser) && !openFriendsModal)
                         ?
                         <LinearIndeterminate/>
                         :(activeFriendships.length === 0)

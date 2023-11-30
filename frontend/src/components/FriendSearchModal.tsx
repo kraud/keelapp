@@ -135,6 +135,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
         // @ts-ignore
         dispatch(deleteFriendship(friendship._id))
         setCancelledRequest(true)
+        // TODO:
         // => delete notification (at selectedUser.id user)
         // get other userID from friendship
         // get all notifications for that user (possible with current endpoints? Might be protected by middleware)
@@ -178,7 +179,6 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                 }}
                                 onSelect={(selection: SearchResult) => {
                                     // trigger more detailed search for user data?
-                                    // navigate(`/word/${selection.id}`) // should we somehow check if value.id is something valid?
                                     setSelectedUser(selection)
                                 }}
                                 isSearchLoading={isLoadingUser}
