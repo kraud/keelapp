@@ -142,6 +142,14 @@ export const UserData = (props: UserDataProps) => {
         dispatch(updateUser(newLocalUserData))
     }
 
+    const displayFriendDetails = (friendshipInfo: FriendshipData) => {
+        const friendId = (friendshipInfo.userIds[0] === user._id) ? friendshipInfo.userIds[1] : friendshipInfo.userIds[0]
+
+        // TODO: create state to set as default in FriendSearchModal as selectedUser
+        // maybe simply give userId and request should be made inside the modal?
+        setOpenFriendsModal(true)
+    }
+
     return(
         <Grid
             component={motion.div} // to implement animations with Framer Motion
@@ -513,6 +521,9 @@ export const UserData = (props: UserDataProps) => {
                                         >
                                             <IconButton
                                                 color={"primary"}
+                                                onClick={() => {
+                                                    displayFriendDetails(friendshipItem)
+                                                }}
                                             >
                                                 <ArrowForwardIosIcon/>
                                             </IconButton>

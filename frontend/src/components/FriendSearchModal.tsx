@@ -20,6 +20,7 @@ import {createFriendship, deleteFriendship, getFriendshipsByUserId} from "../fea
 interface FriendSearchModalProps {
     open: boolean
     setOpen: (value: boolean) => void
+    // TODO: seletedUser should be able to be set by a prop
 }
 
 export const FriendSearchModal = (props: FriendSearchModalProps) => {
