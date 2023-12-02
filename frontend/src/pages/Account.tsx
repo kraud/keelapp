@@ -25,7 +25,7 @@ import {getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
 import {FriendshipData, SearchResult} from "../ts/interfaces";
 import {getUsernamesByIds} from "../features/users/userSlice";
 
-interface UserDataProps {
+interface AccountProps {
 
 }
 
@@ -36,7 +36,7 @@ export interface UserBadgeData {
     email: string
 }
 
-export const UserData = (props: UserDataProps) => {
+export const Account = (props: AccountProps) => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const {user, isLoadingAuth, isSuccess} = useSelector((state: any) => state.auth)

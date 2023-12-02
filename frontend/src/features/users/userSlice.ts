@@ -4,9 +4,10 @@ import userService from "./userService";
 
 
 interface UserSliceState {
-    userList: SearchResult[]
+    userList: SearchResult[],
+    userResult: any,
 
-    isError: boolean,
+        isError: boolean,
     isSuccess: boolean,
     isLoadingUser: boolean,
     message: string,
@@ -14,6 +15,7 @@ interface UserSliceState {
 
 const initialState: UserSliceState = {
     userList: [],
+    userResult: undefined,
 
     isError: false,
     isSuccess: false,

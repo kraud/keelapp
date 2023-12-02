@@ -14,7 +14,7 @@ import LinearIndeterminate from "../components/Spinner";
 import {motion} from "framer-motion";
 import {childVariantsAnimation, routeVariantsAnimation} from "./management/RoutesWithAnimation";
 
-export interface IFormInput {
+export interface UserRegisterData {
     name: string
     username: string
     email: string
@@ -46,14 +46,14 @@ export function Register() {
 
     const {
         handleSubmit, reset, control, formState: { errors }
-    } = useForm<IFormInput>({
+    } = useForm<UserRegisterData>({
         resolver: yupResolver(validationSchema),
     })
 
     const {user, isLoadingAuth, isError, isSuccess, message} = useSelector((state: any) => state.auth)
 
-    const onSubmit = (data: IFormInput) => {
-        const userData: IFormInput = {
+    const onSubmit = (data: UserRegisterData) => {
+        const userData: UserRegisterData = {
             name: data.name,
             username: data.username,
             email: data.email,

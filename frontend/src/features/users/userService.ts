@@ -18,6 +18,7 @@ const getUsernamesByUserIds = async (token: any, ids: string[]) => {
     return(response.data)
 }
 
+// Get users by name or username
 const getUsersBy = async (token: any, query: string) => {
     const config = {
         headers: {

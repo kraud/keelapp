@@ -6,7 +6,7 @@ import Login from "../Login";
 import Register from "../Register";
 import React from "react";
 import {DisplayWord} from "../DisplayWord";
-import {UserData} from "../UserData";
+import {Account} from "../Account";
 import {NotificationHub} from "../NotificationHub";
 
 export const routeVariantsAnimation = {
@@ -80,7 +80,7 @@ export function RoutesWithAnimation() {
             <Route
                 path='/user'
                 element={
-                    <UserData/>
+                    <Account/>
                 }
             />
             <Route

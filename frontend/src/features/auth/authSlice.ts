@@ -1,14 +1,12 @@
 import {createSlice, createAsyncThunk} from "@reduxjs/toolkit"
 import authService from "./authService";
-import {IFormInput} from "../../pages/Register";
-import {SearchResult} from "../../ts/interfaces";
+import {UserRegisterData} from "../../pages/Register";
 
 // Get user from localStorage
 const user = JSON.parse(localStorage.getItem('user')! )
 
 interface AuthSliceState {
     user: any,
-    userList: SearchResult[]
 
     isError: boolean,
     isSuccess: boolean,
@@ -18,7 +16,6 @@ interface AuthSliceState {
 
 const initialState: AuthSliceState = {
     user: user ? user : null,
-    userList: [],
 
     isError: false,
     isSuccess: false,
@@ -27,7 +24,7 @@ const initialState: AuthSliceState = {
 }
 
 // Register user
-export const register = createAsyncThunk('auth/register', async (user: IFormInput, thunkAPI) => {
+export const register = createAsyncThunk('auth/register', async (user: UserRegisterData, thunkAPI) => {
     try {
         return await authService.register(user)
     } catch (error: any) {
@@ -79,7 +76,6 @@ export const authSlice = createSlice({
     reducers: {
         resetState: (state) => {
             state.user = user ? user : null
-            state.userList = []
             state.isLoadingAuth = false
             state.isSuccess = false
             state.isError = false

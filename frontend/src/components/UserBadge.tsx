@@ -2,7 +2,7 @@ import globalTheme from "../theme/theme";
 import {CircularProgress, Grid, TextField, Typography} from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import React from "react";
-import {UserBadgeData} from "../pages/UserData";
+import {UserBadgeData} from "../pages/Account";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import {useTheme} from "@mui/material/styles";
 

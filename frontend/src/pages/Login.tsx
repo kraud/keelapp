@@ -35,17 +35,17 @@ export function Login() {
 
     const {
         handleSubmit, control, formState: { errors }
-    } = useForm<IFormInput>({
+    } = useForm<UserLoginData>({
         resolver: yupResolver(validationSchema),
     })
 
-    interface IFormInput {
+    interface UserLoginData {
         email: string;
         password: string;
     }
 
-    const onSubmit = (data: IFormInput) => {
-        const userData: IFormInput = {
+    const onSubmit = (data: UserLoginData) => {
+        const userData: UserLoginData = {
             email: data.email,
             password: data.password
         }

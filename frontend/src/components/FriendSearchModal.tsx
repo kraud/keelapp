@@ -20,6 +20,7 @@ import {createFriendship, deleteFriendship, getFriendshipsByUserId} from "../fea
 interface FriendSearchModalProps {
     open: boolean
     setOpen: (value: boolean) => void
+    defaultUser?: string
     // TODO: seletedUser should be able to be set by a prop
 }
 
@@ -55,6 +56,13 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
     const [sentRequest, setSentRequest] = useState(false)
     const [cancelledRequest, setCancelledRequest] = useState(false)
     const [deletedRequest, setDeletedRequest] = useState(false)
+
+    useEffect(() => {
+        if(props.defaultUser !== undefined){
+            // TODO: make request to get user by ID and store result in selectedUser
+        }
+    },[])
+
     useEffect(() => {
         if((isSuccessNotifications && !isLoadingNotifications) && (isSuccessFriendships && !isLoadingFriendships) && (sentRequest || cancelledRequest)){
             if(sentRequest){
