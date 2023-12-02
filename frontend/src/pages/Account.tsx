@@ -23,7 +23,7 @@ import {useNavigate} from "react-router-dom";
 import {stringAvatar} from "../components/generalUseFunctions";
 import {getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
 import {FriendshipData, SearchResult} from "../ts/interfaces";
-import {getUsernamesByIds} from "../features/users/userSlice";
+import {getUserById, getUsernamesByIds} from "../features/users/userSlice";
 
 interface AccountProps {
 
@@ -142,13 +142,24 @@ export const Account = (props: AccountProps) => {
         dispatch(updateUser(newLocalUserData))
     }
 
-    const displayFriendDetails = (friendshipInfo: FriendshipData) => {
-        const friendId = (friendshipInfo.userIds[0] === user._id) ? friendshipInfo.userIds[1] : friendshipInfo.userIds[0]
+    const [defaultModalUserId, setDefaultModalUserId] = useState<string|undefined>(undefined)
 
-        // TODO: create state to set as default in FriendSearchModal as selectedUser
-        // maybe simply give userId and request should be made inside the modal?
-        setOpenFriendsModal(true)
+    const displayFriendDetails = (friendshipInfo: FriendshipData) => {
+        const friendId: string = (friendshipInfo.userIds[0] === user._id) ? friendshipInfo.userIds[1] : friendshipInfo.userIds[0]
+        setDefaultModalUserId(friendId)
     }
+
+    useEffect(() => {
+        if(defaultModalUserId !== undefined){
+            setOpenFriendsModal(true)
+        }
+    },[defaultModalUserId])
+
+    useEffect(() => {
+        if(!openFriendsModal){
+            setDefaultModalUserId(undefined)
+        }
+    },[openFriendsModal])
 
     return(
         <Grid
@@ -538,6 +549,7 @@ export const Account = (props: AccountProps) => {
             <FriendSearchModal
                 open={openFriendsModal}
                 setOpen={(value: boolean) => setOpenFriendsModal(value)}
+                defaultUserId={defaultModalUserId}
             />
             <TagInfoModal
                 open={openTagModal}

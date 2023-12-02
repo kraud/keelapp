@@ -336,7 +336,7 @@ const getWordById = asyncHandler(async (req, res) => {
         throw new Error('User not found')
     }
 
-    // Make sure the logged-in user matches the goal user
+    // Make sure the logged-in user matches the word user
     if(word.user.toString() !== req.user.id){
         res.status(401)
         throw new Error('User not authorized')

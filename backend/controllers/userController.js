@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs')
 const asyncHandler = require('express-async-handler')
 const User = require('../models/userModel')
 const mongoose = require('mongoose')
+const Word = require("../models/wordModel");
 
 // @desc    Register new user
 // @route   POST /api/users
@@ -149,6 +150,26 @@ const getUsersBy = asyncHandler(async(req, res) => {
     })
 })
 
+// @desc    Get User
+// @route   GET /api/users
+// @access  Private
+const getUserById = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.id)
+
+    if(!user){
+        res.status(400)
+        throw new Error("User not found")
+    }
+
+    // Check for user
+    if(!req.user){
+        res.status(401)
+        throw new Error('Logged in user not found')
+    }
+
+    res.status(200).json(user)
+})
+
 // @desc    Get user data
 // @route   POST /api/users/me
 // @access  Private
@@ -207,5 +228,6 @@ module.exports = {
     getMe,
     getUsersBy,
     updateUser,
-    getUsernamesBy
+    getUsernamesBy,
+    getUserById
 }

@@ -7,7 +7,7 @@ interface UserSliceState {
     userList: SearchResult[],
     userResult: any,
 
-        isError: boolean,
+    isError: boolean,
     isSuccess: boolean,
     isLoadingUser: boolean,
     message: string,
@@ -44,7 +44,24 @@ export const searchUser = createAsyncThunk('auth/searchUser', async (query: stri
     try {
         // @ts-ignore
         const token = thunkAPI.getState().auth.user.token
-        return await userService.getUsersBy(token, query)
+        return await userService.getUsersByNameUsername(token, query)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+export const getUserById = createAsyncThunk('auth/getUser', async (userId: string, thunkAPI) => {
+    try {
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await userService.getUserByUserId(token, userId)
     } catch(error: any) {
         const message = (
                 error.response &&
@@ -93,6 +110,20 @@ export const userSlice = createSlice({
                 state.userList = action.payload
             })
             .addCase(searchUser.rejected, (state, action) => {
+                state.isLoadingUser = false
+                state.isError = true
+                state.message = action.payload as string
+                state.userList = []
+            })
+            .addCase(getUserById.pending, (state) => {
+                state.isLoadingUser = true
+            })
+            .addCase(getUserById.fulfilled, (state, action) => {
+                state.isLoadingUser = false
+                state.isSuccess = true
+                state.userResult = action.payload
+            })
+            .addCase(getUserById.rejected, (state, action) => {
                 state.isLoadingUser = false
                 state.isError = true
                 state.message = action.payload as string

@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import {useEffect, useState} from "react";
 import React from "react";
 import {AutocompleteSearch} from "./AutocompleteSearch";
-import {searchUser} from "../features/users/userSlice";
+import {getUserById, searchUser} from "../features/users/userSlice";
 import {FriendshipData, SearchResult} from "../ts/interfaces";
 import {useDispatch, useSelector} from "react-redux";
 import {UserBadge} from "./UserBadge";
@@ -20,8 +20,7 @@ import {createFriendship, deleteFriendship, getFriendshipsByUserId} from "../fea
 interface FriendSearchModalProps {
     open: boolean
     setOpen: (value: boolean) => void
-    defaultUser?: string
-    // TODO: seletedUser should be able to be set by a prop
+    defaultUserId?: string
 }
 
 export const FriendSearchModal = (props: FriendSearchModalProps) => {
@@ -42,7 +41,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
     }
     const dispatch = useDispatch()
     const {user} = useSelector((state: any) => state.auth)
-    const {userList, isLoadingUser} = useSelector((state: any) => state.user)
+    const {userList, userResult, isLoadingUser} = useSelector((state: any) => state.user)
     const {isLoadingNotifications, isSuccessNotifications} = useSelector((state: any) => state.notifications)
     const {isSuccessFriendships, isLoadingFriendships, friendships} = useSelector((state: any) => state.friendships)
     const [selectedUser, setSelectedUser] = useState<SearchResult | null>(null)
@@ -58,10 +57,23 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
     const [deletedRequest, setDeletedRequest] = useState(false)
 
     useEffect(() => {
-        if(props.defaultUser !== undefined){
-            // TODO: make request to get user by ID and store result in selectedUser
+        if(props.defaultUserId !== undefined){
+            // @ts-ignore
+            dispatch(getUserById(props.defaultUserId))
         }
-    },[])
+    },[props.defaultUserId])
+
+    useEffect(() => {
+        if(userResult !== undefined){
+            setSelectedUser({
+                id: userResult._id,
+                label: userResult.name,
+                type: 'user',
+                email: userResult.email,
+                username: userResult.username
+            })
+        }
+    },[userResult])
 
     useEffect(() => {
         if((isSuccessNotifications && !isLoadingNotifications) && (isSuccessFriendships && !isLoadingFriendships) && (sentRequest || cancelledRequest)){
@@ -175,104 +187,124 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                     item={true}
                     justifyContent={"center"}
                 >
-                    {(selectedUser === null)
+                    {(isLoadingUser && (props.defaultUserId !== undefined))
                         ?
-                        <Grid
-                            item={true}
-                        >
-                            <AutocompleteSearch
-                                options={userList}
-                                getOptions={(inputValue: string) => {
-                                    // @ts-ignore
-                                    dispatch(searchUser(inputValue))
-                                }}
-                                onSelect={(selection: SearchResult) => {
-                                    // trigger more detailed search for user data?
-                                    setSelectedUser(selection)
-                                }}
-                                isSearchLoading={isLoadingUser}
-                                sxPropsAutocomplete={{
-                                    background: '#c7c7c7',
-                                }}
-                                sxPropsInput={{
-                                    color: 'black',
-                                }}
-                                placeholder={"Search for friends..."}
-                                iconColor={"primary"}
-                            />
-                        </Grid>
-                        :
+
                         <Grid
                             item={true}
                             container={true}
-                            rowSpacing={2}
                             sx={{
-                                marginTop: globalTheme.spacing(1)
+                                width: '500px'
                             }}
                         >
-                            {/* TODO: should check if friend is on logged-in user's friend list => display different buttons */}
-                            <UserBadge
-                                userData={{
-                                    id: selectedUser?.id,
-                                    name: selectedUser?.label,
-                                    email: (selectedUser.type === "user") ?selectedUser?.email : "",
-                                    username: (selectedUser.type === "user") ?selectedUser?.username : "",
-                                }}
-                            />
+                            <LinearIndeterminate/>
+                        </Grid>
+                        :
+                        (selectedUser === null)
+                            ?
                             <Grid
-                                container={true}
-                                justifyContent={"space-around"}
                                 item={true}
-                                xs={12}
                             >
-                                {(isLoadingNotifications || isLoadingFriendships) && <LinearIndeterminate/>}
-                                <Grid
-                                    item={true}
-                                    xs={5}
-                                >
-                                    <Button
-                                        variant={"contained"}
+                                <AutocompleteSearch
+                                    options={userList}
+                                    getOptions={(inputValue: string) => {
                                         // @ts-ignore
-                                        color={["primary", "success", "error", "error"][getFriendRequestButtonLabel(selectedUser.id)]}
-                                        onClick={() => {
-                                            const potentialFriendship = checkIfAlreadyFriend(selectedUser.id)
-                                            if(potentialFriendship !== undefined){// There is a friendship and it's active
-                                                if(potentialFriendship.status === 'accepted'){
-                                                    deleteActiveFriendship(potentialFriendship)
-                                                } else {
-                                                    if(potentialFriendship.userIds[0] === selectedUser.id){ // potentialFriendship listed first => they made the request
-                                                        // accept request => delete notification (at currently logged-in user) + update friendship
-                                                    } else { // currently logged-in user made the request => Cancel request
-                                                        cancelRequest(potentialFriendship)
-                                                    }
-                                                }
-                                            } else { // no friendship status yet => create request
-                                                sendNotification(selectedUser)
-                                                addFriendship(selectedUser)
-                                            }
-                                        }}
-                                        fullWidth={true}
-                                        startIcon={[<PersonAddIcon/>, <CheckCircleIcon/>, <CancelIcon/>, <CancelIcon/>][getFriendRequestButtonLabel(selectedUser.id)]}
-                                    >
-                                        {['Add friend', 'Accept request', 'Cancel request', 'Delete Friendship'][getFriendRequestButtonLabel(selectedUser.id)]}
-                                    </Button>
-                                </Grid>
+                                        dispatch(searchUser(inputValue))
+                                    }}
+                                    onSelect={(selection: SearchResult) => {
+                                        // trigger more detailed search for user data?
+                                        setSelectedUser(selection)
+                                    }}
+                                    isSearchLoading={isLoadingUser}
+                                    sxPropsAutocomplete={{
+                                        background: '#c7c7c7',
+                                    }}
+                                    sxPropsInput={{
+                                        color: 'black',
+                                    }}
+                                    placeholder={"Search for friends..."}
+                                    iconColor={"primary"}
+                                />
+                            </Grid>
+                            :
+                            <Grid
+                                item={true}
+                                container={true}
+                                rowSpacing={2}
+                                sx={{
+                                    marginTop: globalTheme.spacing(1)
+                                }}
+                            >
+                                {/* TODO: should check if friend is on logged-in user's friend list => display different buttons */}
+                                <UserBadge
+                                    userData={{
+                                        id: selectedUser?.id,
+                                        name: selectedUser?.label,
+                                        email: (selectedUser.type === "user") ?selectedUser?.email : "",
+                                        username: (selectedUser.type === "user") ?selectedUser?.username : "",
+                                    }}
+                                />
                                 <Grid
+                                    container={true}
+                                    justifyContent={"space-around"}
                                     item={true}
-                                    xs={5}
+                                    xs={12}
                                 >
-                                    <Button
-                                        variant={"contained"}
-                                        color={"secondary"}
-                                        onClick={() => setSelectedUser(null)}
-                                        fullWidth={true}
-                                        endIcon={<ClearIcon />}
+                                    {(isLoadingNotifications || isLoadingFriendships) && <LinearIndeterminate/>}
+                                    <Grid
+                                        item={true}
+                                        xs={5}
                                     >
-                                        Cancel
-                                    </Button>
+                                        <Button
+                                            variant={"contained"}
+                                            // @ts-ignore
+                                            color={["primary", "success", "error", "error"][getFriendRequestButtonLabel(selectedUser.id)]}
+                                            onClick={() => {
+                                                const potentialFriendship = checkIfAlreadyFriend(selectedUser.id)
+                                                if(potentialFriendship !== undefined){// There is a friendship and it's active
+                                                    if(potentialFriendship.status === 'accepted'){
+                                                        deleteActiveFriendship(potentialFriendship)
+                                                    } else {
+                                                        if(potentialFriendship.userIds[0] === selectedUser.id){ // potentialFriendship listed first => they made the request
+                                                            // accept request => delete notification (at currently logged-in user) + update friendship
+                                                        } else { // currently logged-in user made the request => Cancel request
+                                                            cancelRequest(potentialFriendship)
+                                                        }
+                                                    }
+                                                } else { // no friendship status yet => create request
+                                                    sendNotification(selectedUser)
+                                                    addFriendship(selectedUser)
+                                                }
+                                            }}
+                                            fullWidth={true}
+                                            startIcon={[<PersonAddIcon/>, <CheckCircleIcon/>, <CancelIcon/>, <CancelIcon/>][getFriendRequestButtonLabel(selectedUser.id)]}
+                                        >
+                                            {['Add friend', 'Accept request', 'Cancel request', 'Delete Friendship'][getFriendRequestButtonLabel(selectedUser.id)]}
+                                        </Button>
+                                    </Grid>
+                                    <Grid
+                                        item={true}
+                                        xs={5}
+                                    >
+                                        <Button
+                                            variant={"contained"}
+                                            color={"secondary"}
+                                            onClick={() => {
+                                                setSelectedUser(null)
+                                                // defaultUserId !== undefined when user is selected from friendList
+                                                // and cancel button should return to friend list - NOT to search
+                                                if(props.defaultUserId !== undefined){
+                                                    props.setOpen(false)
+                                                }
+                                            }}
+                                            fullWidth={true}
+                                            endIcon={<ClearIcon />}
+                                        >
+                                            Cancel
+                                        </Button>
+                                    </Grid>
                                 </Grid>
                             </Grid>
-                        </Grid>
                     }
                 </Grid>
             </Box>

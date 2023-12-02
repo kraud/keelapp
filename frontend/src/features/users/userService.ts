@@ -3,8 +3,6 @@ import axios from "axios"
 const API_URL = '/api/users/' // same as authSlice because they share controller
 
 
-// TODO: implement get usernames by userIds array
-
 const getUsernamesByUserIds = async (token: any, ids: string[]) => {
     const config = {
         headers: {
@@ -19,7 +17,7 @@ const getUsernamesByUserIds = async (token: any, ids: string[]) => {
 }
 
 // Get users by name or username
-const getUsersBy = async (token: any, query: string) => {
+const getUsersByNameUsername = async (token: any, query: string) => {
     const config = {
         headers: {
             Authorization: `Bearer ${token}`
@@ -32,9 +30,21 @@ const getUsersBy = async (token: any, query: string) => {
     return(response.data)
 }
 
+// Get users by user ID
+const getUserByUserId = async (token: any, userId: string) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        },
+    }
+    const response = await axios.get(`${API_URL}/getUser/${userId}`, config)
+    return(response.data)
+}
+
 const userService = {
     getUsernamesByUserIds,
-    getUsersBy
+    getUsersByNameUsername,
+    getUserByUserId
 }
 
 export default userService
