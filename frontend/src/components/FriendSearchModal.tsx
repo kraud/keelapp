@@ -76,7 +76,16 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
     },[userResult])
 
     useEffect(() => {
-        if((isSuccessNotifications && !isLoadingNotifications) && (isSuccessFriendships && !isLoadingFriendships) && (sentRequest || cancelledRequest)){
+        console.log('(isSuccessFriendships && !isLoadingFriendships)', (isSuccessFriendships && !isLoadingFriendships))
+        console.log('(isSuccessNotifications && !isLoadingNotifications)', (isSuccessNotifications && !isLoadingNotifications))
+        console.log('deletedRequest', deletedRequest)
+        if(
+            (
+                (isSuccessNotifications && !isLoadingNotifications)
+                ||
+                (isSuccessFriendships && !isLoadingFriendships)
+            ) &&
+            (sentRequest || cancelledRequest || deletedRequest)){
             if(sentRequest){
                 toast.info("Friend request sent")
                 setSentRequest(false)
