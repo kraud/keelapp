@@ -279,7 +279,7 @@ function ResponsiveAppBar() {
                                     <Avatar
                                         alt="User photo"
                                         src={(user) ? "" : "/"}
-                                        {...stringAvatar(user.name)}
+                                        {...stringAvatar((user!!) ?user.name :"-")}
                                     />
                                 </Badge>
                             </IconButton>
