@@ -21,6 +21,7 @@ interface FriendSearchModalProps {
     open: boolean
     setOpen: (value: boolean) => void
     defaultUserId?: string
+    reloadFriendList?: () => void
 }
 
 export const FriendSearchModal = (props: FriendSearchModalProps) => {
@@ -76,16 +77,15 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
     },[userResult])
 
     useEffect(() => {
-        console.log('(isSuccessFriendships && !isLoadingFriendships)', (isSuccessFriendships && !isLoadingFriendships))
-        console.log('(isSuccessNotifications && !isLoadingNotifications)', (isSuccessNotifications && !isLoadingNotifications))
-        console.log('deletedRequest', deletedRequest)
         if(
             (
-                (isSuccessNotifications && !isLoadingNotifications)
-                ||
+                // delete request does not trigger notifications, so we make it an exception
+                ((isSuccessNotifications && !isLoadingNotifications) || deletedRequest)
+                && // it's a '&&', so toast is triggered only when both notification and friendship have been updated successfully.
                 (isSuccessFriendships && !isLoadingFriendships)
             ) &&
-            (sentRequest || cancelledRequest || deletedRequest)){
+            (sentRequest || cancelledRequest || deletedRequest)
+        ){
             if(sentRequest){
                 toast.info("Friend request sent")
                 setSentRequest(false)
@@ -98,9 +98,11 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                 toast.info("Friendship deleted")
                 setDeletedRequest(false)
             }
-            // this will update the button labels
-            // @ts-ignore
-            dispatch(getFriendshipsByUserId(user._id))
+            if(sentRequest || cancelledRequest || deletedRequest){
+                // this will update the button labels
+                // @ts-ignore
+                dispatch(getFriendshipsByUserId(user._id))
+            }
         }
     }, [isSuccessFriendships, isSuccessNotifications, isLoadingNotifications, isLoadingFriendships, sentRequest, cancelledRequest, deletedRequest])
 
@@ -180,6 +182,9 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
         // @ts-ignore
         dispatch(deleteFriendship(friendship._id))
         setDeletedRequest(true)
+        if(props.reloadFriendList !== undefined){
+            props.reloadFriendList()
+        }
     }
 
     return (

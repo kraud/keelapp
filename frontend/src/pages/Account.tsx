@@ -11,7 +11,6 @@ import {searchAllTags} from "../features/words/wordSlice";
 import LinearIndeterminate from "../components/Spinner";
 import IconButton from "@mui/material/IconButton";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import PersonIcon from '@mui/icons-material/Person';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import {FriendSearchModal} from "../components/FriendSearchModal";
@@ -23,7 +22,7 @@ import {useNavigate} from "react-router-dom";
 import {stringAvatar} from "../components/generalUseFunctions";
 import {getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
 import {FriendshipData, SearchResult} from "../ts/interfaces";
-import {getUserById, getUsernamesByIds} from "../features/users/userSlice";
+import {getUsernamesByIds} from "../features/users/userSlice";
 
 interface AccountProps {
 
@@ -46,6 +45,7 @@ export const Account = (props: AccountProps) => {
     const [allTags, setAllTags] = useState<string[]>([])
     const [activeFriendships, setActiveFriendships] = useState<FriendshipData[]>([])
     const [openFriendsModal, setOpenFriendsModal] = useState(false)
+    const [triggerGetFriendships, setTriggerGetFriendships] = useState(false)
     const [openTagModal, setOpenTagModal] = useState(false)
     const [selectedTag, setSelectedTag] = useState("")
     const [isEditing, setIsEditing] = useState(false)
@@ -91,7 +91,7 @@ export const Account = (props: AccountProps) => {
         }
     },[userList])
 
-    useEffect(() => {
+    const sendUserIdsToGetUsernames = () => {
         const acceptedFriendships = friendships.filter((friendship: FriendshipData) => {
             return(friendship.status === 'accepted')
         })
@@ -106,8 +106,23 @@ export const Account = (props: AccountProps) => {
             })
             // @ts-ignore
             dispatch(getUsernamesByIds(userIds))
+        } else {
+            setActiveFriendships([])
         }
+    }
+
+    useEffect(() => {
+        sendUserIdsToGetUsernames()
     },[friendships])
+
+    useEffect(() => {
+        // if while using the modal we changed the friend list we need to update the displayed list
+        if(!openFriendsModal && triggerGetFriendships){
+            // @ts-ignore
+            dispatch(getFriendshipsByUserId(user._id))
+            setTriggerGetFriendships(false)
+        }
+    },[triggerGetFriendships, openFriendsModal])
 
     useEffect(() => {
         if(selectedTag !== ""){
@@ -550,6 +565,7 @@ export const Account = (props: AccountProps) => {
                 open={openFriendsModal}
                 setOpen={(value: boolean) => setOpenFriendsModal(value)}
                 defaultUserId={defaultModalUserId}
+                reloadFriendList={() => setTriggerGetFriendships(true)}
             />
             <TagInfoModal
                 open={openTagModal}

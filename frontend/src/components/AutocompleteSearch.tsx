@@ -249,6 +249,7 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                                 >
                                     {option.label}
                                 </Typography>
+                                {/* TODO: improve option design for other types? e.g. user-search results */}
                                 {(option.type === "word") &&
                                     <Typography
                                         variant={'body2'}
