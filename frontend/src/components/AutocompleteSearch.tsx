@@ -124,6 +124,45 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
         }
     }
 
+    const getSecondLayerInfo = (option: SearchResult) => {
+        switch (option.type) {
+            case ("word"): {
+                return(
+                    <Typography
+                        variant={'body2'}
+                        color={'primary'}
+                        alignSelf={"left"}
+                        sx={{
+                            display: 'inline',
+                            paddingLeft: globalTheme.spacing(1),
+                        }}
+                    >
+                        {getPartOfSpeechAbbreviated(option.partOfSpeech)}
+                    </Typography>
+                )
+            }
+
+            case ("user"): {
+                return(
+                    <Typography
+                        variant={'body2'}
+                        color={'primary'}
+                        alignSelf={"left"}
+                        sx={{
+                            display: 'inline',
+                            paddingLeft: globalTheme.spacing(1),
+                        }}
+                    >
+                        {option.username}
+                    </Typography>
+                )
+            }
+            default: {
+                return null
+            }
+        }
+    }
+
     return(
         <Autocomplete
             open={open}
@@ -249,20 +288,7 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                                 >
                                     {option.label}
                                 </Typography>
-                                {/* TODO: improve option design for other types? e.g. user-search results */}
-                                {(option.type === "word") &&
-                                    <Typography
-                                        variant={'body2'}
-                                        color={'primary'}
-                                        alignSelf={"left"}
-                                        sx={{
-                                            display: 'inline',
-                                            paddingLeft: globalTheme.spacing(1),
-                                        }}
-                                    >
-                                        {getPartOfSpeechAbbreviated(option.partOfSpeech)}
-                                    </Typography>
-                                }
+                                {getSecondLayerInfo(option)}
                             </Grid>
                         </Grid>
                     </li>

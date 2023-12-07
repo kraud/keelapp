@@ -203,7 +203,6 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                 >
                     {(isLoadingUser && (props.defaultUserId !== undefined))
                         ?
-
                         <Grid
                             item={true}
                             container={true}
@@ -232,6 +231,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                     isSearchLoading={isLoadingUser}
                                     sxPropsAutocomplete={{
                                         background: '#c7c7c7',
+                                        width: '500px',
                                     }}
                                     sxPropsInput={{
                                         color: 'black',
@@ -249,7 +249,6 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                     marginTop: globalTheme.spacing(1)
                                 }}
                             >
-                                {/* TODO: should check if friend is on logged-in user's friend list => display different buttons */}
                                 <UserBadge
                                     userData={{
                                         id: selectedUser?.id,
