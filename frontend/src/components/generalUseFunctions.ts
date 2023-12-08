@@ -1,5 +1,6 @@
 import {Lang} from "../ts/enums";
 import {FilterItem} from "../features/words/wordSlice";
+import {FriendshipData} from "../ts/interfaces";
 
 export const getCurrentLangTranslated = (currentLang?: Lang) => {
     switch(currentLang) {
@@ -106,6 +107,38 @@ export function stringAvatar(name: string, onlyOne?: "color"|"children") {
                 bgcolor: stringToColor(name),
             },
             children: returnInitials()
+        }
+    }
+}
+
+export const checkIfAlreadyFriend = (allFriendships: any [], potentialFriendId: string): (FriendshipData | undefined) => {
+    return(
+        allFriendships.find((friendship: FriendshipData) => {
+            return(friendship.userIds.includes(potentialFriendId))
+            // implied that currently-logged-in user's id is present in all locally-available friendships
+            // friendship.userIds.includes(user._id)
+        })
+    )
+}
+
+export const getFriendRequestButtonLabel = (allFriendships: any[], potentialFriendId: string): 0|1|2|3  => {
+    const friendship = checkIfAlreadyFriend(allFriendships, potentialFriendId)
+
+    if(friendship === undefined){ // No friendship (yet!)
+        // return('Add')
+        return(0)
+    } else {
+        // There is a friendship and it's active
+        if(friendship.status === 'accepted'){
+            return(3) // 'Remove friend'
+        } else {// There is a friendship and it's not confirmed yet
+            if(friendship.userIds[0] === potentialFriendId){ // potentialFriend listed first => potentialFriend made the request (current user can accept)
+                // return('Accept')
+                return(1)
+            } else { // currently logged-in user made the request => disable button? Cancel request?
+                // return('Cancel')
+                return(2)
+            }
         }
     }
 }

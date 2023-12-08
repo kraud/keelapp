@@ -51,8 +51,6 @@ export const Account = (props: AccountProps) => {
     const [isEditing, setIsEditing] = useState(false)
     const [localUserData, setLocalUserData] = useState<UserBadgeData | null>(null)
 
-    const friendList = ["Friendo One", "Amigou Dos", "Sõber kolm neli", "Freundy vier", "Another Dude", "friend6"]
-
     useEffect(() => {
         if(!openFriendsModal){
             if(userList!!){

@@ -1,19 +1,19 @@
 import {Autocomplete, CircularProgress, Grid, InputAdornment, TextField, Typography} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {SearchResult} from "../ts/interfaces";
-import {useDispatch} from "react-redux";
 import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from '@mui/icons-material/Search';
 import globalTheme from "../theme/theme";
 import {CountryFlag} from "./GeneralUseComponents";
-import {useNavigate} from "react-router-dom";
 import PersonIcon from "@mui/icons-material/Person";
 import Avatar from "@mui/material/Avatar";
 import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
 import {OverridableStringUnion} from "@mui/types";
-import {SvgIconPropsColorOverrides} from "@mui/material/SvgIcon/SvgIcon";
+import HowToRegIcon from '@mui/icons-material/HowToReg';
 import {getPartOfSpeechAbbreviated} from "./forms/commonFunctions";
+import {checkIfAlreadyFriend, getFriendRequestButtonLabel} from "./generalUseFunctions";
+import {useSelector} from "react-redux";
 
 interface AutocompleteSearchProps {
     options: SearchResult[]
@@ -45,6 +45,7 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
     const [options, setOptions] = useState<SearchResult[]>([])
     const [open, setOpen] = useState(false)
     const [loadingLocal, setLoadingLocal] = useState(false)
+    const {friendships} = useSelector((state: any) => state.friendships)
 
     // if we simply depend on isLoading, the text on the first option reads "no matches" for a second, before "Loading.."
     useEffect(() => {
@@ -144,17 +145,29 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
 
             case ("user"): {
                 return(
-                    <Typography
-                        variant={'body2'}
-                        color={'primary'}
-                        alignSelf={"left"}
-                        sx={{
-                            display: 'inline',
-                            paddingLeft: globalTheme.spacing(1),
-                        }}
-                    >
-                        {option.username}
-                    </Typography>
+                    <>
+                        <Typography
+                            variant={'body2'}
+                            color={'primary'}
+                            alignSelf={"left"}
+                            sx={{
+                                display: 'inline',
+                                paddingLeft: globalTheme.spacing(1),
+                            }}
+                        >
+                            {option.username}
+                        </Typography>
+                        {(getFriendRequestButtonLabel(friendships, option.id) === 3 ) && // 3 => status: 'accepted'
+                            // TODO: add other icons depending of FriendRequest status
+                            <HowToRegIcon
+                                sx={{
+                                    marginBottom: '-5px',
+                                    marginLeft: '12px',
+                                    color: 'green',
+                                }}
+                            />
+                        }
+                    </>
                 )
             }
             default: {
@@ -209,25 +222,25 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                                 color: (props.textColor !== undefined) ? props.textColor : undefined,
                             }),
                             endAdornment: (
-                                    <InputAdornment
-                                        position="end"
-                                        sx={{
-                                            width: '20px',
-                                            height: '20px',
-                                            marginRight: '15px',
-                                            "& .MuiCircularProgress-root": {
-                                                animation: 'none',
-                                                height: '20px !important',
-                                            },
-                                        }}
-                                    >
-                                        {((loadingLocal || props.isSearchLoading) && open)
-                                            //@ts-ignore
-                                            ? <CircularProgress color={(props.iconColor !== undefined) ?props.iconColor :"allWhite"}/>
-                                            //@ts-ignore
-                                            : <SearchIcon color={(props.iconColor !== undefined) ?props.iconColor :"allWhite"}/>
-                                        }
-                                    </InputAdornment>
+                                <InputAdornment
+                                    position="end"
+                                    sx={{
+                                        width: '20px',
+                                        height: '20px',
+                                        marginRight: '15px',
+                                        "& .MuiCircularProgress-root": {
+                                            animation: 'none',
+                                            height: '20px !important',
+                                        },
+                                    }}
+                                >
+                                    {((loadingLocal || props.isSearchLoading) && open)
+                                        //@ts-ignore
+                                        ? <CircularProgress color={(props.iconColor !== undefined) ?props.iconColor :"allWhite"}/>
+                                        //@ts-ignore
+                                        : <SearchIcon color={(props.iconColor !== undefined) ?props.iconColor :"allWhite"}/>
+                                    }
+                                </InputAdornment>
                             )
                         }}
                         placeholder={(props.placeholder !== undefined) ?props.placeholder :"Search..."}
