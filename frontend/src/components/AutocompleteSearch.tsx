@@ -11,8 +11,10 @@ import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
 import {OverridableStringUnion} from "@mui/types";
 import HowToRegIcon from '@mui/icons-material/HowToReg';
+import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
+import QuizIcon from '@mui/icons-material/Quiz';
 import {getPartOfSpeechAbbreviated} from "./forms/commonFunctions";
-import {checkIfAlreadyFriend, getFriendRequestButtonLabel} from "./generalUseFunctions";
+import {getFriendRequestButtonLabel} from "./generalUseFunctions";
 import {useSelector} from "react-redux";
 
 interface AutocompleteSearchProps {
@@ -144,6 +146,11 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
             }
 
             case ("user"): {
+                const statusIconSx = {
+                    marginBottom: '-5px',
+                    marginLeft: '12px',
+                    color: 'green',
+                }
                 return(
                     <>
                         <Typography
@@ -157,15 +164,9 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                         >
                             {option.username}
                         </Typography>
-                        {(getFriendRequestButtonLabel(friendships, option.id) === 3 ) && // 3 => status: 'accepted'
-                            // TODO: add other icons depending of FriendRequest status
-                            <HowToRegIcon
-                                sx={{
-                                    marginBottom: '-5px',
-                                    marginLeft: '12px',
-                                    color: 'green',
-                                }}
-                            />
+                        {
+                            [null,<EmojiPeopleIcon sx={statusIconSx}/>, <QuizIcon sx={statusIconSx}/>, <HowToRegIcon sx={statusIconSx}/>]
+                            [(getFriendRequestButtonLabel(friendships, option.id))]
                         }
                     </>
                 )
