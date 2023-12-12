@@ -48,3 +48,92 @@ const getTagById = asyncHandler(async (req, res) => {
     // TODO: should we return this in the "FilterItem" format for tag?
     res.status(200).json(tag)
 })
+
+// @desc    Create Tag
+// @route   POST /api/tags
+// @access  Private
+const createTag = asyncHandler(async (req, res) => {
+    if(!req.body.label){
+        res.status(400)
+        throw new Error("Please specify label for tag")
+    }
+    if(!req.body.author){
+        res.status(400)
+        throw new Error("Missing tag author")
+    }
+    if(!(['Public', 'Private', 'Friends-Only'].includes(req.body.public))){
+        res.status(400)
+        throw new Error("Invalid public status")
+    }
+    const tag = await Tag.create({
+        author: req.body.author,
+        label: req.body.label,
+        public: req.body.public,
+        // TODO: wordsId?
+    })
+    res.status(200).json(tag)
+})
+
+// @desc    Delete Tag
+// @route   DELETE /api/tags/:id
+// @access  Private
+const deleteTag = asyncHandler(async (req, res) => {
+    const tag = await Tag.findById(req.params.id)
+
+    if(!tag){
+        res.status(400)
+        throw new Error("Tag not found")
+    }
+
+    // Check for user
+    if(!req.user){
+        res.status(401)
+        throw new Error('User not found')
+    }
+
+    // Make sure the logged-in user matches the word user
+    if(tag.author.toString() !== req.user.id){
+        res.status(401)
+        throw new Error('User not authorized to delete this tag (does not match author).')
+    }
+
+    await tag.deleteOne()
+    // TODO: maybe add a flag to also trigger deletion of all words related to this tag?
+    res.status(200).json(tag)
+})
+
+// @desc    Update Tag
+// @route   PUT /api/tags/:id
+// @access  Private
+const updateTag = asyncHandler(async (req, res) => {
+    const tag = await Tag.findById(req.params.id)
+
+    if(!tag){
+        res.status(400)
+        throw new Error("Tag not found")
+    }
+
+    // Check for user
+    if(!req.user){
+        res.status(401)
+        throw new Error('User not found')
+    }
+
+    // Make sure the logged-in user matches the goal user
+    if(tag.user.toString() !== req.user.id){
+        res.status(401)
+        throw new Error('User not authorized')
+    }
+
+    const updatedTag = await Tag.findByIdAndUpdate(req.params.id, req.body, {new: true})
+    res.status(200).json(updatedTag)
+})
+
+module.exports = {
+    searchTags,
+    getUserTags,
+    getTagById,
+    createTag,
+    deleteTag,
+    updateTag
+}
