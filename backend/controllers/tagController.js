@@ -9,7 +9,7 @@ const Word = require("../models/wordModel");
 // updateTag
 
 
-// @desc    Search for tags regex matching a request query (string)
+// @desc    Search for tags regex matching a request query (string) with the tag label
 // @route   GET /api/tags
 // @access  Private
 // TODO: add flag in request to allow search results to include other user tags
@@ -29,8 +29,6 @@ const searchTags = asyncHandler(async (req, res) => {
 // @route   GET /api/tags
 // @access  Private
 const getUserTags = asyncHandler(async (req, res) => {
-    const word = await Word.findById(req.params.id)
-    // first we get all tag arrays from stored words, where at least 1 matches the query
     const tags = await Tag.find(
         {
             author: req.params.id

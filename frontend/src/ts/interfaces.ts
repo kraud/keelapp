@@ -41,6 +41,7 @@ type WordSearch = {
 
 type TagSearch = {
     type: "tag"
+    // TODO: add tag-relevant properties (check tagModel in BE)
 }
 
 type UserSearch = {
