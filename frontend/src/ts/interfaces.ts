@@ -83,6 +83,14 @@ type PartnershipsData = {
     language: Lang
 }
 
+export type TagData = {
+    _id: string,
+    author: string,
+    label: string,
+    public: 'Public' | 'Private' | 'Friends-Only',
+    wordsId?: string[]
+}
+
 export interface PropsButtonData {
     id: string
     variant?: "contained" | "outlined" | "text"

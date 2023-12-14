@@ -18,7 +18,7 @@ const initialState: notificationSliceState = {
     message: "",
 }
 
-// Get user words
+// Get notifications by its userID
 export const getNotifications = createAsyncThunk('notifications/getAllNotifications', async (_, thunkAPI) => {
     try {
         // @ts-ignore
@@ -36,7 +36,7 @@ export const getNotifications = createAsyncThunk('notifications/getAllNotificati
     }
 })
 
-// Get user words
+// Create a new notification
 export const createNotification = createAsyncThunk('notifications/createNotification', async (notification: NotificationData, thunkAPI) => {
     try {
         // @ts-ignore
@@ -55,7 +55,7 @@ export const createNotification = createAsyncThunk('notifications/createNotifica
 })
 
 // Update a notification data by its id
-export const updateNotification = createAsyncThunk(`notification/updateNotificationById`, async (updatedData: NotificationData, thunkAPI) => {
+export const updateNotification = createAsyncThunk(`notifications/updateNotificationById`, async (updatedData: NotificationData, thunkAPI) => {
     try {
         // @ts-ignore
         const token = thunkAPI.getState().auth.user.token
@@ -72,6 +72,7 @@ export const updateNotification = createAsyncThunk(`notification/updateNotificat
     }
 })
 
+// Delete a notification data by its id
 export const deleteNotification = createAsyncThunk(`notifications/updateNotificationById`, async (notificationId: string, thunkAPI) => {
     try {
         // @ts-ignore

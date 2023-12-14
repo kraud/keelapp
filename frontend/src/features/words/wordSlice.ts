@@ -112,6 +112,7 @@ export const getWordsSimplified = createAsyncThunk('words/getAllSimple', async (
         return thunkAPI.rejectWithValue(message)
     }
 })
+
 // Get a word data by its id
 export const getWordById = createAsyncThunk(`words/getWordById`, async (wordId: string, thunkAPI) => {
     try {
@@ -129,6 +130,7 @@ export const getWordById = createAsyncThunk(`words/getWordById`, async (wordId: 
         return thunkAPI.rejectWithValue(message)
     }
 })
+
 // Update a word data by its id
 export const updateWordById = createAsyncThunk(`words/updateWordById`, async (updatedData: WordDataBE, thunkAPI) => {
     try {
@@ -146,6 +148,7 @@ export const updateWordById = createAsyncThunk(`words/updateWordById`, async (up
         return thunkAPI.rejectWithValue(message)
     }
 })
+
 // Delete a word data by its id
 export const deleteWordById = createAsyncThunk(`words/updateWordById`, async (wordId: string, thunkAPI) => {
     try {

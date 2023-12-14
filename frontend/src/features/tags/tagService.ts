@@ -1,4 +1,5 @@
 import axios from "axios";
+import {NotificationData, TagData} from "../../ts/interfaces";
 
 const API_URL = '/api/tags/'
 
@@ -12,8 +13,61 @@ const getUserTags = async (token: any) => {
     return(response.data)
 }
 
+const searchTags = async (token: any, query: string) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        },
+        params: {
+            query: query,
+        }
+    }
+    const response = await axios.get(`${API_URL}/searchTags`, config)
+    return(response.data)
+}
+
+const getTagById = async (token: any, id: string) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+    const response = await axios.get(`${API_URL}/${id}`, config)
+    return(response.data)
+}
+
+const createTag = async (tag: TagData, token: any) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+    const response = await axios.post(API_URL, tag, config)
+    return(response.data)
+}
+
+const deleteTagById = async (token: any, id: string) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+    const response = await axios.delete(`${API_URL}/${id}`, config)
+    return(response.data)
+}
+
+const updateTagById = async (token: any, updatedData: TagData) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+    const response = await axios.put(`${API_URL}/${updatedData._id}`, updatedData, config)
+    return(response.data)
+}
+
 const tagService = {
-    getUserTags
+    getUserTags, searchTags, getTagById, createTag, deleteTagById, updateTagById
 }
 
 export default tagService
