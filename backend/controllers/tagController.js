@@ -1,12 +1,6 @@
 
 const asyncHandler = require("express-async-handler");
 const Tag = require("../models/tagModel");
-const Word = require("../models/wordModel");
-// getTagsByUserId
-// getTagById
-// createTag
-// deleteTag
-// updateTag
 
 
 // @desc    Search for tags regex matching a request query (string) with the tag label
@@ -127,11 +121,30 @@ const updateTag = asyncHandler(async (req, res) => {
     res.status(200).json(updatedTag)
 })
 
+// getAmountByTag
+// @desc    Get Amount of items for a Tags
+// @route   GET /api/tagsAmount
+// @access  Private
+const getAmountByTag = asyncHandler(async (req, res) => {
+    const tag = await Tag.findById(req.params.id)
+
+    if(!tag){
+        res.status(400)
+        throw new Error("Tag ID does not match any existing tag.")
+    }
+    if(!(tag.wordsId)){
+        res.status(400)
+        throw new Error("Tag ID does not have words associated to it.")
+    }
+    res.status(200).json(tag.wordsId.length)
+})
+
 module.exports = {
     searchTags,
     getUserTags,
     getTagById,
     createTag,
     deleteTag,
-    updateTag
+    updateTag,
+    getAmountByTag
 }

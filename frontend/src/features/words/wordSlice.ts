@@ -167,7 +167,7 @@ export const deleteWordById = createAsyncThunk(`words/updateWordById`, async (wo
     }
 })
 
-// Get a word data by its id
+// Gets all words that match (partially or fully) a string query
 export const searchWordByAnyTranslation = createAsyncThunk(`words/searchWord`, async (query: string, thunkAPI) => {
     try {
         // @ts-ignore
@@ -185,7 +185,7 @@ export const searchWordByAnyTranslation = createAsyncThunk(`words/searchWord`, a
     }
 })
 
-// Get a word data by its id
+// Gets all tags that match (partially or fully) a string query
 export const searchAllTags = createAsyncThunk(`words/searchAllTags`, async (query: string, thunkAPI) => {
     try {
         // @ts-ignore
@@ -204,7 +204,7 @@ export const searchAllTags = createAsyncThunk(`words/searchAllTags`, async (quer
 })
 
 
-// Get a word data by its id
+// Get the amount of words that have a certain tag associated to it
 export const getAmountByTag = createAsyncThunk(`words/getAmountByTag`, async (query: string, thunkAPI) => {
     try {
         // @ts-ignore

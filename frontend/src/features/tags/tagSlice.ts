@@ -1,11 +1,11 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {NotificationData, SearchResult, TagData} from "../../ts/interfaces";
+import {SearchResult, TagData} from "../../ts/interfaces";
 import tagService from "./tagService";
-import notificationService from "../notifications/notificationService";
 
 interface tagSliceState {
     tags: SearchResult[],
     fullTagData: TagData | undefined,
+    currentTagAmountWords: number,
 
     isLoadingTags: boolean,
     isSuccessTags: boolean,
@@ -16,6 +16,7 @@ interface tagSliceState {
 const initialState: tagSliceState = {
     tags: [],
     fullTagData: undefined,
+    currentTagAmountWords: 0,
     isLoadingTags: false,
     isSuccessTags: false,
     isError: false,
@@ -130,6 +131,26 @@ export const updateTag = createAsyncThunk(`tags/updateTagById`, async (updatedDa
     }
 })
 
+
+// Get the amount of words that have a certain tag associated to it
+export const getAmountByTag = createAsyncThunk(`words/getAmountByTag`, async (id: string, thunkAPI) => {
+    try {
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await tagService.getTagWordsAmount(token, id)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+
+    }
+})
+
 export const tagSlice = createSlice({
     name: 'tag',
     initialState,
@@ -212,6 +233,19 @@ export const tagSlice = createSlice({
                 state.fullTagData = (action.payload)
             })
             .addCase(updateTag.rejected, (state, action) => {
+                state.isLoadingTags = false
+                state.isError = true
+                state.message = action.payload as string
+            })
+            .addCase(getAmountByTag.pending, (state) => {
+                state.isLoadingTags = true
+            })
+            .addCase(getAmountByTag.fulfilled, (state, action) => {
+                state.isLoadingTags = false
+                state.isSuccessTags = true
+                state.currentTagAmountWords = (action.payload)
+            })
+            .addCase(getAmountByTag.rejected, (state, action) => {
                 state.isLoadingTags = false
                 state.isError = true
                 state.message = action.payload as string

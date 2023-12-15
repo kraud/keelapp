@@ -73,7 +73,7 @@ export const updateNotification = createAsyncThunk(`notifications/updateNotifica
 })
 
 // Delete a notification data by its id
-export const deleteNotification = createAsyncThunk(`notifications/updateNotificationById`, async (notificationId: string, thunkAPI) => {
+export const deleteNotification = createAsyncThunk(`notifications/deleteNotificationById`, async (notificationId: string, thunkAPI) => {
     try {
         // @ts-ignore
         const token = thunkAPI.getState().auth.user.token

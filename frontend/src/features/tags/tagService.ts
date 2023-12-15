@@ -1,5 +1,5 @@
 import axios from "axios";
-import {NotificationData, TagData} from "../../ts/interfaces";
+import {TagData} from "../../ts/interfaces";
 
 const API_URL = '/api/tags/'
 
@@ -66,8 +66,18 @@ const updateTagById = async (token: any, updatedData: TagData) => {
     return(response.data)
 }
 
+const getTagWordsAmount = async (token: any, id: string) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+    const response = await axios.get(`${API_URL}getAmountByTag/${id}`, config)
+    return(response.data)
+}
+
 const tagService = {
-    getUserTags, searchTags, getTagById, createTag, deleteTagById, updateTagById
+    getUserTags, searchTags, getTagById, createTag, deleteTagById, updateTagById, getTagWordsAmount
 }
 
 export default tagService
