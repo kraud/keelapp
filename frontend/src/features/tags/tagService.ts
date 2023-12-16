@@ -13,13 +13,14 @@ const getUserTags = async (token: any) => {
     return(response.data)
 }
 
-const searchTags = async (token: any, query: string) => {
+const searchTags = async (token: any, query: string, includeOtherUsersTags?: boolean) => {
     const config = {
         headers: {
             Authorization: `Bearer ${token}`
         },
         params: {
             query: query,
+            includeOtherUsersTags: includeOtherUsersTags,
         }
     }
     const response = await axios.get(`${API_URL}/searchTags`, config)

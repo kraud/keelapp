@@ -3,18 +3,31 @@ const asyncHandler = require("express-async-handler");
 const Tag = require("../models/tagModel");
 
 
-// @desc    Search for tags regex matching a request query (string) with the tag label
+// @desc    Search for tags with a regex matching (partially or fully) a request query (string) with the tag label
 // @route   GET /api/tags
 // @access  Private
-// TODO: add flag in request to allow search results to include other user tags
 const searchTags = asyncHandler(async (req, res) => {
+    const getPrivateOrPublicQuery = () => {
+        if(req.query.inlcudeOtherUsersTags){
+            return({
+                "label": {$regex: `${req.query.query}`, $options: "i"},
+                author: req.user.id
+            })
+        } else {
+            return({
+                $and: [
+                    {"label": {$regex: `${req.query.query}`, $options: "i"}},
+                    { $or: [
+                        {public: {$in: ['Public']}}, // TODO: in the future add 'Friends-Only' to array, IF user is friends with tag author
+                        {author: req.user.id}
+                    ]}
+                ]
+            })
+        }
+    }
+
     // first we get all tag arrays from stored words, where at least 1 matches the query
-    const tags = await Tag.find(
-        {
-            "label": {$regex: `${req.query.query}`, $options: "i"},
-            author: req.user.id
-        },
-    )
+    const tags = await Tag.find(getPrivateOrPublicQuery())
     // TODO: should we return this in the "FilterItem" format for tag?
     res.status(200).json(tags)
 })
