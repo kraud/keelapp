@@ -23,6 +23,7 @@ import {stringAvatar} from "../components/generalUseFunctions";
 import {getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
 import {FriendshipData, SearchResult} from "../ts/interfaces";
 import {getUsernamesByIds} from "../features/users/userSlice";
+import AddCommentIcon from '@mui/icons-material/AddComment';
 
 interface AccountProps {
 
@@ -41,7 +42,7 @@ export const Account = (props: AccountProps) => {
     const {user, isLoadingAuth, isSuccess} = useSelector((state: any) => state.auth)
     const {userList, isLoadingUser} = useSelector((state: any) => state.user)
     const {tags, isTagSearchLoading} = useSelector((state: any) => state.words)
-    const {friendships, isSuccessFriendships, isLoadingFriendships} = useSelector((state: any) => state.friendships)
+    const {friendships, isLoadingFriendships} = useSelector((state: any) => state.friendships)
     const [allTags, setAllTags] = useState<string[]>([])
     const [activeFriendships, setActiveFriendships] = useState<FriendshipData[]>([])
     const [openFriendsModal, setOpenFriendsModal] = useState(false)
@@ -340,29 +341,52 @@ export const Account = (props: AccountProps) => {
                         :
                         (allTags.length > 0)
                             ?
-                            (allTags.map((tag: string, index: number) => {
-                                return(
+                            <>
+                                {(allTags.map((tag: string, index: number) => {
+                                    return (
+                                        <Grid
+                                            item={true}
+                                            key={index.toString() + '-' + tag}
+                                        >
+                                            <Chip
+                                                variant="filled"
+                                                label={tag}
+                                                color={"secondary"}
+                                                sx={{
+                                                    maxWidth: "max-content",
+                                                }}
+                                                onClick={() => {
+                                                    // navigate('/review/tags?tags='+tag)
+                                                    setSelectedTag(tag)
+                                                }}
+                                            />
+                                        </Grid>
+                                    )
+                                }))}
+                                <Grid
+                                    container={true}
+                                    justifyContent={"center"}
+                                    xs={12}
+                                    sx={{
+                                        marginTop: globalTheme.spacing(2),
+                                    }}
+                                >
                                     <Grid
                                         item={true}
-                                        key={index.toString()+'-'+tag}
+                                        xs={"auto"}
                                     >
-                                        <Chip
-                                            variant="filled"
-                                            label={tag}
-                                            color={"secondary"}
-                                            sx={{
-                                                maxWidth: "max-content",
-                                            }}
-                                            onClick={() => {
-                                                // TODO: temporary function? It should open modal with list of words
-                                                //  + options to hide the tag from friends, send tag to friend, etc?
-                                                // navigate('/review/tags?tags='+tag)
-                                                setSelectedTag(tag)
-                                            }}
-                                        />
+                                        <Button
+                                            variant={"contained"}
+                                            color={"primary"}
+                                            onClick={() => null}
+                                            fullWidth={true}
+                                            startIcon={<AddCommentIcon />}
+                                        >
+                                            Create new tag
+                                        </Button>
                                     </Grid>
-                                )
-                            }))
+                                </Grid>
+                            </>
                             :
                             <>
                                 <Typography
@@ -454,7 +478,6 @@ export const Account = (props: AccountProps) => {
                         </Grid>
                         :
                         (activeFriendships.map((friendshipItem: FriendshipData, index: number) => {
-                            // TODO: mostrar placeholders mientras cargan los useranames? dependerían de isLoadingUser
                             return(
                                 // TODO: make this into a separate component - to list users
                                 <Grid

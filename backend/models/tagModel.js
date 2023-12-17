@@ -15,6 +15,9 @@ const tagSchema = mongoose.Schema(
             required: [true, 'Please add a label for the tag'],
             // unique: true // TODO: should be unique for the user, not for the whole DB
         },
+        description: {
+            type: String,
+        },
         // public: determines how the particular tag by this user can be filtered on search results
         public: { // 'type' as a property name can cause issues with mongoose when defining a schema
             type: String, // 'Public', 'Private', 'Friends-Only'

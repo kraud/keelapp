@@ -7,7 +7,6 @@ import SearchIcon from '@mui/icons-material/Search';
 import globalTheme from "../theme/theme";
 import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
-import {toast} from "react-toastify";
 
 interface AutocompleteMultipleProps {
     values: string[], // type is simply "string" array, since we get this info from the stored word, and there we only keep its "name"
@@ -98,8 +97,8 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
                 if(newValue.length > 0) {
                     if(props.matchAll!!){ // all tags go in a single array
                         props.saveResults([{
-                            type: 'tag',
-                            id: "tag-"+(props.values.length),
+                            type: 'tag', // TODO: type should be set by a prop
+                            id: "tag-"+(props.values.length), // TODO: prefix should be set by a prop
                             tagIds: newValue,
                             filterValue: (props.values.length).toString(),
                         }])
@@ -107,8 +106,8 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
                         props.saveResults( // each tag goes in its own filter
                             newValue.map((value: string) => {
                                 return({
-                                    type: 'tag',
-                                    id: "tag-"+value,
+                                    type: 'tag', // TODO: type should be set by a prop
+                                    id: "tag-"+value, // TODO: prefix should be set by a prop
                                     filterValue: value,
                                 })
                             })

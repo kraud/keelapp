@@ -331,7 +331,8 @@ export function WordForm(props: TranslationFormProps) {
                                     fullWidth={true}
                                     /*
                                     TODO: temporary fix - until we decide what this button should say/do when editing an existing word
-                                     Should we be able to fully reset a word to choose Part of Speech again, (rta: NO, that would require to switch forms; better delete and restart)
+                                     Should we be able to fully reset a word to choose Part of Speech again,
+                                     (rta: NO, that would require to switch forms; better delete and restart)
                                      or should it simply allow to delete whole word? (rta: should be possible from here too)
                                      Should there always be a "delete word" button next to "edit" when reviewing an existing word?
                                     */
