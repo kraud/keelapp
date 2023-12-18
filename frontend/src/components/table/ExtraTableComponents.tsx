@@ -3,11 +3,11 @@ import React, {HTMLProps, useEffect, useState} from "react";
 import globalTheme from "../../theme/theme";
 import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
-import {InternalStatus, TranslationItem} from "../../ts/interfaces";
+import {FilterItem, InternalStatus, TranslationItem} from "../../ts/interfaces";
 import {Lang, PartOfSpeech} from "../../ts/enums";
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
-import {clearWord, clearWordsSimple, FilterItem, getWordById, getWordsSimplified, updateWordById} from "../../features/words/wordSlice";
+import {clearWord, clearWordsSimple, getWordById, getWordsSimplified, updateWordById} from "../../features/words/wordSlice";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from '@mui/icons-material/Add';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -537,6 +537,7 @@ export function TableDataCell(props: TableDataCellProps){
             case ("array"): {
                 return(
                     <AutocompleteMultiple
+                        type={'tag'}
                         values={((selectedWordTagsData.tags !== undefined)&&((selectedWordTagsData.tags).length > 0)) ? selectedWordTagsData.tags : []}
                         saveResults={(results: FilterItem[]) => {
                             setSelectedWordTagsData({

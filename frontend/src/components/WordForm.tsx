@@ -1,7 +1,7 @@
 import {Button, Grid, TextField, Typography} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {TranslationFormGeneric} from "./TranslationFormGeneric";
-import {WordItem, TranslationItem, WordData} from "../ts/interfaces";
+import {WordItem, TranslationItem, WordData, FilterItem} from "../ts/interfaces";
 import {Lang, PartOfSpeech} from "../ts/enums";
 import {useSelector} from "react-redux";
 import LinearIndeterminate from "./Spinner";
@@ -9,7 +9,6 @@ import {toast, Flip} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {PartOfSpeechSelector} from "./PartOfSpeechSelector";
 import {AutocompleteMultiple} from "./AutocompleteMultiple";
-import {FilterItem} from "../features/words/wordSlice";
 
 interface TranslationFormProps {
     onSave: (wordData: WordData) => void,
@@ -494,6 +493,7 @@ export function WordForm(props: TranslationFormProps) {
                                         md={4}
                                     >
                                         <AutocompleteMultiple
+                                            type={'tag'}
                                             values={(completeWordData.tags) ? completeWordData.tags : []}
                                             saveResults={(results: FilterItem[]) => {
                                                 setCompleteWordData({

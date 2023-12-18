@@ -1,19 +1,22 @@
 import {Autocomplete, Chip, CircularProgress, Grid, InputAdornment, TextField, Typography} from "@mui/material";
 import React, {useEffect, useState} from "react";
-import {FilterItem, searchAllTags} from "../features/words/wordSlice";
+import {searchAllTags} from "../features/words/wordSlice";
 import {useDispatch, useSelector} from "react-redux";
 import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from '@mui/icons-material/Search';
 import globalTheme from "../theme/theme";
 import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
+import {FilterItem} from "../ts/interfaces";
 
 interface AutocompleteMultipleProps {
     values: string[], // type is simply "string" array, since we get this info from the stored word, and there we only keep its "name"
     saveResults: (results: FilterItem[]) => void
+    type: any //'tag'|'gender'|'PoS'// TODO: type should be 'tag'|'gender'|'PoS'
     limitTags?: number
     allowNewOptions?: boolean
     disabled?: boolean
+    // TODO: list of selected tags not working when matchAll is false
     matchAll?: boolean // this will change how the filters are returned on saveResults.
     sxProps?: SxProps<Theme>,
 }
@@ -56,6 +59,30 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
         setOptions(tags)
     },[tags])
 
+    const getDataToStoreByType = (newValue: any|any[]) => {
+        switch(props.type){
+            case('tag'):{
+                return({
+                    type: props.type,
+                    id: props.matchAll ? props.type+"-"+(props.values.length) :props.type+"-"+newValue,
+                    filterValue: props.matchAll ? (props.values.length).toString() :newValue,
+                    tagIds: props.matchAll ? newValue :undefined,
+                })
+            }
+            // case('gender'):{
+            //     return(undefined as FilterItem) // TODO: once implemented, add corresponding data to return
+            // }
+            // case('PoS'):{
+            //     return(undefined as FilterItem) // TODO: once implemented, add corresponding data to return
+            // }
+            default: return({
+                type: props.type,
+                id: props.matchAll ? props.type+"-"+(props.values.length) :props.type+"-"+newValue,
+                filterValue: props.matchAll ? (props.values.length).toString() :newValue,
+            })
+        }
+    }
+
     return(
         <Autocomplete
             disabled={props.disabled}
@@ -95,21 +122,12 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
             onChange={(event: any, newValue) => {
                 // setValues(newValue) //NB: moved info to parent component? TODO: check
                 if(newValue.length > 0) {
-                    if(props.matchAll!!){ // all tags go in a single array
-                        props.saveResults([{
-                            type: 'tag', // TODO: type should be set by a prop
-                            id: "tag-"+(props.values.length), // TODO: prefix should be set by a prop
-                            tagIds: newValue,
-                            filterValue: (props.values.length).toString(),
-                        }])
+                    if(props.matchAll!!){ // all tags go in a single array - so all must match in every single result
+                        props.saveResults([getDataToStoreByType(newValue)])
                     } else {
-                        props.saveResults( // each tag goes in its own filter
+                        props.saveResults( // each tag goes in its own filter - so a result can match a single filter at a time
                             newValue.map((value: string) => {
-                                return({
-                                    type: 'tag', // TODO: type should be set by a prop
-                                    id: "tag-"+value, // TODO: prefix should be set by a prop
-                                    filterValue: value,
-                                })
+                                return(getDataToStoreByType(value))
                             })
                         )
                     }

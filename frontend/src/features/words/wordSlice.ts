@@ -1,7 +1,6 @@
 import {createSlice, createAsyncThunk, PayloadAction} from "@reduxjs/toolkit"
 import wordService from "./wordService"
-import {SearchResult, WordData, WordDataBE} from "../../ts/interfaces";
-import {Lang, NounCases, PartOfSpeech} from "../../ts/enums";
+import {FilterItem, SearchResult, WordData, WordDataBE} from "../../ts/interfaces";
 
 interface wordSliceState {
     // list with full translation info for all words might not be needed?
@@ -38,27 +37,6 @@ const initialState: wordSliceState = {
     isSearchLoading: false,
     isTagSearchLoading: false,
     message: "",
-}
-
-export type FilterItem = {
-    id: string,
-    filterValue: string, // also the label that will be displayed
-} & (CaseFilter | TagFilter | PartOfSpeechFilter)
-
-type CaseFilter = {
-    type: 'gender'
-    caseName: NounCases | string,
-    language: Lang,
-}
-
-type TagFilter = {
-    type: 'tag'
-    tagIds?: string[],
-}
-
-type PartOfSpeechFilter = {
-    type: 'PoS'
-    partOfSpeech: PartOfSpeech,
 }
 
 // Create a new word

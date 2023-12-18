@@ -1,6 +1,5 @@
 import {Lang} from "../ts/enums";
-import {FilterItem} from "../features/words/wordSlice";
-import {FriendshipData} from "../ts/interfaces";
+import {FilterItem, FriendshipData} from "../ts/interfaces";
 
 export const getCurrentLangTranslated = (currentLang?: Lang) => {
     switch(currentLang) {

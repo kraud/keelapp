@@ -106,3 +106,24 @@ export interface PropsButtonData {
     isVisible?: boolean
     displayBySelectionAmount?: (amountSelected: number) => boolean, // greater than number => display
 }
+
+export type FilterItem = {
+    id: string,
+    filterValue: string, // also the label that will be displayed
+} & (CaseFilter | TagFilter | PartOfSpeechFilter)
+
+type CaseFilter = {
+    type: 'gender'
+    caseName: NounCases | string,
+    language: Lang,
+}
+
+type TagFilter = {
+    type: 'tag'
+    tagIds?: string[],
+}
+
+type PartOfSpeechFilter = {
+    type: 'PoS'
+    partOfSpeech: PartOfSpeech,
+}

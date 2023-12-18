@@ -4,8 +4,7 @@ import globalTheme from "../theme/theme";
 import {useNavigate, useParams, useSearchParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
-import {deleteWordById, FilterItem, getWordsSimplified} from "../features/words/wordSlice";
-import LinearIndeterminate from "../components/Spinner";
+import {deleteWordById, getWordsSimplified} from "../features/words/wordSlice";
 import {DnDLanguageOrderSelector} from "../components/DnDLanguageOrderSelector";
 import {Lang, NounCases, PartOfSpeech} from "../ts/enums";
 import {TranslationsTable} from "../components/table/TranslationsTable";
@@ -16,6 +15,7 @@ import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrow
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import {AutocompleteMultiple} from "../components/AutocompleteMultiple";
 import {createColumnsReviewTable} from "../components/table/columns/ReviewTableColumns";
+import {FilterItem} from "../ts/interfaces";
 
 export function Review(){
     const navigate = useNavigate()
@@ -341,6 +341,7 @@ export function Review(){
                                 xs={10}
                             >
                                 <AutocompleteMultiple
+                                    type={'tag'}
                                     values={
                                         (
                                             (currentTagFilters[0] !== undefined) &&
