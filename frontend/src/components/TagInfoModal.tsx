@@ -7,12 +7,13 @@ import SendIcon from '@mui/icons-material/Send';
 import ClearIcon from '@mui/icons-material/Clear';
 import {getAmountByTag} from "../features/words/wordSlice";
 import {useDispatch, useSelector} from "react-redux";
+import {getTagById} from "../features/tags/tagSlice";
 
 
 interface FriendSearchModalProps {
     open: boolean
     setOpen: (value: boolean) => void
-    tagId: string // this will eventually be a real ID, and we'll have to load the read tag data when opening this modal
+    tagId: string | undefined // this will eventually be a real ID, and we'll have to load the read tag data when opening this modal
 }
 
 export const TagInfoModal = (props: FriendSearchModalProps) => {
@@ -31,13 +32,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
         },
 
     }
-    const dispatch = useDispatch()
-    const {currentTagAmount, isTagSearchLoading} = useSelector((state: any) => state.words)
-    const [isPublic, setIsPublic] = useState(true) // so Friends can see this tag on your profile and add it to their account
-
-    const handleOnClose = () => {
-        props.setOpen(false)
-    }
+    // ------------------ ^^^^^ ALL BELOW IS LEGACY ^^^^^ ------------------
 
     useEffect(() => {
         if(props.tagId!!){
@@ -45,6 +40,25 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
             dispatch(getAmountByTag(props.tagId))
         }
     },[props.tagId])
+
+    // ------------------ ^^^^^ ALL ABOVE IS LEGACY ^^^^^ ------------------
+    const dispatch = useDispatch()
+    const {currentTagAmount, isTagSearchLoading} = useSelector((state: any) => state.words)
+    const [isPublic, setIsPublic] = useState(true) // so Friends can see this tag on your profile and add it to their account
+
+    const handleOnClose = () => {
+        props.setOpen(false)
+        // TODO: should clear props.tagId when closing
+    }
+
+    const [fullTagData, setFullTagData] = useState(null) // so Friends can see this tag on your profile and add it to their account
+    useEffect(() => {
+        // If props.tagId is a real tag => get the data
+        if(props.tagId!!){
+            // @ts-ignore
+            dispatch(getTagById(props.tagId))
+        } // if not, display empty form to create a new tag
+    },[])
 
     return (
         <Modal
@@ -70,6 +84,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                             item={true}
                             xs={12}
                         >
+                            {/* TODO: if new tag => display Textfield input */}
                             <Typography
                                 variant={"h3"}
                                 display={{
@@ -77,6 +92,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                                 }}
                             >
                                 {props.tagId}
+                                {/*{fullTagData.label}*/}
                             </Typography>
                             {(isTagSearchLoading)
                                 ?
@@ -88,19 +104,22 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                                     }}
                                 />
                                 :
-                                <Typography
-                                    variant={"h6"}
-                                    display={{
-                                        md: "inline"
-                                    }}
-                                    sx={{
-                                        paddingLeft: {
-                                            md: globalTheme.spacing(3)
-                                        }
-                                    }}
-                                >
-                                    {currentTagAmount} {(currentTagAmount > 1) ?"words" :"word"}
-                                </Typography>
+                                // {(fullTagData !== null) &&
+                                    <Typography
+                                        variant={"h6"}
+                                        display={{
+                                            md: "inline"
+                                        }}
+                                        sx={{
+                                            paddingLeft: {
+                                                md: globalTheme.spacing(3)
+                                            }
+                                        }}
+                                    >
+                                        {/*{(fullTagData.wordsId.length)} {(fullTagData.wordsId.length > 1) ?"words" :"word"}*/}
+                                        {currentTagAmount} {(currentTagAmount > 1) ? "words" : "word"}
+                                    </Typography>
+                                // }
                             }
                         </Grid>
                         <Grid
