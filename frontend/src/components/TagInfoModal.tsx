@@ -84,7 +84,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                             item={true}
                             xs={12}
                         >
-                            {/* TODO: if new tag => display Textfield input */}
+                            {/* TODO: if new tag => display Textfield input, onChange to update corresponding field inside fullTagData */}
                             <Typography
                                 variant={"h3"}
                                 display={{
@@ -126,6 +126,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                             item={true}
                             xs={12}
                         >
+                             {/* TODO: onChange to update corresponding field inside fullTagData */}
                             <FormControlLabel
                                 value={isPublic}
                                 control={<Switch checked={isPublic} color="primary" />}
@@ -137,6 +138,8 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                                 }}
                             />
                         </Grid>
+                        {/* TODO: add description input box, onChange to update corresponding field inside fullTagData */}
+                        {/* TODO: add search words? */}
                         <Grid
                             container={true}
                             justifyContent={"flex-start"}
