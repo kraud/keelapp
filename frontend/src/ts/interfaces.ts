@@ -83,10 +83,12 @@ type PartnershipsData = {
     language: Lang
 }
 
+// Matches tagModel in BE
 export type TagData = {
     _id: string,
     author: string,
     label: string,
+    description: string,
     public: 'Public' | 'Private' | 'Friends-Only',
     wordsId?: string[]
 }
