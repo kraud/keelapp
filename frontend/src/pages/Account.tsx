@@ -597,6 +597,15 @@ export const Account = (props: AccountProps) => {
                     setOpenTagModal(value)
                 }}
                 tagId={selectedTag}
+                // TODO: placeholder while setting up TagInfoModal
+                currentTagData={{
+                    _id: "",
+                    author: "",
+                    label: "",
+                    description: "",
+                    public: 'Private' as 'Private', // to make TS happy.
+                    wordsId: [],
+                }}
             />
         </Grid>
     )

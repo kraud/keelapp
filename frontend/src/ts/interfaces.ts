@@ -18,6 +18,7 @@ export type TranslationItem = {
     cases: WordItem[]
 } & (InternalStatus)
 
+// part of form validation
 export type InternalStatus = {
     completionState?: boolean // used while completing forms, not saved on BE
     isDirty?: boolean // used while completing forms, not saved on BE
@@ -85,13 +86,13 @@ type PartnershipsData = {
 
 // Matches tagModel in BE
 export type TagData = {
-    _id: string,
+    _id?: string, // can be undefined when creating a new tag
     author: string,
     label: string,
     description: string,
     public: 'Public' | 'Private' | 'Friends-Only',
     wordsId?: string[]
-}
+} & (InternalStatus)
 
 export interface PropsButtonData {
     id: string

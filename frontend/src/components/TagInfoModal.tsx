@@ -9,12 +9,23 @@ import {getAmountByTag} from "../features/words/wordSlice";
 import {useDispatch, useSelector} from "react-redux";
 import {getTagById} from "../features/tags/tagSlice";
 import {TagData} from "../ts/interfaces";
+import * as Yup from "yup";
+import {GenderDE} from "../ts/enums";
+import {useForm} from "react-hook-form";
+import {yupResolver} from "@hookform/resolvers/yup/dist/yup";
+import {RadioGroupWithHook} from "./RadioGroupFormHook";
+import {TextInputFormWithHook} from "./TextInputFormHook";
 
 
 interface FriendSearchModalProps {
     open: boolean
     setOpen: (value: boolean) => void
     tagId: string | undefined // this will eventually be a real ID, and we'll have to load the read tag data when opening this modal
+
+    currentTagData: TagData,
+    // should this should be replaced by 'fullTagData'? => to avoid changing 'currentTagData' in props
+    // updateTagFormData: (tagFormData: TagData) => void,
+    displayOnly?: boolean,
 }
 
 export const TagInfoModal = (props: FriendSearchModalProps) => {
@@ -45,6 +56,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
     const [isPublic, setIsPublic] = useState(true) // so Friends can see this tag on your profile and add it to their account
 
     // ------------------ ^^^^^ ALL ABOVE IS LEGACY ^^^^^ ------------------
+    const { currentTagData } = props
     const dispatch = useDispatch()
 
     const handleOnClose = () => {
@@ -62,12 +74,87 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
     }
     const [fullTagData, setFullTagData] = useState<TagData>(emptyTagData) // so Friends can see this tag on your profile and add it to their account
     const [isEditing, setIsEditing] = useState(false)
+    // TODO: move this to parent component => Tag data is provided by "currentTagData" prop
     useEffect(() => {
         // If props.tagId is a real tag => get the data
         if(props.tagId!!){
             // @ts-ignore
             dispatch(getTagById(props.tagId))
         } // if not, display empty form to create a new tag
+    },[])
+
+    const validationSchema = Yup.object().shape({
+        public: Yup.string().required("Required")
+            .oneOf(['Public', 'Private', 'Friends-Only'], "Required"),
+        label: Yup.string()
+            .required("A tag label is required"),
+        description: Yup.string().nullable()
+            .min(5, 'Description must be longer than 2 characters')
+            .max(250, 'Description is too long'),
+    })
+
+    const {
+        control, formState: { errors, isValid, isDirty }, setValue
+    } = useForm<
+        {
+            public: 'Public' | 'Private' | 'Friends-Only',
+            label: string,
+            description: string,
+        }
+        >({
+        resolver: yupResolver(validationSchema),
+        mode: "all", // Triggers validation/errors without having to submit
+    })
+
+    const [tagPublic, setTagPublic] = useState<'Public' | 'Private' | 'Friends-Only'|"">("")
+
+    const [tagLabel, setTagLabel] = useState("")
+    const [tagDescription, setTagDescription] = useState("")
+
+    useEffect(() => {
+        // TODO: re-evaluate if props.updateTagFormData is needed? Could just use local state and if needed to reset => use props.currenTagData
+        // props.updateTagFormData({
+        //     author: 'asd',
+        //     public: tagPublic as 'Public' | 'Private' | 'Friends-Only',
+        //     label: tagLabel,
+        //     description: tagDescription,
+        //     completionState: isValid,
+        //     isDirty: isDirty
+        // })
+    }, [tagPublic, tagLabel, tagDescription])
+
+    // This will only be run on first render
+    // we use it to populate the form fields with the previously added information
+    useEffect(() => {
+        if(currentTagData._id!!){
+            setValue(
+                'public',
+                currentTagData.public,
+                {
+                    shouldValidate: true,
+                    shouldTouch: true
+                }
+            )
+            setTagPublic(currentTagData.public as 'Public' | 'Private' | 'Friends-Only'|"")
+            setValue(
+                'label',
+                currentTagData.label,
+                {
+                    shouldValidate: true,
+                    shouldTouch: true
+                }
+            )
+            setTagLabel(currentTagData.label)
+            setValue(
+                'description',
+                currentTagData.description,
+                {
+                    shouldValidate: true,
+                    shouldTouch: true
+                }
+            )
+            setTagDescription(currentTagData.description)
+        }
     },[])
 
     return (
@@ -94,7 +181,6 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                             item={true}
                             xs={12}
                         >
-                            {/* TODO: if new tag => display Textfield input, onChange to update corresponding field inside fullTagData */}
                             {(!isEditing)
                             ?
                                 <Typography
@@ -103,22 +189,35 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                                         md: "inline"
                                     }}
                                 >
-                                    {fullTagData.label}
+                                    {tagLabel}
                                 </Typography>
                             :
-                                <TextField
-                                    label={"Label"}
-                                    type={"text"}
-                                    fullWidth={true}
-                                    value={fullTagData.label}
-                                    onChange={(value) => {
-                                        setFullTagData({
-                                                ...fullTagData,
-                                                label: value.target.value,
-                                            })
-                                    }}
-                                />
+                            <TextInputFormWithHook
+                                control={control}
+                                label={"Label"}
+                                name={"label"}
+                                defaultValue={""}
+                                errors={errors.label}
+                                onChange={(value: any) => {
+                                    setTagLabel(value)
+                                }}
+                                fullWidth={true}
+                                disabled={props.displayOnly}
+                            />
+                            // <TextField
+                            //     label={"Label"}
+                            //     type={"text"}
+                            //     fullWidth={true}
+                            //     value={fullTagData.label}
+                            //     onChange={(value) => {
+                            //         setFullTagData({
+                            //                 ...fullTagData,
+                            //                 label: value.target.value,
+                            //             })
+                            //     }}
+                            // />
                             }
+                            {/* AMOUNT OF WORDS RELATED TO THIS TAG*/}
                             {(isTagSearchLoading)
                                 ?
                                 <CircularProgress
@@ -154,47 +253,57 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                             item={true}
                             xs={12}
                         >
-                             {/*
-                             TODO: replace with RadioGroupWithHook. 3 options: 'Public' | 'Private' | 'Friends-Only'
-                                Add onChange to update corresponding field inside fullTagData
-                              */}
-                            <FormControlLabel
-                                value={isPublic}
-                                control={<Switch checked={isPublic} color="primary" />}
+                            <RadioGroupWithHook
+                                control={control}
                                 label={"Public"}
-                                labelPlacement={"end"}
-                                onChange={() => setIsPublic(!isPublic)}
-                                sx={{
-                                    marginLeft: 0,
+                                name={"public"}
+                                options={['Public', 'Private', 'Friends-Only']}
+                                defaultValue={""}
+                                errors={errors.public}
+                                onChange={(value: any) => {
+                                    setTagPublic(value)
                                 }}
+                                fullWidth={false}
+                                disabled={props.displayOnly}
                             />
                         </Grid>
-                        {/* TODO: onChange to update corresponding field inside fullTagData */}
                         {(!isEditing)
                             ?
                             <Typography
-                                variant={"h3"}
+                                variant={"h6"} // TODO: this should change depending on screen size (styling as well)
                                 display={{
                                     md: "inline"
                                 }}
                             >
-                                {fullTagData.description}
+                                {tagDescription}
                             </Typography>
                             :
-                            <TextField
+                            <TextInputFormWithHook
+                                control={control}
                                 label={"Description"}
-                                type={"text"}
-                                multiline
-                                rows={3}
-                                fullWidth={true}
-                                value={fullTagData.description}
-                                onChange={(value) => {
-                                    setFullTagData({
-                                        ...fullTagData,
-                                        description: value.target.value,
-                                    })
+                                name={"description"}
+                                defaultValue={""}
+                                errors={errors.description}
+                                onChange={(value: any) => {
+                                    setTagDescription(value)
                                 }}
+                                fullWidth={true}
+                                disabled={props.displayOnly}
                             />
+                            // <TextField
+                            //     label={"Description"}
+                            //     type={"text"}
+                            //     multiline
+                            //     rows={3}
+                            //     fullWidth={true}
+                            //     value={fullTagData.description}
+                            //     onChange={(value) => {
+                            //         setFullTagData({
+                            //             ...fullTagData,
+                            //             description: value.target.value,
+                            //         })
+                            //     }}
+                            // />
                         }
                         {/* TODO: add search words? */}
                         <Grid
