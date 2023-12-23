@@ -4,6 +4,7 @@ import wordReducer from '../features/words/wordSlice'
 import notificationReducer from '../features/notifications/notificationSlice'
 import friendshipReducer from '../features/friendships/friendshipSlice'
 import userReducer from '../features/users/userSlice'
+import tagReducer from '../features/tags/tagSlice'
 
 export const store = configureStore({
   reducer: {
@@ -12,5 +13,6 @@ export const store = configureStore({
     words: wordReducer,
     notifications: notificationReducer,
     friendships: friendshipReducer,
+    tags: tagReducer,
   },
 });

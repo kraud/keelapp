@@ -365,6 +365,7 @@ export const Account = (props: AccountProps) => {
                                 }))}
                                 <Grid
                                     container={true}
+                                    item={true}
                                     justifyContent={"center"}
                                     xs={12}
                                     sx={{
@@ -378,7 +379,7 @@ export const Account = (props: AccountProps) => {
                                         <Button
                                             variant={"contained"}
                                             color={"primary"}
-                                            onClick={() => null}
+                                            onClick={() => setOpenTagModal(true)}
                                             fullWidth={true}
                                             startIcon={<AddCommentIcon />}
                                         >
@@ -597,15 +598,6 @@ export const Account = (props: AccountProps) => {
                     setOpenTagModal(value)
                 }}
                 tagId={selectedTag}
-                // TODO: placeholder while setting up TagInfoModal
-                currentTagData={{
-                    _id: "",
-                    author: "",
-                    label: "",
-                    description: "",
-                    public: 'Private' as 'Private', // to make TS happy.
-                    wordsId: [],
-                }}
             />
         </Grid>
     )

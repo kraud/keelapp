@@ -96,7 +96,7 @@ export const createTag = createAsyncThunk('tags/createTag', async (tag: TagData,
 })
 
 // Delete a tag data by its id
-export const deleteTag = createAsyncThunk(`tags/updateTagById`, async (tagId: string, thunkAPI) => {
+export const deleteTag = createAsyncThunk(`tags/deleteTagById`, async (tagId: string, thunkAPI) => {
     try {
         // @ts-ignore
         const token = thunkAPI.getState().auth.user.token

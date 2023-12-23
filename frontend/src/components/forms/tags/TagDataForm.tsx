@@ -3,20 +3,28 @@ import {TextInputFormWithHook} from "../../TextInputFormHook";
 import globalTheme from "../../../theme/theme";
 import {RadioGroupWithHook} from "../../RadioGroupFormHook";
 import React, {useEffect, useState} from "react";
-import {TagData} from "../../../ts/interfaces";
+import {SearchResult, TagData} from "../../../ts/interfaces";
 import * as Yup from "yup";
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup/dist/yup";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import {AutocompleteSearch} from "../../AutocompleteSearch";
+import {searchWordByAnyTranslation} from "../../../features/words/wordSlice";
 
-interface TagFormProps {
+interface TagDataFormProps {
     currentTagData: TagData,
     displayOnly?: boolean,
+
+    updateTagFormData: (tagFormData: TagData) => void,
 }
 
-export const TagDataForm = (props: TagFormProps) => {
+export const TagDataForm = (props: TagDataFormProps) => {
+
+    const dispatch = useDispatch()
     const { currentTagData } = props
-    const {currentTagAmountWords, isLoadingTags} = useSelector((state: any) => state.tags)
+    const {isLoadingTags} = useSelector((state: any) => state.tags)
+    const {user} = useSelector((state: any) => state.auth)
+    const {searchResults, isSearchLoading} = useSelector((state: any) => state.words)
 
     const validationSchema = Yup.object().shape({
         public: Yup.string().required("Required")
@@ -47,15 +55,17 @@ export const TagDataForm = (props: TagFormProps) => {
     const [tagDescription, setTagDescription] = useState("")
 
     useEffect(() => {
-        // TODO: re-evaluate if props.updateTagFormData is needed? Could just use local state and if needed to reset => use props.currenTagData
-        // props.updateTagFormData({
-        //     author: 'asd',
-        //     public: tagPublic as 'Public' | 'Private' | 'Friends-Only',
-        //     label: tagLabel,
-        //     description: tagDescription,
-        //     completionState: isValid,
-        //     isDirty: isDirty
-        // })
+        if(!props.displayOnly){
+            props.updateTagFormData({
+                _id: currentTagData._id, // if it's a new tag that will be "", if editing an existing tag it will be a real ID
+                author: user._id, // if we're editing a Tag, we must be the author of it first
+                public: tagPublic as 'Public' | 'Private' | 'Friends-Only',
+                label: tagLabel,
+                description: tagDescription,
+                completionState: isValid,
+                isDirty: isDirty
+            })
+        }
     }, [tagPublic, tagLabel, tagDescription])
 
     // This will only be run on first render
@@ -102,7 +112,7 @@ export const TagDataForm = (props: TagFormProps) => {
                 item={true}
                 xs={12}
             >
-                {(!props.displayOnly)
+                {(props.displayOnly)
                     ?
                     <Typography
                         variant={"h3"}
@@ -125,18 +135,6 @@ export const TagDataForm = (props: TagFormProps) => {
                         fullWidth={true}
                         disabled={props.displayOnly}
                     />
-                    // <TextField
-                    //     label={"Label"}
-                    //     type={"text"}
-                    //     fullWidth={true}
-                    //     value={fullTagData.label}
-                    //     onChange={(value) => {
-                    //         setFullTagData({
-                    //                 ...fullTagData,
-                    //                 label: value.target.value,
-                    //             })
-                    //     }}
-                    // />
                 }
                 {/* AMOUNT OF WORDS RELATED TO THIS TAG*/}
                 {(isLoadingTags)
@@ -149,7 +147,7 @@ export const TagDataForm = (props: TagFormProps) => {
                         }}
                     />
                     :
-                    (!props.displayOnly) &&
+                    (props.displayOnly) &&
                     <Typography
                         variant={"h6"}
                         display={{
@@ -161,12 +159,12 @@ export const TagDataForm = (props: TagFormProps) => {
                             }
                         }}
                     >
-                        {((fullTagData.wordsId !== undefined))
-                            ? (fullTagData.wordsId.length > 1)
-                                ? `${fullTagData.wordsId.length} words`
-                                : `${fullTagData.wordsId.length} word`
-                            :""
-                        }
+                        {/*{((props.currentTagData.wordsId !== undefined))*/}
+                        {/*    ? (props.currentTagData.wordsId.length > 1)*/}
+                        {/*        ? `${props.currentTagData.wordsId.length} words`*/}
+                        {/*        : `${props.currentTagData.wordsId.length} word`*/}
+                        {/*    :""*/}
+                        {/*}*/}
                     </Typography>
                 }
             </Grid>
@@ -188,45 +186,60 @@ export const TagDataForm = (props: TagFormProps) => {
                     disabled={props.displayOnly}
                 />
             </Grid>
-            {(props.displayOnly)
-                ?
-                <Typography
-                    variant={"h6"} // TODO: this should change depending on screen size (styling as well)
-                    display={{
-                        md: "inline"
+            <Grid
+                item={true}
+                xs={12}
+            >
+                {(props.displayOnly)
+                    ?
+                    <Typography
+                        variant={"h6"} // TODO: this should change depending on screen size (styling as well)
+                        display={{
+                            md: "inline"
+                        }}
+                    >
+                        {tagDescription}
+                    </Typography>
+                    :
+                    <TextInputFormWithHook
+                        control={control}
+                        label={"Description"}
+                        name={"description"}
+                        defaultValue={""}
+                        errors={errors.description}
+                        onChange={(value: any) => {
+                            setTagDescription(value)
+                        }}
+                        fullWidth={true}
+                        disabled={props.displayOnly}
+                    />
+                }
+            </Grid>
+            {/*
+                TODO: modify and add an AutocompleteMultiple/Search for words here.
+                    Selected words' ids will be stored inside wordsId property of Tag
+            */}
+            <Grid
+                item={true}
+                xs={12}
+            >
+                <AutocompleteSearch
+                    options={searchResults} // filter results that have Ids that are already selected?
+                    getOptions={(inputValue: string) => {
+                        // @ts-ignore
+                        dispatch(searchWordByAnyTranslation(inputValue))
                     }}
-                >
-                    {tagDescription}
-                </Typography>
-                :
-                <TextInputFormWithHook
-                    control={control}
-                    label={"Description"}
-                    name={"description"}
-                    defaultValue={""}
-                    errors={errors.description}
-                    onChange={(value: any) => {
-                        setTagDescription(value)
+                    onSelect={(selection: SearchResult) => {
+                        // add selection to a list of selected words that will be displayed under this searchbar
                     }}
-                    fullWidth={true}
-                    disabled={props.displayOnly}
+                    isSearchLoading={isSearchLoading}
+                    textColor={'black'}
+                    sxPropsAutocomplete={{
+                        backgroundColor: 'gray'
+                    }}
                 />
-                // <TextField
-                //     label={"Description"}
-                //     type={"text"}
-                //     multiline
-                //     rows={3}
-                //     fullWidth={true}
-                //     value={fullTagData.description}
-                //     onChange={(value) => {
-                //         setFullTagData({
-                //             ...fullTagData,
-                //             description: value.target.value,
-                //         })
-                //     }}
-                // />
-            }
-            {/* TODO: add search words? */}
+            </Grid>
+            {/* TODO: small list of selected words here. Updated when  */}
         </Grid>
     )
 }
