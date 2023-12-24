@@ -1,4 +1,4 @@
-import {CircularProgress, Grid, Typography} from "@mui/material";
+import {Chip, CircularProgress, Grid, Typography} from "@mui/material";
 import {TextInputFormWithHook} from "../../TextInputFormHook";
 import globalTheme from "../../../theme/theme";
 import {RadioGroupWithHook} from "../../RadioGroupFormHook";
@@ -10,6 +10,9 @@ import {yupResolver} from "@hookform/resolvers/yup/dist/yup";
 import {useDispatch, useSelector} from "react-redux";
 import {AutocompleteSearch} from "../../AutocompleteSearch";
 import {searchWordByAnyTranslation} from "../../../features/words/wordSlice";
+import {CountryFlag} from "../../GeneralUseComponents";
+import {Lang} from "../../../ts/enums";
+import {useNavigate} from "react-router-dom";
 
 interface TagDataFormProps {
     currentTagData: TagData,
@@ -20,6 +23,7 @@ interface TagDataFormProps {
 
 export const TagDataForm = (props: TagDataFormProps) => {
 
+    const navigate = useNavigate()
     const dispatch = useDispatch()
     const { currentTagData } = props
     const {isLoadingTags} = useSelector((state: any) => state.tags)
@@ -53,6 +57,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
 
     const [tagLabel, setTagLabel] = useState("")
     const [tagDescription, setTagDescription] = useState("")
+    const [selectedWords, setSelectedWords] = useState<SearchResult[]>([]) // will always be 'type: "word"'
 
     useEffect(() => {
         if(!props.displayOnly){
@@ -101,6 +106,14 @@ export const TagDataForm = (props: TagDataFormProps) => {
             setTagDescription(currentTagData.description)
         }
     },[])
+
+    const handleDelete = (wordIndex: number) => {
+        setSelectedWords(
+            selectedWords.filter((word: SearchResult, selectedIndex: number) => {
+                return(wordIndex !== selectedIndex)
+            })
+        )
+    }
 
     return(
         <Grid
@@ -229,8 +242,11 @@ export const TagDataForm = (props: TagDataFormProps) => {
                         // @ts-ignore
                         dispatch(searchWordByAnyTranslation(inputValue))
                     }}
-                    onSelect={(selection: SearchResult) => {
+                    onSelect={(selectedWordItem: SearchResult) => {
                         // add selection to a list of selected words that will be displayed under this searchbar
+                        setSelectedWords((prevSelectedWordsState: SearchResult[]) => (
+                            [...prevSelectedWordsState, selectedWordItem]
+                        ))
                     }}
                     isSearchLoading={isSearchLoading}
                     textColor={'black'}
@@ -239,7 +255,50 @@ export const TagDataForm = (props: TagDataFormProps) => {
                     }}
                 />
             </Grid>
-            {/* TODO: small list of selected words here. Updated when  */}
+            {/* LIST OF WORDS RELATED TO THIS TAG */}
+            <Grid
+                container={true}
+                item={true}
+                xs={12}
+            >
+                {(selectedWords.map((selectedWordItem: SearchResult, index: number) => {
+                    return (
+                        <Grid
+                            item={true}
+                            key={index.toString() + '-' + selectedWordItem}
+                        >
+                            <Chip
+                                variant="filled"
+                                label={selectedWordItem.label}
+                                color={"info"}
+                                sx={{
+                                    maxWidth: "max-content",
+                                }}
+                                onClick={() => {
+                                    navigate(`/word/${selectedWordItem.id}`)
+                                }}
+                                onDelete={() => {
+                                    handleDelete(index)
+                                }}
+                                size={"medium"}
+                                icon={
+                                    <CountryFlag
+                                        country={
+                                        (selectedWordItem.type === 'word')
+                                            ? selectedWordItem.language
+                                            : Lang.AQ //other
+                                    }
+                                        border={true}
+                                        sxProps={{
+                                            marginLeft: globalTheme.spacing(2)
+                                        }}
+                                    />
+                                }
+                            />
+                        </Grid>
+                    )
+                }))}
+            </Grid>
         </Grid>
     )
 }

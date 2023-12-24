@@ -86,9 +86,6 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
         }
     },[fullTagData, isSuccessTags, isLoadingTags])
 
-    useEffect(() => {
-        console.log('TagCurrentData',TagCurrentData)
-    },[TagCurrentData])
 
 
     return (

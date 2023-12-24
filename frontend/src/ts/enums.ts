@@ -93,7 +93,8 @@ export enum Lang {
     ES = "Spanish",
     EN = "English",
     DE = "German",
-    EE = "Estonian"
+    EE = "Estonian",
+    AQ = "other"
 }
 
 export enum GenderDE {
