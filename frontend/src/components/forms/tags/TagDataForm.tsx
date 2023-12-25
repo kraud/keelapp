@@ -34,9 +34,11 @@ export const TagDataForm = (props: TagDataFormProps) => {
         public: Yup.string().required("Required")
             .oneOf(['Public', 'Private', 'Friends-Only'], "Required"),
         label: Yup.string()
-            .required("A tag label is required"),
+            .required("A tag label is required")
+            .min(2, 'Label must be longer than 2 characters')
+            .max(30, 'Label is too long'),
         description: Yup.string().nullable()
-            .min(5, 'Description must be longer than 2 characters')
+            .min(5, 'Description must be longer than 5 characters')
             .max(250, 'Description is too long'),
     })
 
@@ -67,11 +69,14 @@ export const TagDataForm = (props: TagDataFormProps) => {
                 public: tagPublic as 'Public' | 'Private' | 'Friends-Only',
                 label: tagLabel,
                 description: tagDescription,
+                // TODO: add selectedWords ids here as 'wordsId'
+                //  => must decide how to display the list later (in which language? clarify amount of translations available for each?)
+
                 completionState: isValid,
                 isDirty: isDirty
             })
         }
-    }, [tagPublic, tagLabel, tagDescription])
+    }, [tagPublic, tagLabel, tagDescription, isValid, isDirty])
 
     // This will only be run on first render
     // we use it to populate the form fields with the previously added information
@@ -228,21 +233,19 @@ export const TagDataForm = (props: TagDataFormProps) => {
                     />
                 }
             </Grid>
-            {/*
-                TODO: modify and add an AutocompleteMultiple/Search for words here.
-                    Selected words' ids will be stored inside wordsId property of Tag
-            */}
             <Grid
                 item={true}
                 xs={12}
             >
                 <AutocompleteSearch
+                    // TODO. OPTION 2: filter selected words by id
                     options={searchResults} // filter results that have Ids that are already selected?
                     getOptions={(inputValue: string) => {
                         // @ts-ignore
                         dispatch(searchWordByAnyTranslation(inputValue))
                     }}
                     onSelect={(selectedWordItem: SearchResult) => {
+                        // TODO. OPTION 1: check that item is not already selected
                         // add selection to a list of selected words that will be displayed under this searchbar
                         setSelectedWords((prevSelectedWordsState: SearchResult[]) => (
                             [...prevSelectedWordsState, selectedWordItem]

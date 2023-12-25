@@ -1,29 +1,25 @@
 import globalTheme from "../theme/theme";
-import {Button, CircularProgress, Grid, Modal, Switch, TextField, Typography} from "@mui/material";
+import {Button, Grid, Modal} from "@mui/material";
 import Box from "@mui/material/Box";
 import React, {useEffect, useState} from "react";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import SendIcon from '@mui/icons-material/Send';
 import ClearIcon from '@mui/icons-material/Clear';
-import {getAmountByTag} from "../features/words/wordSlice";
+import SaveIcon from '@mui/icons-material/Save';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import SaveAsIcon from '@mui/icons-material/SaveAs';
+import EditIcon from '@mui/icons-material/Edit';
 import {useDispatch, useSelector} from "react-redux";
-import {getTagById} from "../features/tags/tagSlice";
+import {clearFullTagData, createTag, getTagById, updateTag} from "../features/tags/tagSlice";
 import {TagData} from "../ts/interfaces";
-import * as Yup from "yup";
-import {GenderDE} from "../ts/enums";
-import {useForm} from "react-hook-form";
-import {yupResolver} from "@hookform/resolvers/yup/dist/yup";
-import {RadioGroupWithHook} from "./RadioGroupFormHook";
-import {TextInputFormWithHook} from "./TextInputFormHook";
 import {TagDataForm} from "./forms/tags/TagDataForm";
+import LinearIndeterminate from "./Spinner";
+import {toast} from "react-toastify";
 
 
 interface FriendSearchModalProps {
     open: boolean
     setOpen: (value: boolean) => void
-    tagId: string | undefined // this will eventually be a real ID, and we'll have to load the read tag data when opening this modal
-
-    // should this should be replaced by 'fullTagData'? => to avoid changing 'currentTagData' in props
+    tagId: string | undefined
 }
 
 export const TagInfoModal = (props: FriendSearchModalProps) => {
@@ -48,7 +44,8 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
 
     const handleOnClose = () => {
         props.setOpen(false)
-        // TODO: should clear props.tagId when closing
+        setTagCurrentData(emptyTagData)
+        dispatch(clearFullTagData())
     }
 
     const emptyTagData = {
@@ -60,33 +57,185 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
     }
     // This state will hold the current state inside the TagForm, and will be updated when that changes.
     // This also includes the internalStatus properties, to know if form is valid and/or dirty, to help with button logic
-    const [TagCurrentData, setTagCurrentData] = useState<TagData>(emptyTagData) // so Friends can see this tag on your profile and add it to their account
+    const [tagCurrentData, setTagCurrentData] = useState<TagData>(emptyTagData)
     const [isEditing, setIsEditing] = useState(false)
 
     useEffect(() => {
         // If props.tagId is empty => we're creating a new tag
-        if(props.tagId!!){
+        if(!(props.tagId!!)){
            setIsEditing(true)
         }
     },[])
 
     useEffect(() => {
         // if not editing => get and display exiting tag data
-        if(!isEditing){
+        if(!isEditing && (props.tagId!!)){
             // @ts-ignore
             dispatch(getTagById(props.tagId)) // result will be stored at fullTagData
         } // if not, display empty form to create a new tag
     },[isEditing])
+
 
     // once the request is made and the results come in, we save them into a local copy of the state,
     // this way the original remains in Redux, and we can access it to reverse changes if needed.
     useEffect(() => {
         if(!isLoadingTags && isSuccessTags && (fullTagData !== undefined)){
             setTagCurrentData(fullTagData)
+            setIsEditing(false)
         }
     },[fullTagData, isSuccessTags, isLoadingTags])
 
+    const getActionButtons = () => {
+        if(isEditing){
+            // we check id twice, in case the tag has just been created, so props.tagId is still ""
+            if((props.tagId!!) || (tagCurrentData._id!!)){ // editing existing tag: save changes - cancel (revert changes set to reviewing)
+                return(<>
+                    <Grid
+                        item={true}
+                        xs={12}
+                        md={4}
+                    >
+                        <Button
+                            variant={"contained"}
+                            color={"primary"}
+                            onClick={() => updateExistingTagData()}
+                            fullWidth={true}
+                            startIcon={<SaveAsIcon/>}
+                            disabled={!(tagCurrentData.completionState!!)}
+                        >
+                            Save changes
+                        </Button>
+                    </Grid>
+                    <Grid
+                        item={true}
+                        xs={12}
+                        md={4}
+                    >
+                        <Button
+                            variant={"contained"}
+                            color={"info"}
+                            onClick={() => {
+                                setIsEditing(false)
+                                setTagCurrentData(fullTagData)
+                            }}
+                            fullWidth={true}
+                            endIcon={<ClearIcon />}
+                        >
+                            Cancel
+                        </Button>
+                    </Grid>
+                </>)
+            } else {// creating new tag: save - cancel (close modal)
+                return(<>
+                    <Grid
+                        item={true}
+                        xs={12}
+                        md={4}
+                    >
+                        <Button
+                            variant={"contained"}
+                            color={"primary"}
+                            onClick={() => createNewTag()}
+                            fullWidth={true}
+                            startIcon={<SaveIcon/>}
+                            disabled={!(tagCurrentData.completionState!!)}
+                        >
+                            Create tag
+                        </Button>
+                    </Grid>
+                    <Grid
+                        item={true}
+                        xs={12}
+                        md={4}
+                    >
+                        <Button
+                            variant={"contained"}
+                            color={"info"}
+                            onClick={() => handleOnClose()}
+                            fullWidth={true}
+                            endIcon={<ClearIcon />}
+                        >
+                            Cancel
+                        </Button>
+                    </Grid>
+                </>)
+            }
+        } else {
+            // reviewing: send to friends - delete words - cancel (close modal)
+            return(<>
+                <Grid
+                    item={true}
+                    xs={12}
+                    md={3}
+                >
+                    <Button
+                        variant={"contained"}
+                        color={"primary"}
+                        onClick={() => toast.info('Coming soon!')}
+                        fullWidth={true}
+                        startIcon={<SendIcon />}
+                    >
+                        Send to friends
+                    </Button>
+                </Grid>
+                <Grid
+                    item={true}
+                    xs={12}
+                    md={3}
+                >
+                    <Button
+                        variant={"contained"}
+                        color={"warning"}
+                        onClick={() => null}
+                        fullWidth={true}
+                        endIcon={<DeleteForeverIcon />}
+                    >
+                        Delete all words
+                    </Button>
+                </Grid>
+                <Grid
+                    item={true}
+                    xs={12}
+                    md={3}
+                >
+                    <Button
+                        variant={"contained"}
+                        color={"secondary"}
+                        onClick={() => setIsEditing(true)}
+                        fullWidth={true}
+                        endIcon={<EditIcon />}
+                    >
+                        Edit
+                    </Button>
+                </Grid>
+                <Grid
+                    item={true}
+                    xs={12}
+                    md={3}
+                >
+                    <Button
+                        variant={"contained"}
+                        color={"info"}
+                        onClick={() => handleOnClose()}
+                        fullWidth={true}
+                        endIcon={<ClearIcon />}
+                    >
+                        Close
+                    </Button>
+                </Grid>
+            </>)
+        }
+    }
 
+    const createNewTag = () => {
+        // @ts-ignore
+        dispatch(createTag(tagCurrentData)) // result will be stored at fullTagData
+    }
+
+    const updateExistingTagData = () => {
+        // @ts-ignore
+        dispatch(updateTag(tagCurrentData)) // result will be stored at fullTagData
+    }
 
     return (
         <Modal
@@ -108,12 +257,20 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                         rowSpacing={2}
                     >
                         <TagDataForm
-                            currentTagData={TagCurrentData}
-                            displayOnly={props.tagId !== ""}
+                            currentTagData={tagCurrentData}
+                            displayOnly={
+                                (
+                                    (props.tagId !== "")
+                                    ||
+                                    ((fullTagData !== undefined) && (fullTagData._id!!))
+                                ) &&
+                                !isEditing
+                            }
                             updateTagFormData={(formData: TagData) => {
                                 setTagCurrentData(formData)
                             }}
                         />
+                        {(isLoadingTags) && <LinearIndeterminate/>}
                         <Grid
                             container={true}
                             justifyContent={"flex-start"}
@@ -129,37 +286,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                                 md: 2,
                             }}
                         >
-                            {/*TODO: button should change when creating/editing a tag */}
-                            <Grid
-                                item={true}
-                                xs={12}
-                                md={5}
-                            >
-                                <Button
-                                    variant={"contained"}
-                                    color={"primary"}
-                                    onClick={() => null}
-                                    fullWidth={true}
-                                    startIcon={<SendIcon />}
-                                >
-                                    Send to friends
-                                </Button>
-                            </Grid>
-                            <Grid
-                                item={true}
-                                xs={12}
-                                md={5}
-                            >
-                                <Button
-                                    variant={"contained"}
-                                    color={"warning"}
-                                    onClick={() => null}
-                                    fullWidth={true}
-                                    endIcon={<ClearIcon />}
-                                >
-                                    Delete all words
-                                </Button>
-                            </Grid>
+                            {getActionButtons()}
                         </Grid>
                     </Grid>
                 </Grid>

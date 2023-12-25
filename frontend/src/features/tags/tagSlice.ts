@@ -156,6 +156,12 @@ export const tagSlice = createSlice({
     initialState,
     reducers: {
         reset: (state: any) => initialState,
+        clearFullTagData: (state: any) => {
+            return({
+                ...state,
+                fullTagData: initialState.fullTagData
+            })
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -253,5 +259,5 @@ export const tagSlice = createSlice({
     }
 })
 
-export const {reset} = tagSlice.actions
+export const {reset, clearFullTagData} = tagSlice.actions
 export default tagSlice.reducer
