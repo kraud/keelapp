@@ -7,7 +7,6 @@ import {useDispatch, useSelector} from "react-redux";
 import Avatar from "@mui/material/Avatar";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SettingsIcon from '@mui/icons-material/Settings';
-import {searchAllTags} from "../features/words/wordSlice";
 import LinearIndeterminate from "../components/Spinner";
 import IconButton from "@mui/material/IconButton";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
@@ -21,9 +20,10 @@ import {updateUser} from "../features/auth/authSlice";
 import {useNavigate} from "react-router-dom";
 import {stringAvatar} from "../components/generalUseFunctions";
 import {getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
-import {FriendshipData, SearchResult} from "../ts/interfaces";
+import {FriendshipData, SearchResult, TagData} from "../ts/interfaces";
 import {getUsernamesByIds} from "../features/users/userSlice";
 import AddCommentIcon from '@mui/icons-material/AddComment';
+import {getTagsByUserId} from "../features/tags/tagSlice";
 
 interface AccountProps {
 
@@ -41,9 +41,11 @@ export const Account = (props: AccountProps) => {
     const dispatch = useDispatch()
     const {user, isLoadingAuth, isSuccess} = useSelector((state: any) => state.auth)
     const {userList, isLoadingUser} = useSelector((state: any) => state.user)
-    const {tags, isTagSearchLoading} = useSelector((state: any) => state.words)
+    // const {tags, isTagSearchLoading} = useSelector((state: any) => state.words)
     const {friendships, isLoadingFriendships} = useSelector((state: any) => state.friendships)
-    const [allTags, setAllTags] = useState<string[]>([])
+    const {tags, fullTagData, isSuccessTags, isLoadingTags} = useSelector((state: any) => state.tags)
+
+    const [allTags, setAllTags] = useState<TagData[]>([])
     const [activeFriendships, setActiveFriendships] = useState<FriendshipData[]>([])
     const [openFriendsModal, setOpenFriendsModal] = useState(false)
     const [triggerGetFriendships, setTriggerGetFriendships] = useState(false)
@@ -140,7 +142,8 @@ export const Account = (props: AccountProps) => {
 
     useEffect(() => {
         // @ts-ignore
-        dispatch(searchAllTags(""))
+        dispatch(getTagsByUserId(user._id))
+        // dispatch(searchAllTags("")) // replaced by tagSlice equivalent (above)
         // @ts-ignore
         dispatch(getFriendshipsByUserId(user._id))
     },[])
@@ -335,14 +338,15 @@ export const Account = (props: AccountProps) => {
                     spacing={1}
                     justifyContent={"center"}
                 >
-                    {(isTagSearchLoading)
+                    {(isLoadingTags)
                         ?
                         <LinearIndeterminate/>
                         :
+                        // TODO: get real tags form user
                         (allTags.length > 0)
                             ?
                             <>
-                                {(allTags.map((tag: string, index: number) => {
+                                {(allTags.map((tag: TagData, index: number) => {
                                     return (
                                         <Grid
                                             item={true}
@@ -350,14 +354,13 @@ export const Account = (props: AccountProps) => {
                                         >
                                             <Chip
                                                 variant="filled"
-                                                label={tag}
+                                                label={tag.label}
                                                 color={"secondary"}
                                                 sx={{
                                                     maxWidth: "max-content",
                                                 }}
                                                 onClick={() => {
-                                                    // navigate('/review/tags?tags='+tag)
-                                                    setSelectedTag(tag)
+                                                    setSelectedTag((tag._id !== undefined) ?tag._id :"")
                                                 }}
                                             />
                                         </Grid>

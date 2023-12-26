@@ -38,7 +38,7 @@ const searchTags = asyncHandler(async (req, res) => {
 const getUserTags = asyncHandler(async (req, res) => {
     const tags = await Tag.find(
         {
-            author: req.params.id
+            author: req.user.id
         },
     )
     // TODO: should we return this in the "FilterItem" format for tag?
