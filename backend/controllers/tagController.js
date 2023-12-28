@@ -74,6 +74,7 @@ const createTag = asyncHandler(async (req, res) => {
         author: req.body.author,
         label: req.body.label,
         public: req.body.public,
+        description: req.body.description,
         // TODO: wordsId?
     })
     res.status(200).json(tag)
@@ -125,7 +126,7 @@ const updateTag = asyncHandler(async (req, res) => {
     }
 
     // Make sure the logged-in user matches the goal user
-    if(tag.user.toString() !== req.user.id){
+    if(tag.author.toString() !== req.user.id){
         res.status(401)
         throw new Error('User not authorized')
     }

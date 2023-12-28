@@ -127,6 +127,7 @@ export const Account = (props: AccountProps) => {
 
     useEffect(() => {
         if(selectedTag !== ""){
+            // console.log('selectedTag', selectedTag)
             setOpenTagModal(true)
         }
     },[selectedTag])

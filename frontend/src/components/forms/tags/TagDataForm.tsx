@@ -110,7 +110,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
             )
             setTagDescription(currentTagData.description)
         }
-    },[])
+    },[currentTagData]) // TODO: check if this is ok? It was not working with only []
 
     const handleDelete = (wordIndex: number) => {
         setSelectedWords(
@@ -233,31 +233,33 @@ export const TagDataForm = (props: TagDataFormProps) => {
                     />
                 }
             </Grid>
-            <Grid
-                item={true}
-                xs={12}
-            >
-                <AutocompleteSearch
-                    // TODO. OPTION 2: filter selected words by id
-                    options={searchResults} // filter results that have Ids that are already selected?
-                    getOptions={(inputValue: string) => {
-                        // @ts-ignore
-                        dispatch(searchWordByAnyTranslation(inputValue))
-                    }}
-                    onSelect={(selectedWordItem: SearchResult) => {
-                        // TODO. OPTION 1: check that item is not already selected
-                        // add selection to a list of selected words that will be displayed under this searchbar
-                        setSelectedWords((prevSelectedWordsState: SearchResult[]) => (
-                            [...prevSelectedWordsState, selectedWordItem]
-                        ))
-                    }}
-                    isSearchLoading={isSearchLoading}
-                    textColor={'black'}
-                    sxPropsAutocomplete={{
-                        backgroundColor: 'gray'
-                    }}
-                />
-            </Grid>
+            {!(props.displayOnly) &&
+                <Grid
+                    item={true}
+                    xs={12}
+                >
+                    <AutocompleteSearch
+                        // TODO. OPTION 2: filter selected words by id
+                        options={searchResults} // filter results that have Ids that are already selected?
+                        getOptions={(inputValue: string) => {
+                            // @ts-ignore
+                            dispatch(searchWordByAnyTranslation(inputValue))
+                        }}
+                        onSelect={(selectedWordItem: SearchResult) => {
+                            // TODO. OPTION 1: check that item is not already selected
+                            // add selection to a list of selected words that will be displayed under this searchbar
+                            setSelectedWords((prevSelectedWordsState: SearchResult[]) => (
+                                [...prevSelectedWordsState, selectedWordItem]
+                            ))
+                        }}
+                        isSearchLoading={isSearchLoading}
+                        textColor={'black'}
+                        sxPropsAutocomplete={{
+                            backgroundColor: 'gray'
+                        }}
+                    />
+                </Grid>
+            }
             {/* LIST OF WORDS RELATED TO THIS TAG */}
             <Grid
                 container={true}

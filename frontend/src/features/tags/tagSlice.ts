@@ -60,11 +60,11 @@ export const searchTagsByLabel = createAsyncThunk(`tags/searchTag`, async (reque
 })
 
 // Get full tag data by its id
-export const getTagById = createAsyncThunk(`tags/getTagById`, async (wordId: string, thunkAPI) => {
+export const getTagById = createAsyncThunk(`tags/getTagById`, async (tagId: string, thunkAPI) => {
     try {
         // @ts-ignore
         const token = thunkAPI.getState().auth.user.token
-        return await tagService.getTagById(token, wordId)
+        return await tagService.getTagById(token, tagId)
     } catch(error: any) {
         const message = (
                 error.response &&

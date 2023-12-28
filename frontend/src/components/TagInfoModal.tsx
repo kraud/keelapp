@@ -62,18 +62,18 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
 
     useEffect(() => {
         // If props.tagId is empty => we're creating a new tag
-        if(!(props.tagId!!)){
+        if((props.open) && (!(props.tagId!!))){
            setIsEditing(true)
         }
-    },[])
+    },[props.open, props.tagId])
 
     useEffect(() => {
         // if not editing => get and display exiting tag data
-        if(!isEditing && (props.tagId!!)){
+        if(props.open && !isEditing && (props.tagId !== "")){
             // @ts-ignore
             dispatch(getTagById(props.tagId)) // result will be stored at fullTagData
         } // if not, display empty form to create a new tag
-    },[isEditing])
+    },[isEditing, props.open, props.tagId])
 
 
     // once the request is made and the results come in, we save them into a local copy of the state,
