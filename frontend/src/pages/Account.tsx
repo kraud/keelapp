@@ -142,6 +142,7 @@ export const Account = (props: AccountProps) => {
     },[user])
 
     useEffect(() => {
+        // TODO: make tag-request again after closing tag-modal
         // @ts-ignore
         dispatch(getTagsByUserId(user._id))
         // dispatch(searchAllTags("")) // replaced by tagSlice equivalent (above)

@@ -103,6 +103,8 @@ const deleteTag = asyncHandler(async (req, res) => {
         throw new Error('User not authorized to delete this tag (does not match author).')
     }
 
+    // TODO: we should remove the tag from the tag-array in all the words (for this user) where it is present
+
     await tag.deleteOne()
     // TODO: maybe add a flag to also trigger deletion of all words related to this tag?
     res.status(200).json(tag)

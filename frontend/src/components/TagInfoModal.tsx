@@ -9,7 +9,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import SaveAsIcon from '@mui/icons-material/SaveAs';
 import EditIcon from '@mui/icons-material/Edit';
 import {useDispatch, useSelector} from "react-redux";
-import {clearFullTagData, createTag, getTagById, updateTag} from "../features/tags/tagSlice";
+import {clearFullTagData, createTag, deleteTag, getTagById, updateTag} from "../features/tags/tagSlice";
 import {TagData} from "../ts/interfaces";
 import {TagDataForm} from "./forms/tags/TagDataForm";
 import LinearIndeterminate from "./Spinner";
@@ -93,7 +93,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                     <Grid
                         item={true}
                         xs={12}
-                        md={4}
+                        md={3}
                     >
                         <Button
                             variant={"contained"}
@@ -109,7 +109,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                     <Grid
                         item={true}
                         xs={12}
-                        md={4}
+                        md={3}
                     >
                         <Button
                             variant={"contained"}
@@ -123,6 +123,26 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                         >
                             Cancel
                         </Button>
+                        {/* TODO: add a Delete-Tag button here?   */}
+                    </Grid>
+                    <Grid
+                        item={true}
+                        xs={12}
+                        md={3}
+                    >
+                        <Button
+                            variant={"contained"}
+                            color={"error"}
+                            onClick={() => {
+                                setIsEditing(false)
+                                setTagCurrentData(fullTagData)
+                            }}
+                            fullWidth={true}
+                            endIcon={<DeleteForeverIcon />}
+                        >
+                            Delete tag
+                        </Button>
+                        {/* TODO: add a Delete-Tag button here?   */}
                     </Grid>
                 </>)
             } else {// creating new tag: save - cancel (close modal)
@@ -186,7 +206,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                     <Button
                         variant={"contained"}
                         color={"warning"}
-                        onClick={() => null}
+                        onClick={() => null} // TODO: add a confirmation before deleting words
                         fullWidth={true}
                         endIcon={<DeleteForeverIcon />}
                     >
@@ -235,6 +255,12 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
     const updateExistingTagData = () => {
         // @ts-ignore
         dispatch(updateTag(tagCurrentData)) // result will be stored at fullTagData
+    }
+
+    const deleteTagData = () => {
+        // @ts-ignore
+        dispatch(deleteTag(tagCurrentData._id)) // result will be stored at fullTagData
+        // TODO: should we give the option to also delete all words related to this tag?
     }
 
     return (
