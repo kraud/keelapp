@@ -81,7 +81,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
     // This will only be run on first render
     // we use it to populate the form fields with the previously added information
     useEffect(() => {
-        if(currentTagData._id!!){
+        if((currentTagData!!) && (currentTagData._id!!)){
             setValue(
                 'public',
                 currentTagData.public,
@@ -291,7 +291,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
                                         country={
                                         (selectedWordItem.type === 'word')
                                             ? selectedWordItem.language
-                                            : Lang.AQ //other
+                                            : Lang.EE // random other?
                                     }
                                         border={true}
                                         sxProps={{

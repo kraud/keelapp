@@ -135,14 +135,13 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                             color={"error"}
                             onClick={() => {
                                 setIsEditing(false)
-                                setTagCurrentData(fullTagData)
+                                deleteTagData()
                             }}
                             fullWidth={true}
                             endIcon={<DeleteForeverIcon />}
                         >
                             Delete tag
                         </Button>
-                        {/* TODO: add a Delete-Tag button here?   */}
                     </Grid>
                 </>)
             } else {// creating new tag: save - cancel (close modal)

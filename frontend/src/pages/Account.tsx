@@ -142,10 +142,8 @@ export const Account = (props: AccountProps) => {
     },[user])
 
     useEffect(() => {
-        // TODO: make tag-request again after closing tag-modal
         // @ts-ignore
         dispatch(getTagsByUserId(user._id))
-        // dispatch(searchAllTags("")) // replaced by tagSlice equivalent (above)
         // @ts-ignore
         dispatch(getFriendshipsByUserId(user._id))
     },[])
@@ -179,6 +177,14 @@ export const Account = (props: AccountProps) => {
             setDefaultModalUserId(undefined)
         }
     },[openFriendsModal])
+
+    useEffect(() => {
+        // TODO: make tag-request again after closing tag-modal
+        if(!openTagModal){
+            // @ts-ignore
+            dispatch(getTagsByUserId(user._id))
+        }
+    },[openTagModal])
 
     return(
         <Grid
@@ -345,29 +351,53 @@ export const Account = (props: AccountProps) => {
                         <LinearIndeterminate/>
                         :
                         // TODO: get real tags form user
-                        (allTags.length > 0)
-                            ?
-                            <>
-                                {(allTags.map((tag: TagData, index: number) => {
-                                    return (
-                                        <Grid
-                                            item={true}
-                                            key={index.toString() + '-' + tag}
-                                        >
-                                            <Chip
-                                                variant="filled"
-                                                label={tag.label}
-                                                color={"secondary"}
-                                                sx={{
-                                                    maxWidth: "max-content",
-                                                }}
-                                                onClick={() => {
-                                                    setSelectedTag((tag._id !== undefined) ?tag._id :"")
-                                                }}
-                                            />
-                                        </Grid>
-                                    )
-                                }))}
+                        <>
+                            {(allTags.length > 0)
+                                ?
+                                <>
+                                    {(allTags.map((tag: TagData, index: number) => {
+                                        return (
+                                            <Grid
+                                                item={true}
+                                                key={index.toString() + '-' + tag}
+                                            >
+                                                <Chip
+                                                    variant="filled"
+                                                    label={tag.label}
+                                                    color={"secondary"}
+                                                    sx={{
+                                                        maxWidth: "max-content",
+                                                    }}
+                                                    onClick={() => {
+                                                        setSelectedTag((tag._id !== undefined) ? tag._id : "")
+                                                    }}
+                                                />
+                                            </Grid>
+                                        )
+                                    }))}
+                                </>
+                                :
+                                <>
+                                    <Typography
+                                        sx={{
+                                            typography: {
+                                                xs: 'body2',
+                                                sm: 'h6',
+                                                md: 'h5',
+                                            },
+                                        }}
+                                    >
+                                        You haven't added tags to any words yet.
+                                    </Typography>
+                                    <Button
+                                        variant="text"
+                                        size="small"
+                                        color={"primary"}
+                                        onClick={() => navigate('/review')}
+                                    >
+                                        Click here to go review your saved words and add tags!
+                                    </Button>
+                                </>}
                                 <Grid
                                     container={true}
                                     item={true}
@@ -392,29 +422,7 @@ export const Account = (props: AccountProps) => {
                                         </Button>
                                     </Grid>
                                 </Grid>
-                            </>
-                            :
-                            <>
-                                <Typography
-                                    sx={{
-                                        typography: {
-                                            xs: 'body2',
-                                            sm: 'h6',
-                                            md: 'h5',
-                                        },
-                                    }}
-                                >
-                                    You haven't added tags to any words yet.
-                                </Typography>
-                                <Button
-                                    variant="text"
-                                    size="small"
-                                    color={"primary"}
-                                    onClick={() => navigate('/review')}
-                                >
-                                    Click here to go review your saved words and add tags!
-                                </Button>
-                            </>
+                        </>
                     }
                 </Grid>
             </Grid>

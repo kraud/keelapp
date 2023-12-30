@@ -223,7 +223,7 @@ export const tagSlice = createSlice({
             .addCase(deleteTag.fulfilled, (state, action) => {
                 state.isLoadingTags = false
                 state.isSuccessTags = true
-                state.fullTagData = (action.payload)
+                state.fullTagData = (action.payload) // TODO: could we change it so it updates the redux-tag list?
             })
             .addCase(deleteTag.rejected, (state, action) => {
                 state.isLoadingTags = false
