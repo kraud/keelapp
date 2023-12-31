@@ -80,6 +80,9 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
     // this way the original remains in Redux, and we can access it to reverse changes if needed.
     useEffect(() => {
         if(!isLoadingTags && isSuccessTags && (fullTagData !== undefined)){
+            if(!isEditing){ // if not editing and fullTagData updated => just deleted that tag now stored in fullTagData
+                toast.info(`${fullTagData.label} tag was deleted!`)
+            }
             setTagCurrentData(fullTagData)
             setIsEditing(false)
         }
@@ -123,7 +126,6 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                         >
                             Cancel
                         </Button>
-                        {/* TODO: add a Delete-Tag button here?   */}
                     </Grid>
                     <Grid
                         item={true}
