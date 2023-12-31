@@ -44,6 +44,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
 
     const handleOnClose = () => {
         props.setOpen(false)
+        setIsEditing(false)
         setTagCurrentData(emptyTagData)
         dispatch(clearFullTagData())
     }
@@ -59,6 +60,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
     // This also includes the internalStatus properties, to know if form is valid and/or dirty, to help with button logic
     const [tagCurrentData, setTagCurrentData] = useState<TagData>(emptyTagData)
     const [isEditing, setIsEditing] = useState(false)
+    const [isDeleting, setIsDeleting] = useState(false)
 
     useEffect(() => {
         // If props.tagId is empty => we're creating a new tag
@@ -80,13 +82,15 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
     // this way the original remains in Redux, and we can access it to reverse changes if needed.
     useEffect(() => {
         if(!isLoadingTags && isSuccessTags && (fullTagData !== undefined)){
-            if(!isEditing){ // if not editing and fullTagData updated => just deleted that tag now stored in fullTagData
+            if(!isEditing && isDeleting){ // if not editing and fullTagData updated => just deleted that tag now stored in fullTagData
                 toast.info(`${fullTagData.label} tag was deleted!`)
+                // TODO: close modal? Add timer to close?
+                setIsDeleting(false)
             }
             setTagCurrentData(fullTagData)
             setIsEditing(false)
         }
-    },[fullTagData, isSuccessTags, isLoadingTags])
+    },[fullTagData, isSuccessTags, isLoadingTags]) // TODO: add isDeleting to array?
 
     const getActionButtons = () => {
         if(isEditing){
@@ -104,7 +108,13 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                             onClick={() => updateExistingTagData()}
                             fullWidth={true}
                             startIcon={<SaveAsIcon/>}
-                            disabled={!(tagCurrentData.completionState!!)}
+                            disabled={
+                                (
+                                    !(tagCurrentData.completionState!!)
+                                    ||
+                                    (isLoadingTags) // we disable all buttons while waiting for BE confirmation
+                                )
+                            }
                         >
                             Save changes
                         </Button>
@@ -141,6 +151,9 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                             }}
                             fullWidth={true}
                             endIcon={<DeleteForeverIcon />}
+                            disabled={
+                                (isLoadingTags) // we disable all buttons while waiting for BE confirmation
+                            }
                         >
                             Delete tag
                         </Button>
@@ -159,7 +172,13 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                             onClick={() => createNewTag()}
                             fullWidth={true}
                             startIcon={<SaveIcon/>}
-                            disabled={!(tagCurrentData.completionState!!)}
+                            disabled={
+                                (
+                                    !(tagCurrentData.completionState!!)
+                                    ||
+                                    (isLoadingTags) // we disable all buttons while waiting for BE confirmation
+                                )
+                            }
                         >
                             Create tag
                         </Button>
@@ -259,6 +278,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
     }
 
     const deleteTagData = () => {
+        setIsDeleting(true)
         // @ts-ignore
         dispatch(deleteTag(tagCurrentData._id)) // result will be stored at fullTagData
         // TODO: should we give the option to also delete all words related to this tag?

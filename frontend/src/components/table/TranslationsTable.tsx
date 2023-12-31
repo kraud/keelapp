@@ -404,14 +404,6 @@ export function TranslationsTable(props: TranslationsTableProps) {
                         </tr>
                     ))}
                     </thead>
-                    {(props.rowDataIsLoading!!) &&
-                        <LinearProgress
-                            sx={{
-                                display: 'table-caption',
-                                bottom: '-77px' // header height
-                            }}
-                        />
-                    }
                     <Slide
                         in={(table.getRowModel().rows.length > 0)}
                         direction="down"
@@ -445,6 +437,14 @@ export function TranslationsTable(props: TranslationsTableProps) {
                         </tbody>
                     </Slide>
                 </table>
+                {(props.rowDataIsLoading!!) &&
+                    <LinearProgress
+                        sx={{
+                            display: 'table-caption',
+                            bottom: '-77px' // header height
+                        }}
+                    />
+                }
                 {(table.getRowModel().rows.length === 0) &&
                     <Grid
                         container={true}
