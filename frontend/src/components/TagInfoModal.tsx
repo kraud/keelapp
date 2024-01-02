@@ -47,6 +47,9 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
         setIsEditing(false)
         setTagCurrentData(emptyTagData)
         dispatch(clearFullTagData())
+        if(currentTagHasBeenDeleted){
+            setIsCurrentTagHasBeenDeleted(false)
+        }
     }
 
     const emptyTagData = {
@@ -61,6 +64,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
     const [tagCurrentData, setTagCurrentData] = useState<TagData>(emptyTagData)
     const [isEditing, setIsEditing] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
+    const [currentTagHasBeenDeleted, setIsCurrentTagHasBeenDeleted] = useState(false)
 
     useEffect(() => {
         // If props.tagId is empty => we're creating a new tag
@@ -86,6 +90,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                 toast.info(`${fullTagData.label} tag was deleted!`)
                 // TODO: close modal? Add timer to close?
                 setIsDeleting(false)
+                setIsCurrentTagHasBeenDeleted(true)
             }
             setTagCurrentData(fullTagData)
             setIsEditing(false)
@@ -202,68 +207,76 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
             }
         } else {
             // reviewing: send to friends - delete words - cancel (close modal)
-            return(<>
-                <Grid
-                    item={true}
-                    xs={12}
-                    md={3}
-                >
-                    <Button
-                        variant={"contained"}
-                        color={"primary"}
-                        onClick={() => toast.info('Coming soon!')}
-                        fullWidth={true}
-                        startIcon={<SendIcon />}
+            return(
+                <>
+                    {(!currentTagHasBeenDeleted) &&
+                        <>
+                            <Grid
+                                item={true}
+                                xs={12}
+                                md={3}
+                            >
+                                <Button
+                                    variant={"contained"}
+                                    color={"primary"}
+                                    onClick={() => toast.info('Coming soon!')}
+                                    fullWidth={true}
+                                    startIcon={<SendIcon/>}
+                                >
+                                    Send to friends
+                                </Button>
+                            </Grid>
+                            <Grid
+                                item={true}
+                                xs={12}
+                                md={3}
+                            >
+                                <Button
+                                    variant={"contained"}
+                                    color={"warning"}
+                                    onClick={() => null} // TODO: add a confirmation before deleting words
+                                    fullWidth={true}
+                                    endIcon={<DeleteForeverIcon/>}
+                                >
+                                    Delete all words
+                                </Button>
+                            </Grid>
+                            <Grid
+                                item={true}
+                                xs={12}
+                                md={3}
+                            >
+                                <Button
+                                    variant={"contained"}
+                                    color={"secondary"}
+                                    onClick={() => setIsEditing(true)}
+                                    fullWidth={true}
+                                    endIcon={<EditIcon/>}
+                                >
+                                    Edit
+                                </Button>
+                            </Grid>
+                        </>
+                    }
+                    <>
+                    <Grid
+                        item={true}
+                        xs={12}
+                        md={3}
                     >
-                        Send to friends
-                    </Button>
-                </Grid>
-                <Grid
-                    item={true}
-                    xs={12}
-                    md={3}
-                >
-                    <Button
-                        variant={"contained"}
-                        color={"warning"}
-                        onClick={() => null} // TODO: add a confirmation before deleting words
-                        fullWidth={true}
-                        endIcon={<DeleteForeverIcon />}
-                    >
-                        Delete all words
-                    </Button>
-                </Grid>
-                <Grid
-                    item={true}
-                    xs={12}
-                    md={3}
-                >
-                    <Button
-                        variant={"contained"}
-                        color={"secondary"}
-                        onClick={() => setIsEditing(true)}
-                        fullWidth={true}
-                        endIcon={<EditIcon />}
-                    >
-                        Edit
-                    </Button>
-                </Grid>
-                <Grid
-                    item={true}
-                    xs={12}
-                    md={3}
-                >
-                    <Button
-                        variant={"contained"}
-                        color={"info"}
-                        onClick={() => handleOnClose()}
-                        fullWidth={true}
-                        endIcon={<ClearIcon />}
-                    >
-                        Close
-                    </Button>
-                </Grid>
-            </>)
+                        <Button
+                            variant={"contained"}
+                            color={"info"}
+                            onClick={() => handleOnClose()}
+                            fullWidth={true}
+                            endIcon={<ClearIcon />}
+                        >
+                            Close
+                        </Button>
+                    </Grid>
+                    </>
+                </>
+                    )
         }
     }
 
