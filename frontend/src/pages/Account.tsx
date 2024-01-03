@@ -53,6 +53,7 @@ export const Account = (props: AccountProps) => {
     const [selectedTag, setSelectedTag] = useState("")
     const [isEditing, setIsEditing] = useState(false)
     const [localUserData, setLocalUserData] = useState<UserBadgeData | null>(null)
+    const [reloadTagList, setReloadTagList] = useState(false)
 
     useEffect(() => {
         if(!openFriendsModal){
@@ -179,12 +180,12 @@ export const Account = (props: AccountProps) => {
     },[openFriendsModal])
 
     useEffect(() => {
-        // TODO: make tag-request again after closing tag-modal
-        if(!openTagModal){
+        if(!openTagModal && reloadTagList){
             // @ts-ignore
             dispatch(getTagsByUserId(user._id))
+            setReloadTagList(false)
         }
-    },[openTagModal])
+    },[openTagModal, reloadTagList])
 
     return(
         <Grid
@@ -611,6 +612,9 @@ export const Account = (props: AccountProps) => {
                     setOpenTagModal(value)
                 }}
                 tagId={selectedTag}
+                setMadeChangesToTagList={(status: boolean) => {
+                    setReloadTagList(status)
+                }}
             />
         </Grid>
     )

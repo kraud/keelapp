@@ -20,6 +20,7 @@ interface FriendSearchModalProps {
     open: boolean
     setOpen: (value: boolean) => void
     tagId: string | undefined
+    setMadeChangesToTagList: (status: boolean) => void
 }
 
 export const TagInfoModal = (props: FriendSearchModalProps) => {
@@ -283,18 +284,22 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
     const createNewTag = () => {
         // @ts-ignore
         dispatch(createTag(tagCurrentData)) // result will be stored at fullTagData
+        props.setMadeChangesToTagList(true)
     }
 
     const updateExistingTagData = () => {
         // @ts-ignore
         dispatch(updateTag(tagCurrentData)) // result will be stored at fullTagData
+        props.setMadeChangesToTagList(true)
     }
 
     const deleteTagData = () => {
         setIsDeleting(true)
         // @ts-ignore
         dispatch(deleteTag(tagCurrentData._id)) // result will be stored at fullTagData
-        // TODO: should we give the option to also delete all words related to this tag?
+        props.setMadeChangesToTagList(true)
+        // Should we give the option to also delete all words related to this tag?
+        // Rta: No. There is a dedicated button for that.
     }
 
     return (
