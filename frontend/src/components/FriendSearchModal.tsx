@@ -18,6 +18,7 @@ import {createNotification} from "../features/notifications/notificationSlice";
 import {createFriendship, deleteFriendship, getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
 import {checkIfAlreadyFriend, getFriendRequestButtonLabel} from "./generalUseFunctions";
 import {getTagsByAnotherUserID} from "../features/tags/tagSlice";
+import {TagChipList} from "./GeneralUseComponents";
 
 interface FriendSearchModalProps {
     open: boolean
@@ -249,28 +250,12 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                     ?
                                     <LinearIndeterminate/>
                                     :
-                                    <>
-                                        {(allTags.map((tag: TagData, index: number) => {
-                                            return (
-                                                <Grid
-                                                    item={true}
-                                                    key={index.toString() + '-' + tag}
-                                                >
-                                                    <Chip
-                                                        variant="filled"
-                                                        label={tag.label}
-                                                        color={"secondary"}
-                                                        sx={{
-                                                            maxWidth: "max-content",
-                                                        }}
-                                                        onClick={() => {
-                                                            // setSelectedTag((tag._id !== undefined) ? tag._id : "")
-                                                        }}
-                                                    />
-                                                </Grid>
-                                            )
-                                        }))}
-                                    </>
+                                    <TagChipList
+                                        tagList={allTags}
+                                        onClickAction={(tagId: string) => {
+                                            // setSelectedTag(tagId)
+                                        }}
+                                    />
                                 }
                                 <Grid
                                     container={true}

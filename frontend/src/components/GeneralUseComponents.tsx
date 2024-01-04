@@ -3,6 +3,8 @@ import React from "react";
 import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
 import Box from "@mui/material/Box";
+import {TagData} from "../ts/interfaces";
+import {Chip, Grid} from "@mui/material";
 
 type BorderProps = {
     border?: boolean
@@ -57,5 +59,40 @@ export const CountryFlag = (props: CountryFlagProps) => {
                 }}
             />
         </Box>
+    )
+}
+
+type TagChipListProps = {
+    tagList: TagData[],
+    onClickAction: (tagId: string) => void,
+    sxProps?: SxProps<Theme>,
+}
+
+export const TagChipList = (props: TagChipListProps) => {
+
+    return(
+        <>
+            {(props.tagList.map((tag: TagData, index: number) => {
+                return (
+                    <Grid
+                        item={true}
+                        key={index.toString() + '-' + tag}
+                    >
+                        <Chip
+                            variant="filled"
+                            label={tag.label}
+                            color={"secondary"}
+                            sx={{
+                                maxWidth: "max-content",
+                                ...props.sxProps
+                            }}
+                            onClick={() => {
+                                props.onClickAction((tag._id !== undefined) ? tag._id : "")
+                            }}
+                        />
+                    </Grid>
+                )
+            }))}
+        </>
     )
 }

@@ -24,6 +24,7 @@ import {FriendshipData, SearchResult, TagData} from "../ts/interfaces";
 import {getUsernamesByIds} from "../features/users/userSlice";
 import AddCommentIcon from '@mui/icons-material/AddComment';
 import {getTagsForCurrentUser} from "../features/tags/tagSlice";
+import {TagChipList} from "../components/GeneralUseComponents";
 
 interface AccountProps {
 
@@ -355,28 +356,12 @@ export const Account = (props: AccountProps) => {
                         <>
                             {(allTags.length > 0)
                                 ?
-                                <>
-                                    {(allTags.map((tag: TagData, index: number) => {
-                                        return (
-                                            <Grid
-                                                item={true}
-                                                key={index.toString() + '-' + tag}
-                                            >
-                                                <Chip
-                                                    variant="filled"
-                                                    label={tag.label}
-                                                    color={"secondary"}
-                                                    sx={{
-                                                        maxWidth: "max-content",
-                                                    }}
-                                                    onClick={() => {
-                                                        setSelectedTag((tag._id !== undefined) ? tag._id : "")
-                                                    }}
-                                                />
-                                            </Grid>
-                                        )
-                                    }))}
-                                </>
+                                <TagChipList
+                                    tagList={allTags}
+                                    onClickAction={(tagId: string) => {
+                                        setSelectedTag(tagId)
+                                    }}
+                                />
                                 :
                                 <>
                                     <Typography
