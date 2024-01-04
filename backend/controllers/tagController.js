@@ -45,6 +45,21 @@ const getUserTags = asyncHandler(async (req, res) => {
     res.status(200).json(tags)
 })
 
+// @desc    Get all tags where user id matches author
+// @route   GET /api/tags
+// @access  Private
+const getOtherUserTags = asyncHandler(async (req, res) => {
+    const tags = await Tag.find(
+        {
+            author: req.query.otherUserId,
+            public: 'Public' // TODO: add 'Friends-Only' later on
+        },
+    )
+    // TODO: check if req.user.id is a friend of each tag where 'public' value is 'Friends-Only'
+    // TODO: should we return this in the "FilterItem" format for tag?
+    res.status(200).json(tags)
+})
+
 // @desc    Get tag by tagId
 // @route   GET /api/tags
 // @access  Private
@@ -162,5 +177,6 @@ module.exports = {
     createTag,
     deleteTag,
     updateTag,
-    getAmountByTag
+    getAmountByTag,
+    getOtherUserTags
 }

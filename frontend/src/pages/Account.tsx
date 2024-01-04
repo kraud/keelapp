@@ -23,7 +23,7 @@ import {getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
 import {FriendshipData, SearchResult, TagData} from "../ts/interfaces";
 import {getUsernamesByIds} from "../features/users/userSlice";
 import AddCommentIcon from '@mui/icons-material/AddComment';
-import {getTagsByUserId} from "../features/tags/tagSlice";
+import {getTagsForCurrentUser} from "../features/tags/tagSlice";
 
 interface AccountProps {
 
@@ -144,7 +144,7 @@ export const Account = (props: AccountProps) => {
 
     useEffect(() => {
         // @ts-ignore
-        dispatch(getTagsByUserId(user._id))
+        dispatch(getTagsForCurrentUser(user._id))
         // @ts-ignore
         dispatch(getFriendshipsByUserId(user._id))
     },[])
@@ -182,7 +182,7 @@ export const Account = (props: AccountProps) => {
     useEffect(() => {
         if(!openTagModal && reloadTagList){
             // @ts-ignore
-            dispatch(getTagsByUserId(user._id))
+            dispatch(getTagsForCurrentUser(user._id))
             setReloadTagList(false)
         }
     },[openTagModal, reloadTagList])
@@ -347,11 +347,11 @@ export const Account = (props: AccountProps) => {
                     spacing={1}
                     justifyContent={"center"}
                 >
+                    {/* TODO: this should be a separate list tag component => also used in FriendSearchModal*/}
                     {(isLoadingTags)
                         ?
                         <LinearIndeterminate/>
                         :
-                        // TODO: get real tags form user
                         <>
                             {(allTags.length > 0)
                                 ?

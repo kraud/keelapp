@@ -13,6 +13,19 @@ const getUserTags = async (token: any) => {
     return(response.data)
 }
 
+const getOtherUserTags = async (token: any, otherUserId: string) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        },
+        params: {
+            otherUserId: otherUserId
+        }
+    }
+    const response = await axios.get(API_URL+'getOtherUserTags', config)
+    return(response.data)
+}
+
 const searchTags = async (token: any, query: string, includeOtherUsersTags?: boolean) => {
     const config = {
         headers: {
@@ -78,7 +91,7 @@ const getTagWordsAmount = async (token: any, id: string) => {
 }
 
 const tagService = {
-    getUserTags, searchTags, getTagById, createTag, deleteTagById, updateTagById, getTagWordsAmount
+    getUserTags, searchTags, getTagById, createTag, deleteTagById, updateTagById, getTagWordsAmount, getOtherUserTags
 }
 
 export default tagService

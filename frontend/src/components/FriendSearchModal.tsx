@@ -1,11 +1,11 @@
 import globalTheme from "../theme/theme";
-import {Button, Grid, Modal} from "@mui/material";
+import {Button, Chip, Grid, Modal} from "@mui/material";
 import Box from "@mui/material/Box";
 import {useEffect, useState} from "react";
 import React from "react";
 import {AutocompleteSearch} from "./AutocompleteSearch";
 import {getUserById, searchUser} from "../features/users/userSlice";
-import {FriendshipData, SearchResult} from "../ts/interfaces";
+import {FriendshipData, SearchResult, TagData} from "../ts/interfaces";
 import {useDispatch, useSelector} from "react-redux";
 import {UserBadge} from "./UserBadge";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
@@ -17,6 +17,7 @@ import LinearIndeterminate from "./Spinner";
 import {createNotification} from "../features/notifications/notificationSlice";
 import {createFriendship, deleteFriendship, getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
 import {checkIfAlreadyFriend, getFriendRequestButtonLabel} from "./generalUseFunctions";
+import {getTagsByAnotherUserID} from "../features/tags/tagSlice";
 
 interface FriendSearchModalProps {
     open: boolean
@@ -62,6 +63,13 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
         if(props.defaultUserId !== undefined){
             // @ts-ignore
             dispatch(getUserById(props.defaultUserId))
+        }
+    },[props.defaultUserId])
+
+    useEffect(() => {
+        if(props.defaultUserId !== undefined){
+            // @ts-ignore
+            dispatch(getTagsByAnotherUserID(props.defaultUserId)) // TODO: this would change other
         }
     },[props.defaultUserId])
 
@@ -159,6 +167,13 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
         }
     }
 
+    const {otherUserTags, fullTagData, isSuccessTags, isLoadingTags} = useSelector((state: any) => state.tags)
+    const [allTags, setAllTags] = useState<TagData[]>([])
+
+    useEffect(() => {
+        setAllTags(otherUserTags)
+    },[otherUserTags])
+
     return (
         <Modal
             open={props.open}
@@ -229,6 +244,34 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                         username: (selectedUser.type === "user") ?selectedUser?.username : "",
                                     }}
                                 />
+                                {/* TODO: this should be a separate list tag component => also used in Account-screen*/}
+                                {(isLoadingTags)
+                                    ?
+                                    <LinearIndeterminate/>
+                                    :
+                                    <>
+                                        {(allTags.map((tag: TagData, index: number) => {
+                                            return (
+                                                <Grid
+                                                    item={true}
+                                                    key={index.toString() + '-' + tag}
+                                                >
+                                                    <Chip
+                                                        variant="filled"
+                                                        label={tag.label}
+                                                        color={"secondary"}
+                                                        sx={{
+                                                            maxWidth: "max-content",
+                                                        }}
+                                                        onClick={() => {
+                                                            // setSelectedTag((tag._id !== undefined) ? tag._id : "")
+                                                        }}
+                                                    />
+                                                </Grid>
+                                            )
+                                        }))}
+                                    </>
+                                }
                                 <Grid
                                     container={true}
                                     justifyContent={"space-around"}

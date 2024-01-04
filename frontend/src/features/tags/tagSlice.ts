@@ -4,6 +4,7 @@ import tagService from "./tagService";
 
 interface tagSliceState {
     tags: SearchResult[],
+    otherUserTags: SearchResult[],
     fullTagData: TagData | undefined,
     currentTagAmountWords: number,
 
@@ -15,6 +16,7 @@ interface tagSliceState {
 
 const initialState: tagSliceState = {
     tags: [],
+    otherUserTags: [],
     fullTagData: undefined,
     currentTagAmountWords: 0,
     isLoadingTags: false,
@@ -23,12 +25,30 @@ const initialState: tagSliceState = {
     message: "",
 }
 
-// Get user tags
-export const getTagsByUserId = createAsyncThunk('tags/getUserTags', async (_, thunkAPI) => {
+// Get currently logged-in user tags
+export const getTagsForCurrentUser = createAsyncThunk('tags/getUserTags', async (_, thunkAPI) => {
     try {
         // @ts-ignore
         const token = thunkAPI.getState().auth.user.token
         return await tagService.getUserTags(token)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+// Get tags by userID
+export const getTagsByAnotherUserID = createAsyncThunk('tags/getOtherUserTags', async (otherUserId: string, thunkAPI) => {
+    try {
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await tagService.getOtherUserTags(token, otherUserId)
     } catch(error: any) {
         const message = (
                 error.response &&
@@ -165,15 +185,28 @@ export const tagSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(getTagsByUserId.pending, (state) => {
+            .addCase(getTagsForCurrentUser.pending, (state) => {
                 state.isLoadingTags = true
             })
-            .addCase(getTagsByUserId.fulfilled, (state, action) => {
+            .addCase(getTagsForCurrentUser.fulfilled, (state, action) => {
                 state.isLoadingTags = false
                 state.isSuccessTags = true
                 state.tags = (action.payload)
             })
-            .addCase(getTagsByUserId.rejected, (state, action) => {
+            .addCase(getTagsForCurrentUser.rejected, (state, action) => {
+                state.isLoadingTags = false
+                state.isError = true
+                state.message = action.payload as string
+            })
+            .addCase(getTagsByAnotherUserID.pending, (state) => {
+                state.isLoadingTags = true
+            })
+            .addCase(getTagsByAnotherUserID.fulfilled, (state, action) => {
+                state.isLoadingTags = false
+                state.isSuccessTags = true
+                state.otherUserTags = (action.payload)
+            })
+            .addCase(getTagsByAnotherUserID.rejected, (state, action) => {
                 state.isLoadingTags = false
                 state.isError = true
                 state.message = action.payload as string
