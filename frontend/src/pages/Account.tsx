@@ -348,8 +348,7 @@ export const Account = (props: AccountProps) => {
                     spacing={1}
                     justifyContent={"center"}
                 >
-                    {/* TODO: this should be a separate list tag component => also used in FriendSearchModal*/}
-                    {(isLoadingTags)
+                    {((isLoadingTags) && (!openFriendsModal))
                         ?
                         <LinearIndeterminate/>
                         :

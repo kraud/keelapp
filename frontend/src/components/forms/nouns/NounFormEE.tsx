@@ -310,6 +310,10 @@ export function NounFormEE(props: NounFormEEProps) {
                             />
                         </Grid>
                     }
+                    {/*
+                        TODO: add a checkbox to specify that this field is not required?
+                         So loading circle in table-cell can be set as full
+                    */}
                     {(getDisabledInputFieldDisplayLogic(props.displayOnly!, shortForm)) &&
                         <Grid
                             item={true}

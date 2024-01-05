@@ -1,5 +1,5 @@
 import globalTheme from "../theme/theme";
-import {Button, Chip, Grid, Modal} from "@mui/material";
+import {Button, Chip, Grid, Modal, Typography} from "@mui/material";
 import Box from "@mui/material/Box";
 import {useEffect, useState} from "react";
 import React from "react";
@@ -17,7 +17,7 @@ import LinearIndeterminate from "./Spinner";
 import {createNotification} from "../features/notifications/notificationSlice";
 import {createFriendship, deleteFriendship, getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
 import {checkIfAlreadyFriend, getFriendRequestButtonLabel} from "./generalUseFunctions";
-import {getTagsByAnotherUserID} from "../features/tags/tagSlice";
+import {clearOtherUserTags, getTagsByAnotherUserID} from "../features/tags/tagSlice";
 import {TagChipList} from "./GeneralUseComponents";
 
 interface FriendSearchModalProps {
@@ -54,6 +54,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
     const handleOnClose = () => {
         props.setOpen(false)
         setSelectedUser(null)
+        dispatch(clearOtherUserTags())
     }
 
     const [sentRequest, setSentRequest] = useState(false)
@@ -245,7 +246,24 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                         username: (selectedUser.type === "user") ?selectedUser?.username : "",
                                     }}
                                 />
-                                {/* TODO: this should be a separate list tag component => also used in Account-screen*/}
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <Typography
+                                        sx={{
+                                            typography: {
+                                                xs: 'h6',
+                                                sm: 'h5',
+                                                md: 'h4',
+                                            },
+                                            textTransform: "uppercase",
+                                            textDecoration: "underline"
+                                        }}
+                                    >
+                                        Tags:
+                                    </Typography>
+                                </Grid>
                                 {(isLoadingTags)
                                     ?
                                     <LinearIndeterminate/>
