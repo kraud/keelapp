@@ -25,6 +25,8 @@ const wordSchema = mongoose.Schema(
         clue: {
             type: String,
         },
+        // TODO: currently holds strings with tag-labels (old system)
+        // soon will be changed into pair of [tagId, tagLabel] (or similar) - (new system)
         tags: [{
             type: String
         }]

@@ -32,6 +32,12 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
                     "user": req.user.id,
                 }
             }
+            // TODO: this will need to be changed. 2 options:
+            //  1 - If we keep on each word the id+tag, we can simply modify this search
+            //      (problem: 2 sources of truth => if tag label changes we must update it on every word)
+            //  2 - If we only keep the id, we must filter the tags separately and then return the overlapping list.
+            //      (problem: this could cause issues with searching through other user's tags -set as public or friends-only-
+            //      We would need to keep a list per-user of the tags they're using?)
             case 'tag': {
                 // NB! in this case, filter.tagIds for type === "tag" will be an array of strings
                 // so each filter further restricts the results when included

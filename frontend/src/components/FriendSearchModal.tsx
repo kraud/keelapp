@@ -1,5 +1,5 @@
 import globalTheme from "../theme/theme";
-import {Button, Chip, Grid, Modal, Typography} from "@mui/material";
+import {Button, Grid, Modal, Typography} from "@mui/material";
 import Box from "@mui/material/Box";
 import {useEffect, useState} from "react";
 import React from "react";
@@ -71,7 +71,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
     useEffect(() => {
         if(props.defaultUserId !== undefined){
             // @ts-ignore
-            dispatch(getTagsByAnotherUserID(props.defaultUserId)) // TODO: this would change other
+            dispatch(getTagsByAnotherUserID(props.defaultUserId))
         }
     },[props.defaultUserId])
 
@@ -141,9 +141,6 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
         // @ts-ignore
         dispatch(createFriendship(newFriendship))
     }
-
-
-
 
     const cancelRequest = (friendship: FriendshipData) => {
         // @ts-ignore
