@@ -2,14 +2,11 @@ import React, {useEffect, useState} from "react"
 import {motion} from "framer-motion";
 import {routeVariantsAnimation} from "./management/RoutesWithAnimation";
 import globalTheme from "../theme/theme";
-import {Button, Chip, Grid, Typography} from "@mui/material";
+import {Button, Grid, Typography} from "@mui/material";
 import {useDispatch, useSelector} from "react-redux";
-import Avatar from "@mui/material/Avatar";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LinearIndeterminate from "../components/Spinner";
-import IconButton from "@mui/material/IconButton";
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import {FriendSearchModal} from "../components/FriendSearchModal";
@@ -18,13 +15,12 @@ import {TagInfoModal} from "../components/TagInfoModal";
 import {toast} from "react-toastify";
 import {updateUser} from "../features/auth/authSlice";
 import {useNavigate} from "react-router-dom";
-import {stringAvatar} from "../components/generalUseFunctions";
 import {getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
 import {FriendshipData, SearchResult, TagData} from "../ts/interfaces";
 import {getUsernamesByIds} from "../features/users/userSlice";
 import AddCommentIcon from '@mui/icons-material/AddComment';
 import {getTagsForCurrentUser} from "../features/tags/tagSlice";
-import {TagChipList} from "../components/GeneralUseComponents";
+import {FriendList, TagChipList} from "../components/GeneralUseComponents";
 
 interface AccountProps {
 
@@ -476,108 +472,12 @@ export const Account = (props: AccountProps) => {
                             </Grid>
                         </Grid>
                         :
-                        (activeFriendships.map((friendshipItem: FriendshipData, index: number) => {
-                            return(
-                                // TODO: make this into a separate component - to list users
-                                <Grid
-                                    container={true}
-                                    item={true}
-                                    xs={12}
-                                    key={index}
-                                    sx={{
-                                        background: (index % 2 === 0) ?"#c7c7c7" :undefined,
-                                        paddingY: globalTheme.spacing(1),
-                                        borderRight: '1px solid black',
-                                        borderLeft: '1px solid black',
-                                        borderTop: (index === 0) ?'1px solid black' :"none",
-                                        borderBottom: "1px solid black",
-                                        borderRadius: (index === 0)
-                                            ? "25px 25px 0 0"
-                                            : (index === (activeFriendships.length -1))
-                                                ? " 0 0 25px 25px"
-                                                : undefined
-                                    }}
-                                >
-                                    {/* AVATAR */}
-                                    <Grid
-                                        container={true}
-                                        item={true}
-                                        justifyContent={"center"}
-                                        xs={"auto"} // width: max-content
-                                        sx={{
-                                            paddingX: globalTheme.spacing(1),
-                                        }}
-                                    >
-                                        <Grid
-                                            item={true}
-                                        >
-                                            <Avatar
-                                                alt="User photo"
-                                                src={(index % 2 === 0) ? "" : "/"}
-                                                color={"primary"}
-                                                sx={{
-                                                    width: '45px',
-                                                    height: '45px',
-                                                    margin: globalTheme.spacing(1),
-                                                    bgcolor: "#0072CE",
-                                                    ...((stringAvatar((friendshipItem.usernames!!) ?friendshipItem.usernames![0] :"-", "color")).sx),
-                                                }}
-                                                {...stringAvatar((friendshipItem.usernames!!) ?friendshipItem.usernames![0] :"-", "children")}
-                                            />
-                                        </Grid>
-                                    </Grid>
-                                    {/* FRIEND'S NAME */}
-                                    <Grid
-                                        container={true}
-                                        alignItems={"center"}
-                                        item={true}
-                                        xs // width: all-available
-                                    >
-                                        <Grid
-                                            item={true}
-                                            sx={{
-                                                overflow: "hidden",
-                                                textOverflow: "ellipsis"
-                                            }}
-                                        >
-                                            <Typography
-                                                sx={{
-                                                    typography: {
-                                                        xs: 'h5',
-                                                        sm: 'h4',
-                                                        md: 'h3',
-                                                    },
-                                                    textTransform: "capitalize"
-                                                }}
-                                                noWrap={true}
-                                            >
-                                                {friendshipItem.usernames![0]}
-                                            </Typography>
-                                        </Grid>
-                                    </Grid>
-                                    {/* ACTION BUTTON */}
-                                    <Grid
-                                        container={true}
-                                        alignItems={"center"}
-                                        item={true}
-                                        xs={"auto"} // width: max-content
-                                    >
-                                        <Grid
-                                            item={true}
-                                        >
-                                            <IconButton
-                                                color={"primary"}
-                                                onClick={() => {
-                                                    displayFriendDetails(friendshipItem)
-                                                }}
-                                            >
-                                                <ArrowForwardIosIcon/>
-                                            </IconButton>
-                                        </Grid>
-                                    </Grid>
-                                </Grid>
-                            )
-                        }))
+                        <FriendList
+                            friendList={activeFriendships}
+                            onClickAction={(friendshipItem: FriendshipData) => {
+                                displayFriendDetails(friendshipItem)
+                            }}
+                        />
                     }
                 </Grid>
             </Grid>

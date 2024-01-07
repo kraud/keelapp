@@ -3,8 +3,13 @@ import React from "react";
 import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
 import Box from "@mui/material/Box";
-import {TagData} from "../ts/interfaces";
-import {Chip, Grid} from "@mui/material";
+import {FriendshipData, TagData} from "../ts/interfaces";
+import {Chip, Grid, Typography} from "@mui/material";
+import globalTheme from "../theme/theme";
+import Avatar from "@mui/material/Avatar";
+import {stringAvatar} from "./generalUseFunctions";
+import IconButton from "@mui/material/IconButton";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 type BorderProps = {
     border?: boolean
@@ -90,6 +95,121 @@ export const TagChipList = (props: TagChipListProps) => {
                                 props.onClickAction((tag._id !== undefined) ? tag._id : "")
                             }}
                         />
+                    </Grid>
+                )
+            }))}
+        </>
+    )
+}
+
+type FriendListProps = {
+    friendList: FriendshipData[],
+    onClickAction: (friendshipItem: FriendshipData) => void,
+    sxProps?: SxProps<Theme>,
+}
+
+export const FriendList = (props: FriendListProps) => {
+
+    return(
+        <>
+            {(props.friendList.map((friendshipItem: FriendshipData, index: number) => {
+                return(
+                    <Grid
+                        container={true}
+                        item={true}
+                        xs={12}
+                        key={index}
+                        sx={{
+                            background: (index % 2 === 0) ?"#c7c7c7" :undefined,
+                            paddingY: globalTheme.spacing(1),
+                            borderRight: '1px solid black',
+                            borderLeft: '1px solid black',
+                            borderTop: (index === 0) ?'1px solid black' :"none",
+                            borderBottom: "1px solid black",
+                            borderRadius: (index === 0)
+                                ? "25px 25px 0 0"
+                                : (index === (props.friendList.length -1))
+                                    ? " 0 0 25px 25px"
+                                    : undefined
+                        }}
+                    >
+                        {/* AVATAR */}
+                        <Grid
+                            container={true}
+                            item={true}
+                            justifyContent={"center"}
+                            xs={"auto"} // width: max-content
+                            sx={{
+                                paddingX: globalTheme.spacing(1),
+                            }}
+                        >
+                            <Grid
+                                item={true}
+                            >
+                                <Avatar
+                                    alt="User photo"
+                                    src={(index % 2 === 0) ? "" : "/"}
+                                    color={"primary"}
+                                    sx={{
+                                        width: '45px',
+                                        height: '45px',
+                                        margin: globalTheme.spacing(1),
+                                        bgcolor: "#0072CE",
+                                        ...((stringAvatar((friendshipItem.usernames!!) ?friendshipItem.usernames![0] :"-", "color")).sx),
+                                    }}
+                                    {...stringAvatar((friendshipItem.usernames!!) ?friendshipItem.usernames![0] :"-", "children")}
+                                />
+                            </Grid>
+                        </Grid>
+                        {/* FRIEND'S NAME */}
+                        <Grid
+                            container={true}
+                            alignItems={"center"}
+                            item={true}
+                            xs // width: all-available
+                        >
+                            <Grid
+                                item={true}
+                                sx={{
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis"
+                                }}
+                            >
+                                <Typography
+                                    sx={{
+                                        typography: {
+                                            xs: 'h5',
+                                            sm: 'h4',
+                                            md: 'h3',
+                                        },
+                                        textTransform: "capitalize"
+                                    }}
+                                    noWrap={true}
+                                >
+                                    {friendshipItem.usernames![0]}
+                                </Typography>
+                            </Grid>
+                        </Grid>
+                        {/* ACTION BUTTON */}
+                        <Grid
+                            container={true}
+                            alignItems={"center"}
+                            item={true}
+                            xs={"auto"} // width: max-content
+                        >
+                            <Grid
+                                item={true}
+                            >
+                                <IconButton
+                                    color={"primary"}
+                                    onClick={() => {
+                                        props.onClickAction(friendshipItem)
+                                    }}
+                                >
+                                    <ArrowForwardIosIcon/>
+                                </IconButton>
+                            </Grid>
+                        </Grid>
                     </Grid>
                 )
             }))}

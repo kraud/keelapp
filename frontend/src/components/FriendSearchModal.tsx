@@ -261,6 +261,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                         Tags:
                                     </Typography>
                                 </Grid>
+                                {/* TODO: display friends-list of currently selected user */}
                                 {(isLoadingTags)
                                     ?
                                     <LinearIndeterminate/>
