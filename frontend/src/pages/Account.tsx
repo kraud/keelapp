@@ -38,7 +38,6 @@ export const Account = (props: AccountProps) => {
     const dispatch = useDispatch()
     const {user, isLoadingAuth, isSuccess} = useSelector((state: any) => state.auth)
     const {userList, isLoadingUser} = useSelector((state: any) => state.user)
-    // const {tags, isTagSearchLoading} = useSelector((state: any) => state.words)
     const {friendships, isLoadingFriendships} = useSelector((state: any) => state.friendships)
     const {tags, fullTagData, isSuccessTags, isLoadingTags} = useSelector((state: any) => state.tags)
 
@@ -227,25 +226,54 @@ export const Account = (props: AccountProps) => {
                 item={true}
                 xs={12}
             >
-                <Grid
-                    item={true}
-                    xs={5}
-                >
-                    <Button
-                        variant={"contained"}
-                        color={"primary"}
-                        onClick={() => setOpenFriendsModal(true)}
-                        fullWidth={true}
-                        startIcon={<PersonAddIcon />}
-                    >
-                        Add friends
-                    </Button>
-                </Grid>
+                {(!isEditing) &&
+                    <>
+                        <Grid
+                            item={true}
+                            xs={4}
+                        >
+                            <Button
+                                variant={"contained"}
+                                color={"primary"}
+                                onClick={() => setOpenFriendsModal(true)}
+                                fullWidth={true}
+                                startIcon={<PersonAddIcon />}
+                            >
+                                Add friends
+                            </Button>
+                        </Grid>
+                        <Grid
+                            container={true}
+                            item={true}
+                            justifyContent={"center"}
+                            xs={4}
+                            sx={{
+                                // marginTop: globalTheme.spacing(2),
+                            }}
+                        >
+                            <Grid
+                                item={true}
+                                xs={"auto"}
+                            >
+                                <Button
+                                    variant={"contained"}
+                                    color={"primary"}
+                                    onClick={() => setOpenTagModal(true)}
+                                    fullWidth={true}
+                                    startIcon={<AddCommentIcon />}
+                                >
+                                    Create tag
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </>
+                }
+
                 <Grid
                     container={true}
                     justifyContent={"center"}
                     item={true}
-                    xs={5}
+                    xs={isEditing ?10 :4}
                     spacing={1}
                 >
                     <Grid
@@ -379,30 +407,6 @@ export const Account = (props: AccountProps) => {
                                         Click here to go review your saved words and add tags!
                                     </Button>
                                 </>}
-                                <Grid
-                                    container={true}
-                                    item={true}
-                                    justifyContent={"center"}
-                                    xs={12}
-                                    sx={{
-                                        marginTop: globalTheme.spacing(2),
-                                    }}
-                                >
-                                    <Grid
-                                        item={true}
-                                        xs={"auto"}
-                                    >
-                                        <Button
-                                            variant={"contained"}
-                                            color={"primary"}
-                                            onClick={() => setOpenTagModal(true)}
-                                            fullWidth={true}
-                                            startIcon={<AddCommentIcon />}
-                                        >
-                                            Create new tag
-                                        </Button>
-                                    </Grid>
-                                </Grid>
                         </>
                     }
                 </Grid>

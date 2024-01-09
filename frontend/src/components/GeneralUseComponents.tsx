@@ -182,9 +182,13 @@ export const FriendList = (props: FriendListProps) => {
                                             sm: 'h4',
                                             md: 'h3',
                                         },
-                                        textTransform: "capitalize"
+                                        textTransform: "capitalize",
+                                        cursor: 'pointer',
                                     }}
                                     noWrap={true}
+                                    onClick={() => {
+                                        props.onClickAction(friendshipItem)
+                                    }}
                                 >
                                     {friendshipItem.usernames![0]}
                                 </Typography>

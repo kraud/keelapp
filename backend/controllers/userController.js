@@ -131,13 +131,15 @@ const getUsersBy = asyncHandler(async(req, res) => {
         if (data) {
             let simpleResults = []
             data.forEach((user) => {
-                simpleResults.push({
-                    id: user._id,
-                    type: "user",
-                    label: user.name,
-                    username: user.username,
-                    email: user.email,
-                })
+                if((user._id).toString() !== req.user.id){ // se we exclude currently logged-in user from results
+                    simpleResults.push({
+                        id: user._id,
+                        type: "user",
+                        label: user.name,
+                        username: user.username,
+                        email: user.email,
+                    })
+                }
             })
             simpleResults.sort((a, b) => a.label.localeCompare(b.label))
             res.status(200).json(simpleResults)
