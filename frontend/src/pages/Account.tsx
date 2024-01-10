@@ -247,9 +247,6 @@ export const Account = (props: AccountProps) => {
                             item={true}
                             justifyContent={"center"}
                             xs={4}
-                            sx={{
-                                // marginTop: globalTheme.spacing(2),
-                            }}
                         >
                             <Grid
                                 item={true}
