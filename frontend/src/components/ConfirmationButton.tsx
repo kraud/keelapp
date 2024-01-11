@@ -4,7 +4,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import React, {useState} from "react";
 
 interface ConfirmationButtonProps{
-    children: any
+    // children: any
     onConfirm: () => void
     buttonProps: any,
     buttonLabel: string,
@@ -13,7 +13,7 @@ interface ConfirmationButtonProps{
 // This component accepts a component (probably a button) as its children, and when clicked it displays a confirmation button
 // If confirmed the function passed inside the props will be triggered
 export const ConfirmationButton = (props: ConfirmationButtonProps) => {
-    const [isConfirmed, setIsConfirmed] = useState(false)
+    const [buttonWasClicked, setButtonWasClicked] = useState(false)
     return(
         <Grid
             container={true}
@@ -21,7 +21,7 @@ export const ConfirmationButton = (props: ConfirmationButtonProps) => {
             item={true}
             xs={12}
         >
-            {(isConfirmed)
+            {(buttonWasClicked)
                 ?
                 <>
                     <Grid
@@ -33,6 +33,7 @@ export const ConfirmationButton = (props: ConfirmationButtonProps) => {
                             color={"secondary"}
                             onClick={() => {
                                 props.onConfirm()
+                                setButtonWasClicked(false)
                             }}
                             fullWidth={true}
                             endIcon={<CheckIcon />}
@@ -48,7 +49,7 @@ export const ConfirmationButton = (props: ConfirmationButtonProps) => {
                             variant={"contained"}
                             color={"error"}
                             onClick={() => {
-
+                                setButtonWasClicked(false)
                             }}
                             fullWidth={true}
                             endIcon={<ClearIcon/>}
@@ -61,7 +62,7 @@ export const ConfirmationButton = (props: ConfirmationButtonProps) => {
                 <Button
                     variant={"contained"}
                     color={"primary"}
-                    onClick={() => setIsConfirmed(true)}
+                    onClick={() => setButtonWasClicked(true)}
                     fullWidth={true}
                     {...props.buttonProps}
                 >

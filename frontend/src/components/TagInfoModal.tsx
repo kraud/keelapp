@@ -14,6 +14,7 @@ import {TagData} from "../ts/interfaces";
 import {TagDataForm} from "./forms/tags/TagDataForm";
 import LinearIndeterminate from "./Spinner";
 import {toast} from "react-toastify";
+import {ConfirmationButton} from "./ConfirmationButton";
 
 
 interface FriendSearchModalProps {
@@ -232,15 +233,18 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                                 xs={12}
                                 md={3}
                             >
-                                <Button
-                                    variant={"contained"}
-                                    color={"warning"}
-                                    onClick={() => null} // TODO: add a confirmation before deleting words
-                                    fullWidth={true}
-                                    endIcon={<DeleteForeverIcon/>}
-                                >
-                                    Delete all words
-                                </Button>
+                                <ConfirmationButton
+                                    onConfirm={() => {
+                                        toast.info("Confirm deletion")
+                                    }}
+                                    buttonLabel={'Delete All Words'}
+                                    buttonProps={{
+                                        variant: "contained",
+                                        color: "warning",
+                                        fullWidth: true,
+                                        endIcon: <DeleteForeverIcon/>
+                                    }}
+                                />
                             </Grid>
                             <Grid
                                 item={true}
