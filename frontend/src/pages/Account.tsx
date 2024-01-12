@@ -254,7 +254,7 @@ export const Account = (props: AccountProps) => {
                             >
                                 <Button
                                     variant={"contained"}
-                                    color={"primary"}
+                                    color={"info"}
                                     onClick={() => setOpenTagModal(true)}
                                     fullWidth={true}
                                     startIcon={<AddCommentIcon />}

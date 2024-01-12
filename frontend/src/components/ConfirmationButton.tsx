@@ -2,6 +2,7 @@ import {Button, Grid} from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import ClearIcon from "@mui/icons-material/Clear";
 import React, {useState} from "react";
+import globalTheme from "../theme/theme";
 
 interface ConfirmationButtonProps{
     // children: any
@@ -44,6 +45,9 @@ export const ConfirmationButton = (props: ConfirmationButtonProps) => {
                     <Grid
                         item={true}
                         xs
+                        sx={{
+                            marginTop: globalTheme.spacing(1)
+                        }}
                     >
                         <Button
                             variant={"contained"}
