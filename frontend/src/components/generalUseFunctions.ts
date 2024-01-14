@@ -1,5 +1,6 @@
 import {Lang} from "../ts/enums";
-import {FilterItem, FriendshipData} from "../ts/interfaces";
+import {FilterItem, FriendshipData, NotificationData, SearchResult} from "../ts/interfaces";
+import {toast} from "react-toastify";
 
 export const getCurrentLangTranslated = (currentLang?: Lang) => {
     switch(currentLang) {
@@ -139,5 +140,58 @@ export const getFriendRequestButtonLabel = (allFriendships: any[], potentialFrie
                 return(2)
             }
         }
+    }
+}
+
+export const getCompleteFriendshipData = (friendships: FriendshipData[], userDataList: SearchResult[], currentlyLoggedInUser: any) => {
+
+    const acceptedFriendships = friendships.filter((friendship: FriendshipData) => {
+        return(friendship.status === 'accepted')
+    })
+    return(
+        acceptedFriendships.map((amistad: FriendshipData) => {
+            const otherUserId = (amistad.userIds[0] === currentlyLoggedInUser._id) ?amistad.userIds[1] :amistad.userIds[0]
+            const otherUserResult = userDataList.filter((storedUser: SearchResult) => {
+                return(storedUser.id === otherUserId)
+            })
+            let otherUserUsername
+            if(otherUserResult !== undefined && (otherUserResult.length > 0)){
+                if(otherUserResult[0].type === 'user'){
+                    otherUserUsername = otherUserResult[0].username
+                } else {
+                    otherUserUsername = '-'
+                }
+            }
+            return({
+                ...amistad,
+                usernames: [otherUserUsername, currentlyLoggedInUser.username]
+            })
+        })
+    )
+}
+
+export const acceptFriendRequest = (
+    notification: NotificationData,
+    friendships: FriendshipData[],
+    triggerDeleteNotification: (notificationId: string) => void,
+    triggerUpdateNotification: (notificationData: {_id: string, status: 'pending' | 'accepted' | 'blocked'}) => void,
+    triggerToasts?: () => void,
+) => {
+    const friendship = friendships.filter((friendship: FriendshipData) => {
+        return(friendship.userIds[0] == notification.content.requesterId)
+    })[0]
+    if(friendship!){
+        if(triggerToasts!!){
+            triggerToasts()
+        }
+        triggerDeleteNotification(notification._id)
+        if(friendship._id !== undefined){
+            triggerUpdateNotification({
+                _id: friendship._id,
+                status: 'accepted'
+            })
+        }
+    } else {
+        toast.info('There was an error processing this request (no matching friendship request.')
     }
 }

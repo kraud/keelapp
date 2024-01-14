@@ -62,9 +62,10 @@ export type NotificationData = {
     // if accepted => we delete notification
     dismissed: boolean,
 } & FriendRequestData
+// TODO: add other types as new notifications are created
 
 type FriendRequestData = {
-    variant: "friendRequest" // TODO: add other types as new notifications are created
+    variant: "friendRequest"
     content: {
         requesterId: string,
         requesterUsername: string,

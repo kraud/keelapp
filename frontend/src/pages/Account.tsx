@@ -21,6 +21,7 @@ import {getUsernamesByIds} from "../features/users/userSlice";
 import AddCommentIcon from '@mui/icons-material/AddComment';
 import {getTagsForCurrentUser} from "../features/tags/tagSlice";
 import {FriendList, TagChipList} from "../components/GeneralUseComponents";
+import {getCompleteFriendshipData} from "../components/generalUseFunctions";
 
 interface AccountProps {
 
@@ -54,37 +55,7 @@ export const Account = (props: AccountProps) => {
     useEffect(() => {
         if(!openFriendsModal){
             if(userList!!){
-                // TODO: move this whole logic to a separate function (should be done fully on BE maybe?)
-                // userList data (into) => friendships
-                const acceptedFriendships = friendships.filter((friendship: FriendshipData) => {
-                    return(friendship.status === 'accepted')
-                })
-                let completeFriendshipData = acceptedFriendships.map((amistad: FriendshipData) => {
-                    const otherUserId = (amistad.userIds[0] === user._id) ?amistad.userIds[1] :amistad.userIds[0]
-                    const otherUserResult = userList.filter((storedUser: SearchResult) => {
-                        return(storedUser.id === otherUserId)
-                    })
-                    let otherUserUsername
-                    if(otherUserResult !== undefined && (otherUserResult.length > 0)){
-                        // TODO: add other cases depending on the type of notification?
-                        switch(otherUserResult[0].type){
-                            case('user'): {
-                                // TODO: check if always single result possible? Can't be friends twice, right?
-                                otherUserUsername = otherUserResult[0].username
-                                break
-                            }
-                            default: {
-                                otherUserUsername = '-'
-                                break
-                            }
-                        }
-                    }
-                    return({
-                        ...amistad,
-                        usernames: [otherUserUsername, user.username]
-                    })
-                })
-                setActiveFriendships(completeFriendshipData)
+                setActiveFriendships(getCompleteFriendshipData(friendships, userList, user))
             }
         }
     },[userList])

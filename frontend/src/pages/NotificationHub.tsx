@@ -16,7 +16,7 @@ import LinearIndeterminate from "../components/Spinner";
 import Tooltip from "@mui/material/Tooltip";
 import {updateFriendship, getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
 import {toast} from "react-toastify";
-import {stringAvatar} from "../components/generalUseFunctions";
+import {acceptFriendRequest, stringAvatar} from "../components/generalUseFunctions";
 
 interface NotificationHubProps {
 
@@ -269,28 +269,24 @@ export const NotificationHub = (props: NotificationHubProps) => {
     }
 
     const onClickAccept = (notification: NotificationData) => {
-        // TODO: create friendship on BE and then delete the notification
-
         switch(notification.variant){
             case('friendRequest'):{
-                const friendship = friendships.filter((friendship: FriendshipData) => {
-                    return(friendship.userIds[0] == notification.content.requesterId)
-                })[0]
-                if(friendship!){
-                    // TODO: this should be triggered after all cases? extract to a separate function
-                    setChangedNotificationList(true)
-                    setChangedFriendshipList(true)
-                    // @ts-ignore
-                    dispatch(deleteNotification(notification._id))
-
-                    // @ts-ignore
-                    dispatch(updateFriendship({
-                        _id: friendship._id,
-                        status: 'accepted'
-                    }))
-                } else {
-                    toast.info('There was an error processing this request (no matching friendship request.')
-                }
+                acceptFriendRequest(
+                    notification,
+                    friendships,
+                    (notificationId) => {
+                        // @ts-ignore
+                        dispatch(deleteNotification(notificationId))
+                    },
+                    (notificationData) => {
+                        // @ts-ignore
+                        dispatch(updateFriendship(notificationData))
+                    },
+                    () => {
+                        setChangedNotificationList(true)
+                        setChangedFriendshipList(true)
+                    }
+                )
                 break
             }
             default: return(null)

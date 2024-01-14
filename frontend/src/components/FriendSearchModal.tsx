@@ -290,20 +290,31 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                             color={["primary", "success", "error", "error"][getFriendRequestButtonLabel(friendships, selectedUser.id)]}
                                             onClick={() => {
                                                 const potentialFriendship = checkIfAlreadyFriend(friendships, selectedUser.id)
-                                                // TODO: replace this with getFriendRequestButtonLabel()?
-                                                if(potentialFriendship !== undefined){// There is a friendship and it's active
-                                                    if(potentialFriendship.status === 'accepted'){
-                                                        deleteActiveFriendship(potentialFriendship)
-                                                    } else {
-                                                        if(potentialFriendship.userIds[0] === selectedUser.id){ // potentialFriendship listed first => they made the request
-                                                            // accept request => delete notification (at currently logged-in user) + update friendship
-                                                        } else { // currently logged-in user made the request => Cancel request
+                                                switch (getFriendRequestButtonLabel(friendships, selectedUser.id)){
+                                                    case 0: { // no friendship status yet => create request
+                                                        sendNotification(selectedUser)
+                                                        addFriendship(selectedUser)
+                                                        break
+                                                    }
+                                                    case 1: { // potentialFriendship listed first => they made the request
+                                                        // accept request => delete notification (at currently logged-in user) + update friendship
+                                                        break
+                                                    }
+                                                    case 2: { // potentialFriendship listed first => they made the request
+                                                        if(potentialFriendship !== undefined){
                                                             cancelRequest(potentialFriendship)
                                                         }
+                                                        break
                                                     }
-                                                } else { // no friendship status yet => create request
-                                                    sendNotification(selectedUser)
-                                                    addFriendship(selectedUser)
+                                                    case 3: { // potentialFriendship listed first => they made the request
+                                                        if(potentialFriendship !== undefined){
+                                                            deleteActiveFriendship(potentialFriendship)
+                                                        }
+                                                        break
+                                                    }
+                                                    default: {
+                                                        break
+                                                    }
                                                 }
                                             }}
                                             fullWidth={true}
