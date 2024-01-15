@@ -14,9 +14,14 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import {toast} from "react-toastify";
 import LinearIndeterminate from "./Spinner";
-import {createNotification} from "../features/notifications/notificationSlice";
-import {createFriendship, deleteFriendship, getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
-import {checkIfAlreadyFriend, getFriendRequestButtonLabel} from "./generalUseFunctions";
+import {createNotification, deleteNotification} from "../features/notifications/notificationSlice";
+import {
+    createFriendship,
+    deleteFriendship,
+    getFriendshipsByUserId,
+    updateFriendship
+} from "../features/friendships/friendshipSlice";
+import {acceptFriendRequest, checkIfAlreadyFriend, getFriendRequestButtonLabel} from "./generalUseFunctions";
 import {clearOtherUserTags, getTagsByAnotherUserID} from "../features/tags/tagSlice";
 import {TagChipList} from "./GeneralUseComponents";
 

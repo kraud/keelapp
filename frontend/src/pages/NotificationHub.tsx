@@ -4,9 +4,8 @@ import globalTheme from "../theme/theme";
 import {Grid, Typography} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import {FriendshipData, NotificationData} from "../ts/interfaces";
+import {NotificationData} from "../ts/interfaces";
 import Avatar from "@mui/material/Avatar";
-import PersonIcon from "@mui/icons-material/Person";
 import IconButton from "@mui/material/IconButton";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -17,6 +16,8 @@ import Tooltip from "@mui/material/Tooltip";
 import {updateFriendship, getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
 import {toast} from "react-toastify";
 import {acceptFriendRequest, stringAvatar} from "../components/generalUseFunctions";
+import {getWordsSimplified} from "../features/words/wordSlice";
+import {useParams} from "react-router-dom";
 
 interface NotificationHubProps {
 
@@ -55,6 +56,23 @@ export const NotificationHub = (props: NotificationHubProps) => {
     }, [isLoadingFriendships, changedNotificationList])
 
     // TODO: if id in URL does not match currently logged-in user => change URL to match? go back dashboard?
+
+    // @ts-ignore
+    const { userId } = useParams<RouterNotificationProps>()
+    useEffect(() => {
+        // //@ts-ignore
+        // let {size} = searchParams
+        // if(size !== 0){
+        //     if(searchParams.getAll("tags").length > 0){
+        //         setCurrentTagFilters([{
+        //             type: 'tag',
+        //             id: "tag-"+((searchParams.getAll("tags")).length),
+        //             tagIds: searchParams.getAll("tags"),
+        //             filterValue: (searchParams.getAll("tags")).toString(),
+        //         }])
+        //     }
+        // }
+    }, [])
 
     const getDescription = (notification: NotificationData) => {
         switch (notification.variant) {

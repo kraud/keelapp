@@ -42,7 +42,6 @@ export function Review(){
         }
     }, [user, navigate, isError, message, dispatch])
 
-
     useEffect(() => {
         //@ts-ignore
         let {size} = searchParams
