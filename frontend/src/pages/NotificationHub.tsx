@@ -16,26 +16,37 @@ import Tooltip from "@mui/material/Tooltip";
 import {updateFriendship, getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
 import {toast} from "react-toastify";
 import {acceptFriendRequest, stringAvatar} from "../components/generalUseFunctions";
-import {getWordsSimplified} from "../features/words/wordSlice";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
+
+interface RouterNotificationProps{
+    userId: string
+}
 
 interface NotificationHubProps {
 
 }
 
 export const NotificationHub = (props: NotificationHubProps) => {
+    const navigate = useNavigate()
     const dispatch = useDispatch()
     const {user} = useSelector((state: any) => state.auth)
     const {isSuccessFriendships, isLoadingFriendships, friendships} = useSelector((state: any) => state.friendships)
+    const {notifications, isLoadingNotifications, isSuccessNotifications} = useSelector((state: any) => state.notifications)
+    // @ts-ignore
+    const { userId } = useParams<RouterNotificationProps>()
+
     const [changedNotificationList, setChangedNotificationList] = useState(false)
     const [changedFriendshipList, setChangedFriendshipList] = useState(false)
-    const {notifications, isLoadingNotifications, isSuccessNotifications} = useSelector((state: any) => state.notifications)
 
     useEffect(() => {
-        // @ts-ignore
-        dispatch(getNotifications())
-        // @ts-ignore
-        dispatch(getFriendshipsByUserId(user._id))
+        if(userId !== user._id){
+            navigate(`/user/${user._id}/notifications`)
+        } else {
+            // @ts-ignore
+            dispatch(getNotifications())
+            // @ts-ignore
+            dispatch(getFriendshipsByUserId(user._id))
+        }
     }, [])
 
     useEffect(() => {
@@ -54,25 +65,6 @@ export const NotificationHub = (props: NotificationHubProps) => {
             toast.info("Friend request accepted")
         }
     }, [isLoadingFriendships, changedNotificationList])
-
-    // TODO: if id in URL does not match currently logged-in user => change URL to match? go back dashboard?
-
-    // @ts-ignore
-    const { userId } = useParams<RouterNotificationProps>()
-    useEffect(() => {
-        // //@ts-ignore
-        // let {size} = searchParams
-        // if(size !== 0){
-        //     if(searchParams.getAll("tags").length > 0){
-        //         setCurrentTagFilters([{
-        //             type: 'tag',
-        //             id: "tag-"+((searchParams.getAll("tags")).length),
-        //             tagIds: searchParams.getAll("tags"),
-        //             filterValue: (searchParams.getAll("tags")).toString(),
-        //         }])
-        //     }
-        // }
-    }, [])
 
     const getDescription = (notification: NotificationData) => {
         switch (notification.variant) {

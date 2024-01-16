@@ -72,6 +72,7 @@ export function RoutesWithAnimation() {
                 }
             />
             <Route
+                 // TODO: should we reverse this to: '/user/notifications/:userId' ?
                 path='/user/:userId?/notifications'
                 element={
                     <NotificationHub/>
