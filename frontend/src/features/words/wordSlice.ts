@@ -23,7 +23,7 @@ interface wordSliceState {
 }
 
 const initialState: wordSliceState = {
-    words: [], // TODO: adjust this to the structure defined in TranslationForm and WordFromGeneric
+    words: [],
     wordsSimple: [],
     word: {
         translations: []

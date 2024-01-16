@@ -24,7 +24,12 @@ export const ConfirmationButton = (props: ConfirmationButtonProps) => {
         >
             {(buttonWasClicked)
                 ?
-                <>
+                <Grid
+                    container={true}
+                    justifyContent={"center"}
+                    item={true}
+                    spacing={1}
+                >
                     <Grid
                         item={true}
                         xs
@@ -45,9 +50,6 @@ export const ConfirmationButton = (props: ConfirmationButtonProps) => {
                     <Grid
                         item={true}
                         xs
-                        sx={{
-                            marginTop: globalTheme.spacing(1)
-                        }}
                     >
                         <Button
                             variant={"contained"}
@@ -61,7 +63,7 @@ export const ConfirmationButton = (props: ConfirmationButtonProps) => {
                             Cancel
                         </Button>
                     </Grid>
-                </>
+                </Grid>
                 :
                 <Button
                     variant={"contained"}

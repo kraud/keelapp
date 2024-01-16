@@ -7,7 +7,7 @@ interface SelectFormWithHookProps {
     control: Control<any, any>, // Comes from the useForm() hook in React-Hook-Form
     name: string // Necessary to identify component from a form in React-Hook-Form
     label: string,
-    options: string[] // TODO: should we have value AND label for each item?1
+    options: string[] // TODO: should we have value AND label for each item?
     defaultValue: string,
     errors?: any,
     type?: "password"|"text"|"email",

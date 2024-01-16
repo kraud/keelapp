@@ -391,7 +391,7 @@ export function Review(){
                             id: "create-exercises",
                             variant: "outlined",
                             color: "secondary",
-                            disabled: true, // TODO: be be implemented soon, will redirect to a version of the Practice screen
+                            disabled: true, // TODO: be be implemented eventually, will redirect to a version of the Practice screen
                             label: "Create exercises",
                             onClick: () => null,
                             displayBySelectionAmount: (amountSelected: number) => {

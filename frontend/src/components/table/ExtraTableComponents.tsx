@@ -19,6 +19,7 @@ import DoneIcon from "@mui/icons-material/Done";
 import {useSearchParams} from "react-router-dom";
 import {AutocompleteMultiple} from "../AutocompleteMultiple";
 import {checkEqualArrayContent, extractTagsArrayFromUnknownFormat} from "../generalUseFunctions";
+import {ConfirmationButton} from "../ConfirmationButton";
 
 interface TableHeaderCellProps {
     content: any
@@ -796,25 +797,25 @@ export function TableDataCell(props: TableDataCellProps){
                                 <Grid
                                     item={true}
                                 >
-                                    <Button
-                                        variant={"outlined"}
-                                        color={"warning"}
-                                        onClick={() => deleteOnClick()}
-                                        disabled={
-                                            (props.type === "text") &&
-                                            (
-                                                (word.translations.length < 3)
-                                                ||
-                                                !(checkCurrentLanguageIncludedInTranslations()) // if not included => we can simply click away, no need to delete
-                                            )
-                                        }
-                                        sx={{
-                                            display: (props.type === "array") ?"none" :"initial"
+                                    <ConfirmationButton
+                                        onConfirm={() => {
+                                            deleteOnClick()
                                         }}
-                                    >
-                                        {/* TODO: add double check before deleting? */}
-                                        Delete
-                                    </Button>
+                                        buttonLabel={'Delete'}
+                                        buttonProps={{
+                                            variant: "outlined",
+                                            color: "warning",
+                                            disabled: (props.type === "text") &&
+                                                (
+                                                    (word.translations.length < 3)
+                                                    ||
+                                                    !(checkCurrentLanguageIncludedInTranslations()) // if not included => we can simply click away, no need to delete
+                                                ),
+                                            sx: {
+                                                display: (props.type === "array") ?"none" :"initial"
+                                            }
+                                        }}
+                                    />
                                 </Grid>
                                 <Grid
                                     item={true}
