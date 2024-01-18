@@ -11,7 +11,7 @@ interface ConfirmationButtonProps{
     buttonLabel: string,
 }
 
-// This component accepts a component (probably a button) as its children, and when clicked it displays a confirmation button
+// This component displays a button, which when clicked it switches to a confirmation-cancellation button
 // If confirmed the function passed inside the props will be triggered
 export const ConfirmationButton = (props: ConfirmationButtonProps) => {
     const [buttonWasClicked, setButtonWasClicked] = useState(false)

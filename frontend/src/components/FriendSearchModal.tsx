@@ -248,35 +248,40 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                         username: (selectedUser.type === "user") ?selectedUser?.username : "",
                                     }}
                                 />
-                                <Grid
-                                    item={true}
-                                    xs={12}
-                                >
-                                    <Typography
-                                        sx={{
-                                            typography: {
-                                                xs: 'h6',
-                                                sm: 'h5',
-                                                md: 'h4',
-                                            },
-                                            textTransform: "uppercase",
-                                            textDecoration: "underline"
-                                        }}
-                                    >
-                                        Tags:
-                                    </Typography>
-                                </Grid>
                                 {/* TODO: display friends-list of currently selected user */}
                                 {(isLoadingTags)
                                     ?
                                     <LinearIndeterminate/>
                                     :
-                                    <TagChipList
-                                        tagList={allTags}
-                                        onClickAction={(tagId: string) => {
-                                            // setSelectedTag(tagId)
-                                        }}
-                                    />
+                                    <>
+                                        {
+                                            (allTags.length > 0) &&
+                                            <Grid
+                                                item={true}
+                                                xs={12}
+                                            >
+                                                <Typography
+                                                    sx={{
+                                                        typography: {
+                                                            xs: 'h6',
+                                                            sm: 'h5',
+                                                            md: 'h4',
+                                                        },
+                                                        textTransform: "uppercase",
+                                                        textDecoration: "underline"
+                                                    }}
+                                                >
+                                                    Tags:
+                                                </Typography>
+                                            </Grid>
+                                        }
+                                        <TagChipList
+                                            tagList={allTags}
+                                            onClickAction={(tagId: string) => {
+                                                // setSelectedTag(tagId)
+                                            }}
+                                        />
+                                    </>
                                 }
                                 <Grid
                                     container={true}

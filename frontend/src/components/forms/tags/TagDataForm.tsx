@@ -13,6 +13,8 @@ import {searchWordByAnyTranslation} from "../../../features/words/wordSlice";
 import {CountryFlag} from "../../GeneralUseComponents";
 import {Lang} from "../../../ts/enums";
 import {useNavigate} from "react-router-dom";
+import {getUsernamesByIds} from "../../../features/users/userSlice";
+import LinearIndeterminate from "../../Spinner";
 
 interface TagDataFormProps {
     currentTagData: TagData,
@@ -25,9 +27,9 @@ export const TagDataForm = (props: TagDataFormProps) => {
 
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const { currentTagData } = props
     const {isLoadingTags} = useSelector((state: any) => state.tags)
     const {user} = useSelector((state: any) => state.auth)
+    const {userList, isLoadingUser} = useSelector((state: any) => state.user)
     const {searchResults, isSearchLoading} = useSelector((state: any) => state.words)
 
     const validationSchema = Yup.object().shape({
@@ -59,12 +61,13 @@ export const TagDataForm = (props: TagDataFormProps) => {
 
     const [tagLabel, setTagLabel] = useState("")
     const [tagDescription, setTagDescription] = useState("")
+    const [tagAuthorUsername, setTagAuthorUsername] = useState("")
     const [selectedWords, setSelectedWords] = useState<SearchResult[]>([]) // will always be 'type: "word"'
 
     useEffect(() => {
         if(!props.displayOnly){
             props.updateTagFormData({
-                _id: currentTagData._id, // if it's a new tag that will be "", if editing an existing tag it will be a real ID
+                _id: props.currentTagData._id, // if it's a new tag that will be "", if editing an existing tag it will be a real ID
                 author: user._id, // if we're editing a Tag, we must be the author of it first
                 public: tagPublic as 'Public' | 'Private' | 'Friends-Only',
                 label: tagLabel,
@@ -81,36 +84,39 @@ export const TagDataForm = (props: TagDataFormProps) => {
     // This will only be run on first render
     // we use it to populate the form fields with the previously added information
     useEffect(() => {
-        if((currentTagData!!) && (currentTagData._id!!)){
+        if((props.currentTagData!!) && (props.currentTagData._id!!)){
             setValue(
                 'public',
-                currentTagData.public,
+                props.currentTagData.public,
                 {
                     shouldValidate: true,
                     shouldTouch: true
                 }
             )
-            setTagPublic(currentTagData.public as 'Public' | 'Private' | 'Friends-Only'|"")
+            setTagPublic(props.currentTagData.public as 'Public' | 'Private' | 'Friends-Only'|"")
             setValue(
                 'label',
-                currentTagData.label,
+                props.currentTagData.label,
                 {
                     shouldValidate: true,
                     shouldTouch: true
                 }
             )
-            setTagLabel(currentTagData.label)
+            setTagLabel(props.currentTagData.label)
             setValue(
                 'description',
-                currentTagData.description,
+                props.currentTagData.description,
                 {
                     shouldValidate: true,
                     shouldTouch: true
                 }
             )
-            setTagDescription(currentTagData.description)
+            setTagDescription(props.currentTagData.description)
+
+            // @ts-ignore
+            dispatch(getUsernamesByIds([props.currentTagData.author]))
         }
-    },[currentTagData]) // TODO: check if this is ok? It was not working with only []
+    },[props.currentTagData]) // TODO: check if this is ok? It was not working with only []
 
     const handleDelete = (wordIndex: number) => {
         setSelectedWords(
@@ -184,6 +190,28 @@ export const TagDataForm = (props: TagDataFormProps) => {
                         {/*    :""*/}
                         {/*}*/}
                     </Typography>
+                }
+            </Grid>
+            <Grid
+                item={true}
+                xs={12}
+            >
+                {
+                    (isLoadingUser)
+                        ?
+                        <LinearIndeterminate/>
+                        :
+                        (
+                            (userList.length > 0) &&
+                            <Typography
+                                variant={"h6"}
+                                display={{
+                                    md: "inline"
+                                }}
+                            >
+                                Created by : {(props.currentTagData.author === user._id) ?'you' :userList[0]}
+                            </Typography>
+                        )
                 }
             </Grid>
             <Grid
