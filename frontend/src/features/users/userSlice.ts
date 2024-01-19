@@ -78,7 +78,7 @@ export const userSlice = createSlice({
     name: 'user',
     initialState,
     reducers: {
-        resetState: (state) => {
+        resetUserSliceState: (state) => {
             state.isLoadingUser = false
             state.isSuccess = false
             state.isError = false
@@ -127,9 +127,9 @@ export const userSlice = createSlice({
                 state.isLoadingUser = false
                 state.isError = true
                 state.message = action.payload as string
-                state.userList = []
+                state.userResult = []
             })
     }
 })
-export const {resetState} = userSlice.actions
+export const {resetUserSliceState} = userSlice.actions
 export default userSlice.reducer

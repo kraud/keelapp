@@ -90,6 +90,12 @@ export function RoutesWithAnimation() {
                     <DisplayWord defaultDisabled={true}/>
                 }
             />
+            <Route
+                path='/tag/:tagId?'
+                element={
+                    <DisplayTag defaultDisabled={true}/>
+                }
+            />
         </Routes>
     );
 }

@@ -13,7 +13,7 @@ import {searchWordByAnyTranslation} from "../../../features/words/wordSlice";
 import {CountryFlag} from "../../GeneralUseComponents";
 import {Lang} from "../../../ts/enums";
 import {useNavigate} from "react-router-dom";
-import {getUsernamesByIds} from "../../../features/users/userSlice";
+import {getUserById, resetUserSliceState} from "../../../features/users/userSlice";
 import LinearIndeterminate from "../../Spinner";
 
 interface TagDataFormProps {
@@ -29,7 +29,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
     const dispatch = useDispatch()
     const {isLoadingTags} = useSelector((state: any) => state.tags)
     const {user} = useSelector((state: any) => state.auth)
-    const {userList, isLoadingUser} = useSelector((state: any) => state.user)
+    const {userResult, isLoadingUser} = useSelector((state: any) => state.user)
     const {searchResults, isSearchLoading} = useSelector((state: any) => state.words)
 
     const validationSchema = Yup.object().shape({
@@ -113,8 +113,12 @@ export const TagDataForm = (props: TagDataFormProps) => {
             )
             setTagDescription(props.currentTagData.description)
 
-            // @ts-ignore
-            dispatch(getUsernamesByIds([props.currentTagData.author]))
+            if((props.currentTagData.author !== user._id)){
+                // @ts-ignore
+                dispatch(getUserById(props.currentTagData.author))
+            } else {
+                dispatch(resetUserSliceState())
+            }
         }
     },[props.currentTagData]) // TODO: check if this is ok? It was not working with only []
 
@@ -202,14 +206,22 @@ export const TagDataForm = (props: TagDataFormProps) => {
                         <LinearIndeterminate/>
                         :
                         (
-                            (userList.length > 0) &&
+                            (
+                                (userResult !== undefined)
+                                ||
+                                (props.currentTagData.author === user._id)
+                            ) &&
                             <Typography
                                 variant={"h6"}
                                 display={{
                                     md: "inline"
                                 }}
                             >
-                                Created by : {(props.currentTagData.author === user._id) ?'you' :userList[0]}
+                                {
+                                    (props.currentTagData.author === user._id)
+                                        ? 'Created by you'
+                                        : `Created by: ${userResult.username}`
+                                }
                             </Typography>
                         )
                 }
