@@ -5,11 +5,12 @@ import {motion} from "framer-motion";
 import {routeVariantsAnimation} from "./management/RoutesWithAnimation";
 import globalTheme from "../theme/theme";
 import {LoadingScreen} from "../components/LoadingScreen";
-import {useParams} from "react-router-dom";
-import {Grid} from "@mui/material";
+import {useNavigate, useParams} from "react-router-dom";
+import {Button, Grid} from "@mui/material";
 import {getTagById} from "../features/tags/tagSlice";
 import {TagDataForm} from "../components/forms/tags/TagDataForm";
 import {TagData} from "../ts/interfaces";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 interface RouterTagProps{
     tagId: string
@@ -19,6 +20,7 @@ interface DisplayTagProps {
 }
 
 export function DisplayTag(props: DisplayTagProps){
+    const navigate = useNavigate()
     const dispatch = useDispatch()
     // @ts-ignore
     const { tagId } = useParams<RouterTagProps>()
@@ -112,6 +114,23 @@ export function DisplayTag(props: DisplayTagProps){
                     display: (displayContent) ?undefined :"none",
                 }}
             >
+
+                <Grid
+                    item={true}
+                    xs
+                >
+                    <Button
+                        variant={"contained"}
+                        color={"secondary"}
+                        onClick={() => {
+                            navigate(-1)
+                        }}
+                        fullWidth={true}
+                        startIcon={<ArrowBackIcon />}
+                    >
+                        Return
+                    </Button>
+                </Grid>
                 {/* TODO: will be refactored into DisplayTagData component, which will include action buttons */}
                 <TagDataForm
                     currentTagData={tagCurrentData}
