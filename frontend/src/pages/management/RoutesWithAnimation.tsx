@@ -8,6 +8,7 @@ import React from "react";
 import {DisplayWord} from "../DisplayWord";
 import {Account} from "../Account";
 import {NotificationHub} from "../NotificationHub";
+import {DisplayTag} from "../DisplayTag";
 
 export const routeVariantsAnimation = {
     initial: {

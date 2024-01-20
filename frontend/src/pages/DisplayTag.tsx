@@ -7,6 +7,9 @@ import globalTheme from "../theme/theme";
 import {LoadingScreen} from "../components/LoadingScreen";
 import {useParams} from "react-router-dom";
 import {Grid} from "@mui/material";
+import {getTagById} from "../features/tags/tagSlice";
+import {TagDataForm} from "../components/forms/tags/TagDataForm";
+import {TagData} from "../ts/interfaces";
 
 interface RouterTagProps{
     tagId: string
@@ -19,9 +22,20 @@ export function DisplayTag(props: DisplayTagProps){
     const dispatch = useDispatch()
     // @ts-ignore
     const { tagId } = useParams<RouterTagProps>()
-    const {tags, isLoadingTags, isSuccessTags, isError, message} = useSelector((state: any) => state.tags)
+    const {fullTagData, tags, isLoadingTags, isSuccessTags, isError, message} = useSelector((state: any) => state.tags)
 
+    const emptyTagData = {
+        author: "",
+        label: "",
+        description: "",
+        public: 'Private' as 'Private', // to make TS happy.
+        wordsId: [],
+    }
     const [displayContent, setDisplayContent] = useState(false)
+    const [isEditing, setIsEditing] = useState(false)
+    const [isDeleting, setIsDeleting] = useState(false)
+    const [tagCurrentData, setTagCurrentData] = useState<TagData>(emptyTagData)
+    const [currentTagHasBeenDeleted, setIsCurrentTagHasBeenDeleted] = useState(false)
 
     useEffect(() => {
         if(tagId!!) {
@@ -43,6 +57,22 @@ export function DisplayTag(props: DisplayTagProps){
             })
         }
     }, [isError, message])
+
+    // once the request is made and the results come in, we save them into a local copy of the state,
+    // this way the original remains in Redux, and we can access it to reverse changes if needed.
+    useEffect(() => {
+        if(!isLoadingTags && isSuccessTags && (fullTagData !== undefined)){
+            if(!isEditing && isDeleting){ // if not editing and fullTagData updated => just deleted that tag now stored in fullTagData
+                toast.info(`${fullTagData.label} tag was deleted!`)
+                // TODO: close modal? Add timer to close?
+                setIsDeleting(false)
+                setIsCurrentTagHasBeenDeleted(true)
+            }
+            setTagCurrentData(fullTagData)
+            setIsEditing(false)
+        }
+    },[fullTagData, isSuccessTags, isLoadingTags]) // TODO: add isDeleting to array?
+
     return(
         <Grid
             component={motion.div} // to implement animations with Framer Motion
@@ -82,7 +112,21 @@ export function DisplayTag(props: DisplayTagProps){
                     display: (displayContent) ?undefined :"none",
                 }}
             >
-            {/*    TODO: add TagDataForm*/}
+                {/* TODO: will be refactored into DisplayTagData component, which will include action buttons */}
+                <TagDataForm
+                    currentTagData={tagCurrentData}
+                    displayOnly={
+                        (
+                            (tagId !== "")
+                            ||
+                            ((fullTagData !== undefined) && (fullTagData._id!!))
+                        ) &&
+                        !isEditing
+                    }
+                    updateTagFormData={(formData: TagData) => {
+                        setTagCurrentData(formData)
+                    }}
+                />
             </div>
         </Grid>
     )

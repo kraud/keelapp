@@ -324,7 +324,10 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                         item={true}
                         container={true}
                         rowSpacing={2}
+                        // TODO: add a reverse-order-thing depending on prop for DisplayTag, so buttons can be
+                        //     at the top when displaying full screen, and the bottom when inside modal
                     >
+                        {/* TODO: form and buttons should all be replaced by a DisplayTagData component */}
                         <TagDataForm
                             currentTagData={tagCurrentData}
                             displayOnly={

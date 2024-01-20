@@ -24,6 +24,7 @@ import {
 import {acceptFriendRequest, checkIfAlreadyFriend, getFriendRequestButtonLabel} from "./generalUseFunctions";
 import {clearOtherUserTags, getTagsByAnotherUserID} from "../features/tags/tagSlice";
 import {TagChipList} from "./GeneralUseComponents";
+import {useNavigate} from "react-router-dom";
 
 interface FriendSearchModalProps {
     open: boolean
@@ -48,6 +49,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
         },
 
     }
+    const navigate = useNavigate()
     const dispatch = useDispatch()
     const {user} = useSelector((state: any) => state.auth)
     const {userList, userResult, isLoadingUser} = useSelector((state: any) => state.user)
@@ -278,7 +280,8 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                         <TagChipList
                                             tagList={allTags}
                                             onClickAction={(tagId: string) => {
-                                                // setSelectedTag(tagId)
+                                                // @ts-ignore
+                                                navigate(`/tag/${tagId}`)
                                             }}
                                         />
                                     </>
