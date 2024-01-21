@@ -61,7 +61,6 @@ export const TagDataForm = (props: TagDataFormProps) => {
 
     const [tagLabel, setTagLabel] = useState("")
     const [tagDescription, setTagDescription] = useState("")
-    const [tagAuthorUsername, setTagAuthorUsername] = useState("")
     const [selectedWords, setSelectedWords] = useState<SearchResult[]>([]) // will always be 'type: "word"'
 
     useEffect(() => {
@@ -196,36 +195,38 @@ export const TagDataForm = (props: TagDataFormProps) => {
                     </Typography>
                 }
             </Grid>
-            <Grid
-                item={true}
-                xs={12}
-            >
-                {
-                    (isLoadingUser)
-                        ?
-                        <LinearIndeterminate/>
-                        :
-                        (
+            {(props.displayOnly) &&
+                <Grid
+                    item={true}
+                    xs={12}
+                >
+                    {
+                        (isLoadingUser)
+                            ?
+                            <LinearIndeterminate/>
+                            :
                             (
-                                (userResult !== undefined)
-                                ||
-                                (props.currentTagData.author === user._id)
-                            ) &&
-                            <Typography
-                                variant={"h6"}
-                                display={{
-                                    md: "inline"
-                                }}
-                            >
-                                {
+                                (
+                                    (userResult !== undefined)
+                                    ||
                                     (props.currentTagData.author === user._id)
-                                        ? 'Created by you'
-                                        : `Created by: ${userResult.username}`
-                                }
-                            </Typography>
-                        )
-                }
-            </Grid>
+                                ) &&
+                                <Typography
+                                    variant={"h6"}
+                                    display={{
+                                        md: "inline"
+                                    }}
+                                >
+                                    {
+                                        (props.currentTagData.author === user._id)
+                                            ? 'Created by you'
+                                            : `Created by: ${userResult.username}`
+                                    }
+                                </Typography>
+                            )
+                    }
+                </Grid>
+            }
             <Grid
                 item={true}
                 xs={12}
