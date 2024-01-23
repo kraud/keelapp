@@ -106,7 +106,7 @@ export function DisplayTag(props: DisplayTagProps){
                         // but when not we simply display it as it normally would ('undefined' changes)
                         display: (!displayContent) ?undefined :"none",
                     }}
-                    displayTime={2500}
+                    displayTime={2400}
                 />
             }
             <div
@@ -118,6 +118,9 @@ export function DisplayTag(props: DisplayTagProps){
                 <Grid
                     item={true}
                     xs
+                    sx={{
+                        paddingBottom: globalTheme.spacing(4)
+                    }}
                 >
                     <Button
                         variant={"contained"}
@@ -131,7 +134,10 @@ export function DisplayTag(props: DisplayTagProps){
                         Return
                     </Button>
                 </Grid>
-                {/* TODO: will be refactored into DisplayTagData component, which will include action buttons */}
+                {/*
+                    TODO: will be refactored into DisplayTagData component,
+                    which will include prop for list of action buttons, and another prop to define where to display them (top-bot)
+                */}
                 <TagDataForm
                     currentTagData={tagCurrentData}
                     displayOnly={
