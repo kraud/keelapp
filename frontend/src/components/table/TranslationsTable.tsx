@@ -270,6 +270,7 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                     alignContent={"center"}
                                     xs={"auto"}
                                 >
+                                    {/* TODO: add property to items inside customButtonList, to specify if button needs confirmation => use ConfirmationButton */}
                                     <Button
                                         variant={(!! button.variant) ?button.variant :"contained"}
                                         color={(!! button.color) ?button.color :"primary"}

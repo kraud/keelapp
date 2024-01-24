@@ -1,15 +1,16 @@
 import React, {useEffect, useState} from "react";
-import {Grid} from "@mui/material";
+import {Button, Grid} from "@mui/material";
 import {motion} from "framer-motion";
 import {routeVariantsAnimation} from "./management/RoutesWithAnimation";
 import globalTheme from "../theme/theme";
 import {WordForm} from "../components/WordForm";
 import {WordData} from "../ts/interfaces";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {getWordById, updateWordById} from "../features/words/wordSlice";
 import {toast} from "react-toastify";
 import {LoadingScreen} from "../components/LoadingScreen";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 interface RouterWordProps{
     wordId: string
@@ -19,6 +20,7 @@ interface DisplayWordProps {
 }
 
 export function DisplayWord(props: DisplayWordProps){
+    const navigate = useNavigate()
     const dispatch = useDispatch()
     // @ts-ignore
     const { wordId } = useParams<RouterWordProps>()
@@ -100,6 +102,25 @@ export function DisplayWord(props: DisplayWordProps){
                     display: (displayContent) ?undefined :"none",
                 }}
             >
+                <Grid
+                    item={true}
+                    xs
+                    sx={{
+                        paddingBottom: globalTheme.spacing(4)
+                    }}
+                >
+                    <Button
+                        variant={"contained"}
+                        color={"secondary"}
+                        onClick={() => {
+                            navigate(-1)
+                        }}
+                        fullWidth={true}
+                        startIcon={<ArrowBackIcon />}
+                    >
+                        Return
+                    </Button>
+                </Grid>
                 <WordForm
                     title={"Detailed view"}
                     subTitle={"All the currently stored translations for this word"}
