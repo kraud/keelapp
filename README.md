@@ -7,6 +7,8 @@ The main purpose of this project is to help you revise your vocabulary in many l
 ## NB!
 At this point, we're at full development of core functions of the app. All the basic functionalities are not yet done, so we consider this a pre-alpha. Once this stage is done, we'll implement branches to help incorporate gradually new functionalities and allow users to interact with the app for the real Alpha stage, and eventually to a Beta. Updates will be posted here on the repository's README.
 
+Also: sometimes (at the time of writing) commits on this repo are not successfully compiling, since time/date limits on certain cases do not allow us to thoroughly check before pushing (to help us keep a stady development-rate, we're trying to commit daily. Once we hit minimum viable product (MVP), we'll switch to a more branched development with extensive testing before pushing to production. 
+
 The website is not yet deployed online, so to test it you can run it locally with the 'npm run dev' command, or run both server and client separately.
 
 ## What does it do? 
