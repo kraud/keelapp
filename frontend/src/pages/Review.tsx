@@ -424,6 +424,8 @@ export function Review(){
                             displayBySelectionAmount: (amountSelected: number) => {
                                 return (amountSelected > 0)
                             },
+                            requiresConfirmation: true,
+                            confirmationButtonLabel: 'Confirm delete',
                         }
                     ]}
                 />

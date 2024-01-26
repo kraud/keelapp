@@ -109,6 +109,9 @@ export interface PropsButtonData {
     setSelectionOnClick?: boolean
     isVisible?: boolean
     displayBySelectionAmount?: (amountSelected: number) => boolean, // greater than number => display
+    requiresConfirmation?: boolean
+    confirmationButtonLabel?: string
+    cancellationButtonLabel?: string
 }
 
 export type FilterItem = {

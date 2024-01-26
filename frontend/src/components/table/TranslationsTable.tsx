@@ -6,17 +6,16 @@ import {
     useReactTable,
 } from '@tanstack/react-table'
 import React, {useEffect, useState} from "react";
-import {Button, Grid, Slide, Switch, Typography} from "@mui/material";
+import {Grid, Slide, Switch, Typography} from "@mui/material";
 import globalTheme from "../../theme/theme";
 import {toast} from "react-toastify";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import ReactDOM from 'react-dom/client';
 import {DebouncedTextField} from "./DebouncedTextField";
 import {useSelector} from "react-redux";
 import {PropsButtonData} from "../../ts/interfaces";
-import {createColumnsReviewTable, TableWordData} from "./columns/ReviewTableColumns";
-import LinearIndeterminate from "../Spinner";
+import {TableWordData} from "./columns/ReviewTableColumns";
 import LinearProgress from "@mui/material/LinearProgress";
+import {ConfirmationButton} from "../ConfirmationButton";
 
 interface TranslationsTableProps {
     sortedAndSelectedLanguages: string[]
@@ -270,19 +269,8 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                     alignContent={"center"}
                                     xs={"auto"}
                                 >
-                                    {/* TODO: add property to items inside customButtonList, to specify if button needs confirmation => use ConfirmationButton */}
-                                    <Button
-                                        variant={(!! button.variant) ?button.variant :"contained"}
-                                        color={(!! button.color) ?button.color :"primary"}
-                                        //
-                                        disabled={(button.calculateDisabled !== undefined)
-                                            ? button.calculateDisabled(rowSelection)
-                                            : (button.disabled !== undefined)
-                                                ? button.disabled
-                                                : false
-                                        }
-                                        fullWidth={true}
-                                        onClick={() => {
+                                    <ConfirmationButton
+                                        onConfirm={() => {
                                             if(button.setSelectionOnClick!!){
                                                 // if setSelectionOnClick is true then:
                                                 // after performing onClick function, return value must be set as selectedRows
@@ -293,9 +281,21 @@ export function TranslationsTable(props: TranslationsTableProps) {
                                                 button.onClick!(rowSelection)
                                             }
                                         }}
-                                    >
-                                        {button.label}
-                                    </Button>
+                                        buttonLabel={(button.label!!) ?button.label :"-missing label-"}
+                                        buttonProps={{
+                                            variant: (!! button.variant) ?button.variant :"contained",
+                                            color: (!! button.color) ?button.color :"primary",
+                                            fullWidth: true,
+                                            disabled: (button.calculateDisabled !== undefined)
+                                                ? button.calculateDisabled(rowSelection)
+                                                : (button.disabled !== undefined)
+                                                    ? button.disabled
+                                                    : false,
+                                        }}
+                                        ignoreConfirmation={!button.requiresConfirmation!!}
+                                        confirmationButtonLabel={button.confirmationButtonLabel}
+                                        cancellationButtonLabel={button.cancellationButtonLabel}
+                                    />
                                 </Grid>
                             )
                         }

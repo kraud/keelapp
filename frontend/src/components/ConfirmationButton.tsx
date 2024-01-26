@@ -8,7 +8,10 @@ interface ConfirmationButtonProps{
     // children: any
     onConfirm: () => void
     buttonProps: any,
+    ignoreConfirmation?: boolean, // used in cases where confirmation is conditionally required
     buttonLabel: string,
+    confirmationButtonLabel?: string,
+    cancellationButtonLabel?: string,
 }
 
 // This component displays a button, which when clicked it switches to a confirmation-cancellation button
@@ -22,17 +25,24 @@ export const ConfirmationButton = (props: ConfirmationButtonProps) => {
             item={true}
             xs={12}
         >
-            {(buttonWasClicked)
+            {(buttonWasClicked && (!props.ignoreConfirmation!!))
                 ?
                 <Grid
                     container={true}
                     justifyContent={"center"}
                     item={true}
-                    spacing={1}
+                    sx={{
+                        border: '2px #666666 solid',
+                        borderRadius: '10px',
+                        backgroundColor: '#e1e1e1'
+                    }}
                 >
                     <Grid
                         item={true}
                         xs
+                        sx={{
+                            padding: globalTheme.spacing(1)
+                        }}
                     >
                         <Button
                             variant={"contained"}
@@ -44,12 +54,15 @@ export const ConfirmationButton = (props: ConfirmationButtonProps) => {
                             fullWidth={true}
                             endIcon={<CheckIcon />}
                         >
-                            Confirm
+                            {(props.confirmationButtonLabel !== undefined) ?props.confirmationButtonLabel :'Confirm'}
                         </Button>
                     </Grid>
                     <Grid
                         item={true}
                         xs
+                        sx={{
+                            padding: globalTheme.spacing(1)
+                        }}
                     >
                         <Button
                             variant={"contained"}
@@ -60,7 +73,7 @@ export const ConfirmationButton = (props: ConfirmationButtonProps) => {
                             fullWidth={true}
                             endIcon={<ClearIcon/>}
                         >
-                            Cancel
+                            {(props.cancellationButtonLabel !== undefined) ?props.cancellationButtonLabel :'Cancel'}
                         </Button>
                     </Grid>
                 </Grid>
@@ -68,7 +81,13 @@ export const ConfirmationButton = (props: ConfirmationButtonProps) => {
                 <Button
                     variant={"contained"}
                     color={"primary"}
-                    onClick={() => setButtonWasClicked(true)}
+                    onClick={() => {
+                        if(props.ignoreConfirmation!!){
+                            props.onConfirm()
+                        } else{
+                            setButtonWasClicked(true)
+                        }
+                    }}
                     fullWidth={true}
                     {...props.buttonProps}
                 >
