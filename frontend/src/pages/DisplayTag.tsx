@@ -7,7 +7,7 @@ import globalTheme from "../theme/theme";
 import {LoadingScreen} from "../components/LoadingScreen";
 import {useNavigate, useParams} from "react-router-dom";
 import {Button, Grid} from "@mui/material";
-import {getTagById} from "../features/tags/tagSlice";
+import {clearFullTagData, getTagById} from "../features/tags/tagSlice";
 import {TagDataForm} from "../components/forms/tags/TagDataForm";
 import {TagData} from "../ts/interfaces";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -127,6 +127,7 @@ export function DisplayTag(props: DisplayTagProps){
                         color={"secondary"}
                         onClick={() => {
                             navigate(-1)
+                            dispatch(clearFullTagData())
                         }}
                         fullWidth={true}
                         startIcon={<ArrowBackIcon />}

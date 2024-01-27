@@ -10,6 +10,8 @@ interface ConfirmationButtonProps{
     buttonProps: any,
     ignoreConfirmation?: boolean, // used in cases where confirmation is conditionally required
     buttonLabel: string,
+    // TODO: separate to different type and extend type with it so we get type safety when ignoreConfirmation is false?
+    //  That way we're required to add confirmation-cancellation labels
     confirmationButtonLabel?: string,
     cancellationButtonLabel?: string,
 }

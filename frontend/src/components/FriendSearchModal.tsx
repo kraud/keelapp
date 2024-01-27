@@ -25,6 +25,7 @@ import {acceptFriendRequest, checkIfAlreadyFriend, getFriendRequestButtonLabel} 
 import {clearOtherUserTags, getTagsByAnotherUserID} from "../features/tags/tagSlice";
 import {TagChipList} from "./GeneralUseComponents";
 import {useNavigate} from "react-router-dom";
+import {ConfirmationButton} from "./ConfirmationButton";
 
 interface FriendSearchModalProps {
     open: boolean
@@ -297,11 +298,8 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                         item={true}
                                         xs={5}
                                     >
-                                        <Button
-                                            variant={"contained"}
-                                            // @ts-ignore
-                                            color={["primary", "success", "error", "error"][getFriendRequestButtonLabel(friendships, selectedUser.id)]}
-                                            onClick={() => {
+                                        <ConfirmationButton
+                                            onConfirm={() => {
                                                 const potentialFriendship = checkIfAlreadyFriend(friendships, selectedUser.id)
                                                 switch (getFriendRequestButtonLabel(friendships, selectedUser.id)){
                                                     case 0: { // no friendship status yet => create request
@@ -330,11 +328,20 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                                     }
                                                 }
                                             }}
-                                            fullWidth={true}
-                                            startIcon={[<PersonAddIcon/>, <CheckCircleIcon/>, <CancelIcon/>, <CancelIcon/>][getFriendRequestButtonLabel(friendships, selectedUser.id)]}
-                                        >
-                                            {['Add friend', 'Accept request', 'Cancel request', 'Delete Friendship'][getFriendRequestButtonLabel(friendships, selectedUser.id)]}
-                                        </Button>
+                                            buttonLabel={['Add friend', 'Accept request', 'Cancel request', 'Delete Friendship'][getFriendRequestButtonLabel(friendships, selectedUser.id)]}
+                                            buttonProps={{
+                                                variant: "contained",
+                                                color: ["primary", "success", "error", "error"][getFriendRequestButtonLabel(friendships, selectedUser.id)],
+                                                fullWidth: true,
+                                                startIcon: [<PersonAddIcon/>, <CheckCircleIcon/>, <CancelIcon/>, <CancelIcon/>][getFriendRequestButtonLabel(friendships, selectedUser.id)]
+                                            }}
+                                            ignoreConfirmation={
+                                                getFriendRequestButtonLabel(friendships, selectedUser.id) === 0
+                                                ||
+                                                getFriendRequestButtonLabel(friendships, selectedUser.id) === 1
+                                            }
+                                            confirmationButtonLabel={[undefined, undefined, "Confirm cancel request", "Confirm delete friend"][getFriendRequestButtonLabel(friendships, selectedUser.id)]}
+                                        />
                                     </Grid>
                                     <Grid
                                         item={true}
