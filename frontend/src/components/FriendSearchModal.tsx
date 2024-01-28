@@ -23,6 +23,7 @@ import {
 } from "../features/friendships/friendshipSlice";
 import {acceptFriendRequest, checkIfAlreadyFriend, getFriendRequestButtonLabel} from "./generalUseFunctions";
 import {clearOtherUserTags, getTagsByAnotherUserID} from "../features/tags/tagSlice";
+import {clearUserResultData} from "../features/users/userSlice";
 import {TagChipList} from "./GeneralUseComponents";
 import {useNavigate} from "react-router-dom";
 import {ConfirmationButton} from "./ConfirmationButton";
@@ -63,6 +64,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
         props.setOpen(false)
         setSelectedUser(null)
         dispatch(clearOtherUserTags())
+        dispatch(clearUserResultData())
     }
 
     const [sentRequest, setSentRequest] = useState(false)
@@ -281,6 +283,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                         <TagChipList
                                             tagList={allTags}
                                             onClickAction={(tagId: string) => {
+                                                handleOnClose()
                                                 // @ts-ignore
                                                 navigate(`/tag/${tagId}`)
                                             }}

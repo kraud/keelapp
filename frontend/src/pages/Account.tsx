@@ -17,7 +17,7 @@ import {updateUser} from "../features/auth/authSlice";
 import {useNavigate} from "react-router-dom";
 import {getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
 import {FriendshipData, SearchResult, TagData} from "../ts/interfaces";
-import {getUsernamesByIds} from "../features/users/userSlice";
+import {clearUserResultData, getUsernamesByIds} from "../features/users/userSlice";
 import AddCommentIcon from '@mui/icons-material/AddComment';
 import {getTagsForCurrentUser} from "../features/tags/tagSlice";
 import {FriendList, TagChipList} from "../components/GeneralUseComponents";
@@ -114,6 +114,7 @@ export const Account = (props: AccountProps) => {
         dispatch(getTagsForCurrentUser(user._id))
         // @ts-ignore
         dispatch(getFriendshipsByUserId(user._id))
+        dispatch(clearUserResultData())
     },[])
 
     useEffect(() => {

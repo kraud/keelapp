@@ -84,6 +84,12 @@ export const userSlice = createSlice({
             state.isError = false
             state.message = ''
         },
+        clearUserResultData: (state: any) => {
+            return({
+                ...state,
+                userResult: initialState.userResult
+            })
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -131,5 +137,5 @@ export const userSlice = createSlice({
             })
     }
 })
-export const {resetUserSliceState} = userSlice.actions
+export const {resetUserSliceState, clearUserResultData} = userSlice.actions
 export default userSlice.reducer
