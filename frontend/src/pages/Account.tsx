@@ -110,6 +110,7 @@ export const Account = (props: AccountProps) => {
     },[user])
 
     useEffect(() => {
+        setDefaultModalUserId(undefined)
         // @ts-ignore
         dispatch(getTagsForCurrentUser(user._id))
         // @ts-ignore

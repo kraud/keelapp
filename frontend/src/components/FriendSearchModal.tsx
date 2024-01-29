@@ -61,10 +61,10 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
 
 
     const handleOnClose = () => {
-        props.setOpen(false)
         setSelectedUser(null)
         dispatch(clearOtherUserTags())
         dispatch(clearUserResultData())
+        props.setOpen(false)
     }
 
     const [sentRequest, setSentRequest] = useState(false)
@@ -75,15 +75,11 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
         if(props.defaultUserId !== undefined){
             // @ts-ignore
             dispatch(getUserById(props.defaultUserId))
-        }
-    },[props.defaultUserId])
-
-    useEffect(() => {
-        if(props.defaultUserId !== undefined){
             // @ts-ignore
             dispatch(getTagsByAnotherUserID(props.defaultUserId))
         }
     },[props.defaultUserId])
+
 
     useEffect(() => {
         if(userResult !== undefined){
@@ -94,6 +90,8 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                 email: userResult.email,
                 username: userResult.username
             })
+        } else {
+            setSelectedUser(null)
         }
     },[userResult])
 
