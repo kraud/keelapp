@@ -34,5 +34,10 @@ const tagSchema = mongoose.Schema(
     }
 )
 
+tagSchema.virtual('tags', {
+    ref: 'TagWord',
+    localField: '_id',
+    foreignField: 'tagId'
+})
 
 module.exports = mongoose.model('Tag',  tagSchema)

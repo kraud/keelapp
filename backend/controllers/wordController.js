@@ -1,6 +1,8 @@
 const asyncHandler = require('express-async-handler')
 
 const Word = require('../models/wordModel')
+const WordTag = require('../models/intermediary/tagWordModel')
+const Tag = require('../models/tagModel')
 
 // @desc    Get Words
 // @route   GET /api/words
@@ -539,6 +541,37 @@ const filterWordByAnyTranslation = asyncHandler(async (req, res) => {
             })
         }
     })
+})
+
+// @desc    Get All word+tag data
+// @route   GET /api/wordTag
+// @access  Private
+const getAllTagWordDataByWordId = asyncHandler(async (req, res) => {
+
+    await Word.aggregate([
+        { '$lookup': {
+            'from': WordTag.collection.name,
+            'let': { 'id': '$_id' }, // from Word
+            'pipeline': [
+                { '$match': {
+                    '$expr': { '$eq': [ '$$id', '$wordId' ] } // checks through all the WordTag
+                }},
+                { '$lookup': {
+                    'from': Tag.collection.name,
+                    'let': { 'tagId': '$tagId' }, // from WordTag
+                    'pipeline': [
+                        { '$match': {
+                            '$expr': { '$eq': [ '$_id', '$$itemId' ] }
+                        }}
+                    ],
+                    'as': 'tags'
+                }},
+                { '$unwind': '$tags' },
+                { '$replaceRoot': { 'newRoot': '$tags' } }
+            ],
+            'as': 'tags'
+        }}
+    ])
 })
 
 module.exports = {

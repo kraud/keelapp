@@ -18,5 +18,4 @@ const tagWordSchema = mongoose.Schema(
     }
 )
 
-
 module.exports = mongoose.model('TagWord',  tagWordSchema)

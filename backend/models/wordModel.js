@@ -36,4 +36,10 @@ const wordSchema = mongoose.Schema(
     }
 )
 
+wordSchema.virtual('words', {
+    ref: 'TagWord',
+    localField: '_id',
+    foreignField: 'wordId'
+})
+
 module.exports = mongoose.model('Word',  wordSchema)
