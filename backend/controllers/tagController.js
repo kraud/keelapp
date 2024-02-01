@@ -1,6 +1,8 @@
 
 const asyncHandler = require("express-async-handler");
 const Tag = require("../models/tagModel");
+const Word = require("../models/wordModel");
+const WordTag = require("../models/intermediary/tagWordModel");
 
 
 // @desc    Search for tags with a regex matching (partially or fully) a request query (string) with the tag label
@@ -90,8 +92,10 @@ const createTag = asyncHandler(async (req, res) => {
         label: req.body.label,
         public: req.body.public,
         description: req.body.description,
-        // TODO: wordsId?
     })
+
+    // TODO: req.body.wordsId? => create entries in tagWordModel with wordId+tagId
+
     res.status(200).json(tag)
 })
 
@@ -170,6 +174,38 @@ const getAmountByTag = asyncHandler(async (req, res) => {
     res.status(200).json(tag.wordsId.length)
 })
 
+// @desc    Get All word+tag data
+// @route   GET --
+// @access  Private
+const getAllTagWordDataByTagId = asyncHandler(async (req, res) => {
+
+    await Tag.aggregate([
+        { '$lookup': {
+            'from': WordTag.collection.name,
+            'let': { 'id': '$_id' }, // from Word
+            'pipeline': [
+                // TODO: add an 'and' operator here, to check for req.body.tagId or by userId, etc.
+                { '$match': {
+                    '$expr': { '$eq': [ '$$id', '$tagId' ] } // checks through all the WordTag
+                }},
+                { '$lookup': {
+                        'from': Word.collection.name,
+                        'let': { 'wordId': '$wordId' }, // from WordTag
+                        'pipeline': [
+                            { '$match': {
+                                    '$expr': { '$eq': [ '$_id', '$$wordId' ] }
+                                }}
+                        ],
+                        'as': 'words'
+                    }},
+                { '$unwind': '$words' },
+                { '$replaceRoot': { 'newRoot': '$words' } }
+            ],
+            'as': 'tags'
+        }}
+    ])
+})
+
 module.exports = {
     searchTags,
     getUserTags,
@@ -178,5 +214,6 @@ module.exports = {
     deleteTag,
     updateTag,
     getAmountByTag,
-    getOtherUserTags
+    getOtherUserTags,
+    getAllTagWordDataByTagId
 }

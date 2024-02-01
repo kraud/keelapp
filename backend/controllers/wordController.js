@@ -561,7 +561,7 @@ const getAllTagWordDataByWordId = asyncHandler(async (req, res) => {
                     'let': { 'tagId': '$tagId' }, // from WordTag
                     'pipeline': [
                         { '$match': {
-                            '$expr': { '$eq': [ '$_id', '$$itemId' ] }
+                            '$expr': { '$eq': [ '$_id', '$$tagId' ] }
                         }}
                     ],
                     'as': 'tags'
@@ -569,7 +569,7 @@ const getAllTagWordDataByWordId = asyncHandler(async (req, res) => {
                 { '$unwind': '$tags' },
                 { '$replaceRoot': { 'newRoot': '$tags' } }
             ],
-            'as': 'tags'
+            'as': 'words'
         }}
     ])
 })
@@ -583,5 +583,6 @@ module.exports = {
     deleteWords,
     filterWordByAnyTranslation,
     getTags,
-    getAmountByTag
+    getAmountByTag,
+    getAllTagWordDataByWordId
 }

@@ -72,13 +72,16 @@ export const TagDataForm = (props: TagDataFormProps) => {
                 label: tagLabel,
                 description: tagDescription,
                 // TODO: add selectedWords ids here as 'wordsId'
+                wordsId: selectedWords.map((word) => {
+                    return word.id
+                }),
                 //  => must decide how to display the list later (in which language? clarify amount of translations available for each?)
 
                 completionState: isValid,
                 isDirty: isDirty
             })
         }
-    }, [tagPublic, tagLabel, tagDescription, isValid, isDirty])
+    }, [tagPublic, tagLabel, tagDescription, isValid, isDirty, selectedWords])
 
     // This will only be run on first render
     // we use it to populate the form fields with the previously added information
