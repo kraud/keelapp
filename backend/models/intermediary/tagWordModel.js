@@ -18,4 +18,7 @@ const tagWordSchema = mongoose.Schema(
     }
 )
 
+// this only allows a single instance of each tagId-wordId combo
+tagWordSchema.index({ tagId: 1, wordId: 1}, { unique: true })
+
 module.exports = mongoose.model('TagWord',  tagWordSchema)

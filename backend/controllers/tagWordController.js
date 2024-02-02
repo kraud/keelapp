@@ -14,6 +14,22 @@ const createTagWord = asyncHandler(async (req, res) => {
     res.status(200).json(tagWord)
 })
 
+// @desc    Set tagWord
+// @route   POST --
+// @access  Private
+const createManyTagWord = asyncHandler(async (req, res) => {
+
+    const tagWords = await TagWord.insertMany(req.body.tagWords)
+        .then(function () {
+            console.log("Data inserted") // Success
+            res.status(200).json(tagWords)
+        }).catch(function (error) {
+            console.log(error)     // Failure
+            res.status(400).json(tagWords)
+            throw new Error("Tag-Word insertMany failed")
+        });
+})
+
 // @desc    Get tagWord by TagID
 // @route   GET --
 // @access  Private
@@ -50,6 +66,8 @@ const deleteTagWord = asyncHandler(async (req, res) => {
     await tagWord.deleteOne()
     res.status(200).json(tagWord)
 })
+
+
 
 module.exports = {
     createTagWord,
