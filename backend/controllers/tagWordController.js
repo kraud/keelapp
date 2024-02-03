@@ -73,5 +73,6 @@ module.exports = {
     createTagWord,
     getAllTagWordsRelatedToTagId,
     getAllTagWordsRelatedToWordId,
-    deleteTagWord
+    deleteTagWord,
+    createManyTagWord
 }
