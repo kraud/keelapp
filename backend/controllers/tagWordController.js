@@ -22,6 +22,7 @@ const createManyTagWord = asyncHandler(async (req, res) => {
     const tagWords = await TagWord.insertMany(req.body.tagWords)
         .then(function () {
             console.log("Data inserted") // Success
+            console.log("tagWords", tagWords) // Success
             res.status(200).json(tagWords)
         }).catch(function (error) {
             console.log(error)     // Failure

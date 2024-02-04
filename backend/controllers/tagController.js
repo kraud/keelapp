@@ -3,6 +3,7 @@ const asyncHandler = require("express-async-handler");
 const Tag = require("../models/tagModel");
 const Word = require("../models/wordModel");
 const WordTag = require("../models/intermediary/tagWordModel");
+const TagWord = require("../models/intermediary/tagWordModel");
 
 
 // @desc    Search for tags with a regex matching (partially or fully) a request query (string) with the tag label
@@ -92,6 +93,12 @@ const createTag = asyncHandler(async (req, res) => {
         label: req.body.label,
         public: req.body.public,
         description: req.body.description,
+    }).then(value => {
+        console.log('new tag value:', value)
+        console.log('req.body.wordsId', req.body.wordsId)
+        // TODO: tagWord logic should be properly implemented in a separate controller?
+        //  how can we call it once we crated the tag?
+        // TagWord.insertMany(req.body.tagWords)
     })
 
     // TODO: req.body.wordsId? => create entries in tagWordModel with wordId+tagId

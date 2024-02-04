@@ -57,6 +57,13 @@ const createTag = async (tag: TagData, token: any) => {
         }
     }
     const response = await axios.post(API_URL, tag, config)
+    // NOT WORKING
+    //     .then((info) => {
+    //     // call to create tagWord
+    //     console.log('info.data from frontend response:', info.data)
+    //     return(info.data)
+    // })
+    // const response = await axios.post(API_URL, tag, config)
     return(response.data)
 }
 
