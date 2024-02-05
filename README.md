@@ -5,7 +5,9 @@ You know how the saying goes when it comes to languages: _You either use it, or 
 The main purpose of this project is to help you revise your vocabulary in many languages at the same time, so you won't forget any of them while learning a new one.
 
 ## NB!
-At this point, we're at full development of core functions of the app. All the basic functionalities are not yet done, so we consider this a pre-alpha. Once this stage is done, we'll implement branches to help incorporate gradually new functionalities and allow users to interact with the app for the real Alpha stage, and eventually to a Beta. Updates will be posted here on the repository's README.
+At this point, we're at full development of core functions of the app. All the basic functionalities are not yet done, so we consider this a pre-alpha. Once this stage is done, we'll implement branches to help incorporate gradually new functionalities and allow users to interact with the app for the real Alpha stage, and eventually to a Beta. Updates will be posted here on the repository's README. 
+
+We're using MERN Stack +Typescript, with Material UI. 
 
 Also: sometimes (at the time of writing) commits on this repo are not successfully compiling, since time/date limits on certain cases do not allow us to thoroughly check before pushing (to help us keep a stady development-rate, we're trying to commit daily. Once we hit minimum viable product (MVP), we'll switch to a more branched development with extensive testing before pushing to production. 
 
