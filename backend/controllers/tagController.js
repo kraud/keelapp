@@ -99,6 +99,24 @@ const createTag = asyncHandler(async (req, res) => {
         // TODO: tagWord logic should be properly implemented in a separate controller?
         //  how can we call it once we crated the tag?
         // TagWord.insertMany(req.body.tagWords)
+        // NB! Testing to see if this works correctly. If so: we'll refactor this into a separate (async?) function
+        const tagWordsItems = req.body.wordsId.map((wordId) => {
+            return({
+                tagId: value._id,
+                wordId: wordId
+            })
+        })
+        TagWord.insertMany(tagWordsItems)
+            .then(function () {
+                console.log("Data inserted") // Success
+                // console.log("tagWords", tagWords) // Success
+                res.status(200).json(tag)
+            }).catch(function (error) {
+                console.log(error)     // Failure
+                console.log("Error when inserting TagWord") // Success
+                res.status(400).json(tag)
+                throw new Error("Tag-Word insertMany failed")
+            });
     })
 
     // TODO: req.body.wordsId? => create entries in tagWordModel with wordId+tagId
