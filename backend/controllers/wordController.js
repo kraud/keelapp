@@ -3,6 +3,7 @@ const asyncHandler = require('express-async-handler')
 const Word = require('../models/wordModel')
 const WordTag = require('../models/intermediary/tagWordModel')
 const Tag = require('../models/tagModel')
+const mongoose = require("mongoose");
 
 // @desc    Get Words
 // @route   GET /api/words
@@ -546,32 +547,38 @@ const filterWordByAnyTranslation = asyncHandler(async (req, res) => {
 // @desc    Get All word+tag data
 // @route   GET /api/wordTag
 // @access  Private
-const getAllTagWordDataByWordId = asyncHandler(async (req, res) => {
+const getAllWordDataByUserId = asyncHandler(async (req, res) => {
 
-    await Word.aggregate([
+    const allWordData = await Word.aggregate([
         { '$lookup': {
             'from': WordTag.collection.name,
-            'let': { 'id': '$_id' }, // from Word
+            'let': { 'id': '$_id', 'wordAuthor': '$user' }, // from Word
             'pipeline': [
-                { '$match': {
-                    '$expr': { '$eq': [ '$$id', '$wordId' ] } // checks through all the WordTag
+                {'$match': {
+                    '$expr': {
+                        '$and': [
+                            {'$eq': ['$$id', '$tagId']},  // tagId from WordTag
+                            {'$eq': [mongoose.Types.ObjectId(req.user.id), '$$wordAuthor']}
+                        ]
+                    }
                 }},
                 { '$lookup': {
                     'from': Tag.collection.name,
                     'let': { 'tagId': '$tagId' }, // from WordTag
                     'pipeline': [
                         { '$match': {
-                            '$expr': { '$eq': [ '$_id', '$$tagId' ] }
-                        }}
+                                '$expr': { '$eq': [ '$_id', '$$tagId' ] }
+                            }}
                     ],
                     'as': 'tags'
                 }},
                 { '$unwind': '$tags' },
                 { '$replaceRoot': { 'newRoot': '$tags' } }
             ],
-            'as': 'words'
+            'as': 'tags'
         }}
     ])
+    res.status(200).json(allWordData)
 })
 
 module.exports = {
@@ -584,5 +591,5 @@ module.exports = {
     filterWordByAnyTranslation,
     getTags,
     getAmountByTag,
-    getAllTagWordDataByWordId
+    getAllWordDataByUserId
 }

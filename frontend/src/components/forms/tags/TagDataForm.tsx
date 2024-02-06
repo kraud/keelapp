@@ -35,7 +35,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
     const validationSchema = Yup.object().shape({
         public: Yup.string().required("Required")
             .oneOf(['Public', 'Private', 'Friends-Only'], "Required"),
-        label: Yup.string()
+        label: Yup.string()// TODO: make it so it MUST be a single word?
             .required("A tag label is required")
             .min(2, 'Label must be longer than 2 characters')
             .max(30, 'Label is too long'),

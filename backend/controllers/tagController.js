@@ -1,4 +1,4 @@
-
+var mongoose = require('mongoose');
 const asyncHandler = require("express-async-handler");
 const Tag = require("../models/tagModel");
 const Word = require("../models/wordModel");
@@ -93,31 +93,42 @@ const createTag = asyncHandler(async (req, res) => {
         label: req.body.label,
         public: req.body.public,
         description: req.body.description,
-    }).then(value => {
-        console.log('new tag value:', value)
-        console.log('req.body.wordsId', req.body.wordsId)
-        // TODO: tagWord logic should be properly implemented in a separate controller?
-        //  how can we call it once we crated the tag?
-        // TagWord.insertMany(req.body.tagWords)
-        // NB! Testing to see if this works correctly. If so: we'll refactor this into a separate (async?) function
-        const tagWordsItems = req.body.wordsId.map((wordId) => {
-            return({
-                tagId: value._id,
-                wordId: wordId
-            })
-        })
-        TagWord.insertMany(tagWordsItems)
-            .then(function () {
-                console.log("Data inserted") // Success
-                // console.log("tagWords", tagWords) // Success
-                res.status(200).json(tag)
-            }).catch(function (error) {
-                console.log(error)     // Failure
-                console.log("Error when inserting TagWord") // Success
-                res.status(400).json(tag)
-                throw new Error("Tag-Word insertMany failed")
-            });
     })
+        .then(value => {
+            console.log('new tag value:', value)
+            console.log('req.body.wordsId', req.body.wordsId)
+            // TODO: tagWord logic should be properly implemented in a separate controller?
+            //  how can we call it once we crated the tag?
+            // TagWord.insertMany(req.body.tagWords)
+            // NB! Testing to see if this works correctly. If so: we'll refactor this into a separate (async?) function
+            const tagWordsItems = req.body.wordsId.map((wordId) => {
+                return ({
+                    tagId: value._id,
+                    wordId: wordId
+                })
+            })
+            TagWord.insertMany(tagWordsItems)
+                .then(function (returnData) {
+                    console.log("Data inserted") // Success
+                    console.log("returnData:", returnData) // Success
+                    // console.log("tagWords", tagWords) // Success
+                    res.status(200).json({
+                        ...tag,
+                        tagWords: returnData,
+                    })
+                }).catch(function (error) {
+                    console.log(error)     // Failure
+                    console.log("Error when inserting TagWord")
+                    res.status(400).json(tag)
+                    throw new Error("Tag-Word insertMany failed")
+                });
+        })
+        .catch(function (error) {
+            console.log(error)     // Failure
+            console.log("Error when creating Tag")
+            res.status(400).json(tag)
+            throw new Error("Tag-Word insertMany failed")
+        });
 
     // TODO: req.body.wordsId? => create entries in tagWordModel with wordId+tagId
 
@@ -202,33 +213,38 @@ const getAmountByTag = asyncHandler(async (req, res) => {
 // @desc    Get All word+tag data
 // @route   GET --
 // @access  Private
-const getAllTagWordDataByTagId = asyncHandler(async (req, res) => {
+const getAllTagDataByUserId = asyncHandler(async (req, res) => {
 
-    await Tag.aggregate([
+    const allTagData = await Tag.aggregate([
         { '$lookup': {
             'from': WordTag.collection.name,
-            'let': { 'id': '$_id' }, // from Word
+            'let': { 'id': '$_id', 'tagAuthor': '$author' }, // from Tag
             'pipeline': [
-                // TODO: add an 'and' operator here, to check for req.body.tagId or by userId, etc.
-                { '$match': {
-                    '$expr': { '$eq': [ '$$id', '$tagId' ] } // checks through all the WordTag
+                {'$match': {
+                    '$expr': {
+                        '$and': [
+                            {'$eq': ['$$id', '$tagId']},  // tagId from WordTag
+                            {'$eq': [mongoose.Types.ObjectId(req.user.id), '$$tagAuthor']}
+                        ]
+                    }
                 }},
                 { '$lookup': {
-                        'from': Word.collection.name,
-                        'let': { 'wordId': '$wordId' }, // from WordTag
-                        'pipeline': [
-                            { '$match': {
-                                    '$expr': { '$eq': [ '$_id', '$$wordId' ] }
-                                }}
-                        ],
-                        'as': 'words'
-                    }},
+                    'from': Word.collection.name,
+                    'let': { 'wordId': '$wordId' }, // from WordTag
+                    'pipeline': [
+                        { '$match': {
+                                '$expr': { '$eq': [ '$_id', '$$wordId' ] }
+                            }}
+                    ],
+                    'as': 'words'
+                }},
                 { '$unwind': '$words' },
                 { '$replaceRoot': { 'newRoot': '$words' } }
             ],
-            'as': 'tags'
+            'as': 'words'
         }}
     ])
+    res.status(200).json(allTagData)
 })
 
 module.exports = {
@@ -240,5 +256,5 @@ module.exports = {
     updateTag,
     getAmountByTag,
     getOtherUserTags,
-    getAllTagWordDataByTagId
+    getAllTagDataByUserId
 }
