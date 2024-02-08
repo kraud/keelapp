@@ -26,7 +26,7 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
                             // bug with MongoDB? Might have to create work-around iterating through the filters array
                             // and checking one at a time, and then joining the unique results at the end
                             // see more at: https://stackoverflow.com/questions/22907451/nodejs-mongodb-in-array-not-working-if-array-is-a-variable
-                            // "word": {$in: ['der', 'die']}, // this works
+                            // "word": {$in: ['der', 'die']}, // this works (using hardcoded strings, instead of a variable like filter.filterValue)
                             // it's an array to allow searching by more than 1 gender at a time => doesn't work at the moment
                             "word": {$in: `${[filter.filterValue]}`}, // this doesn't work => only 1 filter at a time
                             "caseName": {$regex: "^gender"}, // TODO: add check for other fields like "gradable" in adverb
@@ -332,7 +332,7 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
 // @route   GET /api/words
 // @access  Private
 const getWordById = asyncHandler(async (req, res) => {
-    const word = await Word.findById(req.params.id)
+    const word = await Word.findById(req.params.id) // TODO: will be replaced by a lookup query with TagWord
 
     if(!word){
         res.status(400)
@@ -353,6 +353,7 @@ const getWordById = asyncHandler(async (req, res) => {
     res.status(200).json(word)
 })
 
+// THIS IS LEGACY IMPLEMENTATION -- will be replaced by TagWord
 // @desc    Get Tags
 // @route   GET /api/tags
 // @access  Private
@@ -412,6 +413,7 @@ const setWord = asyncHandler(async (req, res) => {
         tags: req.body.tags,
         user: req.user.id
     })
+    // TODO: we must review the list of TagIds and create TagWord entries accordingly
     res.status(200).json(word)
 })
 
@@ -438,6 +440,7 @@ const updateWord = asyncHandler(async (req, res) => {
         throw new Error('User not authorized')
     }
 
+    // TODO: we must review the list of TagIds and update TagWord entries accordingly
     const updatedWord = await Word.findByIdAndUpdate(req.params.id, req.body, {new: true})
     res.status(200).json(updatedWord)
 })
@@ -557,7 +560,7 @@ const getAllWordDataByUserId = asyncHandler(async (req, res) => {
                 {'$match': {
                     '$expr': {
                         '$and': [
-                            {'$eq': ['$$id', '$tagId']},  // tagId from WordTag
+                            {'$eq': ['$$id', '$wordId']},  // wordId from WordTag
                             {'$eq': [mongoose.Types.ObjectId(req.user.id), '$$wordAuthor']}
                         ]
                     }

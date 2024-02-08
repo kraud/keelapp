@@ -88,7 +88,7 @@ const createTag = asyncHandler(async (req, res) => {
         res.status(400)
         throw new Error("Invalid public status")
     }
-    const tag = await Tag.create({
+    Tag.create({
         author: req.body.author,
         label: req.body.label,
         public: req.body.public,
@@ -113,26 +113,22 @@ const createTag = asyncHandler(async (req, res) => {
                     console.log("returnData:", returnData) // Success
                     // console.log("tagWords", tagWords) // Success
                     res.status(200).json({
-                        ...tag,
+                        ...value,
                         tagWords: returnData,
                     })
                 }).catch(function (error) {
                     console.log(error)     // Failure
                     console.log("Error when inserting TagWord")
-                    res.status(400).json(tag)
+                    res.status(400).json(value)
                     throw new Error("Tag-Word insertMany failed")
                 });
         })
         .catch(function (error) {
             console.log(error)     // Failure
             console.log("Error when creating Tag")
-            res.status(400).json(tag)
+            res.status(400).json(value)
             throw new Error("Tag-Word insertMany failed")
-        });
-
-    // TODO: req.body.wordsId? => create entries in tagWordModel with wordId+tagId
-
-    res.status(200).json(tag)
+        })
 })
 
 // @desc    Delete Tag
