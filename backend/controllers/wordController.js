@@ -4,6 +4,7 @@ const Word = require('../models/wordModel')
 const WordTag = require('../models/intermediary/tagWordModel')
 const Tag = require('../models/tagModel')
 const mongoose = require("mongoose");
+const TagWord = require("../models/intermediary/tagWordModel");
 
 // @desc    Get Words
 // @route   GET /api/words
@@ -413,7 +414,38 @@ const setWord = asyncHandler(async (req, res) => {
         tags: req.body.tags,
         user: req.user.id
     })
-    // TODO: we must review the list of TagIds and create TagWord entries accordingly
+        .then(newWordData => {
+            console.log('new tag value:', newWordData)
+            // TODO: tagWord logic should be properly implemented in a separate controller?
+            //  how can we call it once we crated the tag?
+            // NB! Testing to see if this works correctly. If so: we'll refactor this into a separate (async?) function
+            const tagWordsItems = req.body.tagsId.map((tagId) => {
+                return ({
+                    tagId: tagId,
+                    wordId: newWordData._id,
+                })
+            })
+            TagWord.insertMany(tagWordsItems)
+                .then(function (returnNewTagWordData) {
+                    console.log("Data inserted") // Success
+                    console.log("returnData:", returnNewTagWordData) // Success
+                    res.status(200).json({
+                        ...newWordData,
+                        tagWords: returnNewTagWordData,
+                    })
+                }).catch(function (error) {
+                console.log(error)     // Failure
+                console.log("Error when inserting TagWord")
+                res.status(400).json(newWordData)
+                throw new Error("Tag-Word insertMany failed")
+            })
+        })
+        .catch(function (error) {
+            console.log(error) // Failure
+            console.log("Error when creating Word")
+            res.status(400)
+            throw new Error("Tag-Word insertMany failed")
+        })
     res.status(200).json(word)
 })
 
