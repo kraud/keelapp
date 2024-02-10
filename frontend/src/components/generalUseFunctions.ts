@@ -26,10 +26,10 @@ export const extractTagsArrayFromUnknownFormat = (originalArray: FilterItem[]) =
             ?
                 (
                     (originalArray[0].type === "tag") &&
-                    (originalArray[0].tagIds !== undefined) // if not => each arrayItem has a tagId (additive filtering)
+                    (originalArray[0].tagIds !== undefined)
                 )
                     ? (originalArray[0].tagIds) // all tagsIds are stored on the first arrayItem (stackable filtering)
-                    : (originalArray.map(arrayItem => arrayItem.filterValue))
+                    : (originalArray.map(arrayItem => arrayItem.filterValue)) // if not => each arrayItem has a tagId (additive filtering)
             :
                 []
     )

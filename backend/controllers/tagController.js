@@ -11,7 +11,8 @@ const TagWord = require("../models/intermediary/tagWordModel");
 // @access  Private
 const searchTags = asyncHandler(async (req, res) => {
     const getPrivateOrPublicQuery = () => {
-        if(req.query.inlcudeOtherUsersTags){
+        console.log('req',req)
+        if(req.query.includeOtherUsersTags){
             return({
                 "label": {$regex: `${req.query.query}`, $options: "i"},
                 author: req.user.id

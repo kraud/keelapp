@@ -3,7 +3,7 @@ import React, {HTMLProps, useEffect, useState} from "react";
 import globalTheme from "../../theme/theme";
 import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
-import {FilterItem, InternalStatus, TranslationItem} from "../../ts/interfaces";
+import {FilterItem, InternalStatus, TagData, TranslationItem} from "../../ts/interfaces";
 import {Lang, PartOfSpeech} from "../../ts/enums";
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
@@ -108,7 +108,7 @@ export function TableDataCell(props: TableDataCellProps){
         }
     }
     type TagsData = {
-        tags: string[]
+        tags: TagData[]
     } & InternalStatus
 
     const dispatch = useDispatch()

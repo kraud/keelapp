@@ -1,16 +1,16 @@
 import {Autocomplete, Chip, CircularProgress, Grid, InputAdornment, TextField, Typography} from "@mui/material";
 import React, {useEffect, useState} from "react";
-import {searchAllTags} from "../features/words/wordSlice";
 import {useDispatch, useSelector} from "react-redux";
 import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from '@mui/icons-material/Search';
 import globalTheme from "../theme/theme";
 import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
-import {FilterItem} from "../ts/interfaces";
+import {FilterItem, TagData} from "../ts/interfaces";
+import {searchTagsByLabel} from "../features/tags/tagSlice";
 
 interface AutocompleteMultipleProps {
-    values: string[], // type is simply "string" array, since we get this info from the stored word, and there we only keep its "name"
+    values: TagData[], // TODO: this will be changed to SearchResult, so we can change component behaviour depending on type
     saveResults: (results: FilterItem[]) => void
     type: any //'tag'|'gender'|'PoS'// TODO: type should be 'tag'|'gender'|'PoS'
     limitTags?: number
@@ -23,7 +23,7 @@ interface AutocompleteMultipleProps {
 
 export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
     const [inputValue, setInputValue] = useState<string>('')
-    const [options, setOptions] = useState<string[]>([])
+    const [options, setOptions] = useState<TagData[]>([])
     const [open, setOpen] = useState(false)
     const [loadingLocal, setLoadingLocal] = useState(false)
     const dispatch = useDispatch()
@@ -48,13 +48,14 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
         const timeout = setTimeout(() => {
             // dispatch search for inputValue and when results are updated, set them in options
             // @ts-ignore
-            dispatch(searchAllTags(inputValue))
+            dispatch(searchTagsByLabel({query: inputValue, includeOtherUsersTags: false}))
         }, 400)
 
         return () => clearTimeout(timeout)
     }, [inputValue])
 
     useEffect(() => {
+        // TODO: this returns full Tag data. Refactor AutocompleteMultiple to work with this data (and save label+id?)
         // TODO: searchResults should have the FilterItem format, and we unwind that into array of strings
         setOptions(tags)
     },[tags])
@@ -100,7 +101,8 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
                 background: 'white',
                 ...props.sxProps
             }}
-            getOptionLabel={(option: string) => option}
+            // @ts-ignore
+            getOptionLabel={(option: TagData) => option.label}
             // getOptionLabel={(option: SearchResult) => option.label}
             // isOptionEqualToValue={(option, value) => option === value}
             // isOptionEqualToValue={(option, value) => {
@@ -119,14 +121,13 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
             noOptionsText={(loadingLocal || isTagSearchLoading) ?"Loading..." :"No matches"}
             //@ts-ignore
             // onChange={(event: any, newValue: SearchResult) => {
-            onChange={(event: any, newValue) => {
-                // setValues(newValue) //NB: moved info to parent component? TODO: check
+            onChange={(event: any, newValue: TagData[]) => {
                 if(newValue.length > 0) {
                     if(props.matchAll!!){ // all tags go in a single array - so all must match in every single result
                         props.saveResults([getDataToStoreByType(newValue)])
                     } else {
                         props.saveResults( // each tag goes in its own filter - so a result can match a single filter at a time
-                            newValue.map((value: string) => {
+                            newValue.map((value: TagData) => {
                                 return(getDataToStoreByType(value))
                             })
                         )
@@ -148,11 +149,11 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
                 }
                 setInputValue(newInputValue)
             }}
-            renderTags={(value: string[], getTagProps) =>
-                value.map((option: string, index: number) => (
+            renderTags={(value: TagData[], getTagProps) =>
+                value.map((option: TagData, index: number) => (
                     <Chip
                         variant="outlined"
-                        label={option}
+                        label={option.label}
                         color={"secondary"}
                         {...getTagProps({ index })}
                     />
@@ -254,7 +255,7 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
                                         display: 'inline',
                                     }}
                                 >
-                                    {option}
+                                    {option.label}
                                 </Typography>
                             </Grid>
                         </Grid>
