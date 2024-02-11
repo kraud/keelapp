@@ -60,14 +60,23 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
         setOptions(tags)
     },[tags])
 
-    const getDataToStoreByType = (newValue: any|any[]) => {
+    const getDataToStoreByType = (newValue: TagData|TagData[]) => {
         switch(props.type){
             case('tag'):{
                 return({
                     type: props.type,
-                    id: props.matchAll ? props.type+"-"+(props.values.length) :props.type+"-"+newValue,
-                    filterValue: props.matchAll ? (props.values.length).toString() :newValue,
-                    tagIds: props.matchAll ? newValue :undefined,
+                    id: props.matchAll
+                        ? props.type+"-"+(props.values.length)
+                        : (!Array.isArray(newValue))
+                            ? props.type+"-"+newValue.label
+                            : "NO-FILTER-DATA (1)",
+                    filterValue: props.matchAll
+                        ? (props.values.length).toString() // if matchAll => this field is not used to filter => real info is specified in TagIds
+                        : (!Array.isArray(newValue)) // if !matchAll => we must give the tagId to filter by
+                            ? newValue.label
+                            : "NO-FILTER-DATA (2)",
+                    // => undefined TagIds field is checked in BE to know what to do
+                    tagIds: props.matchAll ? newValue.map(value => value.id) :undefined, // if matchAll => it will always be an array (of zero or more tag ids)
                 })
             }
             // case('gender'):{

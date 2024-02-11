@@ -108,7 +108,7 @@ export function TableDataCell(props: TableDataCellProps){
         }
     }
     type TagsData = {
-        tags: TagData[]
+        tags: string[] // corresponds with the tag Ids? TODO: check.
     } & InternalStatus
 
     const dispatch = useDispatch()
