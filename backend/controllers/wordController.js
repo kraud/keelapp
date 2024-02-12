@@ -333,7 +333,38 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
 // @route   GET /api/words
 // @access  Private
 const getWordById = asyncHandler(async (req, res) => {
-    const word = await Word.findById(req.params.id) // TODO: will be replaced by a lookup query with TagWord
+    // const word = await Word.findById(req.params.id) // TODO: will be replaced by a lookup query with TagWord
+    console.log('req.params.id', req.params.id)
+    const word = await Word.aggregate([
+        { '$lookup': {
+            'from': WordTag.collection.name,
+            'let': { 'id': '$_id', 'wordAuthor': '$user' }, // from Word
+            'pipeline': [
+                {'$match': {
+                    '$expr': {
+                        '$and': [
+                            {'$eq': ['$$id', '$wordId']},  // wordId from WordTag
+                            {'$eq': ['$wordId', mongoose.Types.ObjectId(req.params.id)]},  // id from Word // TODO: this is not filtering?
+                            {'$eq': [mongoose.Types.ObjectId(req.user.id), '$$wordAuthor']},
+                        ]
+                    }
+                }},
+                { '$lookup': {
+                    'from': Tag.collection.name,
+                    'let': { 'tagId': '$tagId' }, // from WordTag
+                    'pipeline': [
+                        { '$match': {
+                                '$expr': { '$eq': [ '$_id', '$$tagId' ] }
+                            }}
+                    ],
+                    'as': 'tags'
+                }},
+                { '$unwind': '$tags' },
+                { '$replaceRoot': { 'newRoot': '$tags' } }
+            ],
+            'as': 'tags'
+        }}
+    ])
 
     if(!word){
         res.status(400)
@@ -345,12 +376,13 @@ const getWordById = asyncHandler(async (req, res) => {
         res.status(401)
         throw new Error('User not found')
     }
-
+    console.log('word', word)
     // Make sure the logged-in user matches the word user
-    if(word.user.toString() !== req.user.id){
-        res.status(401)
-        throw new Error('User not authorized')
-    }
+    // TODO: add back in
+    // if(word.user.toString() !== req.user.id){
+    //     res.status(401)
+    //     throw new Error('User not authorized')
+    // }
     res.status(200).json(word)
 })
 
