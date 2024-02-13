@@ -60,6 +60,9 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
         setOptions(tags)
     },[tags])
 
+    // Depending on the type of AutocompleteMultiple, the returned data will be structured differently.
+    // e.g. if matchAll prop is true => returned data will include tagIds,
+    // this way, all filters are applied in an additive fashion (all true at the same time, instead of each adding a category)
     const getDataToStoreByType = (newValue: TagData|TagData[]) => {
         switch(props.type){
             case('tag'):{
@@ -76,7 +79,19 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
                             ? newValue.label
                             : "NO-FILTER-DATA (2)",
                     // => undefined TagIds field is checked in BE to know what to do
-                    tagIds: props.matchAll ? newValue.map(value => value.id) :undefined, // if matchAll => it will always be an array (of zero or more tag ids)
+                    // if not undefined => apply all tags simultaneously
+                    tagIds: props.matchAll
+                        ? (Array.isArray(newValue))
+                            ? newValue.map((value: TagData) => {
+                                // TODO: this should return the full tagData
+                                if(value._id !== undefined){
+                                    return value._id
+                                } else {
+                                    return 'tagData-id-undefined'
+                                }
+                            })
+                            : undefined
+                        : undefined, // if matchAll => it will always be an array (of zero or more tag ids)
                 })
             }
             // case('gender'):{
@@ -88,7 +103,11 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
             default: return({
                 type: props.type,
                 id: props.matchAll ? props.type+"-"+(props.values.length) :props.type+"-"+newValue,
-                filterValue: props.matchAll ? (props.values.length).toString() :newValue,
+                filterValue: props.matchAll
+                    ? (props.values.length).toString()
+                    : (!Array.isArray(newValue)) // if !matchAll => we must give the tagId to filter by
+                        ? newValue.label
+                        : "NO-FILTER-DATA (3)",
             })
         }
     }
