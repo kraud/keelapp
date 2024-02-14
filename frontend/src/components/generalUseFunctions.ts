@@ -21,25 +21,40 @@ export const getCurrentLangTranslated = (currentLang?: Lang) => {
 }
 
 export const extractTagsArrayFromUnknownFormat = (originalArray: FilterItem[]) => {
-    return(
-        (originalArray.length > 0)
-            ?
-                (
-                    (originalArray[0].type === "tag") &&
-                    (originalArray[0].tagIds !== undefined)
+    if(originalArray.length > 0){
+        if(
+            (originalArray[0].type === "tag") &&
+            (originalArray[0].restrictiveArray !== undefined)
+        ){
+            // all tagsIds are stored on the first arrayItem (stackable filtering)
+            return(originalArray[0].restrictiveArray)
+        } else {
+            // if not => each arrayItem has a tagId (additive filtering)
+            const allItemsHaveAdditiveItem = originalArray.every((item: FilterItem) => {
+                return(
+                    (item.type === "tag") &&
+                    (item.additiveItem !== undefined)
                 )
-                    ? (originalArray[0].tagIds) // all tagsIds are stored on the first arrayItem (stackable filtering)
-                    : (originalArray.map(arrayItem => arrayItem.filterValue)) // if not => each arrayItem has a tagId (additive filtering)
-            :
-                []
-    )
+            })
+            if(allItemsHaveAdditiveItem){
+                return(originalArray.map((arrayItem: FilterItem) => {
+                    //@ts-ignore // NB! TS not recognizing allItemsHaveAdditiveItem? every arrayItem will have additiveItem
+                    return(arrayItem.additiveItem!)
+                }))
+            } else {
+                return([])
+            }
+        }
+    } else {
+        return([])
+    }
 }
 
 export const checkEqualArrayContent = (original: unknown[], copy: unknown[]) => {
     let allIncluded = (original.length === copy.length)
     if (allIncluded){
         original.every((originalItem: unknown) => {
-            allIncluded = copy.includes(originalItem)
+            allIncluded = copy.includes(originalItem) // TODO: this might not work with arrays of TagData?
             return allIncluded
         })
     }

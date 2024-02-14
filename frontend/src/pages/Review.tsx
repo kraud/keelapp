@@ -45,20 +45,20 @@ export function Review(){
     useEffect(() => {
         //@ts-ignore
         let {size} = searchParams
-        if(size !== 0){
-            if(searchParams.getAll("tags").length > 0){
-                setCurrentTagFilters([{
-                    type: 'tag',
-                    id: "tag-"+((searchParams.getAll("tags")).length),
-                    tagIds: searchParams.getAll("tags"),
-                    filterValue: (searchParams.getAll("tags")).toString(),
-                }])
-            }
-        }
-        else {
+        // if(size !== 0){
+        //     if(searchParams.getAll("tags").length > 0){
+        //         setCurrentTagFilters([{
+        //             type: 'tag',
+        //             id: "tag-"+((searchParams.getAll("tags")).length),
+        //             tagFullInfo: searchParams.getAll("tags"),
+        //             filterValue: (searchParams.getAll("tags")).toString(),
+        //         }])
+        //     }
+        // }
+        // else {
             //@ts-ignore
             dispatch(getWordsSimplified())
-        }
+        // }
     }, [])
 
     useEffect(() => {
@@ -345,9 +345,9 @@ export function Review(){
                                         (
                                             (currentTagFilters[0] !== undefined) &&
                                             (currentTagFilters[0].type === 'tag') &&
-                                            (currentTagFilters[0].tagIds !== undefined)
+                                            (currentTagFilters[0].tagFullInfo !== undefined)
                                         )
-                                            ? currentTagFilters[0].tagIds
+                                            ? currentTagFilters[0].tagFullInfo // TODO:
                                             : [] // TODO: should replace with map through the items in currentTagFilters?
                                     }
                                     saveResults={(results: FilterItem[]) => {

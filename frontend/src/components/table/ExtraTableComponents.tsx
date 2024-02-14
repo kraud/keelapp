@@ -108,7 +108,7 @@ export function TableDataCell(props: TableDataCellProps){
         }
     }
     type TagsData = {
-        tags: string[] // corresponds with the tag Ids? TODO: check.
+        tags: TagData[] // corresponds with the tag Ids? TODO: check.
     } & InternalStatus
 
     const dispatch = useDispatch()
@@ -542,6 +542,8 @@ export function TableDataCell(props: TableDataCellProps){
                         values={((selectedWordTagsData.tags !== undefined)&&((selectedWordTagsData.tags).length > 0)) ? selectedWordTagsData.tags : []}
                         saveResults={(results: FilterItem[]) => {
                             setSelectedWordTagsData({
+                                // extractTagsArrayFromUnknownFormat not needed here, since values always are separate items?
+                                // tags: extractTagsArrayFromUnknownFormat(results),
                                 tags: extractTagsArrayFromUnknownFormat(results),
                                 isDirty: !checkEqualArrayContent(props.content, extractTagsArrayFromUnknownFormat(results)),
                                 completionState: true,

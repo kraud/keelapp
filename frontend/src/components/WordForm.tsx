@@ -502,10 +502,11 @@ export function WordForm(props: TranslationFormProps) {
                                                         ?
                                                             (
                                                                 (results[0].type === "tag") &&
-                                                                (results[0].tagIds !== undefined)
+                                                                (results[0].restrictiveArray !== undefined)
                                                             )
-                                                                ? (results[0].tagIds)
-                                                                : (results.map(result => result.filterValue))
+                                                                ? (results[0].restrictiveArray)
+                                                                // TODO: create function that returns list with all additiveItems
+                                                                : (results.map(result => result.additiveItem))
                                                         :
                                                         []
                                                 })

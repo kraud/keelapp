@@ -64,6 +64,7 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
     // e.g. if matchAll prop is true => returned data will include tagIds,
     // this way, all filters are applied in an additive fashion (all true at the same time, instead of each adding a category)
     const getDataToStoreByType = (newValue: TagData|TagData[]) => {
+        // NB! this returns a FilterItem, with additional data depending on the type of filter
         switch(props.type){
             case('tag'):{
                 return({
@@ -80,16 +81,9 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
                             : "NO-FILTER-DATA (2)",
                     // => undefined TagIds field is checked in BE to know what to do
                     // if not undefined => apply all tags simultaneously
-                    tagIds: props.matchAll
+                    tagFullInfo: props.matchAll
                         ? (Array.isArray(newValue))
-                            ? newValue.map((value: TagData) => {
-                                // TODO: this should return the full tagData
-                                if(value._id !== undefined){
-                                    return value._id
-                                } else {
-                                    return 'tagData-id-undefined'
-                                }
-                            })
+                            ? newValue // we return full TagData array
                             : undefined
                         : undefined, // if matchAll => it will always be an array (of zero or more tag ids)
                 })

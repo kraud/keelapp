@@ -4,7 +4,7 @@ export interface WordData {
     translations: TranslationItem[],
     partOfSpeech?: string,
     clue?: string,
-    tags?: string[],
+    tags?: TagData[],
 }
 export interface WordDataBE {
     id: string,
@@ -127,7 +127,8 @@ type CaseFilter = {
 
 type TagFilter = {
     type: 'tag'
-    tagIds?: string[],
+    restrictiveArray?: TagData[], // info of each Tag that needs to be present at the same time, single FilterItem can be very restrictive
+    additiveItem?: TagData, // single tag info - this way we can filter by many FilterItems in parallel and each one adds more results
 }
 
 type PartOfSpeechFilter = {
