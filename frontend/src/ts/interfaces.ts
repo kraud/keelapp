@@ -43,6 +43,7 @@ type WordSearch = {
 type TagSearch = {
     type: "tag"
     // TODO: add tag-relevant properties (check tagModel in BE)
+    completeTagInfo?: TagData,
 }
 
 type UserSearch = {
@@ -92,7 +93,7 @@ export type TagData = {
     label: string,
     description: string,
     public: 'Public' | 'Private' | 'Friends-Only',
-    wordsId?: string[]
+    wordsId?: WordData[]
 } & (InternalStatus)
 
 export interface PropsButtonData {

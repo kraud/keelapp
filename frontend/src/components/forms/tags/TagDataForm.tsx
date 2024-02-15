@@ -61,6 +61,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
 
     const [tagLabel, setTagLabel] = useState("")
     const [tagDescription, setTagDescription] = useState("")
+    // TODO: change from SearchResult to TagData?
     const [selectedWords, setSelectedWords] = useState<SearchResult[]>([]) // will always be 'type: "word"'
 
     useEffect(() => {
@@ -124,7 +125,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
         }
     },[props.currentTagData]) // TODO: check if this is ok? It was not working with only []
 
-    const handleDelete = (wordIndex: number) => {
+    const handleDeleteWordFromList = (wordIndex: number) => {
         setSelectedWords(
             selectedWords.filter((word: SearchResult, selectedIndex: number) => {
                 return(wordIndex !== selectedIndex)
@@ -318,7 +319,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
                         >
                             <Chip
                                 variant="filled"
-                                label={selectedWordItem.label}
+                                label={selectedWordItem.label}// TODO: display a default string? On what language? Look into global variable?
                                 color={"info"}
                                 sx={{
                                     maxWidth: "max-content",
@@ -327,7 +328,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
                                     navigate(`/word/${selectedWordItem.id}`)
                                 }}
                                 onDelete={() => {
-                                    handleDelete(index)
+                                    handleDeleteWordFromList(index)
                                 }}
                                 size={"medium"}
                                 icon={
