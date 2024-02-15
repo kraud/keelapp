@@ -1,5 +1,5 @@
 import {Lang} from "../ts/enums";
-import {FilterItem, FriendshipData, NotificationData, SearchResult} from "../ts/interfaces";
+import {FilterItem, FriendshipData, NotificationData, SearchResult, TagData} from "../ts/interfaces";
 import {toast} from "react-toastify";
 
 export const getCurrentLangTranslated = (currentLang?: Lang) => {
@@ -209,4 +209,29 @@ export const acceptFriendRequest = (
     } else {
         toast.info('There was an error processing this request (no matching friendship request.')
     }
+}
+
+export const getAllIndividualTagData = (originalArray: FilterItem[]) => {
+    let tagDataList = [] as TagData[]
+    if(originalArray.length === 0){
+        return([])
+    } else {
+        originalArray.forEach((item: FilterItem) => {
+            if(
+                (item.type === "tag") &&
+                (item.additiveItem !== undefined)
+            ){
+                tagDataList.push(item.additiveItem)
+            } else {
+                // NB! In
+                if(
+                    (item.type === "tag") &&
+                    (item.restrictiveArray !== undefined)
+                ){
+                    tagDataList = item.restrictiveArray
+                }
+            }
+        })
+    }
+    return(tagDataList)
 }
