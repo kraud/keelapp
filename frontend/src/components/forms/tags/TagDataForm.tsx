@@ -61,7 +61,6 @@ export const TagDataForm = (props: TagDataFormProps) => {
 
     const [tagLabel, setTagLabel] = useState("")
     const [tagDescription, setTagDescription] = useState("")
-    // TODO: change from SearchResult to TagData?
     const [selectedWords, setSelectedWords] = useState<SearchResult[]>([]) // will always be 'type: "word"'
 
     useEffect(() => {
