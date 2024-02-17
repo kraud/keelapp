@@ -73,8 +73,12 @@ export const TagDataForm = (props: TagDataFormProps) => {
                 label: tagLabel,
                 description: tagDescription,
                 // TODO: add selectedWords ids here as 'wordsId'
-                wordsId: selectedWords.map((word) => {
-                    return word.id
+                wordsId: selectedWords.map((word: SearchResult) => {
+                    if(word.type == 'word'){
+                        // TODO: this should be WordData
+                        //  => each SearchResult type=word should have its full word data included?
+                        return word
+                    }
                 }),
                 //  => must decide how to display the list later (in which language? clarify amount of translations available for each?)
 
@@ -115,6 +119,8 @@ export const TagDataForm = (props: TagDataFormProps) => {
                 }
             )
             setTagDescription(props.currentTagData.description)
+
+            // TODO: add update to list of related-words state here
 
             if((props.currentTagData.author !== user._id)){
                 // @ts-ignore

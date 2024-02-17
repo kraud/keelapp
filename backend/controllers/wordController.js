@@ -314,7 +314,7 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
             completeWord.translations.forEach((translation) => {
                 simplifiedWord = {
                     ...simplifiedWord,
-                    ...(getRequiredFieldsData(translation, completeWord.partOfSpeech)),
+                    ...(getRequiredFieldsDat(translation, completeWord.partOfSpeech)),
                     [getFieldName(translation.language)]: translation.cases.length
                 }
             })
