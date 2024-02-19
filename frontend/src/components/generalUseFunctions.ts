@@ -1,5 +1,5 @@
 import {Lang} from "../ts/enums";
-import {FilterItem, FriendshipData, NotificationData, SearchResult, TagData} from "../ts/interfaces";
+import {FilterItem, FriendshipData, NotificationData, SearchResult, TagData, WordDataBE} from "../ts/interfaces";
 import {toast} from "react-toastify";
 
 export const getCurrentLangTranslated = (currentLang?: Lang) => {
@@ -211,7 +211,7 @@ export const acceptFriendRequest = (
     }
 }
 
-export const getAllIndividualTagData = (originalArray: FilterItem[]) => {
+export const getAllIndividualTagDataFromFilterItem = (originalArray: FilterItem[]) => {
     let tagDataList = [] as TagData[]
     if(originalArray.length === 0){
         return([])
@@ -223,7 +223,6 @@ export const getAllIndividualTagData = (originalArray: FilterItem[]) => {
             ){
                 tagDataList.push(item.additiveItem)
             } else {
-                // NB! In
                 if(
                     (item.type === "tag") &&
                     (item.restrictiveArray !== undefined)
@@ -234,4 +233,22 @@ export const getAllIndividualTagData = (originalArray: FilterItem[]) => {
         })
     }
     return(tagDataList)
+}
+
+// NB! This is only needed if we assume that completeWordInfo is an optional field. IT SHOULD BECOME A REQUIRED FIELD
+export const getAllIndividualWordDataFromSearchResult = (originalArray: SearchResult[]) => {
+    let wordDataList = [] as WordDataBE[]
+    if(originalArray.length === 0){
+        return([])
+    } else {
+        originalArray.forEach((item: SearchResult) => {
+            if(
+                (item.type === "word") &&
+                (item.completeWordInfo !== undefined)
+            ){
+                wordDataList.push(item.completeWordInfo)
+            }
+        })
+    }
+    return(wordDataList)
 }

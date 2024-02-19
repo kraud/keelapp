@@ -38,6 +38,7 @@ type WordSearch = {
     type: "word",
     language: Lang,
     partOfSpeech: PartOfSpeech,
+    completeWordInfo?: WordDataBE,
 }
 
 type TagSearch = {
@@ -93,7 +94,7 @@ export type TagData = {
     label: string,
     description: string,
     public: 'Public' | 'Private' | 'Friends-Only',
-    wordsId?: WordData[]
+    wordsFullData?: WordDataBE[]
 } & (InternalStatus)
 
 export interface PropsButtonData {

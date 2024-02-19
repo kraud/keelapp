@@ -9,7 +9,7 @@ import {toast, Flip} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {PartOfSpeechSelector} from "./PartOfSpeechSelector";
 import {AutocompleteMultiple} from "./AutocompleteMultiple";
-import {getAllIndividualTagData} from "./generalUseFunctions";
+import {getAllIndividualTagDataFromFilterItem} from "./generalUseFunctions";
 
 interface TranslationFormProps {
     onSave: (wordData: WordData) => void,
@@ -499,7 +499,7 @@ export function WordForm(props: TranslationFormProps) {
                                             saveResults={(results: FilterItem[]) => {
                                                 setCompleteWordData({
                                                     ...completeWordData,
-                                                    tags: getAllIndividualTagData(results)
+                                                    tags: getAllIndividualTagDataFromFilterItem(results)
                                                 })
                                                 setTagsRecentlyModified(true)
                                             }}

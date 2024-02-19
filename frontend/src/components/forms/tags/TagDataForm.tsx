@@ -15,6 +15,7 @@ import {Lang} from "../../../ts/enums";
 import {useNavigate} from "react-router-dom";
 import {getUserById, resetUserSliceState} from "../../../features/users/userSlice";
 import LinearIndeterminate from "../../Spinner";
+import {getAllIndividualWordDataFromSearchResult} from "../../generalUseFunctions";
 
 interface TagDataFormProps {
     currentTagData: TagData,
@@ -71,15 +72,8 @@ export const TagDataForm = (props: TagDataFormProps) => {
                 public: tagPublic as 'Public' | 'Private' | 'Friends-Only',
                 label: tagLabel,
                 description: tagDescription,
-                // TODO: add selectedWords ids here as 'wordsId'
-                wordsId: selectedWords.map((word: SearchResult) => {
-                    if(word.type == 'word'){
-                        // TODO: this should be WordData
-                        //  => each SearchResult type=word should have its full word data included?
-                        return word
-                    }
-                }),
                 //  => must decide how to display the list later (in which language? clarify amount of translations available for each?)
+                wordsFullData: getAllIndividualWordDataFromSearchResult(selectedWords),
 
                 completionState: isValid,
                 isDirty: isDirty

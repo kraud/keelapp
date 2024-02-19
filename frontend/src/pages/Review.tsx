@@ -16,7 +16,7 @@ import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp
 import {AutocompleteMultiple} from "../components/AutocompleteMultiple";
 import {createColumnsReviewTable} from "../components/table/columns/ReviewTableColumns";
 import {FilterItem} from "../ts/interfaces";
-import {getAllIndividualTagData} from "../components/generalUseFunctions";
+import {getAllIndividualTagDataFromFilterItem} from "../components/generalUseFunctions";
 
 export function Review(){
     const navigate = useNavigate()
@@ -343,7 +343,7 @@ export function Review(){
                                 <AutocompleteMultiple
                                     type={'tag'}
                                     values={
-                                        getAllIndividualTagData(currentTagFilters)}
+                                        getAllIndividualTagDataFromFilterItem(currentTagFilters)}
                                     saveResults={(results: FilterItem[]) => {
                                         setCurrentTagFilters(results)
                                     }}
