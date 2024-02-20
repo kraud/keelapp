@@ -96,8 +96,6 @@ const createTag = asyncHandler(async (req, res) => {
         description: req.body.description,
     })
         .then(value => {
-            console.log('new tag value:', value)
-            console.log('req.body.wordsId', req.body.wordsId)
             // TODO: tagWord logic should be properly implemented in a separate controller?
             //  how can we call it once we crated the tag?
             // NB! Testing to see if this works correctly. If so: we'll refactor this into a separate (async?) function
