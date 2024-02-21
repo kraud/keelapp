@@ -1,7 +1,6 @@
 const asyncHandler = require('express-async-handler')
 
 const Word = require('../models/wordModel')
-const WordTag = require('../models/intermediary/tagWordModel')
 const Tag = require('../models/tagModel')
 const mongoose = require("mongoose");
 const TagWord = require("../models/intermediary/tagWordModel");
@@ -334,25 +333,32 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
 // @access  Private
 const getWordById = asyncHandler(async (req, res) => {
     // const word = await Word.findById(req.params.id)
-    // TODO: fix. This is returning unfiltered list of all words (although, with correct Tag data)
     const word = await Word.aggregate([
+        // filtering related to data present in word => apply here
+        {
+            $match: {
+                $and:[
+                    {"_id": mongoose.Types.ObjectId(req.params.id)},
+                    {"user": mongoose.Types.ObjectId(req.user.id)},
+                ]
+            }
+        },
+        // filtering related to data present in tagWord => apply here
         { '$lookup': {
-            'from': WordTag.collection.name,
-            'let': { 'id': '$_id', 'wordAuthor': '$user' }, // from Word
+            'from': TagWord.collection.name,
+            // 'let': { 'id': '$_id', 'wordAuthor': '$user' }, // from Word
+            'let': { 'wordAuthor': '$user' }, // from Word
             'pipeline': [
-                {'$match': {
-                    '$expr': {
+                {
+                    '$match': {
                         '$and': [
-                            {'$eq': ['$$id', '$wordId']},  // wordId from WordTag
-                            {'$eq': ['$wordId', mongoose.Types.ObjectId(req.params.id)]},  // id from Word // TODO: this is not filtering?
-                            // {'$wordId': {$in: [mongoose.Types.ObjectId(req.params.id)]}},  // id from Word // TODO: look into replacing $eq with $in: []
-                            {'$eq': [mongoose.Types.ObjectId(req.user.id), '$$wordAuthor']},
+                            {'$expr': {'$eq': ['$wordId', mongoose.Types.ObjectId(req.params.id)]}}, // wordId from Word,
                         ]
                     }
-                }},
+                },
                 { '$lookup': {
                     'from': Tag.collection.name,
-                    'let': { 'tagId': '$tagId' }, // from WordTag
+                    'let': { 'tagId': '$tagId' }, // from TagWord
                     'pipeline': [
                         { '$match': {
                                 '$expr': { '$eq': [ '$_id', '$$tagId' ] }
@@ -611,26 +617,26 @@ const filterWordByAnyTranslation = asyncHandler(async (req, res) => {
 })
 
 // @desc    Get All word+tag data
-// @route   GET /api/wordTag
+// @route   GET /api/TagWord
 // @access  Private
 const getAllWordDataByUserId = asyncHandler(async (req, res) => {
 
     const allWordData = await Word.aggregate([
         { '$lookup': {
-            'from': WordTag.collection.name,
+            'from': TagWord.collection.name,
             'let': { 'id': '$_id', 'wordAuthor': '$user' }, // from Word
             'pipeline': [
                 {'$match': {
                     '$expr': {
                         '$and': [
-                            {'$eq': ['$$id', '$wordId']},  // wordId from WordTag
+                            {'$eq': ['$$id', '$wordId']},  // wordId from TagWord
                             {'$eq': [mongoose.Types.ObjectId(req.user.id), '$$wordAuthor']}
                         ]
                     }
                 }},
                 { '$lookup': {
                     'from': Tag.collection.name,
-                    'let': { 'tagId': '$tagId' }, // from WordTag
+                    'let': { 'tagId': '$tagId' }, // from TagWord
                     'pipeline': [
                         { '$match': {
                                 '$expr': { '$eq': [ '$_id', '$$tagId' ] }
