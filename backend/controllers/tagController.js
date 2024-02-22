@@ -209,6 +209,16 @@ const getAmountByTag = asyncHandler(async (req, res) => {
 const getAllTagDataByUserId = asyncHandler(async (req, res) => {
 
     const allTagData = await Tag.aggregate([
+        // filtering related to data present in word => apply here
+        {
+            $match: {
+                $and:[
+                    // Make sure the logged-in user matches the word user
+                    {"author": mongoose.Types.ObjectId(req.params.id)},
+                ]
+            }
+        },
+        // filtering related to data present in tagWord => apply here
         { '$lookup': {
             'from': WordTag.collection.name,
             'let': { 'id': '$_id', 'tagAuthor': '$author' }, // from Tag
@@ -217,7 +227,6 @@ const getAllTagDataByUserId = asyncHandler(async (req, res) => {
                     '$expr': {
                         '$and': [
                             {'$eq': ['$$id', '$tagId']},  // tagId from WordTag
-                            {'$eq': [mongoose.Types.ObjectId(req.user.id), '$$tagAuthor']}
                         ]
                     }
                 }},

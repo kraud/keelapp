@@ -338,7 +338,9 @@ const getWordById = asyncHandler(async (req, res) => {
         {
             $match: {
                 $and:[
+                    // filter the Word to match the requested id
                     {"_id": mongoose.Types.ObjectId(req.params.id)},
+                    // Make sure the logged-in user matches the word user
                     {"user": mongoose.Types.ObjectId(req.user.id)},
                 ]
             }
@@ -383,12 +385,7 @@ const getWordById = asyncHandler(async (req, res) => {
         res.status(401)
         throw new Error('User not found')
     }
-    // Make sure the logged-in user matches the word user
-    // TODO: add back in
-    // if(word.user.toString() !== req.user.id){
-    //     res.status(401)
-    //     throw new Error('User not authorized')
-    // }
+
     res.status(200).json(word)
 })
 
@@ -622,6 +619,16 @@ const filterWordByAnyTranslation = asyncHandler(async (req, res) => {
 const getAllWordDataByUserId = asyncHandler(async (req, res) => {
 
     const allWordData = await Word.aggregate([
+        // filtering related to data present in word => apply here
+        {
+            $match: {
+                $and:[
+                    // Make sure the logged-in user matches the word user
+                    {"user": mongoose.Types.ObjectId(req.user.id)},
+                ]
+            }
+        },
+        // filtering related to data present in tagWord => apply here
         { '$lookup': {
             'from': TagWord.collection.name,
             'let': { 'id': '$_id', 'wordAuthor': '$user' }, // from Word
@@ -630,7 +637,6 @@ const getAllWordDataByUserId = asyncHandler(async (req, res) => {
                     '$expr': {
                         '$and': [
                             {'$eq': ['$$id', '$wordId']},  // wordId from TagWord
-                            {'$eq': [mongoose.Types.ObjectId(req.user.id), '$$wordAuthor']}
                         ]
                     }
                 }},
