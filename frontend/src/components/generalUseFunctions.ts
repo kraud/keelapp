@@ -1,5 +1,13 @@
-import {Lang} from "../ts/enums";
-import {FilterItem, FriendshipData, NotificationData, SearchResult, TagData, WordDataBE} from "../ts/interfaces";
+import {Lang, PartOfSpeech} from "../ts/enums";
+import {
+    FilterItem,
+    FriendshipData,
+    NotificationData,
+    SearchResult,
+    TagData,
+    TranslationItem,
+    WordDataBE
+} from "../ts/interfaces";
 import {toast} from "react-toastify";
 
 export const getCurrentLangTranslated = (currentLang?: Lang) => {
@@ -251,4 +259,127 @@ export const getAllIndividualWordDataFromSearchResult = (originalArray: SearchRe
         })
     }
     return(wordDataList)
+}
+
+export const getWordChipDataByLangInOrder = (word: WordDataBE, langPriorityList: Lang[]) => {
+    let langDataFound = false
+    let currentIndex: number = 0
+    while(!langDataFound){
+        const wordTranslation = word.translations.find((translation: TranslationItem) => {
+            return(translation.language === langPriorityList[currentIndex]) // we look for the translation matching the most relevant language at this iteration
+        })
+
+        const currentPartOfSpeech = (word.partOfSpeech !== undefined)
+            ? word.partOfSpeech as PartOfSpeech
+            : PartOfSpeech.noun // we default to noun if nothing is there
+
+        if(wordTranslation!!){ // if we found a match, we exit the loop
+            langDataFound = true
+            const displayLabel = getRequiredFieldsData(wordTranslation, currentPartOfSpeech)
+            return({
+                ...wordTranslation,
+                displayLabel: displayLabel,
+                wordId: word.id,
+            })
+        } else {
+            if(currentIndex >= (langPriorityList.length -1)){
+                // if no match is found, and we checked all the items in langPriorityList
+                // => there's probably a mistake: we return the first item
+                const displayLabel = getRequiredFieldsData(word.translations[0], currentPartOfSpeech)
+                return({
+                    ...word.translations[0],
+                    displayLabel: displayLabel,
+                    wordId: word.id,
+                })
+            } else {
+                currentIndex = currentIndex+1 // if no match is found, we move to the next language and loop again
+            }
+        }
+    }
+}
+
+const getRequiredFieldsData = (translation: TranslationItem, partOfSpeech: PartOfSpeech) => {
+    //Fields depend on Part of Speech + Language
+    switch (partOfSpeech){
+        case ("Noun"): {
+            switch (translation.language){
+                case ("Estonian"): {
+                    return(
+                        (translation.cases.find(wordCase => (wordCase.caseName === 'singularNimetavEE')))!.word
+                    )
+                }
+                case ("English"): {
+                    return(
+                        (translation.cases.find(wordCase => (wordCase.caseName === 'singularEN')))!.word
+                    )
+                }
+                case ("Spanish"): {
+                    return(
+                        (translation.cases.find(wordCase => (wordCase.caseName === 'singularES')))!.word
+                    )
+                }
+                case ("German"): {
+                    return(
+                        (translation.cases.find(wordCase => (wordCase.caseName === 'singularNominativDE')))!.word
+                    )
+                }
+                default: {
+                    return("- missing noun label -")
+                }
+            }
+        }
+        case ("Adverb"): {
+            switch (translation.language){
+                case ("English"): {
+                    return(
+                        (translation.cases.find(wordCase => (wordCase.caseName === 'adverbEN')))!.word
+                    )
+                }
+                case ("Spanish"): {
+                    return(
+                        (translation.cases.find(wordCase => (wordCase.caseName === 'adverbES')))!.word
+                    )
+                }
+                case ("German"): {
+                    return(
+                        (translation.cases.find(wordCase => (wordCase.caseName === 'adverbDE')))!.word
+                    )
+                }
+
+                default: {
+                    return("- missing adverb label -")
+                }
+            }
+        }
+        case ("Adjective"): {
+            switch (translation.language){
+                case ("English"): {
+                    return(
+                        (translation.cases.find(wordCase => (wordCase.caseName === 'positiveEN')))!.word
+                    )
+                }
+                case ("Spanish"): {
+                    return(
+                        (translation.cases.find(wordCase => (wordCase.caseName === 'maleSingularES')))!.word
+                    )
+                }
+                case ("German"): {
+                    return(
+                        (translation.cases.find(wordCase => (wordCase.caseName === 'positiveDE')))!.word
+                    )
+                }
+                case ("Estonian"): {
+                    return(
+                        (translation.cases.find(wordCase => (wordCase.caseName === 'algvorreEE')))!.word
+                    )
+                }
+                default: {
+                    return("- missing adjective label -")
+                }
+            }
+        }
+        default: {
+            return("Part of speech not found")
+        }
+    }
 }

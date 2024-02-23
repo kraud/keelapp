@@ -3,19 +3,19 @@ import {TextInputFormWithHook} from "../../TextInputFormHook";
 import globalTheme from "../../../theme/theme";
 import {RadioGroupWithHook} from "../../RadioGroupFormHook";
 import React, {useEffect, useState} from "react";
-import {SearchResult, TagData} from "../../../ts/interfaces";
+import {SearchResult, TagData, TranslationItem, WordDataBE} from "../../../ts/interfaces";
 import * as Yup from "yup";
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup/dist/yup";
 import {useDispatch, useSelector} from "react-redux";
 import {AutocompleteSearch} from "../../AutocompleteSearch";
 import {searchWordByAnyTranslation} from "../../../features/words/wordSlice";
-import {CountryFlag} from "../../GeneralUseComponents";
 import {Lang} from "../../../ts/enums";
 import {useNavigate} from "react-router-dom";
 import {getUserById, resetUserSliceState} from "../../../features/users/userSlice";
 import LinearIndeterminate from "../../Spinner";
-import {getAllIndividualWordDataFromSearchResult} from "../../generalUseFunctions";
+import {getWordChipDataByLangInOrder} from "../../generalUseFunctions";
+import {CountryFlag} from "../../GeneralUseComponents";
 
 interface TagDataFormProps {
     currentTagData: TagData,
@@ -62,7 +62,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
 
     const [tagLabel, setTagLabel] = useState("")
     const [tagDescription, setTagDescription] = useState("")
-    const [selectedWords, setSelectedWords] = useState<SearchResult[]>([]) // will always be 'type: "word"'
+    const [selectedWords, setSelectedWords] = useState<WordDataBE[]>([]) // will always be 'type: "word"'
 
     useEffect(() => {
         if(!props.displayOnly){
@@ -73,7 +73,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
                 label: tagLabel,
                 description: tagDescription,
                 //  => must decide how to display the list later (in which language? clarify amount of translations available for each?)
-                wordsFullData: getAllIndividualWordDataFromSearchResult(selectedWords),
+                wordsFullData: selectedWords,
 
                 completionState: isValid,
                 isDirty: isDirty
@@ -112,8 +112,9 @@ export const TagDataForm = (props: TagDataFormProps) => {
                 }
             )
             setTagDescription(props.currentTagData.description)
-
-            // TODO: add update to list of related-words state here
+            if(props.currentTagData.wordsFullData !== undefined){
+                setSelectedWords(props.currentTagData.wordsFullData)
+            }
 
             if((props.currentTagData.author !== user._id)){
                 // @ts-ignore
@@ -126,7 +127,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
 
     const handleDeleteWordFromList = (wordIndex: number) => {
         setSelectedWords(
-            selectedWords.filter((word: SearchResult, selectedIndex: number) => {
+            selectedWords.filter((word: WordDataBE, selectedIndex: number) => {
                 return(wordIndex !== selectedIndex)
             })
         )
@@ -295,9 +296,11 @@ export const TagDataForm = (props: TagDataFormProps) => {
                         onSelect={(selectedWordItem: SearchResult) => {
                             // TODO. OPTION 1: check that item is not already selected
                             // add selection to a list of selected words that will be displayed under this searchbar
-                            setSelectedWords((prevSelectedWordsState: SearchResult[]) => (
-                                [...prevSelectedWordsState, selectedWordItem]
-                            ))
+                            if((selectedWordItem.type === 'word') && (selectedWordItem.completeWordInfo !== undefined)){
+                                setSelectedWords((prevSelectedWordsState: WordDataBE[]) => (
+                                    [...prevSelectedWordsState, selectedWordItem.completeWordInfo as WordDataBE]
+                                ))
+                            }
                         }}
                         isSearchLoading={isSearchLoading}
                         textColor={'black'}
@@ -313,7 +316,14 @@ export const TagDataForm = (props: TagDataFormProps) => {
                 item={true}
                 xs={12}
             >
-                {(selectedWords.map((selectedWordItem: SearchResult, index: number) => {
+                {(selectedWords.map((selectedWordItem: WordDataBE, index: number) => {
+                    // TranslationItem + displayLabel
+                    type WordChipDisplayData = {
+                        displayLabel: string,
+                        wordId: string,
+                    } & (TranslationItem)
+
+                    const wordDataToDisplay: WordChipDisplayData = getWordChipDataByLangInOrder(selectedWordItem, [Lang.EN,Lang.DE, Lang.EE, Lang.ES]) as WordChipDisplayData
                     return (
                         <Grid
                             item={true}
@@ -321,25 +331,26 @@ export const TagDataForm = (props: TagDataFormProps) => {
                         >
                             <Chip
                                 variant="filled"
-                                label={selectedWordItem.label}// TODO: display a default string? On what language? Look into global variable?
+                                label={wordDataToDisplay.displayLabel}
                                 color={"info"}
                                 sx={{
                                     maxWidth: "max-content",
+                                    "& .MuiChip-deleteIcon": {
+                                        display: props.displayOnly ?'none' :'inherit'
+                                    },
                                 }}
                                 onClick={() => {
                                     navigate(`/word/${selectedWordItem.id}`)
                                 }}
                                 onDelete={() => {
-                                    handleDeleteWordFromList(index)
+                                    if(!(props.displayOnly)){
+                                        handleDeleteWordFromList(index)
+                                    }
                                 }}
                                 size={"medium"}
                                 icon={
                                     <CountryFlag
-                                        country={
-                                        (selectedWordItem.type === 'word')
-                                            ? selectedWordItem.language
-                                            : Lang.EE // random other?
-                                    }
+                                        country={wordDataToDisplay.language}
                                         border={true}
                                         sxProps={{
                                             marginLeft: globalTheme.spacing(2)
