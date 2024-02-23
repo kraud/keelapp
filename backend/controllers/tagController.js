@@ -68,9 +68,48 @@ const getOtherUserTags = asyncHandler(async (req, res) => {
 // @route   GET /api/tags
 // @access  Private
 const getTagById = asyncHandler(async (req, res) => {
-    const tag = await Tag.findById(req.params.id)
     // TODO: should we return this in the "FilterItem" format for tag?
-    res.status(200).json(tag)
+    // const tag = await Tag.findById(req.params.id)
+    // res.status(200).json(tag)
+
+    const singleTagData = await Tag.aggregate([
+        // filtering related to data present in word => apply here
+        {
+            $match: {
+                $and:[
+                    {"_id": mongoose.Types.ObjectId(req.params.id)},
+                ]
+            }
+        },
+        // filtering related to data present in tagWord => apply here
+        { '$lookup': {
+                'from': WordTag.collection.name,
+                'let': { 'id': '$_id', 'tagAuthor': '$author' }, // from Tag
+                'pipeline': [
+                    {'$match': {
+                            '$expr': {
+                                '$and': [
+                                    {'$eq': ['$$id', '$tagId']},  // tagId from WordTag
+                                ]
+                            }
+                        }},
+                    { '$lookup': {
+                            'from': Word.collection.name,
+                            'let': { 'wordId': '$wordId' }, // from WordTag
+                            'pipeline': [
+                                { '$match': {
+                                        '$expr': { '$eq': [ '$_id', '$$wordId' ] }
+                                    }}
+                            ],
+                            'as': 'words'
+                        }},
+                    { '$unwind': '$words' },
+                    { '$replaceRoot': { 'newRoot': '$words' } }
+                ],
+                'as': 'wordsFullData'
+            }}
+    ])
+    res.status(200).json(singleTagData[0])
 })
 
 // @desc    Create Tag

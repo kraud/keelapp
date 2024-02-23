@@ -189,12 +189,15 @@ export const TagDataForm = (props: TagDataFormProps) => {
                             }
                         }}
                     >
-                        {/*{((props.currentTagData.wordsId !== undefined))*/}
-                        {/*    ? (props.currentTagData.wordsId.length > 1)*/}
-                        {/*        ? `${props.currentTagData.wordsId.length} words`*/}
-                        {/*        : `${props.currentTagData.wordsId.length} word`*/}
-                        {/*    :""*/}
-                        {/*}*/}
+                        {(
+                            (props.currentTagData.wordsFullData !== undefined) &&
+                            (props.currentTagData.wordsFullData.length > 0)
+                        )
+                            ? (props.currentTagData.wordsFullData.length > 1)
+                                ? `${props.currentTagData.wordsFullData.length} words`
+                                : `${props.currentTagData.wordsFullData.length} word`
+                            :"- no words assigned yet -"
+                        }
                     </Typography>
                 }
             </Grid>
