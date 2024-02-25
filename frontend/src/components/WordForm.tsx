@@ -51,18 +51,21 @@ export function WordForm(props: TranslationFormProps) {
     // In case we're loading an already existing word into the form, we need to set that data into the local state
     useEffect(() => {
         if(props.initialState !== undefined){
-            setCompleteWordData({
-                translations: (props.initialState.translations).map((translation: TranslationItem) => {
-                    return({
-                        ...translation,
-                        completionState: true,
-                        isDirty: false,
-                    })
-                }),
-                partOfSpeech: props.initialState.partOfSpeech,
-                clue: props.initialState.clue,
-                tags: props.initialState.tags
-            })
+            console.log('props.initialState', props.initialState)
+            if(props.initialState.translations !== undefined){
+                setCompleteWordData({
+                    translations: (props.initialState.translations).map((translation: TranslationItem) => {
+                        return({
+                            ...translation,
+                            completionState: true,
+                            isDirty: false,
+                        })
+                    }),
+                    partOfSpeech: props.initialState.partOfSpeech,
+                    clue: props.initialState.clue,
+                    tags: props.initialState.tags
+                })
+            }
             if(props.initialState.partOfSpeech !== undefined){
                 setPartOfSpeech(props.initialState.partOfSpeech as PartOfSpeech)
             }

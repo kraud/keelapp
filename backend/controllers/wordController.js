@@ -313,7 +313,7 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
             completeWord.translations.forEach((translation) => {
                 simplifiedWord = {
                     ...simplifiedWord,
-                    ...(getRequiredFieldsDat(translation, completeWord.partOfSpeech)),
+                    ...(getRequiredFieldsData(translation, completeWord.partOfSpeech)),
                     [getFieldName(translation.language)]: translation.cases.length
                 }
             })

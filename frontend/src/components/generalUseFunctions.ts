@@ -279,7 +279,8 @@ export const getWordChipDataByLangInOrder = (word: WordDataBE, langPriorityList:
             return({
                 ...wordTranslation,
                 displayLabel: displayLabel,
-                wordId: word.id,
+                //@ts-ignore // TODO: CHANGE WordDatBE to _id and fix where necessary
+                wordId: word._id,
             })
         } else {
             if(currentIndex >= (langPriorityList.length -1)){
@@ -289,7 +290,8 @@ export const getWordChipDataByLangInOrder = (word: WordDataBE, langPriorityList:
                 return({
                     ...word.translations[0],
                     displayLabel: displayLabel,
-                    wordId: word.id,
+                    //@ts-ignore // TODO: CHANGE WordDatBE to _id and fix where necessary
+                    wordId: word._id,
                 })
             } else {
                 currentIndex = currentIndex+1 // if no match is found, we move to the next language and loop again

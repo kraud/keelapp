@@ -340,7 +340,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
                                     },
                                 }}
                                 onClick={() => {
-                                    navigate(`/word/${selectedWordItem.id}`)
+                                    navigate(`/word/${wordDataToDisplay.wordId}`)
                                 }}
                                 onDelete={() => {
                                     if(!(props.displayOnly)){
