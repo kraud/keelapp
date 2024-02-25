@@ -375,7 +375,7 @@ const getWordById = asyncHandler(async (req, res) => {
         }}
     ])
 
-    if(!word){
+    if(!word[0]){
         res.status(400)
         throw new Error("Word not found")
     }
@@ -386,7 +386,7 @@ const getWordById = asyncHandler(async (req, res) => {
         throw new Error('User not found')
     }
 
-    res.status(200).json(word)
+    res.status(200).json(word[0])
 })
 
 // THIS IS LEGACY IMPLEMENTATION -- will be replaced by TagWord
