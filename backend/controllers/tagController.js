@@ -11,7 +11,6 @@ const TagWord = require("../models/intermediary/tagWordModel");
 // @access  Private
 const searchTags = asyncHandler(async (req, res) => {
     const getPrivateOrPublicQuery = () => {
-        console.log('req',req)
         if(req.query.includeOtherUsersTags){
             return({
                 "label": {$regex: `${req.query.query}`, $options: "i"},
@@ -83,31 +82,31 @@ const getTagById = asyncHandler(async (req, res) => {
         },
         // filtering related to data present in tagWord => apply here
         { '$lookup': {
-                'from': WordTag.collection.name,
-                'let': { 'id': '$_id', 'tagAuthor': '$author' }, // from Tag
-                'pipeline': [
-                    {'$match': {
-                            '$expr': {
-                                '$and': [
-                                    {'$eq': ['$$id', '$tagId']},  // tagId from WordTag
-                                ]
-                            }
-                        }},
-                    { '$lookup': {
-                            'from': Word.collection.name,
-                            'let': { 'wordId': '$wordId' }, // from WordTag
-                            'pipeline': [
-                                { '$match': {
-                                        '$expr': { '$eq': [ '$_id', '$$wordId' ] }
-                                    }}
-                            ],
-                            'as': 'words'
-                        }},
-                    { '$unwind': '$words' },
-                    { '$replaceRoot': { 'newRoot': '$words' } }
-                ],
-                'as': 'wordsFullData'
-            }}
+            'from': WordTag.collection.name,
+            'let': { 'id': '$_id', 'tagAuthor': '$author' }, // from Tag
+            'pipeline': [
+                {'$match': {
+                        '$expr': {
+                            '$and': [
+                                {'$eq': ['$$id', '$tagId']},  // tagId from WordTag
+                            ]
+                        }
+                    }},
+                { '$lookup': {
+                        'from': Word.collection.name,
+                        'let': { 'wordId': '$wordId' }, // from WordTag
+                        'pipeline': [
+                            { '$match': {
+                                    '$expr': { '$eq': [ '$_id', '$$wordId' ] }
+                                }}
+                        ],
+                        'as': 'words'
+                    }},
+                { '$unwind': '$words' },
+                { '$replaceRoot': { 'newRoot': '$words' } }
+            ],
+            'as': 'wordsFullData'
+        }}
     ])
     res.status(200).json(singleTagData[0])
 })
@@ -138,26 +137,28 @@ const createTag = asyncHandler(async (req, res) => {
             // TODO: tagWord logic should be properly implemented in a separate controller?
             //  how can we call it once we crated the tag?
             // NB! Testing to see if this works correctly. If so: we'll refactor this into a separate (async?) function
-            const tagWordsItems = req.body.wordsId.map((wordId) => {
-                return ({
-                    tagId: value._id,
-                    wordId: wordId
-                })
-            })
-            TagWord.insertMany(tagWordsItems)
-                .then(function (returnData) {
-                    console.log("Data inserted") // Success
-                    console.log("returnData:", returnData) // Success
-                    res.status(200).json({
-                        ...value,
-                        tagWords: returnData,
+            if((req.body.wordsId !== undefined) && (req.body.wordsId.length >0)){
+                const tagWordsItems = req.body.wordsId.map((wordId) => {
+                    return ({
+                        tagId: value._id,
+                        wordId: wordId
                     })
-                }).catch(function (error) {
-                    console.log(error)     // Failure
-                    console.log("Error when inserting TagWord")
-                    res.status(400).json(value)
-                    throw new Error("Tag-Word insertMany failed")
-                });
+                })
+                TagWord.insertMany(tagWordsItems)
+                    .then(function (returnData) {
+                        console.log("Data inserted") // Success
+                        console.log("returnData:", returnData) // Success
+                        res.status(200).json({
+                            ...value,
+                            tagWords: returnData,
+                        })
+                    }).catch(function (error) {
+                        console.log(error)     // Failure
+                        console.log("Error when inserting TagWord")
+                        res.status(400).json(value)
+                        throw new Error("Tag-Word insertMany failed")
+                    });
+            }
         })
         .catch(function (error) {
             console.log(error)     // Failure
@@ -219,6 +220,28 @@ const updateTag = asyncHandler(async (req, res) => {
         res.status(401)
         throw new Error('User not authorized')
     }
+    //TODO: iterate over wordsFullData and check for new tag-word relationships => create tagWord documents accordingly
+    let updatedWordsList = []
+
+    // TODO: this is not working. How do we call another function inside this controller?
+    const currentTagData = this.getTagDataByRequest(req, res)
+        .then((response) => {
+        console.log('response:', response)
+    })
+    // TODO: un-comment and continue here
+    // if(req.body.wordsFullData.length > 0){ // if there are words associated with this tag, we must check if they are the same as currently stored in TagWord
+    //     const updatedWordsList = req.body.wordsFullData // all wordsIds. Some might be new, some might already be stored or ir could be missing some previousuly stored.
+    //     const currentTagData = await this.getTagDataByRequest(req, res).then((response) => {
+    //         console.log('response:', response)
+    //     })
+    // }
+
+    const updatedDataToStore = {
+        author: req.body.author,
+        label: req.body.label,
+        public: req.body.public,
+        description: req.body.description,
+    }
 
     const updatedTag = await Tag.findByIdAndUpdate(req.params.id, req.body, {new: true})
     res.status(200).json(updatedTag)
@@ -246,7 +269,6 @@ const getAmountByTag = asyncHandler(async (req, res) => {
 // @route   GET --
 // @access  Private
 const getAllTagDataByUserId = asyncHandler(async (req, res) => {
-
     const allTagData = await Tag.aggregate([
         // filtering related to data present in word => apply here
         {
@@ -288,6 +310,80 @@ const getAllTagDataByUserId = asyncHandler(async (req, res) => {
     res.status(200).json(allTagData)
 })
 
+// @desc    Get tag data + words, and request can specify fields to filter Tag by
+// @route   GET --
+// @access  Private
+const getTagDataByRequest = asyncHandler(async (req, res) => {
+    // req.body might allow filtering tag by: id, author, label, description, public
+    // console.log('ACTIVE')
+    const getMatchQuery = (queryData) => {
+        let matchQuery = []
+        if(queryData.id !== undefined){
+            matchQuery.push({
+                "_id": mongoose.Types.ObjectId(queryData.id) // works
+            })
+        }
+        if(queryData.author !== undefined){
+            matchQuery.push({
+                "author": mongoose.Types.ObjectId(queryData.author) // works
+            })
+        }
+        if(queryData.label !== undefined){
+            matchQuery.push({
+                "label": {$regex: `${queryData.label}`, $options: "i"},
+            })
+        }
+        if(queryData.description !== undefined){
+            matchQuery.push({
+                "description": {$regex: `${queryData.description}`, $options: "i"},
+            })
+        }
+        if(queryData.public !== undefined){
+            matchQuery.push({
+                "public": queryData.public
+            })
+        }
+        return(matchQuery)
+    }
+
+    const allTagData = await Tag.aggregate([
+        // filtering related to data present in word => apply here
+        {
+            $match: {
+                $and: getMatchQuery(req.query)
+            }
+        },
+        // filtering related to data present in tagWord => apply here
+        { '$lookup': {
+                'from': WordTag.collection.name,
+                'let': { 'id': '$_id', 'tagAuthor': '$author' }, // from Tag
+                'pipeline': [
+                    {'$match': {
+                            '$expr': {
+                                '$and': [
+                                    {'$eq': ['$$id', '$tagId']},  // tagId from WordTag
+                                ]
+                            }
+                        }},
+                    { '$lookup': {
+                            'from': Word.collection.name,
+                            'let': { 'wordId': '$wordId' }, // from WordTag
+                            'pipeline': [
+                                { '$match': {
+                                        '$expr': { '$eq': [ '$_id', '$$wordId' ] }
+                                    }}
+                            ],
+                            'as': 'words'
+                        }},
+                    { '$unwind': '$words' },
+                    { '$replaceRoot': { 'newRoot': '$words' } }
+                ],
+                'as': 'words'
+            }}
+    ])
+    res.status(200).json(allTagData)
+})
+
 module.exports = {
     searchTags,
     getUserTags,
@@ -297,5 +393,6 @@ module.exports = {
     updateTag,
     getAmountByTag,
     getOtherUserTags,
-    getAllTagDataByUserId
+    getAllTagDataByUserId,
+    getTagDataByRequest
 }

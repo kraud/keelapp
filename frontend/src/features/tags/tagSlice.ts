@@ -79,6 +79,24 @@ export const searchTagsByLabel = createAsyncThunk(`tags/searchTag`, async (reque
     }
 })
 
+// Get a tag data by its label (total or partial match)
+export const filterTagsByAnyField = createAsyncThunk(`tags/filterTag`, async (request: TagData, thunkAPI) => {
+    try {
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await tagService.filterTags(token, request)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
 // Get full tag data by its id
 export const getTagById = createAsyncThunk(`tags/getTagById`, async (tagId: string, thunkAPI) => {
     try {
@@ -226,6 +244,19 @@ export const tagSlice = createSlice({
                 state.tags = (action.payload)
             })
             .addCase(searchTagsByLabel.rejected, (state, action) => {
+                state.isLoadingTags = false
+                state.isError = true
+                state.message = action.payload as string
+            })
+            .addCase(filterTagsByAnyField.pending, (state) => {
+                state.isLoadingTags = true
+            })
+            .addCase(filterTagsByAnyField.fulfilled, (state, action) => {
+                state.isLoadingTags = false
+                state.isSuccessTags = true
+                state.tags = (action.payload)
+            })
+            .addCase(filterTagsByAnyField.rejected, (state, action) => {
                 state.isLoadingTags = false
                 state.isError = true
                 state.message = action.payload as string

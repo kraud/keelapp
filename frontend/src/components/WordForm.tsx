@@ -51,7 +51,6 @@ export function WordForm(props: TranslationFormProps) {
     // In case we're loading an already existing word into the form, we need to set that data into the local state
     useEffect(() => {
         if(props.initialState !== undefined){
-            console.log('props.initialState', props.initialState)
             if(props.initialState.translations !== undefined){
                 setCompleteWordData({
                     translations: (props.initialState.translations).map((translation: TranslationItem) => {

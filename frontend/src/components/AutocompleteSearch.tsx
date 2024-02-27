@@ -140,7 +140,7 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                             paddingLeft: globalTheme.spacing(1),
                         }}
                     >
-                        {getPartOfSpeechAbbreviated(option.partOfSpeech)}
+                        {getPartOfSpeechAbbreviated(option.completeWordInfo.partOfSpeech)}
                     </Typography>
                 )
             }

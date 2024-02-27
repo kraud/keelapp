@@ -31,7 +31,7 @@ export function DisplayTag(props: DisplayTagProps){
         label: "",
         description: "",
         public: 'Private' as 'Private', // to make TS happy.
-        wordsId: [],
+        wordsFullData: [],
     }
     const [displayContent, setDisplayContent] = useState(false)
     const [isEditing, setIsEditing] = useState(false)

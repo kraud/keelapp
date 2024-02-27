@@ -27,6 +27,7 @@ const wordSchema = mongoose.Schema(
         },
         // TODO: currently holds strings with tag-labels (old system)
         // soon will be changed into pair of [tagId, tagLabel] (or similar) - (new system)
+        // TODO: remove, since we have new real Tag and TagWord implementation
         tags: [{
             type: String
         }]

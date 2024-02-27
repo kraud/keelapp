@@ -296,7 +296,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
                         onSelect={(selectedWordItem: SearchResult) => {
                             // TODO. OPTION 1: check that item is not already selected
                             // add selection to a list of selected words that will be displayed under this searchbar
-                            if((selectedWordItem.type === 'word') && (selectedWordItem.completeWordInfo !== undefined)){
+                            if(selectedWordItem.type === 'word'){
                                 setSelectedWords((prevSelectedWordsState: WordDataBE[]) => (
                                     [...prevSelectedWordsState, selectedWordItem.completeWordInfo as WordDataBE]
                                 ))

@@ -9,7 +9,7 @@ export interface WordData {
 export interface WordDataBE {
     id: string,
     translations: TranslationItem[],
-    partOfSpeech?: string,
+    partOfSpeech: PartOfSpeech,
     clue?: string,
     tags?: string[],
 }
@@ -37,8 +37,7 @@ export type SearchResult = {
 type WordSearch = {
     type: "word",
     language: Lang,
-    partOfSpeech: PartOfSpeech,
-    completeWordInfo?: WordDataBE,
+    completeWordInfo: WordDataBE,
 }
 
 type TagSearch = {
@@ -93,7 +92,7 @@ export type TagData = {
     label: string,
     description: string,
     public: 'Public' | 'Private' | 'Friends-Only',
-    wordsFullData?: WordDataBE[]
+    wordsFullData: WordDataBE[]
 } & (InternalStatus)
 
 export interface PropsButtonData {
