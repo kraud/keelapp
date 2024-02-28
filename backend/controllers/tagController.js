@@ -223,18 +223,32 @@ const updateTag = asyncHandler(async (req, res) => {
     //TODO: iterate over wordsFullData and check for new tag-word relationships => create tagWord documents accordingly
     let updatedWordsList = []
 
-    // TODO: this is not working. How do we call another function inside this controller?
-    const currentTagData = this.getTagDataByRequest(req, res)
-        .then((response) => {
-        console.log('response:', response)
-    })
+
     // TODO: un-comment and continue here
-    // if(req.body.wordsFullData.length > 0){ // if there are words associated with this tag, we must check if they are the same as currently stored in TagWord
-    //     const updatedWordsList = req.body.wordsFullData // all wordsIds. Some might be new, some might already be stored or ir could be missing some previousuly stored.
-    //     const currentTagData = await this.getTagDataByRequest(req, res).then((response) => {
-    //         console.log('response:', response)
-    //     })
-    // }
+    if(req.body.wordsFullData.length > 0){ // if there are words associated with this tag, we must check if they are the same as currently stored in TagWord
+        const updatedWordsList = req.body.wordsFullData // all wordsIds. Some might be new, some might already be stored or ir could be missing some previously stored.
+         // TODO: this is not working. How do we call another function inside this controller?
+        // we retrieve the currently stored list of words related to this tag
+        const currentTagData = await this.getTagDataByRequest(req, res) // req.query should have id (for the tag)
+            .then((tagWithWordData) => { // tagWithWordData will be an array of 1 item with the tag and property words, with a list of Word
+                const tagStoredWordsId = tagWithWordData[0].map((word) => {
+                    return(word._id)
+                })
+                let wordsToBeRemoved = []
+                tagStoredWordsId.forEach((storedWordId) => {
+                    if(!(updatedWordsList.includes(storedWordId))){
+                        wordsToBeRemoved.push(storedWordId)
+                    }  // if updatedWordList DOES include storedWordId => we don't need to save it again
+                })
+                let wordsToBeAdded = []
+                updatedWordsList.forEach((updatedWordId) => {
+                    if(!(tagStoredWordsId.includes(updatedWordId))){
+                        wordsToBeAdded.push(updatedWordId)
+                    }  // if updatedWordList DOES include storedWordId => we don't need to save it again
+                })
+                // console.log('response:', response)
+            })
+    }
 
     const updatedDataToStore = {
         author: req.body.author,
