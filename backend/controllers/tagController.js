@@ -221,17 +221,18 @@ const updateTag = asyncHandler(async (req, res) => {
         throw new Error('User not authorized')
     }
     //TODO: iterate over wordsFullData and check for new tag-word relationships => create tagWord documents accordingly
-    let updatedWordsList = []
-
-
-    // TODO: un-comment and continue here
     if(req.body.wordsFullData.length > 0){ // if there are words associated with this tag, we must check if they are the same as currently stored in TagWord
         const updatedWordsList = req.body.wordsFullData // all wordsIds. Some might be new, some might already be stored or ir could be missing some previously stored.
-         // TODO: this is not working. How do we call another function inside this controller?
         // we retrieve the currently stored list of words related to this tag
-        const currentTagData = await this.getTagDataByRequest(req, res) // req.query should have id (for the tag)
+        const request = {
+            query: {
+                id: req.params.id
+            }
+        }
+        getTagDataByRequest(request) // req.query should have id (for the tag)
             .then((tagWithWordData) => { // tagWithWordData will be an array of 1 item with the tag and property words, with a list of Word
-                const tagStoredWordsId = tagWithWordData[0].map((word) => {
+                console.log('tagWithWordData', tagWithWordData)
+                const tagStoredWordsId = tagWithWordData[0].words.map((word) => {
                     return(word._id)
                 })
                 let wordsToBeRemoved = []
@@ -244,17 +245,25 @@ const updateTag = asyncHandler(async (req, res) => {
                 updatedWordsList.forEach((updatedWordId) => {
                     if(!(tagStoredWordsId.includes(updatedWordId))){
                         wordsToBeAdded.push(updatedWordId)
-                    }  // if updatedWordList DOES include storedWordId => we don't need to save it again
+                    }  // if tagStoredWordsId DOES include updatedWordId => we don't need to save it again
                 })
-                // console.log('response:', response)
-            })
-    }
 
-    const updatedDataToStore = {
-        author: req.body.author,
-        label: req.body.label,
-        public: req.body.public,
-        description: req.body.description,
+                console.log('tagStoredWordsId', tagStoredWordsId)
+                console.log('updatedWordsList', updatedWordsList)
+                // we call TagWord to remove all items that match current TagId+ an item from wordsToBeRemoved
+                // we call TagWord to add all items from wordsToBeRemoved+TagId
+
+                // TODO: once that is done we update the info inside Tag
+                const updatedDataToStore = {
+                    author: req.body.author,
+                    label: req.body.label,
+                    public: req.body.public,
+                    description: req.body.description,
+                }
+
+                // const updatedTag = await Tag.findByIdAndUpdate(req.params.id, updatedDataToStore, {new: true})
+                // res.status(200).json(updatedTag)
+            })
     }
 
     const updatedTag = await Tag.findByIdAndUpdate(req.params.id, req.body, {new: true})
@@ -324,12 +333,16 @@ const getAllTagDataByUserId = asyncHandler(async (req, res) => {
     res.status(200).json(allTagData)
 })
 
+
+// TODO: test removing asyncHandler,
+//  and simply make it async + accepting single parameter with request and calling that from filterTag?
 // @desc    Get tag data + words, and request can specify fields to filter Tag by
 // @route   GET --
 // @access  Private
-const getTagDataByRequest = asyncHandler(async (req, res) => {
+// const getTagDataByRequest = asyncHandler(async (req, res) => {
+const getTagDataByRequest = async (req) => {
     // req.body might allow filtering tag by: id, author, label, description, public
-    // console.log('ACTIVE')
+    console.log('ACTIVE')
     const getMatchQuery = (queryData) => {
         let matchQuery = []
         if(queryData.id !== undefined){
@@ -395,8 +408,10 @@ const getTagDataByRequest = asyncHandler(async (req, res) => {
                 'as': 'words'
             }}
     ])
-    res.status(200).json(allTagData)
-})
+    return(allTagData)
+    // res.status(200).json(allTagData)
+}
+// })
 
 module.exports = {
     searchTags,
