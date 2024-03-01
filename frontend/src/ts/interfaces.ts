@@ -35,6 +35,7 @@ export type SearchResult = {
 } & (WordSearch | TagSearch | UserSearch)
 
 type WordSearch = {
+    // NB! for type 'word', 'id' in SearchResult refers to the wordId (NOT the translation)
     type: "word",
     language: Lang,
     completeWordInfo: WordDataBE,

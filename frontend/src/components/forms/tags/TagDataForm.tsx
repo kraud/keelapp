@@ -133,6 +133,25 @@ export const TagDataForm = (props: TagDataFormProps) => {
         )
     }
 
+    const filterAlreadySelectedOptions = (rawOptions: SearchResult[], selectedOptions: WordDataBE[]) => {
+        console.log('selectedOptions',selectedOptions)
+        console.log('rawOptions',rawOptions)
+        const selectedOptionsIds = selectedOptions.map((selectedOption: WordDataBE) => {
+            //@ts-ignore
+            return(selectedOption._id) // TODO: LOOK INTO WordDataBE and fix '_id' and 'id' issues
+        })
+        let filteredOptions: SearchResult[] = []
+        rawOptions.forEach((option: SearchResult) => {
+            if(
+                (option.type === 'word') &&
+                !(selectedOptionsIds.includes(option.id)) // option is not selected
+            ){
+                filteredOptions.push(option)
+            }
+        })
+        return(filteredOptions)
+    }
+
     return(
         <Grid
             item={true}
@@ -288,7 +307,8 @@ export const TagDataForm = (props: TagDataFormProps) => {
                 >
                     <AutocompleteSearch
                         // TODO. OPTION 2: filter selected words by id
-                        options={searchResults} // filter results that have Ids that are already selected?
+                        // options={searchResults} // filter results that have Ids that are already selected?
+                        options={filterAlreadySelectedOptions(searchResults, selectedWords)} // filter results that have Ids that are already selected?
                         getOptions={(inputValue: string) => {
                             // @ts-ignore
                             dispatch(searchWordByAnyTranslation(inputValue))
