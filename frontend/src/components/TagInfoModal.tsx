@@ -66,6 +66,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
     const [tagCurrentData, setTagCurrentData] = useState<TagData>(emptyTagData)
     const [isEditing, setIsEditing] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
+    const [isUpdating, setIsUpdating] = useState(false)
     const [currentTagHasBeenDeleted, setIsCurrentTagHasBeenDeleted] = useState(false)
 
     useEffect(() => {
@@ -77,11 +78,11 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
 
     useEffect(() => {
         // if not editing => get and display exiting tag data
-        if(props.open && !isEditing && (props.tagId !== "")){
+        if(props.open && !isEditing && (props.tagId !== "") && !(isUpdating)){
             // @ts-ignore
             dispatch(getTagById(props.tagId)) // result will be stored at fullTagData
         } // if not, display empty form to create a new tag
-    },[isEditing, props.open, props.tagId])
+    },[isEditing, isUpdating, props.open, props.tagId])
 
 
     // once the request is made and the results come in, we save them into a local copy of the state,
@@ -94,10 +95,15 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                 setIsDeleting(false)
                 setIsCurrentTagHasBeenDeleted(true)
             }
+            // but, before we check if we're updating an existing one
+            if(!isEditing && isUpdating){
+                toast.success('Tag was updated successfully!')
+                setIsUpdating(false)
+            }
             setTagCurrentData(fullTagData)
             setIsEditing(false)
         }
-    },[fullTagData, isSuccessTags, isLoadingTags]) // TODO: add isDeleting to array?
+    },[fullTagData, isSuccessTags, isLoadingTags, isDeleting, isUpdating]) // TODO: add isDeleting to array?
 
     const getActionButtons = () => {
         if(isEditing){
@@ -292,6 +298,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
     }
 
     const updateExistingTagData = () => {
+        setIsUpdating(true)
         // @ts-ignore
         dispatch(updateTag(tagCurrentData)) // result will be stored at fullTagData
         props.setMadeChangesToTagList(true)

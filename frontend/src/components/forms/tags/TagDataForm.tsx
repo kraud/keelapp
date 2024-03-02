@@ -134,8 +134,6 @@ export const TagDataForm = (props: TagDataFormProps) => {
     }
 
     const filterAlreadySelectedOptions = (rawOptions: SearchResult[], selectedOptions: WordDataBE[]) => {
-        console.log('selectedOptions',selectedOptions)
-        console.log('rawOptions',rawOptions)
         const selectedOptionsIds = selectedOptions.map((selectedOption: WordDataBE) => {
             //@ts-ignore
             return(selectedOption._id) // TODO: LOOK INTO WordDataBE and fix '_id' and 'id' issues

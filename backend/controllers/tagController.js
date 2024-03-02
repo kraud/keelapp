@@ -146,25 +146,19 @@ const createTag = asyncHandler(async (req, res) => {
                 })
                 TagWord.insertMany(tagWordsItems)
                     .then(function (returnData) {
-                        console.log("Data inserted") // Success
-                        console.log("returnData:", returnData) // Success
                         res.status(200).json({
                             ...value,
                             tagWords: returnData,
                         })
                     }).catch(function (error) {
-                        console.log(error)     // Failure
-                        console.log("Error when inserting TagWord")
                         res.status(400).json(value)
                         throw new Error("Tag-Word insertMany failed")
                     });
             }
         })
         .catch(function (error) {
-            console.log(error)     // Failure
-            console.log("Error when creating Tag")
             res.status(400)
-            throw new Error("Tag-Word insertMany failed")
+            throw new Error("Tag create failed")
         })
 })
 
@@ -229,8 +223,8 @@ const updateTag = asyncHandler(async (req, res) => {
         description: req.body.description,
     }
     // iterate over wordsFullData and check for new tag-word relationships => create/remove tagWord documents accordingly
-    // if currently there are words associated with this tag, we must check if they are the same as currently stored in TagWord
-    // if currently wordsFullData is empty we must check if there are words stored related to this tag and delete them
+    // if in wordsFullData there are words associated with this tag, we must check if they are the same as currently stored in TagWord
+    // if wordsFullData is empty we must check if there are words stored related to this tag and delete them
     const updatedWordsList = (req.body.wordsFullData).map((wordFullData) => {
         return((wordFullData._id).toString()) // TODO: check if toString can be removed
     }) // all wordsIds. Some might be new, all might already be stored, or it could be missing some previously stored.
@@ -244,7 +238,6 @@ const updateTag = asyncHandler(async (req, res) => {
     getTagDataByRequest(request) // req.query should have id (for the tag)
         // only 1 possible tag with the id inside query => tagWithWordData will be an array of 1 item
         .then(async (tagWithWordData) => {
-            console.log('tagWithWordData', tagWithWordData)
             // inside tagWithWordData[0] there is property called 'words', with a list of Word elements (check interface in FE)
             const tagStoredWordsId = tagWithWordData[0].words.map((word) => {
                 return((word._id).toString())
@@ -261,11 +254,6 @@ const updateTag = asyncHandler(async (req, res) => {
                     wordsToBeAdded.push(updatedWordId)
                 }  // if tagStoredWordsId DOES include updatedWordId => we don't need to save it again
             })
-
-            console.log('STORED WORDS', tagStoredWordsId)
-            console.log('CURRENT WORDS', updatedWordsList)
-            console.log('wordsToBeRemoved', wordsToBeRemoved)
-            console.log('wordsToBeAdded', wordsToBeAdded)
 
             // FIRST ELEMENT ALWAYS IS THE WORDS TO BE DELETED
             // SECOND ELEMENT ALWAYS IS THE WORDS TO BE ADDED
@@ -287,37 +275,14 @@ const updateTag = asyncHandler(async (req, res) => {
                             // FIRST ELEMENT IN modificationsList IS ALWAYS THE WORDS TO BE DELETED
                             case 0: {
                                 // we call TagWord to remove all items that match current TagId+(an item from wordsToBeRemoved)
-                                // const removeQuery = {
-                                //     $elemMatch: {
-                                //         tagId: req.params.id,
-                                //         wordId: {
-                                //             $in: listOfChanges
-                                //         }
-                                //     }
-                                // }
-                                    const removeQuery = {
-                                        $and: [
-                                            {tagId: req.params.id},
-                                            {wordId: {$in: listOfChanges}}
-                                        ]
-                                    }
-                                    return TagWord.deleteMany(removeQuery)
-                                    // const deleteManyResult = await TagWord.deleteMany(removeQuery)
-                                    // .then((deleteResponse) => {
-                                    //     console.log('Deleted the following: ',deleteResponse)
-                                    //     // res.status(200).json({
-                                    //     //     ...newWordData,
-                                    //     //     tagWords: returnNewTagWordData,
-                                    //     // })
-                                    // })
-                                    // .catch(function (error) {
-                                    //     console.log(error)     // Failure
-                                    //     console.log("Error when deleting TagWord")
-                                    //     res.status(400).json(error)
-                                    //     throw new Error("Tag-Word deleteMany failed")
-                                    // })
-                                    // return deleteManyResult
+                                const removeQuery = {
+                                    $and: [
+                                        {tagId: req.params.id},
+                                        {wordId: {$in: listOfChanges}}
+                                    ]
                                 }
+                                return TagWord.deleteMany(removeQuery)
+                            }
                             // SECOND ELEMENT IN modificationsList IS ALWAYS THE WORDS TO BE ADDED
                             case 1: {
                                 // we call TagWord to add all items from (wordsToBeRemoved)+TagId
@@ -327,24 +292,7 @@ const updateTag = asyncHandler(async (req, res) => {
                                         wordId: wordId,
                                     })
                                 })
-                                console.log('tagWordsItems', tagWordsItems)
                                 return TagWord.insertMany(tagWordsItems)
-                                // const insertManyResult = await TagWord.insertMany(tagWordsItems)
-                                // .then((addedResponse) => {
-                                //     console.log("Data inserted") // Success
-                                //     console.log("returnData:", addedResponse)
-                                //     // res.status(200).json({
-                                //     //     ...newWordData,
-                                //     //     tagWords: returnNewTagWordData,
-                                //     // })
-                                // })
-                                // .catch(function (error) {
-                                //     console.log(error)     // Failure
-                                //     console.log("Error when inserting TagWord")
-                                //     res.status(400).json(error)
-                                //     throw new Error("Tag-Word insertMany failed")
-                                // })
-                                // return insertManyResult
                             }
                             default: {
                                 return // no possible case where array will be longer than 2 elements
@@ -352,23 +300,22 @@ const updateTag = asyncHandler(async (req, res) => {
                         }
                     }
                 })).then(async (completeModificationsResponse) => {
-                    console.log('finalModifications', completeModificationsResponse)
                     const updatedTag = await Tag.findByIdAndUpdate(req.params.id, updatedDataToStore, {new: true})
-                    res.status(200).json(updatedTag)
+                    console.log('req.body.wordsFullData', req.body.wordsFullData)
+                    const updatedDataWithWordsFullData = {
+                        ...updatedTag,
+                        // this is not stored alongside Tag data. So we add it here so return data matches what came in request body
+                        wordsFullData: req.body.wordsFullData
+                    }
+                    res.status(200).json(updatedDataWithWordsFullData)
                 })
             } else {
-                console.log('NO MODIFICATIONS NEEDED')
-                // this needs to be repeated here because inside IF it runs inside 'then', after updating TagWord
+                // no changes needed for stored words related to this tag
+                // NB! this needs to be repeated here because inside IF it runs inside 'then', after updating TagWord
                 const updatedTag = await Tag.findByIdAndUpdate(req.params.id, updatedDataToStore, {new: true})
                 res.status(200).json(updatedTag)
             }
         })
-    // }
-    // else { //
-    //     const updatedTag = await Tag.findByIdAndUpdate(req.params.id, updatedDataToStore, {new: true})
-    //     res.status(200).json(updatedTag)
-    // }
-
 })
 
 // getAmountByTag
@@ -435,15 +382,12 @@ const getAllTagDataByUserId = asyncHandler(async (req, res) => {
 })
 
 
-// TODO: test removing asyncHandler,
-//  and simply make it async + accepting single parameter with request and calling that from filterTag?
 // @desc    Get tag data + words, and request can specify fields to filter Tag by
 // @route   GET --
 // @access  Private
 // const getTagDataByRequest = asyncHandler(async (req, res) => {
 const getTagDataByRequest = async (req) => {
     // req.body might allow filtering tag by: id, author, label, description, public
-    console.log('ACTIVE')
     const getMatchQuery = (queryData) => {
         let matchQuery = []
         if(queryData.id !== undefined){
