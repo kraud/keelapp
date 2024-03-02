@@ -300,14 +300,17 @@ const updateTag = asyncHandler(async (req, res) => {
                         }
                     }
                 })).then(async (completeModificationsResponse) => {
-                    const updatedTag = await Tag.findByIdAndUpdate(req.params.id, updatedDataToStore, {new: true})
-                    console.log('req.body.wordsFullData', req.body.wordsFullData)
-                    const updatedDataWithWordsFullData = {
-                        ...updatedTag,
-                        // this is not stored alongside Tag data. So we add it here so return data matches what came in request body
-                        wordsFullData: req.body.wordsFullData
-                    }
-                    res.status(200).json(updatedDataWithWordsFullData)
+                    Tag.findByIdAndUpdate(req.params.id, updatedDataToStore, {new: true})
+                        .then((updatedTag) => {
+                            const updatedDataWithWordsFullData = {
+                                // updateTag returned by findByIdAndUpdate includes a lot of data used for debugging (?)
+                                // Using toObject() we can access only the data we're interested in
+                                ...updatedTag.toObject(),
+                                // this is not stored alongside Tag data. So we add it here so return data matches what came in request body
+                                wordsFullData: req.body.wordsFullData
+                            }
+                            res.status(200).json(updatedDataWithWordsFullData)
+                    })
                 })
             } else {
                 // no changes needed for stored words related to this tag
