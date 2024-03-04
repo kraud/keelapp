@@ -185,11 +185,18 @@ const deleteTag = asyncHandler(async (req, res) => {
         throw new Error('User not authorized to delete this tag (does not match author).')
     }
 
-    // TODO: we should remove the tag from the tag-array in all the words (for this user) where it is present
-
-    await tag.deleteOne()
-    // TODO: maybe add a flag to also trigger deletion of all words related to this tag?
-    res.status(200).json(tag)
+    tag.deleteOne()
+        .then(async (tagDeletionData) => {
+            const removeQuery = {tagId: req.params.id}
+            TagWord.deleteMany(removeQuery)
+                .then((tagWordDeletionData) => {
+                    res.status(200).json(tag)
+                })
+                .catch(function (error) {
+                    res.status(400).json(value)
+                    throw new Error("Tag-Word deleteMany failed")
+                })
+        })
 })
 
 // @desc    Update Tag
@@ -395,12 +402,12 @@ const getTagDataByRequest = async (req) => {
         let matchQuery = []
         if(queryData.id !== undefined){
             matchQuery.push({
-                "_id": mongoose.Types.ObjectId(queryData.id) // works
+                "_id": mongoose.Types.ObjectId(queryData.id)
             })
         }
         if(queryData.author !== undefined){
             matchQuery.push({
-                "author": mongoose.Types.ObjectId(queryData.author) // works
+                "author": mongoose.Types.ObjectId(queryData.author)
             })
         }
         if(queryData.label !== undefined){
@@ -421,42 +428,48 @@ const getTagDataByRequest = async (req) => {
         return(matchQuery)
     }
 
-    const allTagData = await Tag.aggregate([
-        // filtering related to data present in word => apply here
-        {
-            $match: {
-                $and: getMatchQuery(req.query)
-            }
-        },
-        // filtering related to data present in tagWord => apply here
-        { '$lookup': {
-                'from': WordTag.collection.name,
-                'let': { 'id': '$_id', 'tagAuthor': '$author' }, // from Tag
-                'pipeline': [
-                    {'$match': {
-                            '$expr': {
-                                '$and': [
-                                    {'$eq': ['$$id', '$tagId']},  // tagId from WordTag
-                                ]
-                            }
-                        }},
-                    { '$lookup': {
-                            'from': Word.collection.name,
-                            'let': { 'wordId': '$wordId' }, // from WordTag
-                            'pipeline': [
-                                { '$match': {
-                                        '$expr': { '$eq': [ '$_id', '$$wordId' ] }
-                                    }}
-                            ],
-                            'as': 'words'
-                        }},
-                    { '$unwind': '$words' },
-                    { '$replaceRoot': { 'newRoot': '$words' } }
-                ],
-                'as': 'words'
-            }}
-    ])
-    return(allTagData)
+    // since 'getTagDataByRequest' is not wrapped with asyncHandler, we have to manage/catch errors manually.
+    try {
+        const allTagData = await Tag.aggregate([
+            // filtering related to data present in word => apply here
+            {
+                $match: {
+                    $and: getMatchQuery(req.query)
+                }
+            },
+            // filtering related to data present in tagWord => apply here
+            { '$lookup': {
+                    'from': WordTag.collection.name,
+                    'let': { 'id': '$_id', 'tagAuthor': '$author' }, // from Tag
+                    'pipeline': [
+                        {'$match': {
+                                '$expr': {
+                                    '$and': [
+                                        {'$eq': ['$$id', '$tagId']},  // tagId from WordTag
+                                    ]
+                                }
+                            }},
+                        { '$lookup': {
+                                'from': Word.collection.name,
+                                'let': { 'wordId': '$wordId' }, // from WordTag
+                                'pipeline': [
+                                    { '$match': {
+                                            '$expr': { '$eq': [ '$_id', '$$wordId' ] }
+                                        }}
+                                ],
+                                'as': 'words'
+                            }},
+                        { '$unwind': '$words' },
+                        { '$replaceRoot': { 'newRoot': '$words' } }
+                    ],
+                    'as': 'words'
+                }}
+        ])
+        return(allTagData)
+    } catch (error){
+        throw new Error("Tag auxiliary function 'getTagDataByRequest' failed")
+    }
+
     // res.status(200).json(allTagData)
 }
 // })
