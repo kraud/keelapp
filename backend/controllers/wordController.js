@@ -618,48 +618,76 @@ const filterWordByAnyTranslation = asyncHandler(async (req, res) => {
 // @desc    Get All word+tag data
 // @route   GET /api/TagWord
 // @access  Private
-const getAllWordDataByUserId = asyncHandler(async (req, res) => {
+const getAllWordDataByUserId = async (req) => {
 
-    const allWordData = await Word.aggregate([
-        // filtering related to data present in word => apply here
-        {
-            $match: {
-                $and:[
-                    // Make sure the logged-in user matches the word user
-                    {"user": mongoose.Types.ObjectId(req.user.id)},
-                ]
-            }
-        },
-        // filtering related to data present in tagWord => apply here
-        { '$lookup': {
-            'from': TagWord.collection.name,
-            'let': { 'id': '$_id', 'wordAuthor': '$user' }, // from Word
-            'pipeline': [
-                {'$match': {
-                    '$expr': {
-                        '$and': [
-                            {'$eq': ['$$id', '$wordId']},  // wordId from TagWord
-                        ]
-                    }
-                }},
-                { '$lookup': {
-                    'from': Tag.collection.name,
-                    'let': { 'tagId': '$tagId' }, // from TagWord
-                    'pipeline': [
-                        { '$match': {
-                                '$expr': { '$eq': [ '$_id', '$$tagId' ] }
-                            }}
-                    ],
-                    'as': 'tags'
-                }},
-                { '$unwind': '$tags' },
-                { '$replaceRoot': { 'newRoot': '$tags' } }
-            ],
-            'as': 'tags'
-        }}
-    ])
-    res.status(200).json(allWordData)
-})
+    const getMatchQuery = (queryData) => {
+        let matchQuery = []
+        if(queryData.id !== undefined){
+            matchQuery.push({
+                "_id": mongoose.Types.ObjectId(queryData.id)
+            })
+        }
+        if(queryData.user !== undefined){
+            matchQuery.push({
+                "user": mongoose.Types.ObjectId(queryData.user)
+            })
+        }
+        if(queryData.partOfSpeech !== undefined){
+            matchQuery.push({
+                "partOfSpeech": mongoose.Types.ObjectId(queryData.partOfSpeech)
+            })
+        }
+        if(queryData.clue !== undefined){
+            matchQuery.push({
+                "clue": {$regex: `${queryData.clue}`, $options: "i"},
+            })
+        }
+        // TODO: look into other query options, like tagId(s)?
+        return(matchQuery)
+    }
+
+    // since 'getTagDataByRequest' is not wrapped with asyncHandler, we have to manage/catch errors manually.
+    try {
+        const allWordData = await Word.aggregate([
+            // filtering related to data present in word => apply here
+            {
+                $match: {
+                    $and: getMatchQuery(req.query)
+                }
+            },
+            // filtering related to data present in tagWord => apply here
+            { '$lookup': {
+                'from': TagWord.collection.name,
+                'let': { 'id': '$_id', 'wordAuthor': '$user' }, // from Word
+                'pipeline': [
+                    {'$match': {
+                        '$expr': {
+                            '$and': [
+                                {'$eq': ['$$id', '$wordId']},  // wordId from TagWord
+                            ]
+                        }
+                    }},
+                    { '$lookup': {
+                        'from': Tag.collection.name,
+                        'let': { 'tagId': '$tagId' }, // from TagWord
+                        'pipeline': [
+                            { '$match': {
+                                    '$expr': { '$eq': [ '$_id', '$$tagId' ] }
+                                }}
+                        ],
+                        'as': 'tags'
+                    }},
+                    { '$unwind': '$tags' },
+                    { '$replaceRoot': { 'newRoot': '$tags' } }
+                ],
+                'as': 'tags'
+            }}
+        ])
+        return(allWordData)
+    } catch (error){
+        throw new Error("Tag auxiliary function 'getTagDataByRequest' failed")
+    }
+}
 
 module.exports = {
     getWords,
