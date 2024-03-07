@@ -6,7 +6,7 @@ const {protect} = require('../middleware/authMiddleware')
 router.get('/getTags', protect, getUserTags)
 router.get('/getOtherUserTags', protect, getOtherUserTags)
 router.get('/searchTags', protect, searchTags)
-router.get('/filterTags', protect, getTagDataByRequest)
+router.get('/filterTags', protect, getTagDataByRequest) // TODO: this should be removed? Double check
 router.get('/:id', protect, getTagById)
 router.get('/getAmountByTag/:id', protect, getAmountByTag)
 router.get('/getAllTagDataByTagAuthorId/:id', protect, getAllTagDataByUserId)

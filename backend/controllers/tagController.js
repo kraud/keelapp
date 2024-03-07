@@ -38,6 +38,7 @@ const searchTags = asyncHandler(async (req, res) => {
 // @desc    Get all tags where user id matches author
 // @route   GET /api/tags
 // @access  Private
+// TODO: can be re-implemented using 'getTagDataByRequest'?
 const getUserTags = asyncHandler(async (req, res) => {
     const tags = await Tag.find(
         {
@@ -48,9 +49,10 @@ const getUserTags = asyncHandler(async (req, res) => {
     res.status(200).json(tags)
 })
 
-// @desc    Get all tags where user id matches author
+// @desc    Get all tags where user id matches the one in the request
 // @route   GET /api/tags
 // @access  Private
+// TODO: can be re-implemented using 'getTagDataByRequest'?
 const getOtherUserTags = asyncHandler(async (req, res) => {
     const tags = await Tag.find(
         {
@@ -58,8 +60,6 @@ const getOtherUserTags = asyncHandler(async (req, res) => {
             public: 'Public' // TODO: add 'Friends-Only' later on
         },
     )
-    // TODO: check if req.user.id is a friend of each tag where 'public' value is 'Friends-Only'
-    // TODO: should we return this in the "FilterItem" format for tag?
     res.status(200).json(tags)
 })
 
@@ -195,8 +195,8 @@ const deleteTag = asyncHandler(async (req, res) => {
                     res.status(200).json(tag)
                 })
                 .catch(function (error) {
-                    res.status(400).json(value)
-                    throw new Error("Tag-Word deleteMany failed")
+                    res.status(400).json(error)
+                    throw new Error("Tag-Word (from tag) deleteMany failed")
                 })
         })
 })
@@ -422,6 +422,9 @@ const getTagDataByRequest = async (req) => {
                 "description": {$regex: `${queryData.description}`, $options: "i"},
             })
         }
+        // NB! this only applies for public === 'Public'
+        // For public === 'Friends-Only' => create new type and force this case to include 'FriendsId' list
+        // to also include it inside matchQuery item
         if(queryData.public !== undefined){
             matchQuery.push({
                 "public": queryData.public

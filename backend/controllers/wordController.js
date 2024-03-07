@@ -507,7 +507,7 @@ const updateWord = asyncHandler(async (req, res) => {
         throw new Error('User not authorized')
     }
 
-    // TODO: we must review the list of TagIds and update TagWord entries accordingly
+    // TODO: we must review the list of TagIds and update TagWord entries accordingly => follow tagController's 'updateTag'
     const updatedWord = await Word.findByIdAndUpdate(req.params.id, req.body, {new: true})
     res.status(200).json(updatedWord)
 })
@@ -536,7 +536,17 @@ const deleteWords = asyncHandler(async (req, res) => {
     }
 
     await word.deleteOne()
-    res.status(200).json(word)
+        .then(async (wordDeletionData) => {
+            const removeQuery = {wordId: req.params.id}
+            TagWord.deleteMany(removeQuery)
+                .then((tagWordDeletionData) => {
+                    res.status(200).json(word)
+                })
+                .catch(function (error) {
+                    res.status(400).json(error)
+                    throw new Error("Tag-Word (from word) deleteMany failed")
+                })
+        })
 })
 
 // @desc    Get a list of Words that match a search query in any of its translations
@@ -618,7 +628,9 @@ const filterWordByAnyTranslation = asyncHandler(async (req, res) => {
 // @desc    Get All word+tag data
 // @route   GET /api/TagWord
 // @access  Private
-const getAllWordDataByUserId = async (req) => {
+// TODO: add optional field for an 'override-query'?
+//  For more specific elemMatch
+const getWordDataByRequest = async (req) => {
 
     const getMatchQuery = (queryData) => {
         let matchQuery = []
@@ -685,7 +697,7 @@ const getAllWordDataByUserId = async (req) => {
         ])
         return(allWordData)
     } catch (error){
-        throw new Error("Tag auxiliary function 'getTagDataByRequest' failed")
+        throw new Error("Word auxiliary function 'getWordDataByRequest' failed")
     }
 }
 
@@ -699,5 +711,5 @@ module.exports = {
     filterWordByAnyTranslation,
     getTags,
     getAmountByTag,
-    getAllWordDataByUserId
+    getWordDataByRequest
 }
