@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const {
-    getWords, setWord, updateWord, deleteWords, getWordsSimplified, getWordById, filterWordByAnyTranslation, getTags,
+    getWords, setWord, updateWord, deleteWord, getWordsSimplified, getWordById, filterWordByAnyTranslation, getTags,
     getAmountByTag, getWordDataByRequest
 } = require('../controllers/wordController')
 const {protect} = require('../middleware/authMiddleware')
@@ -24,6 +24,6 @@ router.post('/', protect, setWord)
 
 router.put('/:id', protect, updateWord)
 
-router.delete('/:id', protect, deleteWords)
+router.delete('/:id', protect, deleteWord)
 
 module.exports = router

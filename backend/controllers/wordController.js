@@ -389,7 +389,7 @@ const getWordById = asyncHandler(async (req, res) => {
     res.status(200).json(word[0])
 })
 
-// THIS IS LEGACY IMPLEMENTATION -- will be replaced by TagWord
+// TODO: THIS IS LEGACY IMPLEMENTATION -- will be replaced by TagWord
 // @desc    Get Tags
 // @route   GET /api/tags
 // @access  Private
@@ -438,7 +438,7 @@ const setWord = asyncHandler(async (req, res) => {
         res.status(400)
         throw new Error("Please add part of speech")
     }
-    if(!req.body.translations | req.body.translations.length < 2){
+    if(!req.body.translations || req.body.translations.length < 2){
         res.status(400)
         throw new Error("Please add 2 or more translations")
     }
@@ -461,23 +461,17 @@ const setWord = asyncHandler(async (req, res) => {
                 })
                 TagWord.insertMany(tagWordsItems)
                     .then(function (returnNewTagWordData) {
-                        console.log("Data inserted") // Success
-                        console.log("returnData:", returnNewTagWordData) // Success
                         res.status(200).json({
                             ...newWordData,
                             tagWords: returnNewTagWordData,
                         })
                     }).catch(function (error) {
-                    console.log(error)     // Failure
-                    console.log("Error when inserting TagWord")
-                    res.status(400).json(newWordData)
+                    res.status(400).json(error)
                     throw new Error("Tag-Word insertMany failed")
                 })
             }
         })
         .catch(function (error) {
-            console.log(error) // Failure
-            console.log("Error when creating Word")
             res.status(400)
             throw new Error("Tag-Word insertMany failed")
         })
@@ -501,13 +495,14 @@ const updateWord = asyncHandler(async (req, res) => {
         throw new Error('User not found')
     }
 
-    // Make sure the logged-in user matches the goal user
+    // Make sure the logged-in user matches the word user
     if(word.user.toString() !== req.user.id){
         res.status(401)
         throw new Error('User not authorized')
     }
 
     // TODO: we must review the list of TagIds and update TagWord entries accordingly => follow tagController's 'updateTag'
+    // TODO: first fix tag search in WordForm, to create-update TagWord accordingly.
     const updatedWord = await Word.findByIdAndUpdate(req.params.id, req.body, {new: true})
     res.status(200).json(updatedWord)
 })
@@ -515,7 +510,7 @@ const updateWord = asyncHandler(async (req, res) => {
 // @desc    Delete Words
 // @route   DELETE /api/words/:id
 // @access  Private
-const deleteWords = asyncHandler(async (req, res) => {
+const deleteWord = asyncHandler(async (req, res) => {
     const word = await Word.findById(req.params.id)
 
     if(!word){
@@ -707,7 +702,7 @@ module.exports = {
     getWordById,
     setWord,
     updateWord,
-    deleteWords,
+    deleteWord,
     filterWordByAnyTranslation,
     getTags,
     getAmountByTag,
