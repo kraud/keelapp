@@ -14,6 +14,8 @@ interface AutocompleteMultipleProps {
     saveResults: (results: FilterItem[]) => void
     type: any //'tag'|'gender'|'PoS'// TODO: type should be 'tag'|'gender'|'PoS'
     limitTags?: number
+    // TODO: currently defaults to false.
+    //  Creating new tag requires completing a form (in the future open 'lite'-modal when new value is used as input to create?)
     allowNewOptions?: boolean
     disabled?: boolean
     // TODO: list of selected tags not working when matchAll is false
@@ -27,18 +29,18 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
     const [open, setOpen] = useState(false)
     const [loadingLocal, setLoadingLocal] = useState(false)
     const dispatch = useDispatch()
-    const {tags, isTagSearchLoading} = useSelector((state: any) => state.words)
+    const {tags, isLoadingTags} = useSelector((state: any) => state.tags)
 
     // if we simply depend on isLoading, the text on the first option reads "no matches" for a second, before "Loading.."
     useEffect(() => {
-        if(!isTagSearchLoading && loadingLocal){ // only valid once isLoading catches up with loadingLocal, and then finishes
+        if(!isLoadingTags && loadingLocal){ // only valid once isLoading catches up with loadingLocal, and then finishes
             setLoadingLocal(false)
         } else {
-            if(isTagSearchLoading){
+            if(isLoadingTags){
                 setOptions([])
             }
         }
-    }, [isTagSearchLoading])
+    }, [isLoadingTags])
 
     // this triggers when we type something on the search field
     useEffect(() => {
@@ -56,7 +58,6 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
 
     useEffect(() => {
         // TODO: this returns full Tag data. Refactor AutocompleteMultiple to work with this data (and save label+id?)
-        // TODO: searchResults should have the FilterItem format, and we unwind that into array of strings
         setOptions(tags)
     },[tags])
 
@@ -110,7 +111,8 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
         <Autocomplete
             disabled={props.disabled}
             multiple={true}
-            freeSolo={props.allowNewOptions!!}
+            freeSolo={false} // TODO: eventually revert. See props.allowNewOptions for more info.
+            // freeSolo={props.allowNewOptions!!}
             limitTags={props.limitTags}
             filterSelectedOptions
             disableClearable
@@ -131,7 +133,7 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
             //     return true
             // }}
             filterOptions={(x: any) => x} // necessary to implement filter on server
-            options={(loadingLocal || isTagSearchLoading) ?[] :options}
+            options={(loadingLocal || isLoadingTags) ?[] :options}
             includeInputInList
             // NB! issues when clearing on blur where triggering reset reason at onInputChange on every character- temp fix?
             clearOnBlur={false}
@@ -140,10 +142,11 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
             }}
 
             value={props.values}
-            noOptionsText={(loadingLocal || isTagSearchLoading) ?"Loading..." :"No matches"}
+            noOptionsText={(loadingLocal || isLoadingTags) ?"Loading..." :"No matches"}
             //@ts-ignore
             // onChange={(event: any, newValue: SearchResult) => {
             onChange={(event: any, newValue: TagData[]) => {
+                console.log('newValue', newValue)
                 if(newValue.length > 0) {
                     if(props.matchAll!!){ // all tags go in a single array - so all must match in every single result
                         props.saveResults([getDataToStoreByType(newValue)])
@@ -204,7 +207,7 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
                                         },
                                     }}
                                 >
-                                    {((loadingLocal || isTagSearchLoading) && open)
+                                    {((loadingLocal || isLoadingTags) && open)
                                         //@ts-ignore
                                         ? <CircularProgress color={"secondary"}/>
                                         //@ts-ignore
