@@ -69,12 +69,15 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
         switch(props.type){
             case('tag'):{
                 return({
-                    type: props.type,
+                    type: props.type, // NB! can't hardcode 'tag'. Makes TS angry.
                     id: props.matchAll
-                        ? props.type+"-"+(props.values.length)
-                        : (!Array.isArray(newValue))
-                            ? props.type+"-"+newValue.label
+                        ? 'tag-'+(props.values.length) // e.g. 'tag-1'
+                        : (!Array.isArray(newValue)) // it's not an array
+                            ? "tag-"+newValue.label // e.g. 'tag-test'
                             : "NO-FILTER-DATA (1)",
+                    // TODO: replace filterValue and tagFullInfo with:
+                    //  restrictiveArray
+                    //  additiveItem
                     filterValue: props.matchAll
                         ? (props.values.length).toString() // if matchAll => this field is not used to filter => real info is specified in TagIds
                         : (!Array.isArray(newValue)) // if !matchAll => we must give the tagId to filter by
