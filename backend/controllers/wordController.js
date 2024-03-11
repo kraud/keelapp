@@ -442,45 +442,42 @@ const setWord = asyncHandler(async (req, res) => {
         res.status(400)
         throw new Error("Please add 2 or more translations")
     }
-    const word = await Word.create({
+    Word.create({
         partOfSpeech: req.body.partOfSpeech,
         translations: req.body.translations, // TranslationItem array
         clue: req.body.clue,
         user: req.user.id
     })
         .then(newWordData => {
-            // TODO: tagWord logic should be properly implemented in a separate controller?
-            //  how can we call it once we crated the tag?
-            // NB! Testing to see if this works correctly. If so: we'll refactor this into a separate (async?) function
             if((req.body.tags !== undefined) && (req.body.tags.length >0)){
                 const tagWordsItems = req.body.tags.map((tagItem) => {
                     return ({
                         tagId: tagItem._id,
-                        wordId: newWordData._id,
+                        wordId: (newWordData._id).toString(),
                     })
                 })
                 TagWord.insertMany(tagWordsItems)
-                    .then(function (returnNewTagWordData) {
+                    .then((returnNewTagWordData) => {
                         res.status(200).json({
-                            ...newWordData,
-                            tagWords: returnNewTagWordData,
+                            ...newWordData.toObject(),
+                            tagWords: req.body.tags,
                         })
-                    }).catch(function (error) {
-                    res.status(400).json(error)
-                    throw new Error("Tag-Word insertMany failed")
-                })
+                    })
+                    .catch((error) => {
+                        res.status(400).json(error)
+                        throw new Error("Tag-Word insertMany failed")
+                    })
             }  else {
                 res.status(200).json({
-                    ...newWordData,
+                    ...newWordData.toObject(),
                     tagWords: [],
                 })
             }
         })
-        .catch(function (error) {
+        .catch((error) => {
             res.status(400).json(error)
             throw new Error("Tag-Word insertMany failed")
         })
-    res.status(200).json(word)
 })
 
 // @desc    Update Word

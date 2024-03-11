@@ -48,10 +48,6 @@ export function WordForm(props: TranslationFormProps) {
         }
     }, [props.defaultDisabled])
 
-    // useEffect(() => {
-    //     console.log('completeWordData', completeWordData)
-    // }, [completeWordData])
-
     // In case we're loading an already existing word into the form, we need to set that data into the local state
     useEffect(() => {
         if(props.initialState !== undefined){

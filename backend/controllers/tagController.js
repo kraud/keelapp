@@ -142,7 +142,7 @@ const createTag = asyncHandler(async (req, res) => {
                     })
                 })
                 TagWord.insertMany(tagWordsItems)
-                    .then(function (returnData) {
+                    .then((returnData) => {
                         res.status(200).json({
                             ...value.toObject(),
                             wordsFullData: req.body.wordsFullData,

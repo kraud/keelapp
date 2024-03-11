@@ -160,7 +160,6 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
             //@ts-ignore
             // onChange={(event: any, newValue: SearchResult) => {
             onChange={(event: any, newValue: TagData[]) => {
-                // console.log('newValue', newValue)
                 if(newValue.length > 0) {
                     if(props.matchAll!!){ // all tags go in a single array - so all must match in every single result
                         props.saveResults([getDataToStoreByType(newValue)])
