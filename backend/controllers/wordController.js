@@ -453,9 +453,9 @@ const setWord = asyncHandler(async (req, res) => {
             //  how can we call it once we crated the tag?
             // NB! Testing to see if this works correctly. If so: we'll refactor this into a separate (async?) function
             if((req.body.tags !== undefined) && (req.body.tags.length >0)){
-                const tagWordsItems = req.body.tags.map((tagId) => {
+                const tagWordsItems = req.body.tags.map((tagItem) => {
                     return ({
-                        tagId: tagId,
+                        tagId: tagItem._id,
                         wordId: newWordData._id,
                     })
                 })
@@ -469,10 +469,15 @@ const setWord = asyncHandler(async (req, res) => {
                     res.status(400).json(error)
                     throw new Error("Tag-Word insertMany failed")
                 })
+            }  else {
+                res.status(200).json({
+                    ...newWordData,
+                    tagWords: [],
+                })
             }
         })
         .catch(function (error) {
-            res.status(400)
+            res.status(400).json(error)
             throw new Error("Tag-Word insertMany failed")
         })
     res.status(200).json(word)

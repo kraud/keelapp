@@ -227,12 +227,14 @@ export const getAllIndividualTagDataFromFilterItem = (originalArray: FilterItem[
         originalArray.forEach((item: FilterItem) => {
             if(
                 (item.type === "tag") &&
+                // if the element in the array is a additive item, then there's (usually) one or more items inside the array
                 (item.additiveItem !== undefined)
             ){
                 tagDataList.push(item.additiveItem)
             } else {
                 if(
                     (item.type === "tag") &&
+                    // if the element in the array is a restrictive array, then (usually?) it's the only item in the array
                     (item.restrictiveArray !== undefined)
                 ){
                     tagDataList = item.restrictiveArray

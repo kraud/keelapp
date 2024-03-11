@@ -128,6 +128,7 @@ type CaseFilter = {
 
 type TagFilter = {
     type: 'tag'
+    // both properties will never be !== undefined at the same time (I think?)
     restrictiveArray?: TagData[], // info of each Tag that needs to be present at the same time, single FilterItem can be very restrictive
     additiveItem?: TagData, // single tag info - this way we can filter by many FilterItems in parallel and each one adds more results
 }

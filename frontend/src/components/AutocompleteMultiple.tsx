@@ -75,21 +75,25 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
                         : (!Array.isArray(newValue)) // it's not an array
                             ? "tag-"+newValue.label // e.g. 'tag-test'
                             : "NO-FILTER-DATA (1)",
-                    // TODO: replace filterValue and tagFullInfo with:
-                    //  restrictiveArray
-                    //  additiveItem
-                    filterValue: props.matchAll
-                        ? (props.values.length).toString() // if matchAll => this field is not used to filter => real info is specified in TagIds
-                        : (!Array.isArray(newValue)) // if !matchAll => we must give the tagId to filter by
-                            ? newValue.label
-                            : "NO-FILTER-DATA (2)",
-                    // => undefined TagIds field is checked in BE to know what to do
-                    // if not undefined => apply all tags simultaneously
-                    tagFullInfo: props.matchAll
-                        ? (Array.isArray(newValue))
-                            ? newValue // we return full TagData array
-                            : undefined
-                        : undefined, // if matchAll => it will always be an array (of zero or more tag ids)
+                    restrictiveArray: ((props.matchAll) && (Array.isArray(newValue)))
+                        ? newValue as TagData[]
+                        : undefined,
+                    additiveItem: ((props.matchAll) && (!(Array.isArray(newValue))))
+                        ? undefined
+                        : newValue as TagData,
+                    filterValue: 'tag-'+(props.values.length)+'-selected-items',
+                    // filterValue: props.matchAll
+                    //     ? (props.values.length).toString() // if matchAll => this field is not used to filter => real info is specified in TagIds
+                    //     : (!Array.isArray(newValue)) // if !matchAll => we must give the tagId to filter by
+                    //         ? newValue.label
+                    //         : "NO-FILTER-DATA (2)",
+                    // // => undefined TagIds field is checked in BE to know what to do
+                    // // if not undefined => apply all tags simultaneously
+                    // tagFullInfo: props.matchAll
+                    //     ? (Array.isArray(newValue))
+                    //         ? newValue // we return full TagData array
+                    //         : undefined
+                    //     : undefined, // if matchAll => it will always be an array (of zero or more tag ids)
                 })
             }
             // case('gender'):{
@@ -117,7 +121,14 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
             freeSolo={false} // TODO: eventually revert. See props.allowNewOptions for more info.
             // freeSolo={props.allowNewOptions!!}
             limitTags={props.limitTags}
-            filterSelectedOptions
+            filterSelectedOptions={true}
+            isOptionEqualToValue={(selectedOption, valueToTestAgainst) => {
+                return(
+                    ((selectedOption._id !== undefined) && (valueToTestAgainst._id !== undefined))
+                    &&
+                    (selectedOption._id === valueToTestAgainst._id)
+                )
+            }}
             disableClearable
 
             open={open}
@@ -138,7 +149,7 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
             filterOptions={(x: any) => x} // necessary to implement filter on server
             options={(loadingLocal || isLoadingTags) ?[] :options}
             includeInputInList
-            // NB! issues when clearing on blur where triggering reset reason at onInputChange on every character- temp fix?
+            // NB! issues when clearing on blur where triggering reset reason at onInputChange on every character-temp fix?
             clearOnBlur={false}
             onBlur={() => {
                 setOpen(false)
@@ -149,7 +160,7 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
             //@ts-ignore
             // onChange={(event: any, newValue: SearchResult) => {
             onChange={(event: any, newValue: TagData[]) => {
-                console.log('newValue', newValue)
+                // console.log('newValue', newValue)
                 if(newValue.length > 0) {
                     if(props.matchAll!!){ // all tags go in a single array - so all must match in every single result
                         props.saveResults([getDataToStoreByType(newValue)])
