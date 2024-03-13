@@ -79,34 +79,8 @@ const searchWord = async (token: any, query: string) => {
     return(response.data)
 }
 
-const searchTag = async (token: any, query: string) => {
-    const config = {
-        headers: {
-            Authorization: `Bearer ${token}`
-        },
-        params: {
-            query: query,
-        }
-    }
-    const response = await axios.get(`${API_URL}/searchTag`, config)
-    return(response.data)
-}
-
-const getAmountByTag = async (token: any, query: string) => {
-    const config = {
-        headers: {
-            Authorization: `Bearer ${token}`
-        },
-        params: {
-            query: query,
-        }
-    }
-    const response = await axios.get(`${API_URL}/getAmountByTag`, config)
-    return(response.data)
-}
-
 const wordService = {
-    createWord, getWords, getWordsSimplified, getWordById, updateWordById, deleteWordById, searchWord, searchTag, getAmountByTag
+    createWord, getWords, getWordsSimplified, getWordById, updateWordById, deleteWordById, searchWord
 }
 
 export default wordService

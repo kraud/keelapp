@@ -389,47 +389,6 @@ const getWordById = asyncHandler(async (req, res) => {
     res.status(200).json(word[0])
 })
 
-// TODO: THIS IS LEGACY IMPLEMENTATION -- will be replaced by TagWord
-// @desc    Get Tags
-// @route   GET /api/tags
-// @access  Private
-const getTags = asyncHandler(async (req, res) => {
-    // first we get all tag arrays from stored words, where at least 1 matches the query
-    const tags = await Word.find(
-        {
-            "tags": {$regex: `${req.query.query}`, $options: "i"},
-            user: req.user.id
-        },
-        {
-            tags: 1, _id: 0
-        }
-    )
-    let filteredTags = new Set();
-    // we iterate through all the arrays in tags, and from each we only retrieve the (unique) matching strings
-    (tags).forEach((tagArray) => {
-        (tagArray.tags).forEach((tagString) => {
-            if(tagString.includes(req.query.query)){
-                filteredTags.add(tagString)
-            }
-        })
-    })
-    // TODO: should we return this in the "FilterItem" format for tag?
-    res.status(200).json(Array.from(filteredTags))
-})
-
-// @desc    Get Amount of items for a Tags
-// @route   GET /api/tagsAmount
-// @access  Private
-const getAmountByTag = asyncHandler(async (req, res) => {
-    const amountByTag = await Word.countDocuments(
-        {
-            "tags": {$regex: `${req.query.query}`, $options: "i"},
-            user: req.user.id
-        }
-    )
-    res.status(200).json(amountByTag)
-})
-
 // @desc    Set Word
 // @route   POST /api/words
 // @access  Private
@@ -806,7 +765,5 @@ module.exports = {
     updateWord,
     deleteWord,
     filterWordByAnyTranslation,
-    getTags,
-    getAmountByTag,
     getWordDataByRequest
 }

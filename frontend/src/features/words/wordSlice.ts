@@ -163,44 +163,6 @@ export const searchWordByAnyTranslation = createAsyncThunk(`words/searchWord`, a
     }
 })
 
-// Gets all tags that match (partially or fully) a string query
-export const searchAllTags = createAsyncThunk(`words/searchAllTags`, async (query: string, thunkAPI) => {
-    try {
-        // @ts-ignore
-        const token = thunkAPI.getState().auth.user.token
-        return await wordService.searchTag(token, query)
-    } catch(error: any) {
-        const message = (
-                error.response &&
-                error.response.data &&
-                error.response.data.message
-            )
-            || error.message
-            || error.toString()
-        return thunkAPI.rejectWithValue(message)
-    }
-})
-
-
-// Get the amount of words that have a certain tag associated to it
-export const getAmountByTag = createAsyncThunk(`words/getAmountByTag`, async (query: string, thunkAPI) => {
-    try {
-        // @ts-ignore
-        const token = thunkAPI.getState().auth.user.token
-        return await wordService.getAmountByTag(token, query)
-    } catch(error: any) {
-        const message = (
-                error.response &&
-                error.response.data &&
-                error.response.data.message
-            )
-            || error.message
-            || error.toString()
-        return thunkAPI.rejectWithValue(message)
-
-    }
-})
-
 export const wordSlice = createSlice({
     name: 'word',
     initialState,
@@ -304,32 +266,6 @@ export const wordSlice = createSlice({
             })
             .addCase(searchWordByAnyTranslation.rejected, (state, action) => {
                 state.isSearchLoading = false
-                state.isError = true
-                state.message = action.payload as string
-            })
-            .addCase(searchAllTags.pending, (state) => {
-                state.isTagSearchLoading = true
-            })
-            .addCase(searchAllTags.fulfilled, (state, action) => {
-                state.isTagSearchLoading = false
-                state.isSuccess = true
-                state.tags = (action.payload)
-            })
-            .addCase(searchAllTags.rejected, (state, action) => {
-                state.isTagSearchLoading = false
-                state.isError = true
-                state.message = action.payload as string
-            })
-            .addCase(getAmountByTag.pending, (state) => {
-                state.isTagSearchLoading = true
-            })
-            .addCase(getAmountByTag.fulfilled, (state, action) => {
-                state.isTagSearchLoading = false
-                state.isSuccess = true
-                state.currentTagAmount = (action.payload)
-            })
-            .addCase(getAmountByTag.rejected, (state, action) => {
-                state.isTagSearchLoading = false
                 state.isError = true
                 state.message = action.payload as string
             })
