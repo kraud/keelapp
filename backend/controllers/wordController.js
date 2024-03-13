@@ -503,10 +503,110 @@ const updateWord = asyncHandler(async (req, res) => {
         throw new Error('User not authorized')
     }
 
-    // TODO: we must review the list of TagIds and update TagWord entries accordingly => follow tagController's 'updateTag'
-    // TODO: first fix tag search in WordForm, to create-update TagWord accordingly.
-    const updatedWord = await Word.findByIdAndUpdate(req.params.id, req.body, {new: true})
-    res.status(200).json(updatedWord)
+    // once updating TagWord is done we update the info inside Word
+    const updatedDataToStore = {
+        user: req.body.user,
+        partOfSpeech: req.body.partOfSpeech,
+        translations: req.body.translations,
+        clue: req.body.clue,
+    }
+
+    // iterate over tags and check for new tag-word relationships => create/remove tagWord documents accordingly
+    // if in tags there are tags associated with this word, we must check if they are the same as currently stored in TagWord
+    // if tags is empty we must check if there are tags stored related to this tag and delete them
+    const updatedTagsList = (req.body.tags).map((tagFullData) => {
+        return((tagFullData._id).toString()) // TODO: check if toString can be removed
+    }) // all wordsIds. Some might be new, all might already be stored, or it could be missing some previously stored.
+    // we retrieve the currently stored list of words related to this tag
+    const request = {
+        query: {
+            id: req.params.id // id for the current Word
+        }
+    }
+
+    getWordDataByRequest(request) // req.query should have id (for the tag)
+        // only 1 possible tag with the id inside query => wordWithTagData will be an array of 1 item
+        .then(async (wordWithTagData) => {
+            // inside wordWithTagData[0] there is property called 'tags', with a list of Tag elements (check interface in FE)
+            const wordStoredTagsId = wordWithTagData[0].tags.map((tag) => {
+                return((tag._id).toString())
+            })
+            let tagsToBeRemoved = []
+            wordStoredTagsId.forEach((storedTagId) => {
+                if(!(updatedTagsList.includes(storedTagId))){
+                    tagsToBeRemoved.push(storedTagId)
+                }  // if updatedTagsList DOES include storedWordId => we don't need to save it again
+            })
+            let tagsToBeAdded = []
+            updatedTagsList.forEach((updatedTagId) => {
+                if(!(wordStoredTagsId.includes(updatedTagId))){
+                    tagsToBeAdded.push(updatedTagId)
+                }  // if wordStoredTagsId DOES include updatedTagId => we don't need to save it again
+            })
+
+            // FIRST ELEMENT ALWAYS IS THE TAGS TO BE DELETED
+            // SECOND ELEMENT ALWAYS IS THE TAGS TO BE ADDED
+            const rawModificationLIst = [tagsToBeRemoved, tagsToBeAdded] // some (or both) items in the array might still be an empty array itself
+            const modificationsList = [] // we will store here only the modificationsArrays that have elements inside them
+            rawModificationLIst.forEach((arrayWithModifications) => {
+                if(arrayWithModifications.length > 0){
+                    modificationsList.push(arrayWithModifications)
+                } else {
+                    modificationsList.push(null)
+                }
+            })
+            // Promise.all should allow for parallel asynchronous request to be made and once all are done, it will continue
+            if((modificationsList[0] !== null) || modificationsList[1] !== null){
+                Promise.all(modificationsList.map(async (listOfChanges, index) => {
+                    if(listOfChanges !== null) {
+                        switch(index) {
+                            // FIRST ELEMENT IN modificationsList IS ALWAYS THE WORDS TO BE DELETED
+                            case 0: {
+                                // we call TagWord to remove all items that match current TagId+(an item from wordsToBeRemoved)
+                                const removeQuery = {
+                                    $and: [
+                                        {wordId: req.params.id},
+                                        {tagId: {$in: listOfChanges}}
+                                    ]
+                                }
+                                return TagWord.deleteMany(removeQuery)
+                            }
+                            // SECOND ELEMENT IN modificationsList IS ALWAYS THE WORDS TO BE ADDED
+                            case 1: {
+                                // we call TagWord to add all items from (tagsToBeRemoved)+WordId
+                                const wordTagsItems = listOfChanges.map((tagId) => {
+                                    return ({
+                                        wordId: req.params.id,
+                                        tagId: tagId,
+                                    })
+                                })
+                                return TagWord.insertMany(wordTagsItems)
+                            }
+                            default: {
+                                return // no possible case where array will be longer than 2 elements
+                            }
+                        }
+                    }
+                })).then(async (completeModificationsResponse) => {
+                    Word.findByIdAndUpdate(req.params.id, updatedDataToStore, {new: true})
+                        .then((updatedWord) => {
+                            const updatedDataWithTagsFullData = {
+                                // updateTag returned by findByIdAndUpdate includes a lot of data used for debugging (?)
+                                // Using toObject() we can access only the data we're interested in
+                                ...updatedWord.toObject(),
+                                // this is not stored alongside Tag data. So we add it here so return data matches what came in request body
+                                tags: req.body.tags
+                            }
+                            res.status(200).json(updatedDataWithTagsFullData)
+                        })
+                })
+            } else {
+                // no changes needed for stored tags related to this word
+                // NB! this needs to be repeated here because inside IF it runs inside 'then', after updating TagWord
+                const updatedWord = await Word.findByIdAndUpdate(req.params.id, updatedDataToStore, {new: true})
+                res.status(200).json(updatedWord)
+            }
+        })
 })
 
 // @desc    Delete Words

@@ -255,7 +255,7 @@ const updateTag = asyncHandler(async (req, res) => {
             tagStoredWordsId.forEach((storedWordId) => {
                 if(!(updatedWordsList.includes(storedWordId))){
                     wordsToBeRemoved.push(storedWordId)
-                }  // if updatedWordList DOES include storedWordId => we don't need to save it again
+                }  // if updatedWordsList DOES include storedWordId => we don't need to save it again
             })
             let wordsToBeAdded = []
             updatedWordsList.forEach((updatedWordId) => {
@@ -276,7 +276,6 @@ const updateTag = asyncHandler(async (req, res) => {
                 }
             })
             // Promise.all should allow for parallel asynchronous request to be made and once all are done, it will continue
-            // const finalModifications = await Promise.all(modificationsList.map(async (listOfChanges, index) => {
             if((modificationsList[0] !== null) || modificationsList[1] !== null){
                 Promise.all(modificationsList.map(async (listOfChanges, index) => {
                     if(listOfChanges !== null) {
