@@ -13,7 +13,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import LanguageOutlined from '@mui/icons-material/LanguageOutlined';
 import {logout, resetState} from "../features/auth/authSlice";
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
 import {AutocompleteSearch} from "./AutocompleteSearch";
@@ -26,10 +26,10 @@ import {stringAvatar} from "./generalUseFunctions";
 const pages = ['Add word', 'Practice', 'Review'];
 const settings = ['Notifications', 'Account', 'Dashboard', 'Logout'];
 
-
 function ResponsiveAppBar() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const location = useLocation()
 
     const {user} = useSelector((state: any) => state.auth)
     const {searchResults, isSearchLoading} = useSelector((state: any) => state.words)
@@ -57,10 +57,26 @@ function ResponsiveAppBar() {
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
-    };
+    }
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElUser(event.currentTarget);
-    };
+    }
+
+    const isCurrentOptionSelected = (index: number) => {
+        // NB! Locations refer to the 'pages' array.
+        switch (index){
+            case 0:{
+                return (location.pathname === '/addWord')
+            }
+            case 1:{
+                return (location.pathname === '/practice')
+            }
+            case 2:{
+                return (location.pathname === '/review')
+            }
+            default: return false
+        }
+    }
 
     const handleCloseNavMenu = (option: any) => {
         switch (option){
@@ -149,7 +165,7 @@ function ResponsiveAppBar() {
                             textDecoration: 'none',
                         }}
                     >
-                        KEELAPP
+                        KEELAPP |
                     </Typography>
 
                     {/* MENU ICON (SMALL) */}
@@ -224,11 +240,16 @@ function ResponsiveAppBar() {
 
                     {/* OPTIONS LIST */}
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                        {pages.map((page) => (
+                        {pages.map((page, index) => (
                             <Button
                                 key={page}
                                 onClick={() => handleCloseNavMenu(page)}
-                                sx={{ my: 2, color: 'white', display: 'block' }}
+                                sx={{
+                                    my: 2,
+                                    color: 'white',
+                                    display: 'block',
+                                    textShadow: isCurrentOptionSelected(index) ?'1px 1px 3px black' :undefined,
+                                }}
                             >
                                 {page}
                             </Button>
