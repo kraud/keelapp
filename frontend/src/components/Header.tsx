@@ -92,7 +92,7 @@ function ResponsiveAppBar() {
                 toast.error("This function is not ready yet, we're sorry!")
             }
         }
-        setAnchorElNav(null);
+        setAnchorElNav(null)
     }
 
     // type string when clicking on option and object when clicking off the menu
@@ -336,6 +336,6 @@ function ResponsiveAppBar() {
                 </Toolbar>
             </Container>
         </AppBar>
-    );
+    )
 }
-export default ResponsiveAppBar;
+export default ResponsiveAppBar
