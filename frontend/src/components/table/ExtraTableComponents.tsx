@@ -339,7 +339,8 @@ export function TableDataCell(props: TableDataCellProps){
                             spacing={1}
                             justifyContent={"flex-start"}
                         >
-                            {props.content.map((item: string, index: number) => {
+                            {/* TODO: TagData type must be changed to something more generic? */}
+                            {props.content.map((item: TagData, index: number) => {
                                 switch(true){
                                     case(index == 2): {
                                         return(
@@ -372,14 +373,15 @@ export function TableDataCell(props: TableDataCellProps){
                                             >
                                                 <Chip
                                                     variant="filled"
-                                                    label={item}
+                                                    label={item.label}
                                                     color={"secondary"}
                                                     sx={{
                                                         maxWidth: "max-content",
                                                     }}
                                                     onClick={() => {
-                                                        setSearchParams({"tags": item}) // also acts as navigate
-                                                        dispatch(clearWordsSimple())
+                                                        // TODO: fix click to search with real Tag and SearchParams
+                                                        // setSearchParams({"tags": item}) // also acts as navigate
+                                                        // dispatch(clearWordsSimple())
                                                     }}
                                                 />
                                             </Grid>

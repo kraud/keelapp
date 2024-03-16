@@ -235,24 +235,23 @@ export const createColumnsReviewTable = (selectedLanguagesList: string[], displa
                         }}
                     />,
                 cell: (info) => {
-                    return ''
-                    // return(
-                    //     (info.getValue() !== undefined)
-                    //         ?
-                    //         <TableDataCell
-                    //             content={info.getValue()}
-                    //             wordId={info.row.original.id}
-                    //             type={"array"}
-                    //             textAlign={"center"}
-                    //             onlyForDisplay={false}
-                    //             sxProps={{
-                    //                 minWidth: "50px"
-                    //             }}
-                    //             onlyDisplayAmountOnHover={true}
-                    //         />
-                    //         :
-                    //         ""
-                    // )
+                    return(
+                        (info.getValue() !== undefined)
+                            ?
+                            <TableDataCell
+                                content={info.getValue()}
+                                wordId={info.row.original.id}
+                                type={"array"}
+                                textAlign={"center"}
+                                onlyForDisplay={false}
+                                sxProps={{
+                                    minWidth: "50px"
+                                }}
+                                onlyDisplayAmountOnHover={true}
+                            />
+                            :
+                            ""
+                    )
                 },
                 enableColumnFilter: false,
                 enableSorting: false,

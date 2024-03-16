@@ -203,15 +203,26 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
                 searchResults: result})
         }
     } else {
-        const result = await Word.find(
-            {
-                "user": req.user.id,
+        const request = {
+            query: {
+                user: req.user.id,
             }
-        )
+        }
+        const wordWithTagData = await getWordDataByRequest(request)
         originalResults.push({
             type: 'none',
-            searchResults: result
+            searchResults: wordWithTagData
         })
+        // TODO: delete once this simplified search is fully refactored.
+        // const result = await Word.find(
+        //     {
+        //         "user": req.user.id,
+        //     }
+        // )
+        // originalResults.push({
+        //     type: 'none',
+        //     searchResults: result
+        // })
     }
 
 
@@ -306,7 +317,7 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
                 partOfSpeech: completeWord.partOfSpeech,
                 createdAt: completeWord.createdAt,
                 updatedAt: completeWord.updatedAt,
-                id: completeWord.id,
+                id: completeWord._id,
             }
             partsOfSpeech.add(completeWord.partOfSpeech)
             // from each translated language, we only retrieve the necessary data
