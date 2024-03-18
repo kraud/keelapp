@@ -194,13 +194,26 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
 
     if(filters.length > 0){
         for (const filter of filters) {
-            let result = await Word.find(
-                getFilterQuery(filter)
-            )
-            // TODO: potential optimization => only push if result.length > 0
+            // let result = await Word.find(
+            //     getFilterQuery(filter)
+            // )
+            // // TODO: potential optimization => only push if result.length > 0
+            // originalResults.push({
+            //     type: filter.type,
+            //     searchResults: result
+            // })
+            const request = {
+                query: {
+                    user: req.user.id,
+                }
+            }
+            // this should work for type 'gender' and 'PoS'.
+            // 'Tag' filters will require to be added into 'tagRequest' (currently undefined).
+            const wordWithTagData = await getWordDataByRequest(request, undefined, getFilterQuery(filter))
             originalResults.push({
                 type: filter.type,
-                searchResults: result})
+                searchResults: wordWithTagData
+            })
         }
     } else {
         const request = {
@@ -697,7 +710,7 @@ const filterWordByAnyTranslation = asyncHandler(async (req, res) => {
 // @access  Private
 // TODO: add optional field for an 'override-query'?
 //  For more specific elemMatch
-const getWordDataByRequest = async (req) => {
+const getWordDataByRequest = async (wordRequest, tagRequest, wordForceRequest) => {
 
     const getMatchQuery = (queryData) => {
         let matchQuery = []
@@ -731,7 +744,9 @@ const getWordDataByRequest = async (req) => {
             // filtering related to data present in word => apply here
             {
                 $match: {
-                    $and: getMatchQuery(req.query)
+                    $and: (wordForceRequest !== undefined)
+                        ? wordForceRequest // more complex request can be made to override the getMatchQuery process
+                        : getMatchQuery(wordRequest.query)
                 }
             },
             // filtering related to data present in tagWord => apply here
@@ -751,6 +766,7 @@ const getWordDataByRequest = async (req) => {
                         'let': { 'tagId': '$tagId' }, // from TagWord
                         'pipeline': [
                             { '$match': {
+                                    // TODO: add 'tagRequest' data here
                                     '$expr': { '$eq': [ '$_id', '$$tagId' ] }
                                 }}
                         ],
@@ -764,6 +780,7 @@ const getWordDataByRequest = async (req) => {
         ])
         return(allWordData)
     } catch (error){
+        console.log('error', error)
         throw new Error("Word auxiliary function 'getWordDataByRequest' failed")
     }
 }
