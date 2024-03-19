@@ -20,21 +20,40 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
     const getFilterQuery = (filter) => {
         switch(filter.type) {
             case 'gender': {
-                return {
-                    "translations.cases": {
-                        $elemMatch: {
-                            // bug with MongoDB? Might have to create work-around iterating through the filters array
-                            // and checking one at a time, and then joining the unique results at the end
-                            // see more at: https://stackoverflow.com/questions/22907451/nodejs-mongodb-in-array-not-working-if-array-is-a-variable
-                            // "word": {$in: ['der', 'die']}, // this works (using hardcoded strings, instead of a variable like filter.filterValue)
-                            // it's an array to allow searching by more than 1 gender at a time => doesn't work at the moment
-                            "word": {$in: `${[filter.filterValue]}`}, // this doesn't work => only 1 filter at a time
-                            "caseName": {$regex: "^gender"}, // TODO: add check for other fields like "gradable" in adverb
+                console.log('filter.filterValue', filter.filterValue)
+                return [
+                    {
+                        "translations.cases": {
+                            $elemMatch: {
+                                // bug with MongoDB? Might have to create work-around iterating through the filters array
+                                // and checking one at a time, and then joining the unique results at the end
+                                // see more at: https://stackoverflow.com/questions/22907451/nodejs-mongodb-in-array-not-working-if-array-is-a-variable
+                                // "word": {$in: ['der', 'die']}, // this works (using hardcoded strings, instead of a variable like filter.filterValue)
+                                // it's an array to allow searching by more than 1 gender at a time => doesn't work at the moment
+                                "word": {$in: `${Object.values([filter.filterValue])}`}, // this doesn't work => only 1 filter at a time
+                                "caseName": {$regex: "^gender"}, // TODO: add check for other fields like "gradable" in adverb
+                            }
                         }
                     },
-                    "user": req.user.id,
-                }
+                    {"user": mongoose.Types.ObjectId(req.user.id)},
+                ]
             }
+            // case 'gender': {
+            //     return {
+            //         "translations.cases": {
+            //             $elemMatch: {
+            //                 // bug with MongoDB? Might have to create work-around iterating through the filters array
+            //                 // and checking one at a time, and then joining the unique results at the end
+            //                 // see more at: https://stackoverflow.com/questions/22907451/nodejs-mongodb-in-array-not-working-if-array-is-a-variable
+            //                 // "word": {$in: ['der', 'die']}, // this works (using hardcoded strings, instead of a variable like filter.filterValue)
+            //                 // it's an array to allow searching by more than 1 gender at a time => doesn't work at the moment
+            //                 "word": {$in: `${[filter.filterValue]}`}, // this doesn't work => only 1 filter at a time
+            //                 "caseName": {$regex: "^gender"}, // TODO: add check for other fields like "gradable" in adverb
+            //             }
+            //         },
+            //         "user": req.user.id,
+            //     }
+            // }
             // TODO: this will need to be changed. 2 options:
             //  1 - If we keep on each word the id+tag, we can simply modify this search
             //      (problem: 2 sources of truth => if tag label changes we must update it on every word)
@@ -62,11 +81,17 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
                 break
             }
             case 'PoS': {
-                return {
-                    "user": req.user.id,
-                    "partOfSpeech": {$eq: `${filter.filterValue}`}, // this doesn't work => only 1 filter at a time
-                }
+                return [
+                    {"user": mongoose.Types.ObjectId(req.user.id)},
+                    {"partOfSpeech": {$eq: `${filter.filterValue}`}}, // this doesn't work => only 1 filter at a time
+                ]
             }
+            // case 'PoS': {
+            //     return {
+            //         "user": req.user.id,
+            //         "partOfSpeech": {$eq: `${filter.filterValue}`}, // this doesn't work => only 1 filter at a time
+            //     }
+            // }
             default: { // NO FILTER?
                 return {
                     "user": req.user.id,
@@ -726,7 +751,7 @@ const getWordDataByRequest = async (wordRequest, tagRequest, wordForceRequest) =
         }
         if(queryData.partOfSpeech !== undefined){
             matchQuery.push({
-                "partOfSpeech": mongoose.Types.ObjectId(queryData.partOfSpeech)
+                "partOfSpeech": queryData.partOfSpeech
             })
         }
         if(queryData.clue !== undefined){
@@ -739,6 +764,7 @@ const getWordDataByRequest = async (wordRequest, tagRequest, wordForceRequest) =
     }
 
     // since 'getTagDataByRequest' is not wrapped with asyncHandler, we have to manage/catch errors manually.
+    console.log('wordForceRequest', wordForceRequest)
     try {
         const allWordData = await Word.aggregate([
             // filtering related to data present in word => apply here
