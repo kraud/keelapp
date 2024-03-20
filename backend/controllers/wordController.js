@@ -30,7 +30,7 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
                                 // see more at: https://stackoverflow.com/questions/22907451/nodejs-mongodb-in-array-not-working-if-array-is-a-variable
                                 // "word": {$in: ['der', 'die']}, // this works (using hardcoded strings, instead of a variable like filter.filterValue)
                                 // it's an array to allow searching by more than 1 gender at a time => doesn't work at the moment
-                                "word": {$in: `${Object.values([filter.filterValue])}`}, // this doesn't work => only 1 filter at a time
+                                "word": filter.filterValue, // this doesn't work => only 1 filter at a time
                                 "caseName": {$regex: "^gender"}, // TODO: add check for other fields like "gradable" in adverb
                             }
                         }
