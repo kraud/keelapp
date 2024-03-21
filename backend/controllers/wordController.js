@@ -30,7 +30,8 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
                                 // see more at: https://stackoverflow.com/questions/22907451/nodejs-mongodb-in-array-not-working-if-array-is-a-variable
                                 // "word": {$in: ['der', 'die']}, // this works (using hardcoded strings, instead of a variable like filter.filterValue)
                                 // it's an array to allow searching by more than 1 gender at a time => doesn't work at the moment
-                                "word": filter.filterValue, // this doesn't work => only 1 filter at a time
+                                // "word": {$in: `${[filter.filterValue]}`}, // not working.
+                                "word": filter.filterValue,
                                 "caseName": {$regex: "^gender"}, // TODO: add check for other fields like "gradable" in adverb
                             }
                         }
@@ -61,24 +62,33 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
             //      (problem: this could cause issues with searching through other user's tags -set as public or friends-only-
             //      We would need to keep a list per-user of the tags they're using?)
             case 'tag': {
+                console.log('filter-tag', filter)
                 // NB! in this case, filter.tagIds for type === "tag" will be an array of strings
                 // so each filter further restricts the results when included
-                if(filter.tagIds !== undefined && filter.tagIds.length > 0){
+                // TODO: restrictiveArray implementation would require check across multiple TagWord documents simultaneously (WIP)
+                if(filter.restrictiveArray !== undefined && filter.restrictiveArray.length > 0){
                     return {
-                        "tags": { $all: filter.tagIds},// This would force to only get items that have all the tags in filter.value
+                        // "tags": { $all: filter.tagIds},// This would force to only get items that have all the tags in filter.value
                         user: req.user.id
                     }
                 } else {
                     // NB! in this case, filter.value for type === "tag" will be a single string
                     // so each filter gives additive results when included
-                    if ((filter.filterValue !== undefined) && (filter.filterValue !== "")) {
+                    if (filter.additiveItem !== undefined) {
                         return {
-                            "tags": {$regex: `${filter.filterValue}`, $options: "i"},
-                            user: req.user.id
+                            '$expr': {
+                                '$and': [
+                                    // {'$_id': `${mongoose.Types.ObjectId(filter.additiveItem._id)}`},
+                                    { '$eq': [ '$_id', `${filter.additiveItem._id}` ] },
+                                    { '$eq': [ '$_id', '$$tagId' ] },
+                                ]
+                            }
+                        // {$regex: `${filter.filterValue}`, $options: "i"},
+                        //     user: req.user.id
                         }
-                    }
                 }
                 break
+                }
             }
             case 'PoS': {
                 return [
@@ -213,6 +223,30 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
             }
         }
     }
+
+    const separateFilters = (filters) => {
+        let tagFilters = []
+        let otherFilters = []
+
+        filters.forEach(filter => {
+            switch (filter.type) {
+                case ('Tag'): {
+                    tagFilters.push(filter)
+                    break
+                }
+                default: {
+                    otherFilters.push(filter)
+                    break
+                }
+            }
+        })
+
+        return({
+            tagFilters: tagFilters,
+            otherFilters: otherFilters
+        })
+    }
+
     const filters = (req.query.filters !== undefined) ?req.query.filters :[]
 
     let originalResults = []
@@ -234,7 +268,15 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
             }
             // this should work for type 'gender' and 'PoS'.
             // 'Tag' filters will require to be added into 'tagRequest' (currently undefined).
-            const wordWithTagData = await getWordDataByRequest(request, undefined, getFilterQuery(filter))
+            // TODO: check if necessary
+            // const sortedFilters = separateFilters()
+            // TODO: separate filters with type=tag on a list and send into tagRequest (or create forceTagRequest) and the rest to forceWordrequest?
+            const wordWithTagData = await getWordDataByRequest(
+                request, // this will always be ignored if there's a (non-tag) filter
+                undefined,
+                (filter.type === 'tag')?undefined :getFilterQuery(filter),
+                (filter.type === 'tag') ?getFilterQuery(filter) :undefined
+            )
             originalResults.push({
                 type: filter.type,
                 searchResults: wordWithTagData
@@ -246,6 +288,7 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
                 user: req.user.id,
             }
         }
+        // no need for further parameters in getWordDataByRequest, since they're only required when using filters
         const wordWithTagData = await getWordDataByRequest(request)
         originalResults.push({
             type: 'none',
@@ -735,7 +778,7 @@ const filterWordByAnyTranslation = asyncHandler(async (req, res) => {
 // @access  Private
 // TODO: add optional field for an 'override-query'?
 //  For more specific elemMatch
-const getWordDataByRequest = async (wordRequest, tagRequest, wordForceRequest) => {
+const getWordDataByRequest = async (wordRequest, tagRequest, wordForceRequest, tagForceRequest) => {
 
     const getMatchQuery = (queryData) => {
         let matchQuery = []
@@ -791,9 +834,10 @@ const getWordDataByRequest = async (wordRequest, tagRequest, wordForceRequest) =
                         'from': Tag.collection.name,
                         'let': { 'tagId': '$tagId' }, // from TagWord
                         'pipeline': [
-                            { '$match': {
-                                    // TODO: add 'tagRequest' data here
-                                    '$expr': { '$eq': [ '$_id', '$$tagId' ] }
+                            { '$match':
+                                    (tagForceRequest !== undefined)
+                                    ? tagForceRequest // more complex request can be made to override the getMatchQuery process
+                                    : {'$expr': { '$eq': [ '$_id', '$$tagId' ] }
                                 }}
                         ],
                         'as': 'tags'

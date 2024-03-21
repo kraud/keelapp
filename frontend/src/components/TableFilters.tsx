@@ -23,10 +23,10 @@ export function TableFilters(props: TableFilterProps) {
     const handleOnClick = (id: string) => {
         if(isChipSelected(id)){
             // if we click again on a selected filter, it is removed from the currently active ones for this category
-            setSelectedFilters(selectedFilters.filter(filter => filter.id !== id))
+            setSelectedFilters(selectedFilters.filter(filter => filter._id !== id))
         } else {
             // if we click on a filter, it is added to this category
-            const newSelectedFilter = props.filterOptions.find(filter => filter.id === id)
+            const newSelectedFilter = props.filterOptions.find(filter => filter._id === id)
             if(newSelectedFilter!!){
                 setSelectedFilters([
                     ...selectedFilters,
@@ -39,7 +39,7 @@ export function TableFilters(props: TableFilterProps) {
     const isChipSelected = (id: string) => {
         let isSelected = false
         selectedFilters.forEach((filter) => {
-            if(filter.id === id){
+            if(filter._id === id){
                 isSelected = true
             }
         })
@@ -81,19 +81,19 @@ export function TableFilters(props: TableFilterProps) {
                             }}
                         >
                             <Chip
-                                variant={(isChipSelected(filter.id)) ?'filled' :"outlined"}
-                                color={(isChipSelected(filter.id)) ?"success" :"error"}
-                                onDelete={() => handleOnClick(filter.id)}
-                                deleteIcon={(isChipSelected(filter.id)) ? <CloseIcon /> : <AddIcon />}
+                                variant={(isChipSelected(filter._id)) ?'filled' :"outlined"}
+                                color={(isChipSelected(filter._id)) ?"success" :"error"}
+                                onDelete={() => handleOnClick(filter._id)}
+                                deleteIcon={(isChipSelected(filter._id)) ? <CloseIcon /> : <AddIcon />}
                                 label={filter.filterValue}
                                 sx={{
-                                    background: (isChipSelected(filter.id)) ?undefined :'white',
+                                    background: (isChipSelected(filter._id)) ?undefined :'white',
                                 }}
                                 // This limitation has been added to hide for now
                                 // a bug with MongoDB and variable arrays using the $in operator
                                 // see more at: https://stackoverflow.com/questions/22907451/nodejs-mongodb-in-array-not-working-if-array-is-a-variable
                                 disabled={(props.singleSelection!!)
-                                    ? !(isChipSelected(filter.id)) && (selectedFilters.length>0)
+                                    ? !(isChipSelected(filter._id)) && (selectedFilters.length>0)
                                     : false
                                 } // only 1 chip active at once
                             />

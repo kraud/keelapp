@@ -116,7 +116,7 @@ export interface PropsButtonData {
 }
 
 export type FilterItem = {
-    id: string,
+    _id: string,
     filterValue: string, // also the label that will be displayed
 } & (CaseFilter | TagFilter | PartOfSpeechFilter)
 

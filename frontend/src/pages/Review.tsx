@@ -82,35 +82,35 @@ export function Review(){
 
     const genderFilters: FilterItem[] = [
         {
-            id: 'CaseGenderMaleDE',
+            _id: 'CaseGenderMaleDE',
             type: 'gender',
             filterValue: 'der',
             caseName: NounCases.genderDE,
             language: Lang.DE,
         },
         {
-            id: 'CaseGenderFemaleDE',
+            _id: 'CaseGenderFemaleDE',
             type: 'gender',
             filterValue: 'die',
             caseName: NounCases.genderDE,
             language: Lang.DE,
         },
         {
-            id: 'CaseGenderNeutralDE',
+            _id: 'CaseGenderNeutralDE',
             type: 'gender',
             filterValue: 'das',
             caseName: NounCases.genderDE,
             language: Lang.DE,
         },
         {
-            id: 'CaseGenderMaleES',
+            _id: 'CaseGenderMaleES',
             type: 'gender',
             filterValue: 'el',
             caseName: NounCases.genderES,
             language: Lang.ES,
         },
         {
-            id: 'CaseGenderFemaleES',
+            _id: 'CaseGenderFemaleES',
             type: 'gender',
             filterValue: 'la',
             caseName: NounCases.genderES,
@@ -119,19 +119,19 @@ export function Review(){
     ]
     const PoSFilters: FilterItem[] = [
         {
-            id: 'PoSNoun',
+            _id: 'PoSNoun',
             type: 'PoS',
             filterValue: 'Noun',
             partOfSpeech: PartOfSpeech.noun,
         },
         {
-            id: 'PoSAdverb',
+            _id: 'PoSAdverb',
             type: 'PoS',
             filterValue: 'Adverb',
             partOfSpeech: PartOfSpeech.adverb,
         },
         {
-            id: 'PoSAdjective',
+            _id: 'PoSAdjective',
             type: 'PoS',
             filterValue: 'Adjective',
             partOfSpeech: PartOfSpeech.adjective,
@@ -154,6 +154,10 @@ export function Review(){
 
         return () => clearTimeout(timeout)
     }, [currentPoSFilters, currentGenderFilters, currentTagFilters])
+
+    useEffect(() => {
+        console.log('currentTagFilters', currentTagFilters)
+    }, [currentTagFilters])
 
     const goToDetailedView = (rowSelection: unknown) => {
         // rowSelection format:
@@ -342,12 +346,12 @@ export function Review(){
                             >
                                 <AutocompleteMultiple
                                     type={'tag'}
-                                    values={
-                                        getAllIndividualTagDataFromFilterItem(currentTagFilters)}
+                                    // values={currentTagFilters}
+                                    values={getAllIndividualTagDataFromFilterItem(currentTagFilters)}
                                     saveResults={(results: FilterItem[]) => {
                                         setCurrentTagFilters(results)
                                     }}
-                                    matchAll={true}
+                                    matchAll={false}
                                     limitTags={3}
                                     allowNewOptions={false}
                                 />

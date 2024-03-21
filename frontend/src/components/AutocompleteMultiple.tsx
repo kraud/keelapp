@@ -61,16 +61,20 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
         setOptions(tags)
     },[tags])
 
+    useEffect(() => {
+        console.log('props.values AUTOCOMPLETE', props.values)
+    },[props.values])
+
     // Depending on the type of AutocompleteMultiple, the returned data will be structured differently.
-    // e.g. if matchAll prop is true => returned data will include tagIds,
-    // this way, all filters are applied in an additive fashion (all true at the same time, instead of each adding a category)
+    // e.g. if matchAll prop is true => returned data will include restrictiveArray,
+    // this way, all filters are applied in a restrictive fashion (all true at the same time, instead of each adding a category)
     const getDataToStoreByType = (newValue: TagData|TagData[]) => {
         // NB! this returns a FilterItem, with additional data depending on the type of filter
         switch(props.type){
             case('tag'):{
                 return({
                     type: props.type, // NB! can't hardcode 'tag'. Makes TS angry.
-                    id: props.matchAll
+                    _id: props.matchAll
                         ? 'tag-'+(props.values.length) // e.g. 'tag-1'
                         : (!Array.isArray(newValue)) // it's not an array
                             ? "tag-"+newValue.label // e.g. 'tag-test'
@@ -78,9 +82,9 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
                     restrictiveArray: ((props.matchAll) && (Array.isArray(newValue)))
                         ? newValue as TagData[]
                         : undefined,
-                    additiveItem: ((props.matchAll) && (!(Array.isArray(newValue))))
-                        ? undefined
-                        : newValue as TagData,
+                    additiveItem: (!(props.matchAll) && (!(Array.isArray(newValue))))
+                        ? newValue as TagData
+                        : undefined,
                     filterValue: 'tag-'+(props.values.length)+'-selected-items',
                     // filterValue: props.matchAll
                     //     ? (props.values.length).toString() // if matchAll => this field is not used to filter => real info is specified in TagIds
@@ -104,7 +108,7 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
             // }
             default: return({
                 type: props.type,
-                id: props.matchAll ? props.type+"-"+(props.values.length) :props.type+"-"+newValue,
+                _id: props.matchAll ? props.type+"-"+(props.values.length) :props.type+"-"+newValue,
                 filterValue: props.matchAll
                     ? (props.values.length).toString()
                     : (!Array.isArray(newValue)) // if !matchAll => we must give the tagId to filter by
