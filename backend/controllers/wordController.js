@@ -79,15 +79,15 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
                             '$expr': {
                                 '$and': [
                                     // {'$_id': `${mongoose.Types.ObjectId(filter.additiveItem._id)}`},
-                                    { '$eq': [ '$_id', `${filter.additiveItem._id}` ] },
+                                    // { '$eq': [ '$_id', `${filter.additiveItem._id}` ] },
                                     { '$eq': [ '$_id', '$$tagId' ] },
                                 ]
                             }
                         // {$regex: `${filter.filterValue}`, $options: "i"},
                         //     user: req.user.id
                         }
-                }
-                break
+                    }
+                    break
                 }
             }
             case 'PoS': {
@@ -808,6 +808,7 @@ const getWordDataByRequest = async (wordRequest, tagRequest, wordForceRequest, t
 
     // since 'getTagDataByRequest' is not wrapped with asyncHandler, we have to manage/catch errors manually.
     console.log('wordForceRequest', wordForceRequest)
+    console.log('tagForceRequest', tagForceRequest)
     try {
         const allWordData = await Word.aggregate([
             // filtering related to data present in word => apply here

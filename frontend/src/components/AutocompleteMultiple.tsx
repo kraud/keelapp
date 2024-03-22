@@ -86,18 +86,6 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
                         ? newValue as TagData
                         : undefined,
                     filterValue: 'tag-'+(props.values.length)+'-selected-items',
-                    // filterValue: props.matchAll
-                    //     ? (props.values.length).toString() // if matchAll => this field is not used to filter => real info is specified in TagIds
-                    //     : (!Array.isArray(newValue)) // if !matchAll => we must give the tagId to filter by
-                    //         ? newValue.label
-                    //         : "NO-FILTER-DATA (2)",
-                    // // => undefined TagIds field is checked in BE to know what to do
-                    // // if not undefined => apply all tags simultaneously
-                    // tagFullInfo: props.matchAll
-                    //     ? (Array.isArray(newValue))
-                    //         ? newValue // we return full TagData array
-                    //         : undefined
-                    //     : undefined, // if matchAll => it will always be an array (of zero or more tag ids)
                 })
             }
             // case('gender'):{
@@ -145,11 +133,6 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
             }}
             // @ts-ignore
             getOptionLabel={(option: TagData) => option.label}
-            // getOptionLabel={(option: SearchResult) => option.label}
-            // isOptionEqualToValue={(option, value) => option === value}
-            // isOptionEqualToValue={(option, value) => {
-            //     return true
-            // }}
             filterOptions={(x: any) => x} // necessary to implement filter on server
             options={(loadingLocal || isLoadingTags) ?[] :options}
             includeInputInList
@@ -162,7 +145,6 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
             value={props.values}
             noOptionsText={(loadingLocal || isLoadingTags) ?"Loading..." :"No matches"}
             //@ts-ignore
-            // onChange={(event: any, newValue: SearchResult) => {
             onChange={(event: any, newValue: TagData[]) => {
                 if(newValue.length > 0) {
                     if(props.matchAll!!){ // all tags go in a single array - so all must match in every single result

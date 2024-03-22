@@ -155,10 +155,6 @@ export function Review(){
         return () => clearTimeout(timeout)
     }, [currentPoSFilters, currentGenderFilters, currentTagFilters])
 
-    useEffect(() => {
-        console.log('currentTagFilters', currentTagFilters)
-    }, [currentTagFilters])
-
     const goToDetailedView = (rowSelection: unknown) => {
         // rowSelection format:
         // { selectedRowIndex: true }
@@ -346,7 +342,6 @@ export function Review(){
                             >
                                 <AutocompleteMultiple
                                     type={'tag'}
-                                    // values={currentTagFilters}
                                     values={getAllIndividualTagDataFromFilterItem(currentTagFilters)}
                                     saveResults={(results: FilterItem[]) => {
                                         setCurrentTagFilters(results)
