@@ -40,13 +40,22 @@ const searchTags = asyncHandler(async (req, res) => {
 // @access  Private
 // TODO: can be re-implemented using 'getTagDataByRequest'?
 const getUserTags = asyncHandler(async (req, res) => {
-    const tags = await Tag.find(
-        {
+    // const tags = await Tag.find(
+    //     {
+    //         author: req.user.id
+    //     },
+    // )
+    // // TODO: should we return this in the "FilterItem" format for tag?
+    // res.status(200).json(tags)
+
+    const request = {
+        query: {
             author: req.user.id
-        },
-    )
-    // TODO: should we return this in the "FilterItem" format for tag?
-    res.status(200).json(tags)
+        }
+    }
+
+    const tagsData = await getTagDataByRequest(request)
+    res.status(200).json(tagsData)
 })
 
 // @desc    Get all tags where user id matches the one in the request

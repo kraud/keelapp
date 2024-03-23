@@ -80,6 +80,7 @@ export const Account = (props: AccountProps) => {
         }
     }
 
+    // TODO: replace this with a complete request to Friendships and User?
     useEffect(() => {
         sendUserIdsToGetUsernames()
     },[friendships])

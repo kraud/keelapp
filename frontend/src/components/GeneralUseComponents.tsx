@@ -75,6 +75,7 @@ type TagChipListProps = {
 
 export const TagChipList = (props: TagChipListProps) => {
 
+    // TODO: separate chip, to include a small section at the end, with a different color, with number of words associated with it
     return(
         <>
             {(props.tagList.map((tag: TagData, index: number) => {
@@ -85,7 +86,8 @@ export const TagChipList = (props: TagChipListProps) => {
                     >
                         <Chip
                             variant="filled"
-                            label={tag.label}
+                            //@ts-ignore // TODO: change data from BE with 'words' property to 'wordsFullData'
+                            label={((tag.words !== undefined) && (tag.words.length > 0)) ?tag.label + ' ('+(tag.words.length)+')' :tag.label}
                             color={"secondary"}
                             sx={{
                                 maxWidth: "max-content",
