@@ -86,7 +86,6 @@ export const TagChipList = (props: TagChipListProps) => {
                     >
                         <Chip
                             variant="filled"
-                            //@ts-ignore // TODO: change data from BE with 'words' property to 'wordsFullData'
                             label={((tag.words !== undefined) && (tag.words.length > 0)) ?tag.label + ' ('+(tag.words.length)+')' :tag.label}
                             color={"secondary"}
                             sx={{

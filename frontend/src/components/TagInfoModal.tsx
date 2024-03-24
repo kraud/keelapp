@@ -59,7 +59,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
         label: "",
         description: "",
         public: 'Private' as 'Private', // to make TS happy.
-        wordsFullData: [],
+        words: [],
     }
     // This state will hold the current state inside the TagForm, and will be updated when that changes.
     // This also includes the internalStatus properties, to know if form is valid and/or dirty, to help with button logic

@@ -93,7 +93,7 @@ export type TagData = {
     label: string,
     description: string,
     public: 'Public' | 'Private' | 'Friends-Only',
-    wordsFullData: WordDataBE[]
+    words: WordDataBE[]
 } & (InternalStatus)
 
 export interface PropsButtonData {

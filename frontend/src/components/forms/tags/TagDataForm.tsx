@@ -73,7 +73,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
                 label: tagLabel,
                 description: tagDescription,
                 //  => must decide how to display the list later (in which language? clarify amount of translations available for each?)
-                wordsFullData: selectedWords,
+                words: selectedWords,
 
                 completionState: isValid,
                 isDirty: isDirty
@@ -112,8 +112,8 @@ export const TagDataForm = (props: TagDataFormProps) => {
                 }
             )
             setTagDescription(props.currentTagData.description)
-            if(props.currentTagData.wordsFullData !== undefined){
-                setSelectedWords(props.currentTagData.wordsFullData)
+            if(props.currentTagData.words !== undefined){
+                setSelectedWords(props.currentTagData.words)
             }
 
             if((props.currentTagData.author !== user._id)){
@@ -208,12 +208,12 @@ export const TagDataForm = (props: TagDataFormProps) => {
                         }}
                     >
                         {(
-                            (props.currentTagData.wordsFullData !== undefined) &&
-                            (props.currentTagData.wordsFullData.length > 0)
+                            (props.currentTagData.words !== undefined) &&
+                            (props.currentTagData.words.length > 0)
                         )
-                            ? (props.currentTagData.wordsFullData.length > 1)
-                                ? `${props.currentTagData.wordsFullData.length} words`
-                                : `${props.currentTagData.wordsFullData.length} word`
+                            ? (props.currentTagData.words.length > 1)
+                                ? `${props.currentTagData.words.length} words`
+                                : `${props.currentTagData.words.length} word`
                             :"- no words assigned yet -"
                         }
                     </Typography>
