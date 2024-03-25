@@ -78,6 +78,11 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
                         return {
                             '$expr': {
                                 '$and': [
+                                    // TODO: I think sending variables to be used inside a pipeline+lookup+match=etc is not supported?
+                                    //  check issues:
+                                    //  https://stackoverflow.com/questions/73851363/why-cant-i-use-a-variable-for-pipeline-in-a-lookup-in-an-aggregation
+                                    //  and https://stackoverflow.com/questions/56671129/declaring-variables-in-mongodb-using-lookup-with-let-and-pipeline
+                                    //  for more info. Will create alternative workaround filtering by tagsId in TagWord.
                                     // {'$_id': `${mongoose.Types.ObjectId(filter.additiveItem._id)}`},
                                     // { '$eq': [ '$_id', `${filter.additiveItem._id}` ] },
                                     { '$eq': [ '$_id', '$$tagId' ] },
@@ -270,7 +275,9 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
             // 'Tag' filters will require to be added into 'tagRequest' (currently undefined).
             // TODO: check if necessary
             // const sortedFilters = separateFilters()
-            // TODO: separate filters with type=tag on a list and send into tagRequest (or create forceTagRequest) and the rest to forceWordrequest?
+            // TODO: separate filters with type=tag on a list, and create a variation of getWordDataByRequest matching this:
+            //  When filtering by tag, first get all words ids that have a TagWord with the tagIds
+            //  from the tag-filter, then perform word search by filtering through those wordsIds, which will return word+tag data
             const wordWithTagData = await getWordDataByRequest(
                 request, // this will always be ignored if there's a (non-tag) filter
                 undefined,
@@ -807,8 +814,61 @@ const getWordDataByRequest = async (wordRequest, tagRequest, wordForceRequest, t
     }
 
     // since 'getTagDataByRequest' is not wrapped with asyncHandler, we have to manage/catch errors manually.
-    console.log('wordForceRequest', wordForceRequest)
-    console.log('tagForceRequest', tagForceRequest)
+    // console.log('wordForceRequest', wordForceRequest)
+    // console.log('tagForceRequest', tagForceRequest)
+
+    try {
+        const allWordData = await Word.aggregate([
+            // filtering related to data present in word => apply here
+            {
+                $match: {
+                    $and: (wordForceRequest !== undefined)
+                        ? wordForceRequest // more complex request can be made to override the getMatchQuery process
+                        : getMatchQuery(wordRequest.query)
+                }
+            },
+            // filtering related to data present in tagWord => apply here
+            { '$lookup': {
+                'from': TagWord.collection.name,
+                'let': { 'id': '$_id', 'wordAuthor': '$user' }, // from Word
+                'pipeline': [
+                    {'$match': {
+                        '$expr': {
+                            '$and': [
+                                {'$eq': ['$$id', '$wordId']},  // wordId from TagWord
+                            ]
+                        }
+                    }},
+                    { '$lookup': {
+                        'from': Tag.collection.name,
+                        'let': { 'tagId': '$tagId' }, // from TagWord
+                        'pipeline': [
+                            { '$match':
+                                    (tagForceRequest !== undefined)
+                                    ? tagForceRequest // more complex request can be made to override the getMatchQuery process
+                                    : {'$expr': { '$eq': [ '$_id', '$$tagId' ] }
+                                }}
+                        ],
+                        'as': 'tags'
+                    }},
+                    { '$unwind': '$tags' },
+                    { '$replaceRoot': { 'newRoot': '$tags' } }
+                ],
+                'as': 'tags'
+            }}
+        ])
+        return(allWordData)
+    } catch (error){
+        console.log('error', error)
+        throw new Error("Word auxiliary function 'getWordDataByRequest' failed")
+    }
+}
+
+//  When filtering by tag, first get all words ids that have a TagWord with the tagIds
+//  from the tag-filter, then perform word search by filtering through those wordsIds, which will return word+tag data
+
+const getWordsByTagFiltering = async (wordRequest, tagRequest, wordForceRequest, tagForceRequest) => {
+
     try {
         const allWordData = await Word.aggregate([
             // filtering related to data present in word => apply here

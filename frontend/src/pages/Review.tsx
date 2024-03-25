@@ -144,6 +144,7 @@ export function Review(){
 
     useEffect(() => {
         const timeout = setTimeout(() => {
+            console.log('currentTagFilters',currentTagFilters)
             // @ts-ignore
             dispatch(getWordsSimplified([
                 ...currentPoSFilters,
@@ -346,7 +347,7 @@ export function Review(){
                                     saveResults={(results: FilterItem[]) => {
                                         setCurrentTagFilters(results)
                                     }}
-                                    matchAll={false}
+                                    matchAll={true} // TODO: should be turned back to false
                                     limitTags={3}
                                     allowNewOptions={false}
                                 />

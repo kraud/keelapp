@@ -230,7 +230,6 @@ export const getAllIndividualTagDataFromFilterItem = (originalArray: FilterItem[
                 // if the element in the array is a additive item, then there's (usually) one or more items inside the array
                 (item.additiveItem !== undefined)
             ){
-                console.log('additive')
                 tagDataList.push(item.additiveItem)
             } else {
                 if(
@@ -238,7 +237,6 @@ export const getAllIndividualTagDataFromFilterItem = (originalArray: FilterItem[
                     // if the element in the array is a restrictive array, then (usually?) it's the only item in the array
                     (item.restrictiveArray !== undefined)
                 ){
-                    console.log('restrictive')
                     tagDataList = item.restrictiveArray
                 }
             }

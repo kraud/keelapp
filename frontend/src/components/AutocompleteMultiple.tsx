@@ -61,10 +61,6 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
         setOptions(tags)
     },[tags])
 
-    useEffect(() => {
-        console.log('props.values AUTOCOMPLETE', props.values)
-    },[props.values])
-
     // Depending on the type of AutocompleteMultiple, the returned data will be structured differently.
     // e.g. if matchAll prop is true => returned data will include restrictiveArray,
     // this way, all filters are applied in a restrictive fashion (all true at the same time, instead of each adding a category)
