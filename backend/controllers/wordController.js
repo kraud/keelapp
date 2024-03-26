@@ -274,20 +274,33 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
             // this should work for type 'gender' and 'PoS'.
             // 'Tag' filters will require to be added into 'tagRequest' (currently undefined).
             // TODO: check if necessary
-            // const sortedFilters = separateFilters()
+            // const sortedFilters = separateFilters(filters) // probably not necessary to filter, since we're looking at one filter at a time
             // TODO: separate filters with type=tag on a list, and create a variation of getWordDataByRequest matching this:
             //  When filtering by tag, first get all words ids that have a TagWord with the tagIds
             //  from the tag-filter, then perform word search by filtering through those wordsIds, which will return word+tag data
-            const wordWithTagData = await getWordDataByRequest(
-                request, // this will always be ignored if there's a (non-tag) filter
-                undefined,
-                (filter.type === 'tag')?undefined :getFilterQuery(filter),
-                (filter.type === 'tag') ?getFilterQuery(filter) :undefined
-            )
-            originalResults.push({
-                type: filter.type,
-                searchResults: wordWithTagData
-            })
+            if(filter.type === 'tag'){
+                const wordWithTagData = await getWordsByTagFiltering(
+                    request, // this will always be ignored if there's a (non-tag) filter
+                    filter
+                )
+                // TODO: -----------> once this is working, refactor this to avoid repetition <-----------
+                originalResults.push({
+                    type: filter.type,
+                    searchResults: wordWithTagData
+                })
+            } else {
+                const wordWithTagData = await getWordDataByRequest(
+                    request, // this will always be ignored if there's a (non-tag) filter
+                    undefined,
+                    getFilterQuery(filter),
+                    undefined
+                )
+                // TODO: -----------> once this is working, refactor this to avoid repetition <-----------
+                originalResults.push({
+                    type: filter.type,
+                    searchResults: wordWithTagData
+                })
+            }
         }
     } else {
         const request = {
@@ -783,35 +796,8 @@ const filterWordByAnyTranslation = asyncHandler(async (req, res) => {
 // @desc    Get All word+tag data
 // @route   GET /api/TagWord
 // @access  Private
-// TODO: add optional field for an 'override-query'?
-//  For more specific elemMatch
+// TODO: Tag-filter now has its own functions => delete TagRequest and tagForceRequest
 const getWordDataByRequest = async (wordRequest, tagRequest, wordForceRequest, tagForceRequest) => {
-
-    const getMatchQuery = (queryData) => {
-        let matchQuery = []
-        if(queryData.id !== undefined){
-            matchQuery.push({
-                "_id": mongoose.Types.ObjectId(queryData.id)
-            })
-        }
-        if(queryData.user !== undefined){
-            matchQuery.push({
-                "user": mongoose.Types.ObjectId(queryData.user)
-            })
-        }
-        if(queryData.partOfSpeech !== undefined){
-            matchQuery.push({
-                "partOfSpeech": queryData.partOfSpeech
-            })
-        }
-        if(queryData.clue !== undefined){
-            matchQuery.push({
-                "clue": {$regex: `${queryData.clue}`, $options: "i"},
-            })
-        }
-        // TODO: look into other query options, like tagId(s)?
-        return(matchQuery)
-    }
 
     // since 'getTagDataByRequest' is not wrapped with asyncHandler, we have to manage/catch errors manually.
     // console.log('wordForceRequest', wordForceRequest)
@@ -864,19 +850,39 @@ const getWordDataByRequest = async (wordRequest, tagRequest, wordForceRequest, t
     }
 }
 
-//  When filtering by tag, first get all words ids that have a TagWord with the tagIds
 //  from the tag-filter, then perform word search by filtering through those wordsIds, which will return word+tag data
+// NB! tagFilter for now will always be a 'restrictiveArray' type of tag-filter.
+const getWordsByTagFiltering = async (wordRequest, tagFilter) => {
 
-const getWordsByTagFiltering = async (wordRequest, tagRequest, wordForceRequest, tagForceRequest) => {
+    // console.log('tagFilter', tagFilter)
+    const tagIds = tagFilter.restrictiveArray.map(tagFilter => {
+        return mongoose.Types.ObjectId(tagFilter._id)
+    })
+    //  When filtering by tag, first get all words ids that have a TagWord with the tagIds
+    const wordIdsBySelectedTags = await TagWord.find(
+        {
+            "tagId" : {
+                $elemMatch: {
+                    "$in": `${tagIds}`
+                }
+            }
+        },
+        {
+            _id: 1
+        }
+    ).then(response => {
+        const computedResponse = response.map(item => {
+            return (item._id).toString()
+        })
+        console.log('computedResponse', computedResponse)
+    })
 
-    try {
+    /*try {
         const allWordData = await Word.aggregate([
             // filtering related to data present in word => apply here
             {
                 $match: {
-                    $and: (wordForceRequest !== undefined)
-                        ? wordForceRequest // more complex request can be made to override the getMatchQuery process
-                        : getMatchQuery(wordRequest.query)
+                    $and: getMatchQuery(wordRequest.query)
                 }
             },
             // filtering related to data present in tagWord => apply here
@@ -896,10 +902,8 @@ const getWordsByTagFiltering = async (wordRequest, tagRequest, wordForceRequest,
                         'let': { 'tagId': '$tagId' }, // from TagWord
                         'pipeline': [
                             { '$match':
-                                    (tagForceRequest !== undefined)
-                                    ? tagForceRequest // more complex request can be made to override the getMatchQuery process
-                                    : {'$expr': { '$eq': [ '$_id', '$$tagId' ] }
-                                }}
+                                {'$expr': { '$eq': [ '$_id', '$$tagId' ] }}
+                            }
                         ],
                         'as': 'tags'
                     }},
@@ -913,7 +917,35 @@ const getWordsByTagFiltering = async (wordRequest, tagRequest, wordForceRequest,
     } catch (error){
         console.log('error', error)
         throw new Error("Word auxiliary function 'getWordDataByRequest' failed")
+    }*/
+}
+
+// AUXILIARY FUNCTIONS:
+
+const getMatchQuery = (queryData) => {
+    let matchQuery = []
+    if(queryData.id !== undefined){
+        matchQuery.push({
+            "_id": mongoose.Types.ObjectId(queryData.id)
+        })
     }
+    if(queryData.user !== undefined){
+        matchQuery.push({
+            "user": mongoose.Types.ObjectId(queryData.user)
+        })
+    }
+    if(queryData.partOfSpeech !== undefined){
+        matchQuery.push({
+            "partOfSpeech": queryData.partOfSpeech
+        })
+    }
+    if(queryData.clue !== undefined){
+        matchQuery.push({
+            "clue": {$regex: `${queryData.clue}`, $options: "i"},
+        })
+    }
+    // TODO: look into other query options, like tagId(s)?
+    return(matchQuery)
 }
 
 module.exports = {

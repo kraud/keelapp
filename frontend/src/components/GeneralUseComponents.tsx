@@ -86,7 +86,7 @@ export const TagChipList = (props: TagChipListProps) => {
                     >
                         <Chip
                             variant="filled"
-                            // label={((tag.words !== undefined) && (tag.words.length > 0)) ?tag.label + ' ('+(tag.words.length)+')' :tag.label}
+                            label={((tag.words !== undefined) && (tag.words.length > 0)) ?tag.label + ' ('+(tag.words.length)+')' :tag.label}
                             color={"secondary"}
                             sx={{
                                 maxWidth: "max-content",

@@ -114,7 +114,7 @@ const getTagById = asyncHandler(async (req, res) => {
                 { '$unwind': '$words' },
                 { '$replaceRoot': { 'newRoot': '$words' } }
             ],
-            'as': 'wordsFullData'
+            'as': 'words'
         }}
     ])
     res.status(200).json(singleTagData[0])
