@@ -144,7 +144,6 @@ export function Review(){
 
     useEffect(() => {
         const timeout = setTimeout(() => {
-            console.log('currentTagFilters',currentTagFilters)
             // @ts-ignore
             dispatch(getWordsSimplified([
                 ...currentPoSFilters,
