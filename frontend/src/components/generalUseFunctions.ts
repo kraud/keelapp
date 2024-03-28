@@ -227,7 +227,7 @@ export const getAllIndividualTagDataFromFilterItem = (originalArray: FilterItem[
         originalArray.forEach((item: FilterItem) => {
             if(
                 (item.type === "tag") &&
-                // if the element in the array is a additive item, then there's (usually) one or more items inside the array
+                // if the element in the array is an additive item, then there's (usually) one or more items inside the array
                 (item.additiveItem !== undefined)
             ){
                 tagDataList.push(item.additiveItem)

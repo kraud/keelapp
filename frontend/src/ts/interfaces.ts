@@ -129,7 +129,12 @@ type CaseFilter = {
 type TagFilter = {
     type: 'tag'
     // both properties will never be !== undefined at the same time (I think?)
+    // TODO: we're not using restrictive this way anymore. We send all tags in an array like this,
+    //  but BE implementation follows additiveItem description.
+    //  RestrictiveArray description is currently too hard to implement
     restrictiveArray?: TagData[], // info of each Tag that needs to be present at the same time, single FilterItem can be very restrictive
+    // NB! this property is not being used anymore. Its purpose was implemented using the restrictiveArray property.
+    // TODO: should replace 'restrictiveArray' & 'additiveItem' with new property with a better name? Refactor AutocompleteMultiple accordingly.
     additiveItem?: TagData, // single tag info - this way we can filter by many FilterItems in parallel and each one adds more results
 }
 
