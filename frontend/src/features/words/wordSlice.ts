@@ -1,6 +1,7 @@
 import {createSlice, createAsyncThunk, PayloadAction} from "@reduxjs/toolkit"
 import wordService from "./wordService"
 import {FilterItem, SearchResult, WordData, WordDataBE} from "../../ts/interfaces";
+import {PartOfSpeech} from "../../ts/enums";
 
 interface wordSliceState {
     // list with full translation info for all words might not be needed?
@@ -11,6 +12,7 @@ interface wordSliceState {
     searchResults: SearchResult[],
     tags: string[], // TODO: change this to TagData[] eventually
     currentTagAmount: number,
+    currentlySelectedPoS?: PartOfSpeech, // when adding a new word, we need to know the PoS, so we can display the proper labels
 
     // state-tracking properties
     isError: boolean,
@@ -31,6 +33,7 @@ const initialState: wordSliceState = {
     searchResults: [],
     tags: [],
     currentTagAmount: 0,
+    currentlySelectedPoS: undefined,
     isError: false,
     isSuccess: false,
     isLoading: false,
@@ -185,6 +188,19 @@ export const wordSlice = createSlice({
                 ...state,
                 wordsSimple: initialState.wordsSimple
             })
+        },
+        setSelectedPoS: (state: any, action: unknown) => {
+            return ({
+                ...state,
+                // @ts-ignore
+                currentlySelectedPoS: action.payload
+            })
+        },
+        resetSelectedPoS: (state: any) => {
+            return ({
+                ...state,
+                currentlySelectedPoS: undefined
+            })
         }
     },
     extraReducers: (builder) => {
@@ -272,5 +288,5 @@ export const wordSlice = createSlice({
     }
 })
 
-export const {reset, clearWord, clearResults, clearWordsSimple} = wordSlice.actions
+export const {reset, clearWord, clearResults, clearWordsSimple, setSelectedPoS, resetSelectedPoS} = wordSlice.actions
 export default wordSlice.reducer

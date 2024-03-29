@@ -13,6 +13,7 @@ export function AddWord() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const {user} = useSelector((state: any) => state.auth)
+    const {currentlySelectedPoS} = useSelector((state: any) => state.words)
 
     useEffect(() => {
         if(!user){
@@ -38,7 +39,11 @@ export function AddWord() {
             }}
         >
             <WordForm
-                title={"Add a new word"}
+                title={
+                    (currentlySelectedPoS !== undefined)
+                        ? `Add a new ${currentlySelectedPoS.toLowerCase() }`
+                        : 'Add a new word'
+                }
                 subTitle={"All the required fields must be completed before saving"}
                 onSave={(wordData: WordData) => {
                     //@ts-ignore

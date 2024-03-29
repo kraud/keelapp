@@ -3,13 +3,14 @@ import React, {useEffect, useState} from "react";
 import {TranslationFormGeneric} from "./TranslationFormGeneric";
 import {WordItem, TranslationItem, WordData, FilterItem} from "../ts/interfaces";
 import {Lang, PartOfSpeech} from "../ts/enums";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import LinearIndeterminate from "./Spinner";
 import {toast, Flip} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {PartOfSpeechSelector} from "./PartOfSpeechSelector";
 import {AutocompleteMultiple} from "./AutocompleteMultiple";
 import {getAllIndividualTagDataFromFilterItem} from "./generalUseFunctions";
+import {setSelectedPoS, resetSelectedPoS} from "../features/words/wordSlice";
 
 interface TranslationFormProps {
     onSave: (wordData: WordData) => void,
@@ -21,6 +22,7 @@ interface TranslationFormProps {
 
 // stores the complete *Word* Data
 export function WordForm(props: TranslationFormProps) {
+    const dispatch = useDispatch()
     const {isSuccess, isLoading} = useSelector((state: any) => state.words)
 
     // Type of word to be added (noun/verb/adjective/etc.)
@@ -67,6 +69,8 @@ export function WordForm(props: TranslationFormProps) {
             }
             if(props.initialState.partOfSpeech !== undefined){
                 setPartOfSpeech(props.initialState.partOfSpeech as PartOfSpeech)
+                //@ts-ignore
+                dispatch(setSelectedPoS(props.initialState.partOfSpeech))
             }
         }
     },[props.initialState]) // TODO: should this be [] instead?
@@ -213,6 +217,8 @@ export function WordForm(props: TranslationFormProps) {
 
     const resetAll = () => {
         setPartOfSpeech(undefined)
+        //@ts-ignore
+        dispatch(resetSelectedPoS())
         setCompleteWordData(
             {
                 translations: [
@@ -277,7 +283,11 @@ export function WordForm(props: TranslationFormProps) {
                 )
                 ?
                 <PartOfSpeechSelector
-                    setPartOfSpeech={(part: PartOfSpeech) => setPartOfSpeech(part)}
+                    setPartOfSpeech={(part: PartOfSpeech) => {
+                        setPartOfSpeech(part)
+                        //@ts-ignore
+                        dispatch(setSelectedPoS(part))
+                    }}
                 />
                 :
                 <Grid
