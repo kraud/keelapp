@@ -24,7 +24,7 @@ export function DisplayWord(props: DisplayWordProps){
     const dispatch = useDispatch()
     // @ts-ignore
     const { wordId } = useParams<RouterWordProps>()
-    const {word, isLoading, isError, message} = useSelector((state: any) => state.words)
+    const {word, currentlySelectedPoS, isLoading, isError, message} = useSelector((state: any) => state.words)
     const [displayContent, setDisplayContent] = useState(false)
     const [finishedUpdating, setFinishedUpdating] = useState(true)
 
@@ -122,7 +122,11 @@ export function DisplayWord(props: DisplayWordProps){
                     </Button>
                 </Grid>
                 <WordForm
-                    title={"Detailed view"}
+                    title={
+                        (currentlySelectedPoS !== undefined)
+                            ? `Detailed view: ${currentlySelectedPoS.toLowerCase() }`
+                            : "Detailed view"
+                }
                     subTitle={"All the currently stored translations for this word"}
                     onSave={(wordData: WordData) => {
                         const updatedWordData = {

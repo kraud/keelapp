@@ -169,7 +169,7 @@ export const updateTag = createAsyncThunk(`tags/updateTagById`, async (updatedDa
     }
 })
 
-
+// TODO: never used. Not properly implemented? Check if needed. If not, delete.
 // Get the amount of words that have a certain tag associated to it
 export const getAmountByTag = createAsyncThunk(`words/getAmountByTag`, async (id: string, thunkAPI) => {
     try {

@@ -324,7 +324,7 @@ export function WordForm(props: TranslationFormProps) {
                         >
                             <Grid
                                 item={true}
-                                xs={4}
+                                xs={disabledForms ?6 :4}
                             >
                                 <Button
                                     variant={"outlined"}
@@ -358,37 +358,39 @@ export function WordForm(props: TranslationFormProps) {
                                     }
                                 </Button>
                             </Grid>
-                            <Grid
-                                item={true}
-                                xs={4}
-                            >
-                                <Button
-                                    onClick={() => sanitizeDataForStorage()}
-                                    variant={"outlined"}
-                                    fullWidth={true}
-                                    disabled={
-                                        ((completeWordData.translations).length < 2)
-                                        ||
-                                        (((completeWordData.translations).filter((selectedLang) => {
-                                            return (!selectedLang.completionState)
-                                        })).length > 0)
-                                        ||
-                                        (disabledForms)
-                                        ||
-                                        !(
-                                            (
-                                                ((completeWordData.translations).filter((selectedLang) => {
-                                                    return (selectedLang.isDirty)
-                                                })).length > 0
-                                            )
-                                            ||
-                                            (clueRecentlyModified || tagsRecentlyModified)
-                                        )
-                                    }
+                            {(!disabledForms) &&
+                                <Grid
+                                    item={true}
+                                    xs={4}
                                 >
-                                    Submit
-                                </Button>
-                            </Grid>
+                                    <Button
+                                        onClick={() => sanitizeDataForStorage()}
+                                        variant={"outlined"}
+                                        fullWidth={true}
+                                        disabled={
+                                            ((completeWordData.translations).length < 2)
+                                            ||
+                                            (((completeWordData.translations).filter((selectedLang) => {
+                                                return (!selectedLang.completionState)
+                                            })).length > 0)
+                                            ||
+                                            (disabledForms)
+                                            ||
+                                            !(
+                                                (
+                                                    ((completeWordData.translations).filter((selectedLang) => {
+                                                        return (selectedLang.isDirty)
+                                                    })).length > 0
+                                                )
+                                                ||
+                                                (clueRecentlyModified || tagsRecentlyModified)
+                                            )
+                                        }
+                                    >
+                                        Submit
+                                    </Button>
+                                </Grid>
+                            }
                         </Grid>
                     </Grid>
                     {(isLoading) &&
