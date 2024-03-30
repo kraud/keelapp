@@ -103,7 +103,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
             setTagCurrentData(fullTagData)
             setIsEditing(false)
         }
-    },[fullTagData, isSuccessTags, isLoadingTags, isDeleting, isUpdating]) // TODO: add isDeleting to array?
+    },[fullTagData, isSuccessTags, isLoadingTags, isDeleting, isUpdating])
 
     const getActionButtons = () => {
         if(isEditing){
@@ -292,6 +292,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
     }
 
     const createNewTag = () => {
+        // TODO: add logic for toast to inform about successful tag-creation
         // @ts-ignore
         dispatch(createTag(tagCurrentData)) // result will be stored at fullTagData
         props.setMadeChangesToTagList(true)
@@ -302,6 +303,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
         // @ts-ignore
         dispatch(updateTag(tagCurrentData)) // result will be stored at fullTagData
         props.setMadeChangesToTagList(true)
+        setIsEditing(false)
     }
 
     const deleteTagData = () => {

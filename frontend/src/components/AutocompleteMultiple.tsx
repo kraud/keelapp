@@ -275,7 +275,10 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
                                         display: 'inline',
                                     }}
                                 >
-                                    {option.label}
+                                    {((option.words !== undefined) && (option.words.length > 0))
+                                        ? option.label + ' ('+(option.words.length)+')'
+                                        : option.label
+                                    }
                                 </Typography>
                             </Grid>
                         </Grid>

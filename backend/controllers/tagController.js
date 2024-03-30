@@ -12,10 +12,10 @@ const TagWord = require("../models/intermediary/tagWordModel");
 const searchTags = asyncHandler(async (req, res) => {
     const getPrivateOrPublicQuery = () => {
         if(req.query.includeOtherUsersTags){
-            return({
-                "label": {$regex: `${req.query.query}`, $options: "i"},
-                author: req.user.id
-            })
+            return([
+                {"label": {$regex: `${req.query.query}`, $options: "i"}},
+                {"author": mongoose.Types.ObjectId(req.user.id)}
+            ])
         } else {
             return({
                 $and: [
@@ -30,8 +30,7 @@ const searchTags = asyncHandler(async (req, res) => {
     }
 
     // first we get all tag arrays from stored words, where at least 1 matches the query
-    const tags = await Tag.find(getPrivateOrPublicQuery())
-    // TODO: should we return this in the "FilterItem" format for tag?
+    const tags = await getTagDataByRequest(undefined, getPrivateOrPublicQuery())
     res.status(200).json(tags)
 })
 
@@ -143,8 +142,8 @@ const createTag = asyncHandler(async (req, res) => {
         description: req.body.description,
     })
         .then((value) => {
-            if(req.body.wordsFullData.length >0){
-                const tagWordsItems = req.body.wordsFullData.map((wordData) => {
+            if(req.body.words.length >0){
+                const tagWordsItems = req.body.words.map((wordData) => {
                     return ({
                         tagId: value._id,
                         wordId: wordData._id
@@ -154,7 +153,7 @@ const createTag = asyncHandler(async (req, res) => {
                     .then((returnData) => {
                         res.status(200).json({
                             ...value.toObject(),
-                            wordsFullData: req.body.wordsFullData,
+                            words: req.body.words,
                         })
                     }).catch(function (error) {
                         res.status(400).json(value)
@@ -163,7 +162,7 @@ const createTag = asyncHandler(async (req, res) => {
             } else {
                 res.status(200).json({
                     ...value,
-                    wordsFullData: [],
+                    words: [],
                 })
             }
         })
@@ -240,10 +239,10 @@ const updateTag = asyncHandler(async (req, res) => {
         public: req.body.public,
         description: req.body.description,
     }
-    // iterate over wordsFullData and check for new tag-word relationships => create/remove tagWord documents accordingly
-    // if in wordsFullData there are words associated with this tag, we must check if they are the same as currently stored in TagWord
-    // if wordsFullData is empty we must check if there are words stored related to this tag and delete them
-    const updatedWordsList = (req.body.wordsFullData).map((wordFullData) => {
+    // iterate over words and check for new tag-word relationships => create/remove tagWord documents accordingly
+    // if in words there are words associated with this tag, we must check if they are the same as currently stored in TagWord
+    // if words is empty we must check if there are words stored related to this tag and delete them
+    const updatedWordsList = (req.body.words).map((wordFullData) => {
         return((wordFullData._id).toString()) // TODO: check if toString can be removed
     }) // all wordsIds. Some might be new, all might already be stored, or it could be missing some previously stored.
     // we retrieve the currently stored list of words related to this tag
@@ -324,7 +323,7 @@ const updateTag = asyncHandler(async (req, res) => {
                                 // Using toObject() we can access only the data we're interested in
                                 ...updatedTag.toObject(),
                                 // this is not stored alongside Tag data. So we add it here so return data matches what came in request body
-                                wordsFullData: req.body.wordsFullData
+                                words: req.body.words
                             }
                             res.status(200).json(updatedDataWithWordsFullData)
                     })
@@ -406,7 +405,7 @@ const getAllTagDataByUserId = asyncHandler(async (req, res) => {
 // @route   GET --
 // @access  Private
 // TODO: remove from tagRoutes? This is an internal-use function now
-const getTagDataByRequest = async (req) => {
+const getTagDataByRequest = async (req, tagForceRequest) => {
     // req.body might allow filtering tag by: id, author, label, description, public
     const getMatchQuery = (queryData) => {
         let matchQuery = []
@@ -448,7 +447,9 @@ const getTagDataByRequest = async (req) => {
             // filtering related to data present in word => apply here
             {
                 $match: {
-                    $and: getMatchQuery(req.query)
+                    $and: (tagForceRequest !== undefined)
+                        ? tagForceRequest // more complex request can be made to override the getMatchQuery process
+                        : getMatchQuery(req.query)
                 }
             },
             // filtering related to data present in tagWord => apply here
