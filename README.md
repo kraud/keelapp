@@ -17,6 +17,7 @@ The website is not yet deployed online, so to test it you can run it locally wit
 This tool is meant for people learning a new language, so they can simultaneously revise the new vocabulary in other languages they might know, so that information won't be forgotten. Words can be organized through tags, so it's easier to aggregate related content (units on a book for example).
 Each type of word (part of speech) has its own custom form, which varies depending on the language, so you can capture in full detail the content you're learning, and have it at hand to revise.
 Activities and games will be added once all the word-management functions are done. A social component will also be added, to help you share collections of words with friends, and propose challenges to one another in case they are native speakers of a language you're interested in.
+We're also investigating the use of large lenguage models to generate collections of words and translations automatically, by providing song lyrics or book extracts. 
 
 ## What it's not 
 This is **not** meant to teach you, but to simply be a resource where you can store all the different words you'll be learning and include their translation in as many languages as you want, so in the future you can practice your skills in all of them simultaneously, instead of one a time.
