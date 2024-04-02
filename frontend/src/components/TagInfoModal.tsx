@@ -67,6 +67,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
     const [isEditing, setIsEditing] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
     const [isUpdating, setIsUpdating] = useState(false)
+    const [isCreating, setIsCreating] = useState(false)
     const [currentTagHasBeenDeleted, setIsCurrentTagHasBeenDeleted] = useState(false)
 
     useEffect(() => {
@@ -100,10 +101,15 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                 toast.success('Tag was updated successfully!')
                 setIsUpdating(false)
             }
+            // but, before we check if we're updating an existing one
+            if(!isEditing && isCreating){
+                toast.success('Tag was created successfully!')
+                setIsCreating(false)
+            }
             setTagCurrentData(fullTagData)
             setIsEditing(false)
         }
-    },[fullTagData, isSuccessTags, isLoadingTags, isDeleting, isUpdating])
+    },[fullTagData, isSuccessTags, isLoadingTags, isDeleting, isUpdating, isCreating])
 
     const getActionButtons = () => {
         if(isEditing){
@@ -292,10 +298,11 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
     }
 
     const createNewTag = () => {
-        // TODO: add logic for toast to inform about successful tag-creation
+        setIsCreating(true)
         // @ts-ignore
         dispatch(createTag(tagCurrentData)) // result will be stored at fullTagData
         props.setMadeChangesToTagList(true)
+        setIsEditing(false)
     }
 
     const updateExistingTagData = () => {
