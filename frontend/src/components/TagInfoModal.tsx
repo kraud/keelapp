@@ -9,12 +9,20 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import SaveAsIcon from '@mui/icons-material/SaveAs';
 import EditIcon from '@mui/icons-material/Edit';
 import {useDispatch, useSelector} from "react-redux";
-import {clearFullTagData, createTag, deleteTag, getTagById, updateTag} from "../features/tags/tagSlice";
-import {TagData} from "../ts/interfaces";
+import {
+    clearFullTagData,
+    clearFullTagDataWords,
+    createTag,
+    deleteTag,
+    getTagById,
+    updateTag
+} from "../features/tags/tagSlice";
+import {TagData, WordDataBE} from "../ts/interfaces";
 import {TagDataForm} from "./forms/tags/TagDataForm";
 import LinearIndeterminate from "./Spinner";
 import {toast} from "react-toastify";
 import {ConfirmationButton} from "./ConfirmationButton";
+import {deleteManyWordsById} from "../features/words/wordSlice";
 
 
 interface FriendSearchModalProps {
@@ -43,6 +51,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
     const dispatch = useDispatch()
     // 'fullTagData' will remain the same as it in BE. In case we need to cancel changes, we have this to copy the info from.
     const {fullTagData, isSuccessTags, isLoadingTags} = useSelector((state: any) => state.tags)
+    const {isLoading, isSuccess} = useSelector((state: any) => state.words)
 
     const handleOnClose = () => {
         props.setOpen(false)
@@ -66,6 +75,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
     const [tagCurrentData, setTagCurrentData] = useState<TagData>(emptyTagData)
     const [isEditing, setIsEditing] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
+    const [isDeletingWords, setIsDeletingWords] = useState(false)
     const [isUpdating, setIsUpdating] = useState(false)
     const [isCreating, setIsCreating] = useState(false)
     const [currentTagHasBeenDeleted, setIsCurrentTagHasBeenDeleted] = useState(false)
@@ -101,7 +111,6 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                 toast.success('Tag was updated successfully!')
                 setIsUpdating(false)
             }
-            // but, before we check if we're updating an existing one
             if(!isEditing && isCreating){
                 toast.success('Tag was created successfully!')
                 setIsCreating(false)
@@ -110,6 +119,16 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
             setIsEditing(false)
         }
     },[fullTagData, isSuccessTags, isLoadingTags, isDeleting, isUpdating, isCreating])
+
+    useEffect(() => {
+        if(fullTagData !== undefined){
+            if(!isLoading && isSuccess && isDeletingWords){
+                toast.success('Words were deleted successfully!')
+                setIsDeletingWords(false)
+                dispatch(clearFullTagDataWords())
+            }
+        }
+    },[isDeletingWords, isLoading, isSuccess])
 
     const getActionButtons = () => {
         if(isEditing){
@@ -246,15 +265,14 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                                 md={3}
                             >
                                 <ConfirmationButton
-                                    onConfirm={() => {
-                                        toast.info("Confirm deletion")
-                                    }}
+                                    onConfirm={() => deleteTagWords()}
                                     buttonLabel={'Delete All Words'}
                                     buttonProps={{
                                         variant: "contained",
                                         color: "warning",
                                         fullWidth: true,
-                                        endIcon: <DeleteForeverIcon/>
+                                        endIcon: <DeleteForeverIcon/>,
+                                        disabled: !((tagCurrentData.words!!) && (tagCurrentData.words.length > 0))
                                     }}
                                 />
                             </Grid>
@@ -318,8 +336,17 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
         // @ts-ignore
         dispatch(deleteTag(tagCurrentData._id)) // result will be stored at fullTagData
         props.setMadeChangesToTagList(true)
-        // Should we give the option to also delete all words related to this tag?
-        // Rta: No. There is a dedicated button for that.
+    }
+
+    const deleteTagWords = () => {
+        setIsDeletingWords(true)
+        const wordsId = tagCurrentData.words.map((wordToDelete: WordDataBE) => {
+            // @ts-ignore TODO: FIX WordDataBE definition! It should use '_id', not 'id'
+            return(wordToDelete._id)
+        })
+        // @ts-ignore
+        dispatch(deleteManyWordsById(wordsId)) // result will be stored at fullTagData
+        props.setMadeChangesToTagList(true)
     }
 
     return (

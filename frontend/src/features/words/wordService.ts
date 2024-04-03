@@ -56,6 +56,19 @@ const deleteWordById = async (token: any, id: string) => {
     return(response.data)
 }
 
+const deleteManyWordsById = async (token: any, wordsId: string[]) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        },
+        data: {
+            wordsId: wordsId,
+        }
+    }
+    const response = await axios.delete(`${API_URL}/deleteMany`, config)
+    return(response.data)
+}
+
 const updateWordById = async (token: any, updatedData: WordDataBE) => {
     const config = {
         headers: {
@@ -80,7 +93,8 @@ const searchWord = async (token: any, query: string) => {
 }
 
 const wordService = {
-    createWord, getWords, getWordsSimplified, getWordById, updateWordById, deleteWordById, searchWord
+    createWord, getWords, getWordsSimplified, getWordById, updateWordById, deleteWordById,
+    searchWord, deleteManyWordsById
 }
 
 export default wordService

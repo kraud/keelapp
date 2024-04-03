@@ -200,6 +200,12 @@ export const tagSlice = createSlice({
                 fullTagData: initialState.fullTagData
             })
         },
+        clearFullTagDataWords: (state: any) => {
+            return({
+                ...state,
+                fullTagData: {...state.fullTagData, words: []}
+            })
+        },
         clearOtherUserTags: (state: any) => {
             return({
                 ...state,
@@ -329,5 +335,5 @@ export const tagSlice = createSlice({
     }
 })
 
-export const {reset, clearFullTagData, clearOtherUserTags} = tagSlice.actions
+export const {reset, clearFullTagData, clearOtherUserTags, clearFullTagDataWords} = tagSlice.actions
 export default tagSlice.reducer

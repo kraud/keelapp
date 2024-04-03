@@ -131,11 +131,28 @@ export const updateWordById = createAsyncThunk(`words/updateWordById`, async (up
 })
 
 // Delete a word data by its id
-export const deleteWordById = createAsyncThunk(`words/updateWordById`, async (wordId: string, thunkAPI) => {
+export const deleteWordById = createAsyncThunk(`words/deleteWordById`, async (wordId: string, thunkAPI) => {
     try {
         // @ts-ignore
         const token = thunkAPI.getState().auth.user.token
         return await wordService.deleteWordById(token, wordId)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+export const deleteManyWordsById = createAsyncThunk(`words/deleteManyWordsById`, async (wordsId: string[], thunkAPI) => {
+    try {
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await wordService.deleteManyWordsById(token, wordsId)
     } catch(error: any) {
         const message = (
                 error.response &&
@@ -282,6 +299,32 @@ export const wordSlice = createSlice({
             })
             .addCase(searchWordByAnyTranslation.rejected, (state, action) => {
                 state.isSearchLoading = false
+                state.isError = true
+                state.message = action.payload as string
+            })
+            .addCase(deleteManyWordsById.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(deleteManyWordsById.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                // state.searchResults = (action.payload) // TODO: what do we get from the payload?
+            })
+            .addCase(deleteManyWordsById.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload as string
+            })
+            .addCase(deleteWordById.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(deleteWordById.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                // state.word = (action.payload) // TODO: what do we get from the payload?
+            })
+            .addCase(deleteWordById.rejected, (state, action) => {
+                state.isLoading = false
                 state.isError = true
                 state.message = action.payload as string
             })

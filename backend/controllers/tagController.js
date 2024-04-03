@@ -75,10 +75,6 @@ const getOtherUserTags = asyncHandler(async (req, res) => {
 // @route   GET /api/tags
 // @access  Private
 const getTagById = asyncHandler(async (req, res) => {
-    // TODO: should we return this in the "FilterItem" format for tag?
-    // const tag = await Tag.findById(req.params.id)
-    // res.status(200).json(tag)
-
     const singleTagData = await Tag.aggregate([
         // filtering related to data present in word => apply here
         {
