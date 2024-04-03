@@ -380,8 +380,8 @@ export function TableDataCell(props: TableDataCellProps){
                                                     }}
                                                     onClick={() => {
                                                         // TODO: fix click to search with real Tag and SearchParams
-                                                        // setSearchParams({"tags": item}) // also acts as navigate
-                                                        // dispatch(clearWordsSimple())
+                                                        setSearchParams({"tags": (item._id!!) ?item._id :''}) // also acts as navigate
+                                                        dispatch(clearWordsSimple())
                                                     }}
                                                 />
                                             </Grid>

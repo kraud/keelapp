@@ -255,6 +255,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                                     onClick={() => toast.info('Coming soon!')}
                                     fullWidth={true}
                                     startIcon={<SendIcon/>}
+                                    disabled={true} // TODO: change once sharing tag logic is implemented.
                                 >
                                     Send to friends
                                 </Button>

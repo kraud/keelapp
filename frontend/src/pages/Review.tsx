@@ -15,7 +15,7 @@ import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrow
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import {AutocompleteMultiple} from "../components/AutocompleteMultiple";
 import {createColumnsReviewTable} from "../components/table/columns/ReviewTableColumns";
-import {FilterItem} from "../ts/interfaces";
+import {FilterItem, TagData} from "../ts/interfaces";
 import {getAllIndividualTagDataFromFilterItem} from "../components/generalUseFunctions";
 
 export function Review(){
@@ -31,7 +31,7 @@ export function Review(){
 
     const {wordsSimple, isLoading, isError, message} = useSelector((state: any) => state.words)
     // @ts-ignore
-    // const { filtersURL } = useParams<RouterWordProps>()
+    const { filtersURL } = useParams<RouterWordProps>()
     let [searchParams, setSearchParams]  = useSearchParams();
 
     useEffect(() => {
@@ -46,20 +46,25 @@ export function Review(){
     useEffect(() => {
         //@ts-ignore
         let {size} = searchParams
-        // if(size !== 0){
-        //     if(searchParams.getAll("tags").length > 0){
-        //         setCurrentTagFilters([{
-        //             type: 'tag',
-        //             id: "tag-"+((searchParams.getAll("tags")).length),
-        //             tagFullInfo: searchParams.getAll("tags"),
-        //             filterValue: (searchParams.getAll("tags")).toString(),
-        //         }])
-        //     }
-        // }
-        // else {
+        if(size !== 0){
+            if(searchParams.getAll("tags").length > 0){
+                {/* TODO: fix dispatching request to display tag-names after clicking on tag from table*/}
+                setCurrentTagFilters([{
+                    type: 'tag',
+                    _id: "tag-"+((searchParams.getAll("tags")).length),
+                    filterValue: 'Placeholder-value. Check restrictiveArray.',
+                    restrictiveArray: searchParams.getAll("tags").map((param) => {
+                        return({
+                                _id: param
+                            })
+                    }),
+                } as FilterItem])
+            }
+        }
+        else {
             //@ts-ignore
             dispatch(getWordsSimplified())
-        // }
+        }
     }, [])
 
     useEffect(() => {
@@ -340,6 +345,7 @@ export function Review(){
                                 item={true}
                                 xs={10}
                             >
+                                {/* TODO: fix dispatching request to display tag-names after clicking on tag from table*/}
                                 <AutocompleteMultiple
                                     type={'tag'}
                                     values={getAllIndividualTagDataFromFilterItem(currentTagFilters)}
@@ -384,7 +390,7 @@ export function Review(){
                             id: "create-exercises",
                             variant: "outlined",
                             color: "secondary",
-                            disabled: true, // TODO: be be implemented eventually, will redirect to a version of the Practice screen
+                            disabled: true, // TODO: to be implemented eventually, will redirect to a version of the Practice screen
                             label: "Create exercises",
                             onClick: () => null,
                             displayBySelectionAmount: (amountSelected: number) => {
