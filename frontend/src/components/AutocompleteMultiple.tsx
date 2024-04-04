@@ -8,6 +8,7 @@ import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
 import {FilterItem, TagData} from "../ts/interfaces";
 import {searchTagsByLabel} from "../features/tags/tagSlice";
+import LinearIndeterminate from "./Spinner";
 
 interface AutocompleteMultipleProps {
     values: TagData[], // TODO: this will be changed to SearchResult, so we can change component behaviour depending on type
@@ -21,6 +22,7 @@ interface AutocompleteMultipleProps {
     // TODO: list of selected tags not working when matchAll is false
     matchAll?: boolean // this will change how the filters are returned on saveResults.
     sxProps?: SxProps<Theme>,
+    forceLoadingState?: boolean // in case loading icon needs to be triggered from parent component
 }
 
 export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
@@ -170,14 +172,28 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
                 setInputValue(newInputValue)
             }}
             renderTags={(value: TagData[], getTagProps) =>
-                value.map((option: TagData, index: number) => (
-                    <Chip
-                        variant="outlined"
-                        label={option.label}
-                        color={"secondary"}
-                        {...getTagProps({ index })}
-                    />
-                ))
+                value.map((option: TagData, index: number) => {
+                    // this allows to display a loading bar instead of an empty chip if full chip-data is still loading
+                    if(option.label === undefined && props.forceLoadingState){
+                        return(
+                            <LinearIndeterminate
+                                sxProps={{
+                                    marginBottom: -globalTheme.spacing(1),
+                                    width: '50%'
+                                }}
+                            />
+                        )
+                    } else {
+                        return(
+                            <Chip
+                                variant="outlined"
+                                label={option.label}
+                                color={"secondary"}
+                                {...getTagProps({index})}
+                            />
+                        )
+                    }
+                })
             }
             renderInput={(params) => {
                 return(
@@ -202,7 +218,11 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
                                         },
                                     }}
                                 >
-                                    {((loadingLocal || isLoadingTags) && open)
+                                    {(
+                                        ((loadingLocal || isLoadingTags) && open)
+                                        ||
+                                        (props.forceLoadingState)
+                                    )
                                         //@ts-ignore
                                         ? <CircularProgress color={"secondary"}/>
                                         //@ts-ignore

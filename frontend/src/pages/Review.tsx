@@ -17,6 +17,7 @@ import {AutocompleteMultiple} from "../components/AutocompleteMultiple";
 import {createColumnsReviewTable} from "../components/table/columns/ReviewTableColumns";
 import {FilterItem, TagData} from "../ts/interfaces";
 import {getAllIndividualTagDataFromFilterItem} from "../components/generalUseFunctions";
+import {getTagById} from "../features/tags/tagSlice";
 
 export function Review(){
     const navigate = useNavigate()
@@ -30,6 +31,7 @@ export function Review(){
     const [finishedDeleting, setFinishedDeleting] = useState(true)
 
     const {wordsSimple, isLoading, isError, message} = useSelector((state: any) => state.words)
+    const {fullTagData, isLoadingTags} = useSelector((state: any) => state.tags)
     // @ts-ignore
     const { filtersURL } = useParams<RouterWordProps>()
     let [searchParams, setSearchParams]  = useSearchParams();
@@ -48,15 +50,16 @@ export function Review(){
         let {size} = searchParams
         if(size !== 0){
             if(searchParams.getAll("tags").length > 0){
-                {/* TODO: fix dispatching request to display tag-names after clicking on tag from table*/}
+                //@ts-ignore
+                dispatch(getTagById(searchParams.getAll("tags")[0]))
                 setCurrentTagFilters([{
                     type: 'tag',
                     _id: "tag-"+((searchParams.getAll("tags")).length),
                     filterValue: 'Placeholder-value. Check restrictiveArray.',
                     restrictiveArray: searchParams.getAll("tags").map((param) => {
                         return({
-                                _id: param
-                            })
+                            _id: param // this is the only data we currently have for this tag, we'll trigger simpleSearch with this, while also
+                        })
                     }),
                 } as FilterItem])
             }
@@ -74,6 +77,16 @@ export function Review(){
             dispatch(getWordsSimplified())
         }
     }, [displayFilers])
+
+    useEffect(() => {
+        // if after updating fullTagData, the corresponding id matches the one from URL => we update currentTagFilters
+        if((fullTagData!!) && ((searchParams.getAll("tags"))[0] === fullTagData._id)){
+            setCurrentTagFilters((previousState) => [{
+                ...previousState[0],
+                restrictiveArray: [fullTagData],
+            }])
+        }
+    }, [fullTagData])
 
     // allows column dragging from table to work with DnDLanguageSelector
     const changeLanguageOrderFromTable = (newList: string[]) => {
@@ -355,6 +368,7 @@ export function Review(){
                                     matchAll={true} // TODO: should be turned back to false
                                     limitTags={3}
                                     allowNewOptions={false}
+                                    forceLoadingState={isLoadingTags}
                                 />
                             </Grid>
                         </Grid>
