@@ -7,7 +7,14 @@ import {FilterItem, InternalStatus, TagData, TranslationItem} from "../../ts/int
 import {Lang, PartOfSpeech} from "../../ts/enums";
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
-import {clearWord, clearWordsSimple, getWordById, getWordsSimplified, updateWordById} from "../../features/words/wordSlice";
+import {
+    clearWord,
+    clearWordsSimple,
+    getWordById,
+    getWordsSimplified, resetSelectedPoS,
+    setSelectedPoS,
+    updateWordById
+} from "../../features/words/wordSlice";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from '@mui/icons-material/Add';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -117,7 +124,7 @@ export function TableDataCell(props: TableDataCellProps){
     const [open, setOpen] = useState(false)
     const [selectedTranslationData, setSelectedTranslationData] = useState<TranslationItem>()
     const [selectedWordTagsData, setSelectedWordTagsData] = useState<TagsData>({tags: []})
-    const {word, isLoading, isError, message} = useSelector((state: any) => state.words)
+    const {word, isLoading, isError, message, currentlySelectedPoS} = useSelector((state: any) => state.words)
     const [displayOnly, setDisplayOnly] = useState(true)
     const [finishedUpdating, setFinishedUpdating] = useState(true)
     const [finishedDeleting, setFinishedDeleting] = useState(true)
@@ -127,6 +134,8 @@ export function TableDataCell(props: TableDataCellProps){
         if(props.wordId !== undefined){
             //@ts-ignore
             dispatch(getWordById(props.wordId))
+            //@ts-ignore
+            dispatch(setSelectedPoS(props.partOfSpeech))
         }
         setOpen(true)
     }
@@ -203,6 +212,8 @@ export function TableDataCell(props: TableDataCellProps){
         setOpen(false)
         setDisplayOnly(true)
         setSelectedTranslationData(undefined)
+        //@ts-ignore
+        dispatch(resetSelectedPoS())
         dispatch(clearWord())
     }
 
@@ -379,7 +390,6 @@ export function TableDataCell(props: TableDataCellProps){
                                                         maxWidth: "max-content",
                                                     }}
                                                     onClick={() => {
-                                                        // TODO: fix click to search with real Tag and SearchParams
                                                         setSearchParams({"tags": (item._id!!) ?item._id :''}) // also acts as navigate
                                                         dispatch(clearWordsSimple())
                                                     }}
@@ -545,7 +555,6 @@ export function TableDataCell(props: TableDataCellProps){
                         saveResults={(results: FilterItem[]) => {
                             setSelectedWordTagsData({
                                 // extractTagsArrayFromUnknownFormat not needed here, since values always are separate items?
-                                // tags: extractTagsArrayFromUnknownFormat(results),
                                 tags: extractTagsArrayFromUnknownFormat(results),
                                 isDirty: !checkEqualArrayContent(props.content, extractTagsArrayFromUnknownFormat(results)),
                                 completionState: true,
@@ -788,16 +797,19 @@ export function TableDataCell(props: TableDataCellProps){
                                 }}
                                 xs={"auto"}
                             >
-                                {(isLoading) &&
                                     <Grid
                                         container={true}
                                         item={true}
                                         alignContent={"center"}
                                         xs
                                     >
-                                        <LinearIndeterminate/>
+                                        <Typography
+                                            variant={"h4"}
+                                        >
+                                            {currentlySelectedPoS}
+                                        </Typography>
+                                        {(isLoading) && <LinearIndeterminate/>}
                                     </Grid>
-                                }
                                 <Grid
                                     item={true}
                                 >
