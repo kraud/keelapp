@@ -27,6 +27,7 @@ import {useSearchParams} from "react-router-dom";
 import {AutocompleteMultiple} from "../AutocompleteMultiple";
 import {checkEqualArrayContent, extractTagsArrayFromUnknownFormat} from "../generalUseFunctions";
 import {ConfirmationButton} from "../ConfirmationButton";
+import {CountryFlag} from "../GeneralUseComponents";
 
 interface TableHeaderCellProps {
     content: any
@@ -803,11 +804,22 @@ export function TableDataCell(props: TableDataCellProps){
                                         alignContent={"center"}
                                         xs
                                     >
-                                        <Typography
-                                            variant={"h4"}
-                                        >
-                                            {currentlySelectedPoS}
-                                        </Typography>
+                                        {(currentlySelectedPoS !== undefined) &&
+                                            <Typography
+                                                variant={"h4"}
+                                            >
+                                                {currentlySelectedPoS}
+                                                <CountryFlag
+                                                    country={props.language!!}
+                                                    border={true}
+                                                    sxProps={{
+                                                        marginLeft: '10px',
+                                                        marginTop: '-5px',
+                                                        display: 'inline-block'
+                                                    }}
+                                                />
+                                            </Typography>
+                                        }
                                         {(isLoading) && <LinearIndeterminate/>}
                                     </Grid>
                                 <Grid
