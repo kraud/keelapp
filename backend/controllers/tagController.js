@@ -37,22 +37,12 @@ const searchTags = asyncHandler(async (req, res) => {
 // @desc    Get all tags where user id matches author
 // @route   GET /api/tags
 // @access  Private
-// TODO: can be re-implemented using 'getTagDataByRequest'?
 const getUserTags = asyncHandler(async (req, res) => {
-    // const tags = await Tag.find(
-    //     {
-    //         author: req.user.id
-    //     },
-    // )
-    // // TODO: should we return this in the "FilterItem" format for tag?
-    // res.status(200).json(tags)
-
     const request = {
         query: {
             author: req.user.id
         }
     }
-
     const tagsData = await getTagDataByRequest(request)
     res.status(200).json(tagsData)
 })
@@ -333,7 +323,6 @@ const updateTag = asyncHandler(async (req, res) => {
         })
 })
 
-// getAmountByTag
 // @desc    Get Amount of items for a Tags
 // @route   GET /api/tagsAmount
 // @access  Private
@@ -350,52 +339,6 @@ const getAmountByTag = asyncHandler(async (req, res) => {
     }
     res.status(200).json(tag.wordsId.length)
 })
-
-// @desc    Get All word+tag data
-// @route   GET --
-// @access  Private
-const getAllTagDataByUserId = asyncHandler(async (req, res) => {
-    const allTagData = await Tag.aggregate([
-        // filtering related to data present in word => apply here
-        {
-            $match: {
-                $and:[
-                    // Make sure the logged-in user matches the word user
-                    {"author": mongoose.Types.ObjectId(req.params.id)},
-                ]
-            }
-        },
-        // filtering related to data present in tagWord => apply here
-        { '$lookup': {
-            'from': WordTag.collection.name,
-            'let': { 'id': '$_id', 'tagAuthor': '$author' }, // from Tag
-            'pipeline': [
-                {'$match': {
-                    '$expr': {
-                        '$and': [
-                            {'$eq': ['$$id', '$tagId']},  // tagId from WordTag
-                        ]
-                    }
-                }},
-                { '$lookup': {
-                    'from': Word.collection.name,
-                    'let': { 'wordId': '$wordId' }, // from WordTag
-                    'pipeline': [
-                        { '$match': {
-                                '$expr': { '$eq': [ '$_id', '$$wordId' ] }
-                            }}
-                    ],
-                    'as': 'words'
-                }},
-                { '$unwind': '$words' },
-                { '$replaceRoot': { 'newRoot': '$words' } }
-            ],
-            'as': 'words'
-        }}
-    ])
-    res.status(200).json(allTagData)
-})
-
 
 // @desc    Get tag data + words, and request can specify fields to filter Tag by
 // @route   GET --
@@ -491,6 +434,5 @@ module.exports = {
     updateTag,
     getAmountByTag,
     getOtherUserTags,
-    getAllTagDataByUserId,
     getTagDataByRequest
 }
