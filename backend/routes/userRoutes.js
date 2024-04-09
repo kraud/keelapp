@@ -9,6 +9,5 @@ router.put('/updateUser', protect, updateUser)
 router.get('/me', protect, getMe)
 router.get('/searchUser', protect, getUsersBy)
 router.get('/getUser/:id', protect, getUserById)
-router.get('/getUsernames', protect, getUsernamesBy)
 
 module.exports = router

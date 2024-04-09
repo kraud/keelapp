@@ -166,33 +166,6 @@ export const getFriendRequestButtonLabel = (allFriendships: any[], potentialFrie
     }
 }
 
-export const getCompleteFriendshipData = (friendships: FriendshipData[], userDataList: SearchResult[], currentlyLoggedInUser: any) => {
-
-    const acceptedFriendships = friendships.filter((friendship: FriendshipData) => {
-        return(friendship.status === 'accepted')
-    })
-    return(
-        acceptedFriendships.map((amistad: FriendshipData) => {
-            const otherUserId = (amistad.userIds[0] === currentlyLoggedInUser._id) ?amistad.userIds[1] :amistad.userIds[0]
-            const otherUserResult = userDataList.filter((storedUser: SearchResult) => {
-                return(storedUser.id === otherUserId)
-            })
-            let otherUserUsername
-            if(otherUserResult !== undefined && (otherUserResult.length > 0)){
-                if(otherUserResult[0].type === 'user'){
-                    otherUserUsername = otherUserResult[0].username
-                } else {
-                    otherUserUsername = '-'
-                }
-            }
-            return({
-                ...amistad,
-                usernames: [otherUserUsername, currentlyLoggedInUser.username]
-            })
-        })
-    )
-}
-
 export const acceptFriendRequest = (
     notification: NotificationData,
     friendships: FriendshipData[],

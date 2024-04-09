@@ -16,12 +16,11 @@ import {toast} from "react-toastify";
 import {updateUser} from "../features/auth/authSlice";
 import {useNavigate} from "react-router-dom";
 import {getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
-import {FriendshipData, SearchResult, TagData} from "../ts/interfaces";
-import {clearUserResultData, getUsernamesByIds} from "../features/users/userSlice";
+import {FriendshipData, TagData} from "../ts/interfaces";
+import {clearUserResultData} from "../features/users/userSlice";
 import AddCommentIcon from '@mui/icons-material/AddComment';
 import {getTagsForCurrentUser} from "../features/tags/tagSlice";
 import {FriendList, TagChipList} from "../components/GeneralUseComponents";
-import {getCompleteFriendshipData} from "../components/generalUseFunctions";
 
 interface AccountProps {
 
