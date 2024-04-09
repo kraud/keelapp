@@ -1,13 +1,9 @@
 const asyncHandler = require('express-async-handler')
 
 const Friendship = require('../models/friendshipModel')
-const TagWord = require("../models/intermediary/tagWordModel");
-const Word = require("../models/wordModel");
-const mongoose = require("mongoose");
-const Tag = require("../models/tagModel");
-const WordTag = require("../models/intermediary/tagWordModel");
+const User = require("../models/userModel");
 
-// @desc    Get all Friendships where the provided userId corresponds with one of the friendship paticipants' id
+// @desc    Get all Friendships where the provided userId corresponds with one of the friendship participants' id
 // @route   GET /api/getFriendships
 // @access  Private
 const getUserFriendshipsByParticipantId = asyncHandler(async (req, res) => {
@@ -23,20 +19,23 @@ const getUserFriendshipsByParticipantId = asyncHandler(async (req, res) => {
     }
     // NB! user that made the get request does not necessarily need to be a participant of the friendship
     // all documents where userIds is an array that contains the string in "req.query.userId" as one of its elements:
-    // const friendships = await Friendship.find({
-    //     userIds: req.query.userId
-    // })
-    //
-    // res.status(200).json(friendships)
-
-
-    const request = {
-        query: {
-            userIds: req.query.userId // userId
-        }
-    }
-    const friendshipData = await getFriendshipDataByRequest(request)
-    res.status(200).json(friendshipData)
+    Friendship.find({
+        userIds: req.query.userId
+    })
+    .then(async (matchingFriendships) => {
+        Promise.all(matchingFriendships.map(async (friendship) => {
+            const friendshipParticipants = await Promise.all(friendship.userIds.map(async (participantId) => {
+                const participantData = await User.findById(participantId, { _id: 1, name: 1 , username: 1 })
+                return(participantData)
+            }))
+            return({
+                ...friendship.toObject(),
+                usersData: friendshipParticipants
+            })
+        })).then(async (completeFriendshipData) => {
+            res.status(200).json(completeFriendshipData)
+        })
+    })
 
 })
 
@@ -130,81 +129,6 @@ const updateFriendship = asyncHandler(async (req, res) => {
     const updatedFriendship = await Friendship.findByIdAndUpdate(req.params.id, req.body, {new: true})
     res.status(200).json(updatedFriendship)
 })
-
-
-const getFriendshipDataByRequest = async (friendshipFilter) => {
-
-    try {
-        const allFriendshipData = await Friendship.aggregate([
-            // filtering related to data present in Friendship => apply here
-            {
-                $match: {
-                    $and: getMatchQuery(req.query)
-                }
-            },
-            // filtering related to data present in tagWord => apply here
-            { '$lookup': {
-                'from': User.collection.name,
-                'let': { 'userIds': '$userIds'}, // from Friendship
-                'pipeline': [
-                    {'$match': {
-                        '$expr': {
-                            '$_id': {$in: '$$userIds'} // _id from User
-                            // '$and': [
-                                // {'$eq': ['$$id', '$_id']},  // _id from User
-                            // ]
-                        }
-                    }},
-                    { '$lookup': {
-                        'from': User.collection.name,
-                        'let': { 'id': '$_id' }, // from Friendship
-                        'pipeline': [
-                            { '$match': {
-                                    '$expr': { '$eq': [ '$_id', '$$id' ] }
-                                }}
-                        ],
-                        'as': 'users'
-                    }},
-                    { '$unwind': '$users' },
-                    { '$replaceRoot': { 'newRoot': '$users' } }
-                ],
-                'as': 'users'
-            }}
-        ])
-        return(allFriendshipData)
-    } catch (error){
-        throw new Error("Friendship auxiliary function 'getTagDataByRequest' failed")
-    }
-}
-
-// AUXILIARY FUNCTIONS:
-// TODO: modify to match FriendshipModel
-const getMatchQuery = (queryData) => {
-    let matchQuery = []
-    if(queryData.userIds !== undefined){
-        matchQuery.push({
-            // this way we check if the userIds arrays includes the value in 'queryData.userIds'
-            "userIds": queryData.userIds
-        })
-    }
-    // if(queryData.user !== undefined){
-    //     matchQuery.push({
-    //         "user": mongoose.Types.ObjectId(queryData.user)
-    //     })
-    // }
-    // if(queryData.partOfSpeech !== undefined){
-    //     matchQuery.push({
-    //         "partOfSpeech": queryData.partOfSpeech
-    //     })
-    // }
-    // if(queryData.clue !== undefined){
-    //     matchQuery.push({
-    //         "clue": {$regex: `${queryData.clue}`, $options: "i"},
-    //     })
-    // }
-    // TODO: look into other query options, like tagId(s)?
-    return(matchQuery)
-}
 
 module.exports = {
     getUserFriendshipsByParticipantId,

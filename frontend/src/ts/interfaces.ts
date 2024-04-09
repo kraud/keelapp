@@ -53,6 +53,13 @@ type UserSearch = {
     // eventually, add profile picture info
 }
 
+type UserData = {
+    _id: string,
+    name: string,
+    username: string,
+    email: string,
+}
+
 export type NotificationData = {
     _id: string,
     user: string,
@@ -78,7 +85,8 @@ export type FriendshipData = {
     userIds: string[],
     usernames?: string[],
     status: 'pending' | 'accepted' | 'blocked',
-    partnerships?: PartnershipsData[]
+    partnerships?: PartnershipsData[],
+    usersData?: UserData[] // NB! Not stored on BE, only calculated when retrieving data.
 }
 
 type PartnershipsData = {

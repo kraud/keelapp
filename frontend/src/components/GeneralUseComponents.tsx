@@ -156,9 +156,9 @@ export const FriendList = (props: FriendListProps) => {
                                         height: '45px',
                                         margin: globalTheme.spacing(1),
                                         bgcolor: "#0072CE",
-                                        ...((stringAvatar((friendshipItem.usernames!!) ?friendshipItem.usernames![0] :"-", "color")).sx),
+                                        ...((stringAvatar((friendshipItem.usersData!!) ?friendshipItem.usersData![0].username :"-", "color")).sx),
                                     }}
-                                    {...stringAvatar((friendshipItem.usernames!!) ?friendshipItem.usernames![0] :"-", "children")}
+                                    {...stringAvatar((friendshipItem.usersData!!) ?friendshipItem.usersData![0].username :"-", "children")}
                                 />
                             </Grid>
                         </Grid>
@@ -191,7 +191,7 @@ export const FriendList = (props: FriendListProps) => {
                                         props.onClickAction(friendshipItem)
                                     }}
                                 >
-                                    {friendshipItem.usernames![0]}
+                                    {friendshipItem.usersData![0].username}
                                 </Typography>
                             </Grid>
                         </Grid>

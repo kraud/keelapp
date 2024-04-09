@@ -3,7 +3,6 @@ const bcrypt = require('bcryptjs')
 const asyncHandler = require('express-async-handler')
 const User = require('../models/userModel')
 const mongoose = require('mongoose')
-const Word = require("../models/wordModel");
 
 // @desc    Register new user
 // @route   POST /api/users

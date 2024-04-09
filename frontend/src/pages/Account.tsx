@@ -38,9 +38,8 @@ export const Account = (props: AccountProps) => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const {user, isLoadingAuth, isSuccess} = useSelector((state: any) => state.auth)
-    const {userList, isLoadingUser} = useSelector((state: any) => state.user)
     const {friendships, isLoadingFriendships} = useSelector((state: any) => state.friendships)
-    const {tags, fullTagData, isSuccessTags, isLoadingTags} = useSelector((state: any) => state.tags)
+    const {tags, isLoadingTags} = useSelector((state: any) => state.tags)
 
     const [allTags, setAllTags] = useState<TagData[]>([])
     const [activeFriendships, setActiveFriendships] = useState<FriendshipData[]>([])
@@ -53,36 +52,16 @@ export const Account = (props: AccountProps) => {
     const [reloadTagList, setReloadTagList] = useState(false)
 
     useEffect(() => {
-        if(!openFriendsModal){
-            if(userList!!){
-                setActiveFriendships(getCompleteFriendshipData(friendships, userList, user))
+        if(friendships!!){
+            const acceptedFriendships = friendships.filter((friendship: FriendshipData) => {
+                return(friendship.status === 'accepted')
+            })
+            if(acceptedFriendships.length > 0){
+                setActiveFriendships(acceptedFriendships)
+            } else {
+                setActiveFriendships([])
             }
         }
-    },[userList])
-
-    const sendUserIdsToGetUsernames = () => {
-        const acceptedFriendships = friendships.filter((friendship: FriendshipData) => {
-            return(friendship.status === 'accepted')
-        })
-        if(acceptedFriendships.length > 0){ // if there are no yet-accepted friendships, then no need to get any usernames
-            // all the ids of the users that the current user is friends with
-            const userIds = acceptedFriendships.map((friendship: FriendshipData) => {
-                if(friendship.userIds[0] === user._id){
-                    return friendship.userIds[1]
-                } else {
-                    return friendship.userIds[0]
-                }
-            })
-            // @ts-ignore
-            dispatch(getUsernamesByIds(userIds))
-        } else {
-            setActiveFriendships([])
-        }
-    }
-
-    // TODO: replace this with a complete request to Friendships and User?
-    useEffect(() => {
-        sendUserIdsToGetUsernames()
     },[friendships])
 
     useEffect(() => {
@@ -96,7 +75,6 @@ export const Account = (props: AccountProps) => {
 
     useEffect(() => {
         if(selectedTag !== ""){
-            // console.log('selectedTag', selectedTag)
             setOpenTagModal(true)
         }
     },[selectedTag])
@@ -412,7 +390,7 @@ export const Account = (props: AccountProps) => {
                     container={true}
                     xs={12}
                 >
-                    {((isLoadingFriendships || isLoadingUser) && !openFriendsModal)
+                    {((isLoadingFriendships) && !openFriendsModal)
                         ?
                         <LinearIndeterminate/>
                         :(activeFriendships.length === 0)
