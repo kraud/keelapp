@@ -4,6 +4,7 @@ const Tag = require("../models/tagModel");
 const Word = require("../models/wordModel");
 const WordTag = require("../models/intermediary/tagWordModel");
 const TagWord = require("../models/intermediary/tagWordModel");
+const Friendship = require("../models/friendshipModel");
 
 
 // @desc    Search for tags with a regex matching (partially or fully) a request query (string) with the tag label
@@ -52,12 +53,25 @@ const getUserTags = asyncHandler(async (req, res) => {
 // @access  Private
 // TODO: can be re-implemented using 'getTagDataByRequest'?
 const getOtherUserTags = asyncHandler(async (req, res) => {
-    const tags = await Tag.find(
-        {
+
+    const usersAreFriends = await Friendship.find({
+        "userIds" : { $in : [req.query.userId, req.user.id] }
+    })
+
+    let request
+    if(usersAreFriends){
+        request = {
             author: req.query.otherUserId,
-            public: 'Public' // TODO: add 'Friends-Only' later on
-        },
-    )
+            public: {$in: ['Public', 'Friends-Only']}
+        }
+    } else {
+        request = {
+            author: req.query.otherUserId,
+            public: 'Public'
+        }
+    }
+
+    const tags = await Tag.find(request)
     res.status(200).json(tags)
 })
 
