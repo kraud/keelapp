@@ -391,8 +391,6 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                             container={true}
                             justifyContent={"flex-start"}
                             item={true}
-                            // xs={12}
-                            // md={10}
                             rowSpacing={{
                                 xs: 1,
                                 md: 0,

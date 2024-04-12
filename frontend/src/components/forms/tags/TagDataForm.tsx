@@ -14,8 +14,10 @@ import {Lang} from "../../../ts/enums";
 import {useNavigate} from "react-router-dom";
 import {getUserById, resetUserSliceState} from "../../../features/users/userSlice";
 import LinearIndeterminate from "../../Spinner";
-import {getWordChipDataByLangInOrder} from "../../generalUseFunctions";
+import {getWordChipDataByLangInOrder, stringAvatar} from "../../generalUseFunctions";
 import {CountryFlag} from "../../GeneralUseComponents";
+import Avatar from "@mui/material/Avatar";
+import {getPartOfSpeechAbbreviated} from "../commonFunctions";
 
 interface TagDataFormProps {
     currentTagData: TagData,
@@ -346,7 +348,22 @@ export const TagDataForm = (props: TagDataFormProps) => {
                         >
                             <Chip
                                 variant="filled"
-                                label={wordDataToDisplay.displayLabel}
+                                label={
+                                    <>
+                                        {wordDataToDisplay.displayLabel}
+                                        <Typography
+                                            variant={'body2'}
+                                            color={'AllWhite'}
+                                            alignSelf={"left"}
+                                            sx={{
+                                                display: 'inline',
+                                                paddingLeft: globalTheme.spacing(1),
+                                            }}
+                                        >
+                                             ({getPartOfSpeechAbbreviated(selectedWordItem.partOfSpeech)})
+                                        </Typography>
+                                    </>
+                                }
                                 color={"info"}
                                 sx={{
                                     maxWidth: "max-content",
@@ -363,7 +380,12 @@ export const TagDataForm = (props: TagDataFormProps) => {
                                     }
                                 }}
                                 size={"medium"}
-                                icon={
+                                icon={<>
+                                    {/*<Avatar*/}
+                                    {/*    alt="Part of speech"*/}
+                                    {/*    src={(user) ? "" : "/"}*/}
+                                    {/*    {...stringAvatar((selectedWordItem.partOfSpeech!!) ?selectedWordItem.partOfSpeech :"-")}*/}
+                                    {/*/>*/}
                                     <CountryFlag
                                         country={wordDataToDisplay.language}
                                         border={true}
@@ -371,7 +393,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
                                             marginLeft: globalTheme.spacing(2)
                                         }}
                                     />
-                                }
+                                </>}
                             />
                         </Grid>
                     )
