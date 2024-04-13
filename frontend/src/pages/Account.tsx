@@ -49,6 +49,7 @@ export const Account = (props: AccountProps) => {
     const [isEditing, setIsEditing] = useState(false)
     const [localUserData, setLocalUserData] = useState<UserBadgeData | null>(null)
     const [reloadTagList, setReloadTagList] = useState(false)
+    const [tagIdToShare, setTagIdToShare] = useState("")
 
     useEffect(() => {
         if(friendships!!){
@@ -435,9 +436,16 @@ export const Account = (props: AccountProps) => {
             </Grid>
             <FriendSearchModal
                 open={openFriendsModal}
-                setOpen={(value: boolean) => setOpenFriendsModal(value)}
+                setOpen={(value: boolean) => {
+                    setOpenFriendsModal(value)
+                    // in case we were sending a tag to a Friend and closed the tag, we reset tagIdToShare
+                    if(!value && (tagIdToShare !== "")){
+                        setTagIdToShare("")
+                    }
+                }}
                 defaultUserId={defaultModalUserId}
                 reloadFriendList={() => setTriggerGetFriendships(true)}
+                userList={(tagIdToShare !== "") ?activeFriendships :undefined}
             />
             <TagInfoModal
                 open={openTagModal}
@@ -450,6 +458,11 @@ export const Account = (props: AccountProps) => {
                 tagId={selectedTag}
                 setMadeChangesToTagList={(status: boolean) => {
                     setReloadTagList(status)
+                }}
+                triggerAction={(tagId: string) => {
+                    setTagIdToShare(tagId)
+                    setOpenTagModal(false)
+                    setOpenFriendsModal(true)
                 }}
             />
         </Grid>

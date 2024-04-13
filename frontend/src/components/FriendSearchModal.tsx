@@ -24,7 +24,7 @@ import {
 import {acceptFriendRequest, checkIfAlreadyFriend, getFriendRequestButtonLabel} from "./generalUseFunctions";
 import {clearOtherUserTags, getTagsByAnotherUserID} from "../features/tags/tagSlice";
 import {clearUserResultData} from "../features/users/userSlice";
-import {TagChipList} from "./GeneralUseComponents";
+import {FriendList, TagChipList} from "./GeneralUseComponents";
 import {useNavigate} from "react-router-dom";
 import {ConfirmationButton} from "./ConfirmationButton";
 
@@ -33,6 +33,7 @@ interface FriendSearchModalProps {
     setOpen: (value: boolean) => void
     defaultUserId?: string
     reloadFriendList?: () => void
+    userList?: FriendshipData[] // add another prop to manage display?
 }
 
 export const FriendSearchModal = (props: FriendSearchModalProps) => {
@@ -211,28 +212,47 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                             ?
                             <Grid
                                 item={true}
+                                container={true}
+                                direction={"column"}
+                                rowSpacing={2}
                             >
-                                <AutocompleteSearch
-                                    options={userList}
-                                    getOptions={(inputValue: string) => {
-                                        // @ts-ignore
-                                        dispatch(searchUser(inputValue))
-                                    }}
-                                    onSelect={(selection: SearchResult) => {
-                                        // trigger more detailed search for user data?
-                                        setSelectedUser(selection)
-                                    }}
-                                    isSearchLoading={isLoadingUser}
-                                    sxPropsAutocomplete={{
-                                        background: '#c7c7c7',
-                                        width: '500px',
-                                    }}
-                                    sxPropsInput={{
-                                        color: 'black',
-                                    }}
-                                    placeholder={"Search for friends..."}
-                                    iconColor={"primary"}
-                                />
+                                <Grid
+                                    item={true}
+                                >
+                                    <AutocompleteSearch
+                                        options={userList}
+                                        getOptions={(inputValue: string) => {
+                                            // @ts-ignore
+                                            dispatch(searchUser(inputValue))
+                                        }}
+                                        onSelect={(selection: SearchResult) => {
+                                            // trigger more detailed search for user data?
+                                            setSelectedUser(selection)
+                                        }}
+                                        isSearchLoading={isLoadingUser}
+                                        sxPropsAutocomplete={{
+                                            background: '#c7c7c7',
+                                            width: '500px',
+                                        }}
+                                        sxPropsInput={{
+                                            color: 'black',
+                                        }}
+                                        placeholder={"Search for friends..."}
+                                        iconColor={"primary"}
+                                    />
+                                </Grid>
+                                {(props.userList !== undefined) &&
+                                    <Grid
+                                        item={true}
+                                    >
+                                        <FriendList
+                                            friendList={props.userList}
+                                            onClickAction={(friendshipItem: FriendshipData) => {
+                                                // TODO: replace right arrow icon with a "send Tag" button.
+                                            }}
+                                        />
+                                    </Grid>
+                                }
                             </Grid>
                             :
                             <Grid

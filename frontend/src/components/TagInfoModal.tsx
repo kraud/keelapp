@@ -30,6 +30,7 @@ interface FriendSearchModalProps {
     setOpen: (value: boolean) => void
     tagId: string | undefined
     setMadeChangesToTagList: (status: boolean) => void
+    triggerAction?: (tagId: string) => void // we'll use this to open FriendSearchModal and send the tagId to another user
 }
 
 export const TagInfoModal = (props: FriendSearchModalProps) => {
@@ -252,10 +253,10 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                                 <Button
                                     variant={"contained"}
                                     color={"primary"}
-                                    onClick={() => toast.info('Coming soon!')}
+                                    onClick={() => props.triggerAction!(tagCurrentData._id!!)}
                                     fullWidth={true}
                                     startIcon={<SendIcon/>}
-                                    disabled={true} // TODO: change once sharing tag logic is implemented.
+                                    disabled={false}
                                 >
                                     Send to friends
                                 </Button>
