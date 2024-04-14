@@ -2,7 +2,11 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const asyncHandler = require('express-async-handler')
 const User = require('../models/userModel')
-const mongoose = require('mongoose')
+const Friendship = require('../models/friendshipModel')
+
+function queryParamToBool(value) {
+    return ((value+'').toLowerCase() === 'true')
+}
 
 // @desc    Register new user
 // @route   POST /api/users
@@ -106,6 +110,31 @@ const getMe = asyncHandler(async(req, res) => {
 // @route   POST /api/users/me
 // @access  Private
 const getUsersBy = asyncHandler(async(req, res) => {
+
+    // NB! For some reason boolean values are converted to string inside req, so we need to convert them back
+    // every new boolean field should receive the same treatment
+    const requestQuery = {
+        ...req.query,
+        searchOnlyFriends: queryParamToBool(req.query.searchOnlyFriends)
+    }
+
+    const formatAndReturnSimpleResults = (matchingUsersData) => {
+        let simpleResults = []
+        matchingUsersData.forEach((matchingUser) => {
+            if((matchingUser._id).toString() !== req.user.id){ // se we exclude currently logged-in user from results
+                simpleResults.push({
+                    id: matchingUser._id,
+                    type: "user",
+                    label: matchingUser.name,
+                    username: matchingUser.username,
+                    email: matchingUser.email,
+                })
+            }
+        })
+        simpleResults.sort((a, b) => a.label.localeCompare(b.label))
+        res.status(200).json(simpleResults)
+    }
+
     if (!(req.query)) {
         res.status(400)
         throw new Error("Missing search query text")
@@ -117,38 +146,63 @@ const getUsersBy = asyncHandler(async(req, res) => {
         throw new Error('User not found')
     }
 
-    await User.find({
+    let userQuery = {
         $or: [
             {
-                "name": {$regex: `${req.query.query}`, $options: "i"},
+                "name": {$regex: `${requestQuery.nameOrUsernameMatch}`, $options: "i"},
             },
             {
-                "username": {$regex: `${req.query.query}`, $options: "i"},
+                "username": {$regex: `${requestQuery.nameOrUsernameMatch}`, $options: "i"},
             },
         ]
-    }).then((data) => {
-        if (data) {
-            let simpleResults = []
-            data.forEach((user) => {
-                if((user._id).toString() !== req.user.id){ // se we exclude currently logged-in user from results
-                    simpleResults.push({
-                        id: user._id,
-                        type: "user",
-                        label: user.name,
-                        username: user.username,
-                        email: user.email,
+    }
+    if(requestQuery.searchOnlyFriends){
+        // When searching through a user's friend list, we first need to find all the active friendships that user has
+        Friendship.find({
+            userIds: req.user.id,
+            status: 'accepted'
+        })
+        .then(async (matchingFriendships) => {
+            // then we need the ids of the other users which participate in those friendships
+            const matchingFriendsIds = []
+            matchingFriendships.forEach((matchingFriendship) => {
+                if(matchingFriendship.userIds[0] === req.user.id){
+                    matchingFriendsIds.push(matchingFriendship.userIds[1].toString())
+                } else {
+                    matchingFriendsIds.push(matchingFriendship.userIds[0].toString())
+                }
+            })
+            // now we search through the users in the collection, only retrieving those that (at least partially) match the query
+            // as well as those whose id is included in the list of active friends.
+            userQuery = {
+                $and: [
+                    userQuery,
+                    {_id: {'$in': matchingFriendsIds}}
+                ]
+            }
+            User.find(userQuery).then((matchingUserReturnData) => {
+                if (matchingUserReturnData) {
+                    formatAndReturnSimpleResults(matchingUserReturnData)
+                } else {
+                    res.status(404).json({
+                        text: "No user matches for this search",
+                        error: err
                     })
                 }
             })
-            simpleResults.sort((a, b) => a.label.localeCompare(b.label))
-            res.status(200).json(simpleResults)
-        } else {
-            res.status(404).json({
-                text: "No user matches for this search",
-                error: err
-            })
-        }
-    })
+        })
+    } else {
+        User.find(userQuery).then((matchingUserReturnData) => {
+            if (matchingUserReturnData) {
+                formatAndReturnSimpleResults(matchingUserReturnData)
+            } else {
+                res.status(404).json({
+                    text: "No user matches for this search",
+                    error: err
+                })
+            }
+        })
+    }
 })
 
 // @desc    Get User

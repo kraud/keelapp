@@ -1,15 +1,16 @@
 import axios from "axios"
+import {SearchUserQuery} from "./userSlice";
 
 const API_URL = '/api/users/' // same as authSlice because they share controller
 
 // Get users by name or username
-const getUsersByNameUsername = async (token: any, query: string) => {
+const getUsersByNameUsername = async (token: any, query: SearchUserQuery) => {
     const config = {
         headers: {
             Authorization: `Bearer ${token}`
         },
         params: {
-            query: query,
+            ...query
         }
     }
     const response = await axios.get(`${API_URL}/searchUser`, config)

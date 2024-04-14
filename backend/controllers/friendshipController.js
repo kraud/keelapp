@@ -3,6 +3,7 @@ const asyncHandler = require('express-async-handler')
 const Friendship = require('../models/friendshipModel')
 const User = require("../models/userModel");
 
+// TODO: add parameters to req.query to allow specifying if the friendship is accepter/rejected/etc.
 // @desc    Get all Friendships where the provided userId corresponds with one of the friendship participants' id
 // @route   GET /api/getFriendships
 // @access  Private

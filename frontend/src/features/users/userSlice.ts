@@ -23,8 +23,14 @@ const initialState: UserSliceState = {
     message: "",
 }
 
+export interface SearchUserQuery {
+    nameOrUsernameMatch: string,
+    searchOnlyFriends: boolean
+    // TODO: as new filtering needs arise, add fields her
+}
+
 // TODO: add additional parameters to query, so we can specify query to filter by friends-only, not-yet-friends, etc.
-export const searchUser = createAsyncThunk('auth/searchUser', async (query: string, thunkAPI) => {
+export const searchUser = createAsyncThunk('auth/searchUser', async (query: SearchUserQuery, thunkAPI) => {
     try {
         // @ts-ignore
         const token = thunkAPI.getState().auth.user.token

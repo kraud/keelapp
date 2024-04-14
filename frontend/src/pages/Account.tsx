@@ -187,7 +187,10 @@ export const Account = (props: AccountProps) => {
                             <Button
                                 variant={"contained"}
                                 color={"primary"}
-                                onClick={() => setOpenFriendsModal(true)}
+                                onClick={() => {
+                                    setTagIdToShare("") // we make sure that no list will be displayed on FriendSearchModal
+                                    setOpenFriendsModal(true)
+                                }}
                                 fullWidth={true}
                                 startIcon={<PersonAddIcon />}
                             >

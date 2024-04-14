@@ -223,7 +223,10 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                         options={userList}
                                         getOptions={(inputValue: string) => {
                                             // @ts-ignore
-                                            dispatch(searchUser(inputValue))
+                                            dispatch(searchUser({
+                                                nameOrUsernameMatch: inputValue,
+                                                searchOnlyFriends: (props.userList !== undefined)!! // only search friends when sending Tag to friends
+                                            }))
                                         }}
                                         onSelect={(selection: SearchResult) => {
                                             // trigger more detailed search for user data?
