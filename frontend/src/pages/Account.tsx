@@ -449,6 +449,7 @@ export const Account = (props: AccountProps) => {
                 defaultUserId={defaultModalUserId}
                 reloadFriendList={() => setTriggerGetFriendships(true)}
                 userList={(tagIdToShare !== "") ?activeFriendships :undefined}
+                title={(tagIdToShare !== "") ?'Select a friend:' :undefined}
             />
             <TagInfoModal
                 open={openTagModal}

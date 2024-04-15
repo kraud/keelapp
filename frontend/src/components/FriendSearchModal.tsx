@@ -35,6 +35,7 @@ interface FriendSearchModalProps {
     defaultUserId?: string
     reloadFriendList?: () => void
     userList?: FriendshipData[] // add another prop to manage display?
+    title?: string // add another prop to manage display?
 }
 
 export const FriendSearchModal = (props: FriendSearchModalProps) => {
@@ -220,6 +221,15 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                 <Grid
                                     item={true}
                                 >
+                                    <Typography
+                                        variant={"h4"}
+                                    >
+                                        {props.title}
+                                    </Typography>
+                                </Grid>
+                                <Grid
+                                    item={true}
+                                >
                                     <AutocompleteSearch
                                         options={userList}
                                         getOptions={(inputValue: string) => {
@@ -252,7 +262,6 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                         <FriendList
                                             friendList={props.userList}
                                             onClickAction={(friendshipItem: FriendshipData) => {
-                                                // TODO: replace right arrow icon with a "send Tag" button.
                                             }}
                                             actionIcon={<SendIcon/>}
                                         />

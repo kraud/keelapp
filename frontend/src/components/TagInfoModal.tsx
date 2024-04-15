@@ -258,7 +258,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                                     startIcon={<SendIcon/>}
                                     disabled={false}
                                 >
-                                    Send to friends
+                                    Send to friend
                                 </Button>
                             </Grid>
                             <Grid
