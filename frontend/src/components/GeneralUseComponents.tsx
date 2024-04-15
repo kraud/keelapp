@@ -1,5 +1,5 @@
 import {Lang} from "../ts/enums";
-import React from "react";
+import React, {ReactNode} from "react";
 import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -107,6 +107,7 @@ type FriendListProps = {
     friendList: FriendshipData[],
     onClickAction: (friendshipItem: FriendshipData) => void,
     sxProps?: SxProps<Theme>,
+    actionIcon?: ReactNode,
 }
 
 export const FriendList = (props: FriendListProps) => {
@@ -201,6 +202,9 @@ export const FriendList = (props: FriendListProps) => {
                             alignItems={"center"}
                             item={true}
                             xs={"auto"} // width: max-content
+                            sx={{
+                                marginRight: globalTheme.spacing(2)
+                            }}
                         >
                             <Grid
                                 item={true}
@@ -211,7 +215,10 @@ export const FriendList = (props: FriendListProps) => {
                                         props.onClickAction(friendshipItem)
                                     }}
                                 >
-                                    <ArrowForwardIosIcon/>
+                                    {(props.actionIcon !== undefined)
+                                        ? props.actionIcon
+                                        : <ArrowForwardIosIcon/>
+                                    }
                                 </IconButton>
                             </Grid>
                         </Grid>

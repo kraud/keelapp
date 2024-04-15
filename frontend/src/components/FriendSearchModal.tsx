@@ -27,6 +27,7 @@ import {clearUserResultData} from "../features/users/userSlice";
 import {FriendList, TagChipList} from "./GeneralUseComponents";
 import {useNavigate} from "react-router-dom";
 import {ConfirmationButton} from "./ConfirmationButton";
+import SendIcon from '@mui/icons-material/Send';
 
 interface FriendSearchModalProps {
     open: boolean
@@ -253,6 +254,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                             onClickAction={(friendshipItem: FriendshipData) => {
                                                 // TODO: replace right arrow icon with a "send Tag" button.
                                             }}
+                                            actionIcon={<SendIcon/>}
                                         />
                                     </Grid>
                                 }
