@@ -449,7 +449,7 @@ export const Account = (props: AccountProps) => {
                 defaultUserId={defaultModalUserId}
                 reloadFriendList={() => setTriggerGetFriendships(true)}
                 userList={(tagIdToShare !== "") ?activeFriendships :undefined}
-                title={(tagIdToShare !== "") ?'Select a friend:' :undefined}
+                title={(tagIdToShare !== "") ?'Select a friend:' :'Search friends:'}
             />
             <TagInfoModal
                 open={openTagModal}
@@ -468,6 +468,7 @@ export const Account = (props: AccountProps) => {
                     setOpenTagModal(false)
                     setOpenFriendsModal(true)
                 }}
+                title={(selectedTag !== "") ?undefined :'Create new tag:'}
             />
         </Grid>
     )

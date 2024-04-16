@@ -34,8 +34,8 @@ interface FriendSearchModalProps {
     setOpen: (value: boolean) => void
     defaultUserId?: string
     reloadFriendList?: () => void
-    userList?: FriendshipData[] // add another prop to manage display?
-    title?: string // add another prop to manage display?
+    userList?: FriendshipData[]
+    title?: string
 }
 
 export const FriendSearchModal = (props: FriendSearchModalProps) => {
@@ -216,17 +216,21 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                 item={true}
                                 container={true}
                                 direction={"column"}
+                                alignItems={"center"}
                                 rowSpacing={2}
                             >
-                                <Grid
-                                    item={true}
-                                >
-                                    <Typography
-                                        variant={"h4"}
+                                {(props.title !== undefined) &&
+                                    <Grid
+                                        item={true}
                                     >
-                                        {props.title}
-                                    </Typography>
-                                </Grid>
+                                        <Typography
+                                            variant={"h4"}
+                                        >
+                                            {props.title}
+                                        </Typography>
+                                    </Grid>
+                                }
+                                {/* TODO: should add action buttons to interact with selectedUsers list?*/}
                                 <Grid
                                     item={true}
                                 >
@@ -240,7 +244,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                             }))
                                         }}
                                         onSelect={(selection: SearchResult) => {
-                                            // trigger more detailed search for user data?
+                                            // TODO: if sharing tag => it should add selection to selectedUsers
                                             setSelectedUser(selection)
                                         }}
                                         isSearchLoading={isLoadingUser}
@@ -255,6 +259,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                         iconColor={"primary"}
                                     />
                                 </Grid>
+                                {/*  TODO: add userChipList populated with selectUsers */}
                                 {(props.userList !== undefined) &&
                                     <Grid
                                         item={true}

@@ -1,5 +1,5 @@
 import globalTheme from "../theme/theme";
-import {Button, Grid, Modal} from "@mui/material";
+import {Button, Grid, Modal, Typography} from "@mui/material";
 import Box from "@mui/material/Box";
 import React, {useEffect, useState} from "react";
 import SendIcon from '@mui/icons-material/Send';
@@ -31,6 +31,7 @@ interface FriendSearchModalProps {
     tagId: string | undefined
     setMadeChangesToTagList: (status: boolean) => void
     triggerAction?: (tagId: string) => void // we'll use this to open FriendSearchModal and send the tagId to another user
+    title?: string
 }
 
 export const TagInfoModal = (props: FriendSearchModalProps) => {
@@ -372,6 +373,17 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                         // TODO: add a reverse-order-thing depending on prop for DisplayTag, so buttons can be
                         //     at the top when displaying full screen, and the bottom when inside modal
                     >
+                        {(props.title !== undefined) &&
+                            <Grid
+                                item={true}
+                            >
+                                <Typography
+                                    variant={"h4"}
+                                >
+                                    {props.title}
+                                </Typography>
+                            </Grid>
+                        }
                         {/* TODO: form and buttons should all be replaced by a DisplayTagData component */}
                         <TagDataForm
                             currentTagData={tagCurrentData}

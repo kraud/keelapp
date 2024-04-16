@@ -157,9 +157,9 @@ export const FriendList = (props: FriendListProps) => {
                                         height: '45px',
                                         margin: globalTheme.spacing(1),
                                         bgcolor: "#0072CE",
-                                        ...((stringAvatar((friendshipItem.usersData!!) ?friendshipItem.usersData![0].username :"-", "color")).sx),
+                                        ...((stringAvatar((friendshipItem.usersData!!) ?friendshipItem.usersData![0].name :"-", "color")).sx),
                                     }}
-                                    {...stringAvatar((friendshipItem.usersData!!) ?friendshipItem.usersData![0].username :"-", "children")}
+                                    {...stringAvatar((friendshipItem.usersData!!) ?friendshipItem.usersData![0].name :"-", "children")}
                                 />
                             </Grid>
                         </Grid>
