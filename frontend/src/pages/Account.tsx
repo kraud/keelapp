@@ -20,7 +20,7 @@ import {FriendshipData, TagData} from "../ts/interfaces";
 import {clearUserResultData} from "../features/users/userSlice";
 import AddCommentIcon from '@mui/icons-material/AddComment';
 import {getTagsForCurrentUser} from "../features/tags/tagSlice";
-import {FriendList, TagChipList} from "../components/GeneralUseComponents";
+import {FriendList, ChipList} from "../components/GeneralUseComponents";
 
 interface AccountProps {
 
@@ -331,8 +331,8 @@ export const Account = (props: AccountProps) => {
                         <>
                             {(allTags.length > 0)
                                 ?
-                                <TagChipList
-                                    tagList={allTags}
+                                <ChipList
+                                    itemList={allTags}
                                     onClickAction={(tagId: string) => {
                                         setSelectedTag(tagId)
                                     }}
@@ -448,8 +448,9 @@ export const Account = (props: AccountProps) => {
                 }}
                 defaultUserId={defaultModalUserId}
                 reloadFriendList={() => setTriggerGetFriendships(true)}
-                userList={(tagIdToShare !== "") ?activeFriendships :undefined}
                 title={(tagIdToShare !== "") ?'Select a friend:' :'Search friends:'}
+                // this prop is only used when sharing tag with friends
+                userList={(tagIdToShare !== "") ?activeFriendships :undefined}
             />
             <TagInfoModal
                 open={openTagModal}

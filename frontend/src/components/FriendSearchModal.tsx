@@ -21,10 +21,15 @@ import {
     getFriendshipsByUserId,
     updateFriendship
 } from "../features/friendships/friendshipSlice";
-import {acceptFriendRequest, checkIfAlreadyFriend, getFriendRequestButtonLabel} from "./generalUseFunctions";
+import {
+    acceptFriendRequest,
+    checkIfAlreadyFriend,
+    getFriendRequestButtonLabel,
+    getOtherUserDataFromFriendship, userDataToSearchResultConversion
+} from "./generalUseFunctions";
 import {clearOtherUserTags, getTagsByAnotherUserID} from "../features/tags/tagSlice";
 import {clearUserResultData} from "../features/users/userSlice";
-import {FriendList, TagChipList} from "./GeneralUseComponents";
+import {FriendList, ChipList} from "./GeneralUseComponents";
 import {useNavigate} from "react-router-dom";
 import {ConfirmationButton} from "./ConfirmationButton";
 import SendIcon from '@mui/icons-material/Send';
@@ -61,6 +66,8 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
     const {isLoadingNotifications, isSuccessNotifications} = useSelector((state: any) => state.notifications)
     const {isSuccessFriendships, isLoadingFriendships, friendships} = useSelector((state: any) => state.friendships)
     const [selectedUser, setSelectedUser] = useState<SearchResult | null>(null)
+    // this will only be relevant when selecting multiple friends to share them something
+    const [selectedUsersList, setSelectedUsersList] = useState<SearchResult[]>([])
 
 
     const handleOnClose = () => {
@@ -235,6 +242,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                     item={true}
                                 >
                                     <AutocompleteSearch
+                                        // TODO: we should filter here elements already present in selectedUserList if we're selecting multiple users
                                         options={userList}
                                         getOptions={(inputValue: string) => {
                                             // @ts-ignore
@@ -244,8 +252,14 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                             }))
                                         }}
                                         onSelect={(selection: SearchResult) => {
-                                            // TODO: if sharing tag => it should add selection to selectedUsers
-                                            setSelectedUser(selection)
+                                            // if sharing tag => it should add selection to selectedUsersList
+                                            if(props.userList !== undefined){
+                                                setSelectedUsersList((prevState) => {
+                                                    return([...prevState, selection])
+                                                })
+                                            } else { // if not, we simply set user to display their data
+                                                setSelectedUser(selection)
+                                            }
                                         }}
                                         isSearchLoading={isLoadingUser}
                                         sxPropsAutocomplete={{
@@ -259,14 +273,34 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                         iconColor={"primary"}
                                     />
                                 </Grid>
-                                {/*  TODO: add userChipList populated with selectUsers */}
+                                <ChipList
+                                    itemList={selectedUsersList}
+                                    onClickAction={(userId: string) => {
+                                        // we remove from the selectedUserList the item matching userId
+                                        setSelectedUsersList((prevState: SearchResult[]) => {
+                                            return(
+                                                prevState.filter((selectedUserData) => {
+                                                    return(selectedUserData.id !== userId)
+                                                })
+                                            )
+                                        })
+                                    }}
+                                    deletableItems={true}
+                                />
                                 {(props.userList !== undefined) &&
                                     <Grid
                                         item={true}
                                     >
                                         <FriendList
+                                            // TODO: we should filter here elements already present in selectedUserList if we're selecting multiple users
                                             friendList={props.userList}
                                             onClickAction={(friendshipItem: FriendshipData) => {
+                                                // we add the other user display in the frienship to our selectedUsersList
+                                                // we don't check for duplicates before adding, because the displayed userList should already be filtered
+                                                const otherUser = getOtherUserDataFromFriendship(friendshipItem, user._id)
+                                                setSelectedUsersList((prevState: SearchResult[]) => {
+                                                    return([...prevState, userDataToSearchResultConversion(otherUser)])
+                                                })
                                             }}
                                             actionIcon={<SendIcon/>}
                                         />
@@ -274,6 +308,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                 }
                             </Grid>
                             :
+                            // Selected user data display
                             <Grid
                                 item={true}
                                 container={true}
@@ -317,8 +352,8 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                                 </Typography>
                                             </Grid>
                                         }
-                                        <TagChipList
-                                            tagList={allTags}
+                                        <ChipList
+                                            itemList={allTags}
                                             onClickAction={(tagId: string) => {
                                                 handleOnClose()
                                                 // @ts-ignore

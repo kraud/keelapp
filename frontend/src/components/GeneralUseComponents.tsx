@@ -3,13 +3,14 @@ import React, {ReactNode} from "react";
 import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
 import Box from "@mui/material/Box";
-import {FriendshipData, TagData} from "../ts/interfaces";
+import {FriendshipData, SearchResult, TagData} from "../ts/interfaces";
 import {Chip, Grid, Typography} from "@mui/material";
 import globalTheme from "../theme/theme";
 import Avatar from "@mui/material/Avatar";
-import {stringAvatar} from "./generalUseFunctions";
+import {getOtherUserDataFromFriendship, stringAvatar} from "./generalUseFunctions";
 import IconButton from "@mui/material/IconButton";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import {useSelector} from "react-redux";
 
 type BorderProps = {
     border?: boolean
@@ -67,33 +68,93 @@ export const CountryFlag = (props: CountryFlagProps) => {
     )
 }
 
-type TagChipListProps = {
-    tagList: TagData[],
+type ChipListProps = {
+    itemList: TagData[] | SearchResult[],
     onClickAction: (tagId: string) => void,
     sxProps?: SxProps<Theme>,
+    deletableItems?: boolean
 }
 
-export const TagChipList = (props: TagChipListProps) => {
+export const ChipList = (props: ChipListProps) => {
+
+    const getLabel = (item: TagData|SearchResult) => {
+        //@ts-ignore
+        if(item.words !== undefined){ // then is TagData => TODO: find a better way to typeof custom types
+            //@ts-ignore
+            if((item.words.length > 0)){
+                //@ts-ignore
+                return(item.label + ' ('+(item.words.length)+')')
+            } else {
+                return(item.label)
+            }
+        } else { // then is SearchResult
+            //@ts-ignore
+            switch (item.type!!) {
+                case ('user'): {
+                    return(item.label)
+                }
+                case ('tag'): {
+                    return(item.label)
+                }
+                // TODO: as more types are needed, add them.
+                // case ('word'): { // this case was implemented manually in TagDataForm => incorporate here eventually
+                //
+                // }
+                default: {
+                    return(item.label)
+                }
+            }
+        }
+
+    }
+
+    const handleOnClick = (item: TagData|SearchResult) => {
+        // TODO: unify TagData and SearchResult to _id and id matches?
+        //@ts-ignore
+        if(item._id !== undefined){ // then is TagData => TODO: find a better way to typeof custom types
+            //@ts-ignore
+            props.onClickAction(item._id)
+        } else { // then is SearchResult
+            // no action specified yet for onClick SearchResult
+        }
+    }
+
+    const handleOnDelete = (item: TagData|SearchResult) => {
+        // TODO: idem handleOnClick
+        //@ts-ignore
+        if(item._id !== undefined){ // then is TagData => TODO: idem handleOnClick
+            // no action specified yet for onDelete TagData
+        } else { // then is SearchResult
+            // @ts-ignore
+            props.onClickAction(item.id)
+        }
+    }
 
     // TODO: separate chip, to include a small section at the end, with a different color, with number of words associated with it
     return(
         <>
-            {(props.tagList.map((tag: TagData, index: number) => {
+            {(props.itemList.map((item: TagData|SearchResult, index: number) => {
                 return (
                     <Grid
                         item={true}
-                        key={index.toString() + '-' + tag}
+                        key={index.toString() + '-' + item}
                     >
                         <Chip
                             variant="filled"
-                            label={((tag.words !== undefined) && (tag.words.length > 0)) ?tag.label + ' ('+(tag.words.length)+')' :tag.label}
+                            label={getLabel(item)}
                             color={"secondary"}
                             sx={{
                                 maxWidth: "max-content",
                                 ...props.sxProps
                             }}
+                            onDelete={(props.deletableItems!!)
+                                ? () => {
+                                    handleOnDelete(item)
+                                }
+                                : undefined
+                            }
                             onClick={() => {
-                                props.onClickAction((tag._id !== undefined) ? tag._id : "")
+                                handleOnClick(item)
                             }}
                         />
                     </Grid>
@@ -111,6 +172,7 @@ type FriendListProps = {
 }
 
 export const FriendList = (props: FriendListProps) => {
+    const {user} = useSelector((state: any) => state.auth)
 
     return(
         <>
@@ -157,9 +219,9 @@ export const FriendList = (props: FriendListProps) => {
                                         height: '45px',
                                         margin: globalTheme.spacing(1),
                                         bgcolor: "#0072CE",
-                                        ...((stringAvatar((friendshipItem.usersData!!) ?friendshipItem.usersData![0].name :"-", "color")).sx),
+                                        ...((stringAvatar((friendshipItem.usersData!!) ?getOtherUserDataFromFriendship(friendshipItem, user._id).name :"-", "color")).sx),
                                     }}
-                                    {...stringAvatar((friendshipItem.usersData!!) ?friendshipItem.usersData![0].name :"-", "children")}
+                                    {...stringAvatar((friendshipItem.usersData!!) ?getOtherUserDataFromFriendship(friendshipItem, user._id).name :"-", "children")}
                                 />
                             </Grid>
                         </Grid>
@@ -192,7 +254,7 @@ export const FriendList = (props: FriendListProps) => {
                                         props.onClickAction(friendshipItem)
                                     }}
                                 >
-                                    {friendshipItem.usersData![0].username}
+                                    {getOtherUserDataFromFriendship(friendshipItem, user._id).username}
                                 </Typography>
                             </Grid>
                         </Grid>

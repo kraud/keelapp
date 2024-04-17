@@ -5,7 +5,7 @@ import {
     NotificationData,
     SearchResult,
     TagData,
-    TranslationItem,
+    TranslationItem, UserData,
     WordDataBE
 } from "../ts/interfaces";
 import {toast} from "react-toastify";
@@ -67,6 +67,59 @@ export const checkEqualArrayContent = (original: unknown[], copy: unknown[]) => 
         })
     }
     return allIncluded
+}
+
+export const getOtherUserDataFromFriendship = (friendship: FriendshipData, currentUserId: string) => {
+    if(friendship.usersData !== undefined){
+        const matchingUserData = (friendship.usersData).find((participant) => {
+            return(participant._id !== currentUserId)
+        })
+        if(matchingUserData !== undefined){
+            return(matchingUserData)
+        } else {
+            return({
+                _id: "no-matching-id",
+                name: 'no-matching-name',
+                username: 'no-matching-username',
+                email: 'no-matching-email',
+            })
+
+        }
+    } else {
+        const matchingUserId = (friendship.userIds).filter((participantId) => {
+            return(participantId !== currentUserId)
+        })[0]
+        return({
+            _id: matchingUserId,
+            name: 'no-name-available',
+            username: 'no-username-available',
+            email: 'no-email-available',
+        })
+    }
+}
+
+export const userDataToSearchResultConversion = (userDataItem: UserData) => {
+    return({
+        id: userDataItem._id,
+        type: "user"  as const,
+        label: userDataItem.name,
+        email: userDataItem.email,
+        username: userDataItem.username
+    })
+}
+
+export const searchResultToUserDataConversion = (searchResultItem: SearchResult) => {
+    return({
+        _id: searchResultItem.id,
+        name: searchResultItem.label,
+        // TODO: double check if this works
+        ...(searchResultItem.type === 'user')
+            ? {
+                username: searchResultItem.username,
+                email: searchResultItem.email,
+            }
+            : undefined
+    })
 }
 
 function stringToColor(string: string) {

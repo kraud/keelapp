@@ -53,7 +53,7 @@ type UserSearch = {
     // eventually, add profile picture info
 }
 
-type UserData = {
+export type UserData = {
     _id: string,
     name: string,
     username: string,
@@ -83,7 +83,7 @@ type FriendRequestData = {
 export type FriendshipData = {
     _id?: string,
     userIds: string[],
-    usernames?: string[],
+    usernames?: string[], // not used anymore?
     status: 'pending' | 'accepted' | 'blocked',
     partnerships?: PartnershipsData[],
     usersData?: UserData[] // NB! Not stored on BE, only calculated when retrieving data.
