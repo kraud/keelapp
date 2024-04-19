@@ -205,6 +205,7 @@ export function Register() {
                                     onClick={handleSubmit(onSubmit)}
                                     variant={"outlined"}
                                     fullWidth={true}
+                                    color={"success"}
                                 >
                                     Submit
                                 </Button>
@@ -216,6 +217,7 @@ export function Register() {
                                     onClick={() => reset()}
                                     variant={"outlined"}
                                     fullWidth={true}
+                                    color={"error"}
                                 >
                                     Reset
                                 </Button>

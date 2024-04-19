@@ -9,6 +9,7 @@ import {
     WordDataBE
 } from "../ts/interfaces";
 import {toast} from "react-toastify";
+import {useSelector} from "react-redux";
 
 export const getCurrentLangTranslated = (currentLang?: Lang) => {
     switch(currentLang) {
@@ -410,6 +411,48 @@ const getRequiredFieldsData = (translation: TranslationItem, partOfSpeech: PartO
         }
         default: {
             return("Part of speech not found")
+        }
+    }
+}
+
+type FriendshipCase = {
+    listType: 'Friendships',
+    rawList: FriendshipData[],
+    currentUserId: string,
+}
+
+type SearchResultCase = {
+    listType: 'SearchResults',
+    rawList: SearchResult[]
+}
+
+type GetListOfAvailableUsersInput = {
+    selectedUsersList: SearchResult[]
+} & (FriendshipCase | SearchResultCase)
+
+export const getListOfAvailableUsers = (inputData: GetListOfAvailableUsersInput) => {
+    const selectedUsersId = inputData.selectedUsersList.map((userItem: SearchResult) => {
+        return(userItem.id)
+    })
+    switch(inputData.listType){
+        case "Friendships": {
+            let availableFriendships: FriendshipData[] = []
+            inputData.rawList.forEach((friendshipItem: FriendshipData) => {
+                const otherUserInFriendship = getOtherUserDataFromFriendship(friendshipItem, inputData.currentUserId)
+                if(!selectedUsersId.includes(otherUserInFriendship._id)){
+                    availableFriendships.push(friendshipItem)
+                }
+            })
+            return(availableFriendships)
+        }
+        case "SearchResults": {
+            let availableUsers: SearchResult[] = []
+            inputData.rawList.forEach((searchResultItem: SearchResult) => {
+                if(!selectedUsersId.includes(searchResultItem.id)){
+                    availableUsers.push(searchResultItem)
+                }
+            })
+            return(availableUsers)
         }
     }
 }

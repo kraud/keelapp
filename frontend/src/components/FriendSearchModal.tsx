@@ -24,7 +24,7 @@ import {
 import {
     acceptFriendRequest,
     checkIfAlreadyFriend,
-    getFriendRequestButtonLabel,
+    getFriendRequestButtonLabel, getListOfAvailableUsers,
     getOtherUserDataFromFriendship, userDataToSearchResultConversion
 } from "./generalUseFunctions";
 import {clearOtherUserTags, getTagsByAnotherUserID} from "../features/tags/tagSlice";
@@ -39,8 +39,9 @@ interface FriendSearchModalProps {
     setOpen: (value: boolean) => void
     defaultUserId?: string
     reloadFriendList?: () => void
-    userList?: FriendshipData[]
     title?: string
+    userList?: FriendshipData[]
+    // TODO: eventually add callback function here to return list of users for action
 }
 
 export const FriendSearchModal = (props: FriendSearchModalProps) => {
@@ -243,7 +244,12 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                 >
                                     <AutocompleteSearch
                                         // TODO: we should filter here elements already present in selectedUserList if we're selecting multiple users
-                                        options={userList}
+                                        // options={userList}
+                                        options={getListOfAvailableUsers({
+                                            listType: 'SearchResults',
+                                            rawList: userList,
+                                            selectedUsersList: selectedUsersList
+                                        }) as SearchResult[]}
                                         getOptions={(inputValue: string) => {
                                             // @ts-ignore
                                             dispatch(searchUser({
@@ -293,7 +299,13 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                     >
                                         <FriendList
                                             // TODO: we should filter here elements already present in selectedUserList if we're selecting multiple users
-                                            friendList={props.userList}
+                                            // friendList={props.userList}
+                                            friendList={getListOfAvailableUsers({
+                                                listType: 'Friendships',
+                                                rawList: props.userList,
+                                                selectedUsersList: selectedUsersList,
+                                                currentUserId: user._id
+                                            }) as FriendshipData[]}
                                             onClickAction={(friendshipItem: FriendshipData) => {
                                                 // we add the other user display in the frienship to our selectedUsersList
                                                 // we don't check for duplicates before adding, because the displayed userList should already be filtered

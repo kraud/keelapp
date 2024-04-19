@@ -157,6 +157,7 @@ export function Login() {
                                     onClick={handleSubmit(onSubmit)}
                                     variant={"outlined"}
                                     fullWidth={true}
+                                    color={"success"}
                                 >
                                     Submit
                                 </Button>
