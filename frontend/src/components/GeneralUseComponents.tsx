@@ -169,6 +169,8 @@ type FriendListProps = {
     onClickAction: (friendshipItem: FriendshipData) => void,
     sxProps?: SxProps<Theme>,
     actionIcon?: ReactNode,
+    disableNameOnClick?: boolean,
+    hideIcon?: boolean,
 }
 
 export const FriendList = (props: FriendListProps) => {
@@ -247,11 +249,13 @@ export const FriendList = (props: FriendListProps) => {
                                             md: 'h3',
                                         },
                                         textTransform: "capitalize",
-                                        cursor: 'pointer',
+                                        cursor: (props.disableNameOnClick!!) ? undefined : 'pointer',
                                     }}
                                     noWrap={true}
                                     onClick={() => {
-                                        props.onClickAction(friendshipItem)
+                                        if(!props.disableNameOnClick!!){
+                                            props.onClickAction(friendshipItem)
+                                        }
                                     }}
                                 >
                                     {getOtherUserDataFromFriendship(friendshipItem, user._id).username}
@@ -268,21 +272,23 @@ export const FriendList = (props: FriendListProps) => {
                                 marginRight: globalTheme.spacing(2)
                             }}
                         >
-                            <Grid
-                                item={true}
-                            >
-                                <IconButton
-                                    color={"primary"}
-                                    onClick={() => {
-                                        props.onClickAction(friendshipItem)
-                                    }}
+                            {!(props.hideIcon!!) &&
+                                <Grid
+                                    item={true}
                                 >
-                                    {(props.actionIcon !== undefined)
-                                        ? props.actionIcon
-                                        : <ArrowForwardIosIcon/>
-                                    }
-                                </IconButton>
-                            </Grid>
+                                    <IconButton
+                                        color={"primary"}
+                                        onClick={() => {
+                                            props.onClickAction(friendshipItem)
+                                        }}
+                                    >
+                                        {(props.actionIcon !== undefined)
+                                            ? props.actionIcon
+                                            : <ArrowForwardIosIcon/>
+                                        }
+                                    </IconButton>
+                                </Grid>
+                            }
                         </Grid>
                     </Grid>
                 )

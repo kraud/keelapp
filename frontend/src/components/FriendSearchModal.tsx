@@ -243,8 +243,6 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                     item={true}
                                 >
                                     <AutocompleteSearch
-                                        // TODO: we should filter here elements already present in selectedUserList if we're selecting multiple users
-                                        // options={userList}
                                         options={getListOfAvailableUsers({
                                             listType: 'SearchResults',
                                             rawList: userList,
@@ -298,8 +296,6 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                         item={true}
                                     >
                                         <FriendList
-                                            // TODO: we should filter here elements already present in selectedUserList if we're selecting multiple users
-                                            // friendList={props.userList}
                                             friendList={getListOfAvailableUsers({
                                                 listType: 'Friendships',
                                                 rawList: props.userList,
@@ -315,6 +311,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                                 })
                                             }}
                                             actionIcon={<SendIcon/>}
+                                            disableNameOnClick={true}
                                         />
                                     </Grid>
                                 }
