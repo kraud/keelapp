@@ -12,6 +12,7 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ClearIcon from '@mui/icons-material/Clear';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
+import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
 import {toast} from "react-toastify";
 import LinearIndeterminate from "./Spinner";
 import {createNotification, deleteNotification} from "../features/notifications/notificationSlice";
@@ -34,14 +35,18 @@ import {useNavigate} from "react-router-dom";
 import {ConfirmationButton} from "./ConfirmationButton";
 import SendIcon from '@mui/icons-material/Send';
 
-interface FriendSearchModalProps {
+type FriendSearchModalProps = {
     open: boolean
     setOpen: (value: boolean) => void
     defaultUserId?: string
     reloadFriendList?: () => void
     title?: string
-    userList?: FriendshipData[]
     // TODO: eventually add callback function here to return list of users for action
+} & (MultipleUserSelection)
+
+type MultipleUserSelection ={
+    userList?: FriendshipData[]
+    onClickUserListSelection: (usersId: SearchResult[]) => void
 }
 
 export const FriendSearchModal = (props: FriendSearchModalProps) => {
@@ -292,6 +297,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                     deletableItems={true}
                                 />
                                 {(props.userList !== undefined) &&
+                                <>
                                     <Grid
                                         item={true}
                                     >
@@ -314,6 +320,30 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                             disableNameOnClick={true}
                                         />
                                     </Grid>
+                                    <Grid
+                                        container={true}
+                                        justifyContent={"space-around"}
+                                        item={true}
+                                    >
+                                        <Grid
+                                            item={true}
+                                            xs={10}
+                                        >
+                                            <Button
+                                                variant={"contained"}
+                                                color={"primary"}
+                                                onClick={() => {
+                                                    props.onClickUserListSelection(selectedUsersList)
+                                                }}
+                                                disabled={selectedUsersList.length === 0}
+                                                fullWidth={true}
+                                                endIcon={<ForwardToInboxIcon />}
+                                            >
+                                                Send tag
+                                            </Button>
+                                        </Grid>
+                                    </Grid>
+                                </>
                                 }
                             </Grid>
                             :

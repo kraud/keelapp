@@ -16,7 +16,7 @@ import {toast} from "react-toastify";
 import {updateUser} from "../features/auth/authSlice";
 import {useNavigate} from "react-router-dom";
 import {getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
-import {FriendshipData, TagData} from "../ts/interfaces";
+import {FriendshipData, SearchResult, TagData} from "../ts/interfaces";
 import {clearUserResultData} from "../features/users/userSlice";
 import AddCommentIcon from '@mui/icons-material/AddComment';
 import {getTagsForCurrentUser} from "../features/tags/tagSlice";
@@ -444,6 +444,7 @@ export const Account = (props: AccountProps) => {
                     // in case we were sending a tag to a Friend and closed the tag, we reset tagIdToShare
                     if(!value && (tagIdToShare !== "")){
                         setTagIdToShare("")
+                        setSelectedTag("")
                     }
                 }}
                 defaultUserId={defaultModalUserId}
@@ -451,6 +452,9 @@ export const Account = (props: AccountProps) => {
                 title={(tagIdToShare !== "") ?'Select a friend:' :'Search friends:'}
                 // this prop is only used when sharing tag with friends
                 userList={(tagIdToShare !== "") ?activeFriendships :undefined}
+                onClickUserListSelection={(usersIds: SearchResult[]) => {
+                    // dispatch logic send tag (tagIdToShare) to users (usersIds) => create notification in corresponding users
+                }}
             />
             <TagInfoModal
                 open={openTagModal}
