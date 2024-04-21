@@ -28,6 +28,7 @@ import {AutocompleteMultiple} from "../AutocompleteMultiple";
 import {checkEqualArrayContent, extractTagsArrayFromUnknownFormat} from "../generalUseFunctions";
 import {ConfirmationButton} from "../ConfirmationButton";
 import {CountryFlag} from "../GeneralUseComponents";
+import Tooltip from "@mui/material/Tooltip";
 
 interface TableHeaderCellProps {
     content: any
@@ -354,7 +355,7 @@ export function TableDataCell(props: TableDataCellProps){
                             {/* TODO: TagData type must be changed to something more generic? */}
                             {props.content.map((item: TagData, index: number) => {
                                 switch(true){
-                                    case(index == 2): {
+                                    case(index == 2): { // final chip displaying amount of remaining items
                                         return(
                                             <Grid
                                                 item={true}
@@ -374,10 +375,10 @@ export function TableDataCell(props: TableDataCellProps){
                                             </Grid>
                                         )
                                     }
-                                    case(index > 2): {
+                                    case(index > 2): { // we don't display the rest of the tags
                                         return null
                                     }
-                                    case(index < 2): {
+                                    case(index < 2): { // tags that will be displayed inside the cell
                                         return(
                                             <Grid
                                                 item={true}
@@ -385,7 +386,7 @@ export function TableDataCell(props: TableDataCellProps){
                                             >
                                                 <Chip
                                                     variant="filled"
-                                                    label={item.label}
+                                                    label={<EllipsisText>{item.label}</EllipsisText>}
                                                     color={"secondary"}
                                                     sx={{
                                                         maxWidth: "max-content",
@@ -892,6 +893,26 @@ export function TableDataCell(props: TableDataCellProps){
                 </Box>
             </Modal>
         </>
+    )
+}
+
+const EllipsisText = (props: any) => {
+    const { children } = props
+    const CHIP_MAX_WIDTH =  '100px';
+
+    return (
+        <Tooltip
+            title={children}
+        >
+            <div style={{
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                maxWidth: CHIP_MAX_WIDTH,
+            }}>
+                {children}
+            </div>
+        </Tooltip>
     )
 }
 

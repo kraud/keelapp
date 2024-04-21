@@ -226,22 +226,22 @@ export function TranslationFormGeneric(props: WordFormGenericProps) {
                             <Tooltip
                                 title={(props.amountOfFormsOnScreen < 3) ? "You need at least 2 translations" : ""}
                             >
-                            <span>
-                                <Button
-                                    variant={"outlined"}
-                                    color={"error"}
-                                    disabled={(props.amountOfFormsOnScreen < 3)}
-                                    onClick={() => {
-                                        // this should run even if no language is selected
-                                        // because there's an empty Object at this index holding its place
-                                        props.removeLanguageFromSelected(props.index, false)
-                                        setCurrentLang(null)
-                                    }}
-                                    sx={componentStyles.removeButton}
-                                >
-                                    REMOVE
-                                </Button>
-                            </span>
+                                <span>
+                                    <Button
+                                        variant={"outlined"}
+                                        color={"error"}
+                                        disabled={(props.amountOfFormsOnScreen < 3)}
+                                        onClick={() => {
+                                            // this should run even if no language is selected
+                                            // because there's an empty Object at this index holding its place
+                                            props.removeLanguageFromSelected(props.index, false)
+                                            setCurrentLang(null)
+                                        }}
+                                        sx={componentStyles.removeButton}
+                                    >
+                                        REMOVE
+                                    </Button>
+                                </span>
                             </Tooltip>
                         </Grid>
                         {(currentLang !== null && (currentTranslationData.language!!)) &&

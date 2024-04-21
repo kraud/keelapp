@@ -41,12 +41,11 @@ type FriendSearchModalProps = {
     defaultUserId?: string
     reloadFriendList?: () => void
     title?: string
-    // TODO: eventually add callback function here to return list of users for action
 } & (MultipleUserSelection)
 
 type MultipleUserSelection ={
     userList?: FriendshipData[]
-    onClickUserListSelection: (usersId: SearchResult[]) => void
+    onClickUserListSelection: (usersId: SearchResult[]) => void // this should also be optional?
 }
 
 export const FriendSearchModal = (props: FriendSearchModalProps) => {
@@ -243,7 +242,6 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                         </Typography>
                                     </Grid>
                                 }
-                                {/* TODO: should add action buttons to interact with selectedUsers list?*/}
                                 <Grid
                                     item={true}
                                 >
