@@ -136,8 +136,13 @@ export function TableDataCell(props: TableDataCellProps){
         if(props.wordId !== undefined){
             //@ts-ignore
             dispatch(getWordById(props.wordId))
-            //@ts-ignore
-            dispatch(setSelectedPoS(props.partOfSpeech))
+            if(!props.partOfSpeech!!){
+                //@ts-ignore
+                dispatch(setSelectedPoS('Tags' as PartOfSpeech)) // TODO: will there be other cases aside from Tags?
+            } else {
+                //@ts-ignore
+                dispatch(setSelectedPoS(props.partOfSpeech))
+            }
         }
         setOpen(true)
     }
@@ -799,30 +804,34 @@ export function TableDataCell(props: TableDataCellProps){
                                 }}
                                 xs={"auto"}
                             >
-                                    <Grid
-                                        container={true}
-                                        item={true}
-                                        alignContent={"center"}
-                                        xs
-                                    >
-                                        {(currentlySelectedPoS !== undefined) &&
-                                            <Typography
-                                                variant={"h4"}
-                                            >
-                                                {currentlySelectedPoS}
-                                                <CountryFlag
-                                                    country={props.language!!}
-                                                    border={true}
-                                                    sxProps={{
-                                                        marginLeft: '10px',
-                                                        marginTop: '-5px',
-                                                        display: 'inline-block'
-                                                    }}
-                                                />
-                                            </Typography>
+                                {/* Part of speech TITLE */}
+                                <Grid
+                                    container={true}
+                                    item={true}
+                                    alignContent={"center"}
+                                    xs
+                                >
+                                    {(currentlySelectedPoS !== undefined) &&
+                                        <Typography
+                                            variant={"h4"}
+                                        >
+                                            {currentlySelectedPoS}
+
+                                        {(props.language !== undefined) &&
+                                            <CountryFlag
+                                                country={props.language!!}
+                                                border={true}
+                                                sxProps={{
+                                                    marginLeft: '10px',
+                                                    marginTop: '-5px',
+                                                    display: 'inline-block'
+                                                }}
+                                            />
                                         }
-                                        {(isLoading) && <LinearIndeterminate/>}
-                                    </Grid>
+                                        </Typography>
+                                    }
+                                    {(isLoading) && <LinearIndeterminate/>}
+                                </Grid>
                                 <Grid
                                     item={true}
                                 >
@@ -898,11 +907,14 @@ export function TableDataCell(props: TableDataCellProps){
 
 const EllipsisText = (props: any) => {
     const { children } = props
-    const CHIP_MAX_WIDTH =  '100px';
+    const CHIP_MAX_WIDTH =  '100px'
+    const ellipsisBreakpoint =  13 // determined by trial and error, with chip label fontSize = 13px
+    const needsEllipsis = (children as string).length > ellipsisBreakpoint
 
     return (
         <Tooltip
-            title={children}
+            title={(needsEllipsis) ?children :''}
+            arrow={true}
         >
             <div style={{
                 whiteSpace: "nowrap",

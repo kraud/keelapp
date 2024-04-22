@@ -67,7 +67,7 @@ export const createColumnsReviewTable = (selectedLanguagesList: string[], displa
                 currentLanguageData = {
                     accessor: 'dataEE',
                     language: Lang.EE,
-                    amount: 'registeredCasesEE',  // i.e. info.row.original.*registeredCasesDE*
+                    amount: 'registeredCasesEE',  // i.e. info.row.original.*registeredCasesEE*
                     onlyDisplayAmountOnHover: true,
                     type: "text",
                     sxProps: {
@@ -82,7 +82,7 @@ export const createColumnsReviewTable = (selectedLanguagesList: string[], displa
                 currentLanguageData = {
                     accessor: 'dataEN',
                     language: Lang.EN,
-                    amount: 'registeredCasesEN',  // i.e. info.row.original.*registeredCasesDE*
+                    amount: 'registeredCasesEN',  // i.e. info.row.original.*registeredCasesEN*
                     onlyDisplayAmountOnHover: true,
                     type: "text",
                     sxProps: {
@@ -97,9 +97,9 @@ export const createColumnsReviewTable = (selectedLanguagesList: string[], displa
                 currentLanguageData = {
                     accessor: 'dataES',
                     language: Lang.ES,
-                    wordGender: 'genderES', // i.e. info.row.original.*genderDE*
+                    wordGender: 'genderES', // i.e. info.row.original.*genderES*
                     displayWordGender: displayGender,
-                    amount: 'registeredCasesES',  // i.e. info.row.original.*registeredCasesDE*
+                    amount: 'registeredCasesES',  // i.e. info.row.original.*registeredCasesES*
                     onlyDisplayAmountOnHover: true,
                     type: "text",
                     sxProps: {
