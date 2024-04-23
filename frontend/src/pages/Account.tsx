@@ -21,6 +21,7 @@ import {clearUserResultData} from "../features/users/userSlice";
 import AddCommentIcon from '@mui/icons-material/AddComment';
 import {getTagsForCurrentUser} from "../features/tags/tagSlice";
 import {FriendList, ChipList} from "../components/GeneralUseComponents";
+import {createNotification} from "../features/notifications/notificationSlice";
 
 interface AccountProps {
 
@@ -113,6 +114,19 @@ export const Account = (props: AccountProps) => {
     const displayFriendDetails = (friendshipInfo: FriendshipData) => {
         const friendId: string = (friendshipInfo.userIds[0] === user._id) ? friendshipInfo.userIds[1] : friendshipInfo.userIds[0]
         setDefaultModalUserId(friendId)
+    }
+
+    const sendShareTagNotification = (selectedUser: SearchResult[], tagIdToShare: string) => {
+        const newNotification = {
+            user: selectedUser, // users (one or more) to be notified
+            variant: "shareTagRequest",
+            content: {
+                tagId: tagIdToShare, // tag to share
+                requesterId: user._id, // user that created the request
+            }
+        }
+        // @ts-ignore
+        dispatch(createNotification(newNotification))
     }
 
     useEffect(() => {
@@ -453,7 +467,9 @@ export const Account = (props: AccountProps) => {
                 // this prop is only used when sharing tag with friends
                 userList={(tagIdToShare !== "") ?activeFriendships :undefined}
                 onClickUserListSelection={(usersIds: SearchResult[]) => {
-                    // dispatch logic send tag (tagIdToShare) to users (usersIds) => create notification in corresponding users
+                    if((usersIds.length > 0) && (tagIdToShare !== "")){
+                        sendShareTagNotification(usersIds, tagIdToShare)
+                    }
                 }}
             />
             <TagInfoModal

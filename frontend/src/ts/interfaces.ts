@@ -69,7 +69,7 @@ export type NotificationData = {
     // DISMISSED: true => read => NO badge on avatar (ignored, but NOT deleted)
     // if accepted => we delete notification
     dismissed: boolean,
-} & FriendRequestData
+} & (FriendRequestData | ShareTagRequestData)
 // TODO: add other types as new notifications are created
 
 type FriendRequestData = {
@@ -77,6 +77,14 @@ type FriendRequestData = {
     content: {
         requesterId: string,
         requesterUsername: string,
+    }
+}
+
+type ShareTagRequestData = {
+    variant: "shareTagRequest"
+    content: {
+        tagId: string,
+        requesterId: string,
     }
 }
 
