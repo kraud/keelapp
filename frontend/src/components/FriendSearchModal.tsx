@@ -140,9 +140,9 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
         }
     }, [isSuccessFriendships, isSuccessNotifications, isLoadingNotifications, isLoadingFriendships, sentRequest, cancelledRequest, deletedRequest])
 
-    const sendNotification = (selectedUser: SearchResult) => {
+    const sendFriendRequestNotification = (selectedUser: SearchResult) => {
         const newNotification = {
-            user: selectedUser.id, // user to be notified
+            user: [selectedUser.id], // user to be notified
             variant: "friendRequest",
             content: {
                 requesterId: user._id, // user that created the request
@@ -415,7 +415,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                                 const potentialFriendship = checkIfAlreadyFriend(friendships, selectedUser.id)
                                                 switch (getFriendRequestButtonLabel(friendships, selectedUser.id)){
                                                     case 0: { // no friendship status yet => create request
-                                                        sendNotification(selectedUser)
+                                                        sendFriendRequestNotification(selectedUser)
                                                         addFriendship(selectedUser)
                                                         break
                                                     }

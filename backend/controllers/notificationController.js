@@ -31,6 +31,7 @@ const getNotificationsByUserId = asyncHandler(async (req, res) => {
 // @route   POST /api/
 // @access  Private
 const createNotification = asyncHandler(async (req, res) => {
+    // NB! when posting, a NotificationData-user property will always be an array (of at least 1).
     if(!req.body.user){
         res.status(400)
         throw new Error("Please specify a user to be notified.")
@@ -42,13 +43,18 @@ const createNotification = asyncHandler(async (req, res) => {
 
     // TODO: if it's friendRequest => should check if request already exists? also should check on frontend
 
-    const notification = await Notification.create({
-        user: req.body.user,
-        variant: req.body.variant,
-        dismissed: false, // all notifications are not dismissed by default
-        content: req.body.content, // Might be empty?
+    // the notification is added once for each item in user array.
+    const notifications = req.body.user.map(userId => {
+        return({
+            user: userId,
+            variant: req.body.variant,
+            dismissed: false, // all notifications are not dismissed by default
+            content: req.body.content, // Might be empty?
+        })
     })
-    res.status(200).json(notification)
+
+    const notificationResponse = await Notification.insertMany(notifications)
+    res.status(200).json(notificationResponse)
 })
 
 // @desc    Delete Notification

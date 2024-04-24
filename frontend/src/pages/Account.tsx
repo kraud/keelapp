@@ -117,8 +117,11 @@ export const Account = (props: AccountProps) => {
     }
 
     const sendShareTagNotification = (selectedUser: SearchResult[], tagIdToShare: string) => {
+        const usersIds = selectedUser.map((userItem: SearchResult) => {
+            return(userItem.id)
+        })
         const newNotification = {
-            user: selectedUser, // users (one or more) to be notified
+            user: usersIds, // users (one or more) to be notified
             variant: "shareTagRequest",
             content: {
                 tagId: tagIdToShare, // tag to share

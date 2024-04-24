@@ -84,6 +84,23 @@ export const NotificationHub = (props: NotificationHubProps) => {
                     </Typography>
                 )
             }
+            case("shareTagRequest"): {
+                const otherUserUsername: string = notification.content.requesterId
+                const tagName: string = notification.content.tagId
+                return (
+                    <Typography
+                        sx={{
+                            typography: {
+                                xs: 'body2',
+                                sm: 'body1',
+                                md: 'h6',
+                            },
+                        }}
+                    >
+                        {otherUserUsername} wants to share the {tagName} tag with you.
+                    </Typography>
+                )
+            }
             default:
                 return (
                     <Typography
@@ -299,6 +316,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
                 )
                 break
             }
+            // TODO: shareTagRequest
             default: return(null)
         }
     }

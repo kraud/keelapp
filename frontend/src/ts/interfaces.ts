@@ -62,7 +62,8 @@ export type UserData = {
 
 export type NotificationData = {
     _id: string,
-    user: string,
+    // user to be notified
+    user: string | string[], // when retrieving notification data it will always be 1 user id
 
     // Notification's state:
     // DISMISSED: false => not read => badge on avatar (initial state)
@@ -70,7 +71,6 @@ export type NotificationData = {
     // if accepted => we delete notification
     dismissed: boolean,
 } & (FriendRequestData | ShareTagRequestData)
-// TODO: add other types as new notifications are created
 
 type FriendRequestData = {
     variant: "friendRequest"
