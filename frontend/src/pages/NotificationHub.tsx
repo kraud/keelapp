@@ -9,6 +9,7 @@ import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import BookmarkAddIcon from '@mui/icons-material/BookmarkAdd';
+import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
 import ClearIcon from '@mui/icons-material/Clear';
 import DoneIcon from '@mui/icons-material/Done';
 import NotificationsOffIcon from '@mui/icons-material/NotificationsOff';
@@ -71,7 +72,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
     const getDescription = (notification: NotificationData) => {
         switch (notification.variant) {
             case("friendRequest"): {
-                const friendUsername: string = notification.content.requesterUsername
+                const friendUsername: string = notification.notificationSender!.username
                 return (
                     <Typography
                         sx={{
@@ -87,8 +88,8 @@ export const NotificationHub = (props: NotificationHubProps) => {
                 )
             }
             case("shareTagRequest"): {
-                const otherUserUsername: string = notification.content.requesterId
-                const tagName: string = notification.content.tagId
+                const otherUserUsername: string = notification.notificationSender!.username
+                const tagName: string = (notification.notificationTag !== undefined)  ? notification.notificationTag.label : '--'
                 return (
                     <Typography
                         sx={{
@@ -99,7 +100,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
                             },
                         }}
                     >
-                        {otherUserUsername} wants to share the {tagName} tag with you.
+                        {otherUserUsername} wants to share the '{tagName}' tag with you.
                     </Typography>
                 )
             }
@@ -129,6 +130,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
                     item={true}
                 >
                     {(notifications).map((notification: NotificationData, index: number) => {
+                        const avatarUsername: string = notification.notificationSender!.username
                         return (
                             <Grid
                                 container={true}
@@ -172,20 +174,12 @@ export const NotificationHub = (props: NotificationHubProps) => {
                                             sx={{
                                                 width: '45px',
                                                 height: '45px',
-                                                // margin: globalTheme.spacing(1),
                                                 bgcolor: (notification.dismissed) ?"black" :"#0072CE",
 
-                                                ...((stringAvatar(
-                                                    (notification.variant === 'friendRequest')
-                                                        ? notification.content.requesterUsername
-                                                        : 'No name',
-                                                    "color")).sx),
+                                                ...((stringAvatar(avatarUsername, "color")).sx),
                                             }}
 
-                                            {...stringAvatar(
-                                                (notification.variant === 'friendRequest')
-                                                ? notification.content.requesterUsername
-                                                : 'No name', "children")
+                                            {...stringAvatar(avatarUsername, "children")
                                             }
                                         />
                                     </Grid>
@@ -208,7 +202,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
                                 </Grid>
                                 {/* ACTION BUTTON */}
                                 <Tooltip
-                                    title={"Accept friendship request"}
+                                    title={getTooltipLabel({variant: notification.variant, action: 'accept'})}
                                 >
                                     <Grid
                                         container={true}
@@ -233,7 +227,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
                                 </Tooltip>
                                 {/* DELETE */}
                                 <Tooltip
-                                    title={"Delete notification"}
+                                    title={getTooltipLabel({variant: notification.variant, action: 'delete'})}
                                 >
                                     <Grid
                                         container={true}
@@ -258,7 +252,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
                                 </Tooltip>
                                 {/* SNOOZE */}
                                 <Tooltip
-                                    title={"Set notification as read"}
+                                    title={getTooltipLabel({variant: notification.variant, action: 'ignore'})}
                                 >
                                     <Grid
                                         container={true}
@@ -348,9 +342,43 @@ export const NotificationHub = (props: NotificationHubProps) => {
                         return(<NotificationsOffIcon/>)
                     }
                     case('delete'):{
-                        return(<ClearIcon/>)
+                        return(<BookmarkRemoveIcon/>)
                     }
                     default: return(<DoneIcon/>)
+                }
+            }
+            default: return(<DoneIcon/>)
+        }
+    }
+
+    const getTooltipLabel = (notificationData: {variant: 'friendRequest'|'shareTagRequest', action: 'accept'|'ignore'|'delete'}) => {
+        switch(notificationData.variant){
+            case('friendRequest'):{
+                switch(notificationData.action){
+                    case('accept'):{
+                        return("Accept friendship request")
+                    }
+                    case('ignore'):{
+                        return("Set notification as read")
+                    }
+                    case('delete'):{
+                        return("Delete notification")
+                    }
+                    default: return("") // Tooltip will not be displayed if label === ""
+                }
+            }
+            case('shareTagRequest'):{
+                switch(notificationData.action){
+                    case('accept'):{
+                        return("Add tag")
+                    }
+                    case('ignore'):{
+                        return("Set notification as read")
+                    }
+                    case('delete'):{
+                        return("Delete notification")
+                    }
+                    default: return("") // Tooltip will not be displayed if label === ""
                 }
             }
             default: return(<DoneIcon/>)

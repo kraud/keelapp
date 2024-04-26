@@ -70,6 +70,7 @@ export type NotificationData = {
     // DISMISSED: true => read => NO badge on avatar (ignored, but NOT deleted)
     // if accepted => we delete notification
     dismissed: boolean,
+    notificationSender?: UserData // only present in BE response, not when creating the Notification
 } & (FriendRequestData | ShareTagRequestData)
 
 type FriendRequestData = {
@@ -85,7 +86,8 @@ type ShareTagRequestData = {
     content: {
         requesterId: string,
         tagId: string,
-    }
+    },
+    notificationTag?: TagData
 }
 
 export type FriendshipData = {

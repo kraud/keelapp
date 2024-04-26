@@ -3,13 +3,20 @@ const asyncHandler = require('express-async-handler')
 const Notification = require('../models/notificationModel')
 const mongoose = require("mongoose");
 const User = require("../models/userModel");
-const Word = require("../models/wordModel");
+const Tag = require("../models/tagModel");
 
 // @desc    Get Notifications
 // @route   GET /api/getNotifications
 // @access  Private
 const getNotificationsByUserId = asyncHandler(async (req, res) => {
-    await Notification.find({ user: req.user.id})
+
+    const request = {
+        query: {
+            user: req.user.id
+        }
+    }
+
+    await getNotificationDataByRequest(request)
         .then((data => {
             if(data){
                 let dismissedNotifications = [];
@@ -28,32 +35,6 @@ const getNotificationsByUserId = asyncHandler(async (req, res) => {
                 res.status(200).json(results)
             }
         }))
-
-    // const request = {
-    //     query: {
-    //         user: req.user.id
-    //     }
-    // }
-    //
-    // await getNotificationDataByRequest(request)
-    //     .then((data => {
-    //         if(data){
-    //             let dismissedNotifications = [];
-    //             let unreadNotifications = [];
-    //             (data).map((notification) => {
-    //                 if(notification.dismissed){
-    //                     dismissedNotifications.push(notification)
-    //                 } else {
-    //                     unreadNotifications.push(notification)
-    //                 }
-    //             })
-    //             dismissedNotifications.sort((a,b) => Date.parse(b) - Date.parse(a))
-    //             unreadNotifications.sort((a,b) => Date.parse(b) - Date.parse(a))
-    //             // TODO: new notifications on top, dismissed notifications at the bottom of all new notifications
-    //             const results = unreadNotifications.concat(dismissedNotifications)
-    //             res.status(200).json(results)
-    //         }
-    //     }))
 })
 
 // @desc    Set Notification
@@ -171,23 +152,62 @@ const getNotificationDataByRequest = async (req) => {
                     $and: getMatchQuery(req.query)
                 }
             },
-            // filtering related to data present in tagWord => apply here
             { '$lookup': {
                 'from': User.collection.name,
-                // TODO: this is not working. content.requesterId is probably not correctly used.
                 'let': {'notificationSenderId': '$content.requesterId' }, // from Notification
                 'pipeline': [
                     {'$match': {
                         '$expr': {
-                            '$eq': ['$$notificationSenderId', '$_id']}  // _id from User
+                            '$eq': [
+                                {"$toObjectId": '$$notificationSenderId'},
+                                '$_id'
+                            ]
+                        }  // _id from User
                     }},
+                    { "$project": { "username": 1, "_id": 0}}
                 ],
                 'as': 'notificationSender'
-            }}
+            }},
+            // NB! 'unwind' is here so the result of the join (inside notificationSender) is a single element, and not an array.
+            { '$unwind': '$notificationSender' },
+            { '$lookup': {
+                'from': Tag.collection.name,
+                'let': {'tagIdToShare': '$content.tagId', 'notificationVariant': '$variant' }, // from Notification
+                'pipeline': [
+                    {'$match': {
+                        '$expr': {
+                            // NB! We need this conditional, so we only look up Tag data when document is a shareTagRequest
+                            "$cond": [
+                                { "$eq": ['$$notificationVariant', "shareTagRequest"] },
+                                {
+                                    '$eq': [
+                                        {
+                                            "$toObjectId": '$$tagIdToShare'
+                                        },
+                                        '$_id'
+                                    ]
+                                },
+                                // {},
+                                { "$eq": ['$_id', -1] } // impossible condition, so no Tag will match
+                            ]
+                        }  // _id from Tag
+                    }},
+                    { "$project": { "label": 1, "_id": 0}}
+                ],
+                'as': 'notificationTag'
+            }},
+            {
+                '$unwind': {
+                    path: "$notificationTag",
+                    // this way, when a non-shareTagRequest notification reaches here, and does not match any tag,
+                    // we keep that document in the Notification response list
+                    preserveNullAndEmptyArrays: true
+                }
+            },
         ])
         return(allNotificationData)
     } catch (error){
-        throw new Error("Notification auxiliary function 'getTagDataByRequest' failed")
+        throw new Error("Notification auxiliary function 'getNotificationDataByRequest' failed")
     }
 }
 
