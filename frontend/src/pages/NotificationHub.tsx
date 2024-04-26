@@ -8,7 +8,9 @@ import {NotificationData} from "../ts/interfaces";
 import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import BookmarkAddIcon from '@mui/icons-material/BookmarkAdd';
 import ClearIcon from '@mui/icons-material/Clear';
+import DoneIcon from '@mui/icons-material/Done';
 import NotificationsOffIcon from '@mui/icons-material/NotificationsOff';
 import {updateNotification, getNotifications, deleteNotification} from "../features/notifications/notificationSlice";
 import LinearIndeterminate from "../components/Spinner";
@@ -224,7 +226,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
                                                     color: (notification.dismissed) ?"black" :"#0072CE"
                                                 }}
                                             >
-                                                <PersonAddIcon/>
+                                                {getIcon({variant: notification.variant, action: 'accept'})}
                                             </IconButton>
                                         </Grid>
                                     </Grid>
@@ -249,7 +251,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
                                                     color: (notification.dismissed) ?"black" :"#0072CE"
                                                 }}
                                             >
-                                                <ClearIcon/>
+                                                {getIcon({variant: notification.variant, action: 'delete'})}
                                             </IconButton>
                                         </Grid>
                                     </Grid>
@@ -274,7 +276,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
                                                     color: (notification.dismissed) ?"black" :"#0072CE"
                                                 }}
                                             >
-                                                <NotificationsOffIcon/>
+                                                {getIcon({variant: notification.variant, action: 'ignore'})}
                                             </IconButton>
                                         </Grid>
                                     </Grid>
@@ -317,7 +319,41 @@ export const NotificationHub = (props: NotificationHubProps) => {
                 break
             }
             // TODO: shareTagRequest
-            default: return(null)
+            default: return null
+        }
+    }
+
+    const getIcon = (notificationData: {variant: 'friendRequest'|'shareTagRequest', action: 'accept'|'ignore'|'delete'}) => {
+        switch(notificationData.variant){
+            case('friendRequest'):{
+                switch(notificationData.action){
+                    case('accept'):{
+                        return(<PersonAddIcon/>)
+                    }
+                    case('ignore'):{
+                        return(<NotificationsOffIcon/>)
+                    }
+                    case('delete'):{
+                        return(<ClearIcon/>)
+                    }
+                    default: return(<DoneIcon/>)
+                }
+            }
+            case('shareTagRequest'):{
+                switch(notificationData.action){
+                    case('accept'):{
+                        return(<BookmarkAddIcon/>)
+                    }
+                    case('ignore'):{
+                        return(<NotificationsOffIcon/>)
+                    }
+                    case('delete'):{
+                        return(<ClearIcon/>)
+                    }
+                    default: return(<DoneIcon/>)
+                }
+            }
+            default: return(<DoneIcon/>)
         }
     }
 

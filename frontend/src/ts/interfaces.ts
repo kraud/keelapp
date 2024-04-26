@@ -83,8 +83,8 @@ type FriendRequestData = {
 type ShareTagRequestData = {
     variant: "shareTagRequest"
     content: {
-        tagId: string,
         requesterId: string,
+        tagId: string,
     }
 }
 
