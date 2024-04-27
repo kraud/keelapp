@@ -57,13 +57,6 @@ const createTag = async (tag: TagData, token: any) => {
         }
     }
     const response = await axios.post(API_URL, tag, config)
-    // NOT WORKING
-    //     .then((info) => {
-    //     // call to create tagWord
-    //     console.log('info.data from frontend response:', info.data)
-    //     return(info.data)
-    // })
-    // const response = await axios.post(API_URL, tag, config)
     return(response.data)
 }
 
@@ -114,8 +107,19 @@ const filterTags = async (token: any, request: TagData) => {
     return(response.data)
 }
 
+const addExternalTag = async (token: any, tagId: string) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+    const response = await axios.get(`${API_URL}/addExternalTag/${tagId}`, config)
+    return(response.data)
+}
+
 const tagService = {
-    getUserTags, searchTags, getTagById, createTag, deleteTagById, updateTagById, getTagWordsAmount, getOtherUserTags, filterTags
+    getUserTags, searchTags, getTagById, createTag, deleteTagById, updateTagById, getTagWordsAmount, getOtherUserTags,
+    filterTags, addExternalTag
 }
 
 export default tagService

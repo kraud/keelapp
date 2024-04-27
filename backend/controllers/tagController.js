@@ -119,6 +119,13 @@ const getTagById = asyncHandler(async (req, res) => {
     res.status(200).json(singleTagData[0])
 })
 
+// @desc    Get tag by tagId
+// @route   GET /api/tags  // TODO: should this be a POST? Return data would match (list of words)
+// @access  Private
+const addExternalTag = asyncHandler(async (req, res) => {
+    const tagId = req.params.id
+})
+
 // @desc    Create Tag
 // @route   POST /api/tags
 // @access  Private
@@ -448,5 +455,6 @@ module.exports = {
     updateTag,
     getAmountByTag,
     getOtherUserTags,
-    getTagDataByRequest
+    getTagDataByRequest,
+    addExternalTag
 }

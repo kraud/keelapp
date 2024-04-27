@@ -189,6 +189,26 @@ export const getAmountByTag = createAsyncThunk(`words/getAmountByTag`, async (id
     }
 })
 
+
+
+// Get full tag data by its id
+export const acceptExternalTag = createAsyncThunk(`tags/addExternalTag`, async (tagId: string, thunkAPI) => {
+    try {
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await tagService.addExternalTag(token, tagId)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
 export const tagSlice = createSlice({
     name: 'tag',
     initialState,
@@ -328,6 +348,19 @@ export const tagSlice = createSlice({
                 state.currentTagAmountWords = (action.payload)
             })
             .addCase(getAmountByTag.rejected, (state, action) => {
+                state.isLoadingTags = false
+                state.isError = true
+                state.message = action.payload as string
+            })
+            .addCase(acceptExternalTag.pending, (state) => {
+                state.isLoadingTags = true
+            })
+            .addCase(acceptExternalTag.fulfilled, (state, action) => {
+                state.isLoadingTags = false
+                state.isSuccessTags = true
+                // state.currentTagAmountWords = (action.payload) // where will we use the returned list? words[]?
+            })
+            .addCase(acceptExternalTag.rejected, (state, action) => {
                 state.isLoadingTags = false
                 state.isError = true
                 state.message = action.payload as string

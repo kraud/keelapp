@@ -312,7 +312,10 @@ export const NotificationHub = (props: NotificationHubProps) => {
                 )
                 break
             }
-            // TODO: shareTagRequest
+            case('shareTagRequest'):{
+
+                break
+            }
             default: return null
         }
     }
