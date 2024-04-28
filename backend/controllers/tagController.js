@@ -119,11 +119,23 @@ const getTagById = asyncHandler(async (req, res) => {
     res.status(200).json(singleTagData[0])
 })
 
-// @desc    Get tag by tagId
-// @route   GET /api/tags  // TODO: should this be a POST? Return data would match (list of words)
+// @desc    Copies the tag and words data into this account (alongside the TagWord documents).
+// @route   POST /api/tags
 // @access  Private
 const addExternalTag = asyncHandler(async (req, res) => {
     const tagId = req.params.id
+    const tagData = await Tag.findById(tagId, {_id: 0, createdAt: 0, updatedAt: 0, __v: 0})
+    const tagWordData = await TagWord.find({ tagId: tagId}, {_id: 0, createdAt: 0, updatedAt: 0, __v: 0})
+        .then(async (tagWordList) => {
+            const wordIdList = tagWordList.map((tagWordItem) => {
+                return(tagWordItem.wordId)
+            })
+            const wordData = await Word.find({_id: {$in: wordIdList}}, {_id: 0, createdAt: 0, updatedAt: 0, __v: 0})
+
+            Word.insertMany(wordData)
+            TagWord.insertMany(wordData)
+            Tag.create(tagData)
+        })
 })
 
 // @desc    Create Tag

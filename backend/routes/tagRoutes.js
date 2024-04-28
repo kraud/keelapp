@@ -11,7 +11,7 @@ router.get('/getOtherUserTags', protect, getOtherUserTags)
 router.get('/searchTags', protect, searchTags)
 router.get('/filterTags', protect, getTagDataByRequest) // TODO: this should be removed? Double check
 router.get('/:id', protect, getTagById)
-router.get('/addExternalTag/:id', protect, addExternalTag) // should this be a POST? Return data would match
+router.post('/addExternalTag/:id', protect, addExternalTag)
 router.get('/getAmountByTag/:id', protect, getAmountByTag)
 router.post('/', protect, createTag)
 router.delete('/:id', protect, deleteTag)

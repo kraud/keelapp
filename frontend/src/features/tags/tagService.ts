@@ -113,7 +113,7 @@ const addExternalTag = async (token: any, tagId: string) => {
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.get(`${API_URL}/addExternalTag/${tagId}`, config)
+    const response = await axios.post(`${API_URL}/addExternalTag/${tagId}`, config)
     return(response.data)
 }
 
