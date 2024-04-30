@@ -189,8 +189,6 @@ export const getAmountByTag = createAsyncThunk(`words/getAmountByTag`, async (id
     }
 })
 
-
-
 // Get full tag data by its id
 export const acceptExternalTag = createAsyncThunk(`tags/addExternalTag`, async (tagId: string, thunkAPI) => {
     try {

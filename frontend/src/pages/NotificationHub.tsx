@@ -20,6 +20,7 @@ import {updateFriendship, getFriendshipsByUserId} from "../features/friendships/
 import {toast} from "react-toastify";
 import {acceptFriendRequest, stringAvatar} from "../components/generalUseFunctions";
 import {useNavigate, useParams} from "react-router-dom";
+import {acceptExternalTag} from "../features/tags/tagSlice";
 
 interface RouterNotificationProps{
     userId: string
@@ -313,7 +314,8 @@ export const NotificationHub = (props: NotificationHubProps) => {
                 break
             }
             case('shareTagRequest'):{
-
+                //@ts-ignore
+                dispatch(acceptExternalTag(notification.content.tagId))
                 break
             }
             default: return null
