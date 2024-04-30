@@ -665,59 +665,61 @@ const deleteWord = asyncHandler(async (req, res) => {
 // @route   DELETE /api/words/deleteMany
 // @access  Private
 const deleteManyWords = asyncHandler(async (req, res) => {
-    const wordObjectIds = req.body.wordsId.map(wordId => (mongoose.Types.ObjectId(wordId)))
-    const request = {
-        _id: {
-            "$in": wordObjectIds
-        }
-    }
-    Word.find(request).then(wordsToDelete => { // TODO: rename wordsToDelete
-        if(wordsToDelete !== undefined){
-            if(wordsToDelete.length !== req.body.wordsId.length){
-                res.status(400)
-                throw new Error("Some words are missing")
-            }
-        }
-        // Make sure the logged-in user matches the word user
-        let allowedToDelete = true
-        wordsToDelete.forEach((wordToDelete) => {
-            if((wordToDelete.user).toString() !== req.user.id){
-                allowedToDelete = false
-            }
-        })
-        if(!allowedToDelete){
-            res.status(401)
-            throw new Error('User not authorized to delete at least one of the words')
-        }
-    })
 
     // Check for user
     if(!req.user){
         res.status(401)
         throw new Error('User not found')
     }
-
-    // TODO: move this inside WordFind response?
-    Word.deleteMany(request)
-        .then(async (wordDeletionData) => {
-            const removeQuery = {
-                wordId: {
-                    "$in": wordObjectIds
-                }
+    const wordObjectIds = req.body.wordsId.map(wordId => (mongoose.Types.ObjectId(wordId)))
+    const request = {
+        _id: {
+            "$in": wordObjectIds
+        }
+    }
+    Word.find(request).then((wordsToDelete) => {
+        if(wordsToDelete !== undefined){
+            if(wordsToDelete.length !== req.body.wordsId.length){
+                res.status(400)
+                throw new Error("Some words are missing")
             }
-            TagWord.deleteMany(removeQuery)
-                .then((tagWordDeletionData) => {
-                    res.status(200).json(tagWordDeletionData)
+            // Make sure the logged-in user matches the word user
+            let allowedToDelete = true
+            wordsToDelete.forEach((wordToDelete) => {
+                if((wordToDelete.user).toString() !== req.user.id){
+                    allowedToDelete = false
+                }
+            })
+            if(!allowedToDelete){
+                res.status(401)
+                throw new Error('User not authorized to delete at least one of the words')
+            }
+
+            Word.deleteMany(request)
+                .then(async (wordDeletionData) => {
+                    const removeQuery = {
+                        wordId: {
+                            "$in": wordObjectIds
+                        }
+                    }
+                    TagWord.deleteMany(removeQuery)
+                        .then((tagWordDeletionData) => {
+                            res.status(200).json(tagWordDeletionData)
+                        })
+                        .catch(function (error) {
+                            res.status(400).json(error)
+                            throw new Error("DeleteManyWords function. Tag-Word (from word) deleteMany failed")
+                        })
                 })
                 .catch(function (error) {
                     res.status(400).json(error)
-                    throw new Error("DeleteManyWords function. Tag-Word (from word) deleteMany failed")
+                    throw new Error("DeleteManyWords function. Word deleteMany failed")
                 })
-        })
-        .catch(function (error) {
-            res.status(400).json(error)
-            throw new Error("DeleteManyWords function. Word deleteMany failed")
-        })
+        } else {
+            res.status(400)
+            throw new Error("There was an error when searching for the required words.")
+        }
+    })
 })
 
 // @desc    Get a list of Words that match a search query in any of its translations

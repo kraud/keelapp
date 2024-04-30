@@ -124,9 +124,8 @@ const getTagById = asyncHandler(async (req, res) => {
 // @access  Private
 const addExternalTag = asyncHandler(async (req, res) => {
     const tagId = req.body.tagId
-    console.log('tagId', tagId)
     // From the tagId we get all the matching TagWord items
-    const tagWordData = await TagWord.find({tagId: tagId}, {_id: 0, createdAt: 0, updatedAt: 0, __v: 0})
+    TagWord.find({tagId: tagId}, {_id: 0, createdAt: 0, updatedAt: 0, __v: 0})
         .then(async (tagWordList) => {
             const tagData = await Tag.findById(tagId, {_id: 0, createdAt: 0, updatedAt: 0, __v: 0})
             // from the TagWordItems we extract all the wordIds
@@ -134,17 +133,17 @@ const addExternalTag = asyncHandler(async (req, res) => {
                 return(tagWordItem.wordId)
             })
             // we then create the new cloned tag, from the original's data
-            const clonedTag = await Tag.create({
+            return await Tag.create({
                 ...(tagData.toObject()),
                 author: mongoose.Types.ObjectId(req.user.id) // the only change is that the tag now has a new author
             }).then(async (tagCloneData) => {
                 // once the cloned tag has been created, we get all the word data by filtering through their ids.
-                const originalWordData = await Word.find(
+                return await Word.find(
                     {_id: {$in: wordIdList}},
                     {_id: 0, createdAt: 0, updatedAt: 0, __v: 0}
-                ).then((completeOriginalWordData) => {
+                ).then(async (completeOriginalWordData) => {
                     // we then create the new cloned words, from the original's data
-                    Word.insertMany(
+                    return await Word.insertMany(
                         (completeOriginalWordData).map((originalWordItem) => {
                             return({
                                 ...originalWordItem.toObject(),
@@ -160,71 +159,16 @@ const addExternalTag = asyncHandler(async (req, res) => {
                             })
                         })
                         return TagWord.insertMany(newTagWordList).then((tagWordResponse) => {
-                            console.log('tagWordResponse', tagWordResponse)
-                            res.status(200)
+                            res.status(200).json({
+                                clonedTag: tagCloneData,
+                                clonedWords: newClonedWordData,
+                                clonedTagWords: tagWordResponse
+                            })
                         })
                     })
                 })
             })
         })
-            // const steps = [0,1,2] // we create an unrelated array, on which to run Promise.map
-            // Promise.all(steps.map(async(step) => {
-            //     switch(step){
-            //         case(0):{
-            //             return Word.insertMany(
-            //                 (wordData).map((wordItem) => {
-            //                     return({
-            //                         ...wordItem.toObject(),
-            //                         user: mongoose.Types.ObjectId(req.user.id)
-            //                     })
-            //                 })
-            //             ).then((returnNewTagWordData) => {
-            //                 return TagWord.insertMany(tagWordsItems)
-            //                     // .then((returnNewTagWordData) => {
-            //                         // res.status(200).json({
-            //                         //     ...newWordData.toObject(),
-            //                         //     tagWords: req.body.tags,
-            //                         // })
-            //                     // })
-            //                     .catch((error) => {
-            //                         res.status(400).json(error)
-            //                         throw new Error("Tag-Word insertMany failed")
-            //                     })
-            //             })
-            //             // console.log(
-            //             //     'wordData',
-            //             //     (wordData).map((wordItem) => {
-            //             //         return({
-            //             //             ...wordItem.toObject(),
-            //             //             user: mongoose.Types.ObjectId(req.user.id)
-            //             //         })
-            //             //     })
-            //             // )
-            //             // break
-            //         }
-            //         case(1):{
-            //             // return TagWord.insertMany(tagWordList)
-            //             // console.log('tagWordData',tagWordList)
-            //             // break
-            //         }
-            //         case(2):{
-            //             // TODO: eventually here, we can create the tag without changing the tagId and/or author
-            //             //  so it is possible to partially copy the tag, while still retaining the original author data
-            //             return Tag.create({
-            //                 ...(tagData.toObject()),
-            //                 author: mongoose.Types.ObjectId(req.user.id)
-            //             })
-            //             // console.log('tagData', {...(tagData.toObject()), author: mongoose.Types.ObjectId(req.user.id)})
-            //             // break
-            //         }
-            //         default: return
-            //     }
-            // })).then(async (finishedCopyingResponse) => {
-            //     console.log(finishedCopyingResponse)
-            //     // depending on state of the three items, we return 200/400?
-            //     res.status(200).json(finishedCopyingResponse)
-            //
-            // })
 })
 
 // @desc    Create Tag

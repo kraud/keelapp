@@ -471,6 +471,7 @@ export const Account = (props: AccountProps) => {
                 userList={(tagIdToShare !== "") ?activeFriendships :undefined}
                 onClickUserListSelection={(usersIds: SearchResult[]) => {
                     if((usersIds.length > 0) && (tagIdToShare !== "")){
+                        // TODO: add logic for loading bar and closing modal once notification has been sent.
                         sendShareTagNotification(usersIds, tagIdToShare)
                     }
                 }}

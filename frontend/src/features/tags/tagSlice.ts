@@ -1,5 +1,5 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {SearchResult, TagData} from "../../ts/interfaces";
+import {SearchResult, TagData, WordDataBE} from "../../ts/interfaces";
 import tagService from "./tagService";
 
 interface tagSliceState {
@@ -7,6 +7,7 @@ interface tagSliceState {
     otherUserTags: SearchResult[],
     fullTagData: TagData | undefined,
     currentTagAmountWords: number,
+    clonedTagResponse: { clonedTag: TagData, clonedWords: WordDataBE[] } | undefined
 
     isLoadingTags: boolean,
     isSuccessTags: boolean,
@@ -18,6 +19,7 @@ const initialState: tagSliceState = {
     tags: [],
     otherUserTags: [],
     fullTagData: undefined,
+    clonedTagResponse: undefined,
     currentTagAmountWords: 0,
     isLoadingTags: false,
     isSuccessTags: false,
@@ -218,6 +220,12 @@ export const tagSlice = createSlice({
                 fullTagData: initialState.fullTagData
             })
         },
+        clearClonedTagData: (state: any) => {
+            return({
+                ...state,
+                clonedTagResponse: initialState.clonedTagResponse
+            })
+        },
         clearFullTagDataWords: (state: any) => {
             return({
                 ...state,
@@ -356,7 +364,7 @@ export const tagSlice = createSlice({
             .addCase(acceptExternalTag.fulfilled, (state, action) => {
                 state.isLoadingTags = false
                 state.isSuccessTags = true
-                // state.currentTagAmountWords = (action.payload) // where will we use the returned list? words[]?
+                state.clonedTagResponse = {clonedTag: (action.payload).clonedTag, clonedWords: (action.payload).clonedWords}
             })
             .addCase(acceptExternalTag.rejected, (state, action) => {
                 state.isLoadingTags = false
@@ -366,5 +374,5 @@ export const tagSlice = createSlice({
     }
 })
 
-export const {reset, clearFullTagData, clearOtherUserTags, clearFullTagDataWords} = tagSlice.actions
+export const {reset, clearFullTagData, clearOtherUserTags, clearFullTagDataWords, clearClonedTagData} = tagSlice.actions
 export default tagSlice.reducer

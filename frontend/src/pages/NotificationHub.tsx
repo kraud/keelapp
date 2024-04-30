@@ -20,7 +20,7 @@ import {updateFriendship, getFriendshipsByUserId} from "../features/friendships/
 import {toast} from "react-toastify";
 import {acceptFriendRequest, stringAvatar} from "../components/generalUseFunctions";
 import {useNavigate, useParams} from "react-router-dom";
-import {acceptExternalTag} from "../features/tags/tagSlice";
+import {acceptExternalTag, clearClonedTagData} from "../features/tags/tagSlice";
 
 interface RouterNotificationProps{
     userId: string
@@ -34,6 +34,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const {user} = useSelector((state: any) => state.auth)
+    const {clonedTagResponse, isLoadingTags, isSuccessTags} = useSelector((state: any) => state.tags)
     const {isSuccessFriendships, isLoadingFriendships, friendships} = useSelector((state: any) => state.friendships)
     const {notifications, isLoadingNotifications, isSuccessNotifications} = useSelector((state: any) => state.notifications)
     // @ts-ignore
@@ -41,6 +42,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
 
     const [changedNotificationList, setChangedNotificationList] = useState(false)
     const [changedFriendshipList, setChangedFriendshipList] = useState(false)
+    const [notificationInProcess, setNotificationInProcess] = useState("")
 
     useEffect(() => {
         if(userId !== user._id){
@@ -69,6 +71,19 @@ export const NotificationHub = (props: NotificationHubProps) => {
             toast.info("Friend request accepted")
         }
     }, [isLoadingFriendships, changedNotificationList])
+
+    // this is related to dealing with the state after accepting a shareTagRequest
+    useEffect(() => {
+        // this will only be true if the tag request has been accepted and successfully cloned
+        if((notificationInProcess !== "") && (clonedTagResponse !== undefined) && (!isLoadingTags) && (isSuccessTags)){
+            // now we can delete the notification from the list
+            onClickDelete(notificationInProcess)
+            setNotificationInProcess("")
+            // we don't need the cloned tag data anymore, so we reset the state
+            dispatch(clearClonedTagData())
+            toast.success(`Tag was added successfully to your account!`)
+        }
+    }, [clonedTagResponse, isLoadingTags, isSuccessTags, notificationInProcess])
 
     const getDescription = (notification: NotificationData) => {
         switch (notification.variant) {
@@ -240,7 +255,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
                                             item={true}
                                         >
                                             <IconButton
-                                                onClick={() => onClickDelete(notification)}
+                                                onClick={() => onClickDelete(notification._id)}
                                                 color={"primary"}
                                                 sx={{
                                                     color: (notification.dismissed) ?"black" :"#0072CE"
@@ -286,10 +301,10 @@ export const NotificationHub = (props: NotificationHubProps) => {
         }
     }
 
-    const onClickDelete = (notification: NotificationData) => {
+    const onClickDelete = (notificationId: string) => {
         setChangedNotificationList(true)
         // @ts-ignore
-        dispatch(deleteNotification(notification._id))
+        dispatch(deleteNotification(notificationId))
     }
 
     const onClickAccept = (notification: NotificationData) => {
@@ -314,6 +329,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
                 break
             }
             case('shareTagRequest'):{
+                setNotificationInProcess(notification._id)
                 //@ts-ignore
                 dispatch(acceptExternalTag(notification.content.tagId))
                 break
@@ -375,7 +391,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
             case('shareTagRequest'):{
                 switch(notificationData.action){
                     case('accept'):{
-                        return("Add tag")
+                        return("Accept tag")
                     }
                     case('ignore'):{
                         return("Set notification as read")
@@ -440,7 +456,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
                         Notifications:
                     </Typography>
                 </Grid>
-                {(isLoadingNotifications) && <LinearIndeterminate/>}
+                {(isLoadingNotifications || isLoadingTags) && <LinearIndeterminate/>}
                 {(notifications.length > 0)
                     ?
                         getListOfNotification()

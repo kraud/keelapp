@@ -4,7 +4,7 @@ import globalTheme from "../theme/theme";
 import {useNavigate, useParams, useSearchParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
-import {deleteWordById, getWordsSimplified} from "../features/words/wordSlice";
+import {deleteManyWordsById, deleteWordById, getWordsSimplified} from "../features/words/wordSlice";
 import {DnDLanguageOrderSelector} from "../components/DnDLanguageOrderSelector";
 import {Lang, NounCases, PartOfSpeech} from "../ts/enums";
 import {TranslationsTable} from "../components/table/TranslationsTable";
@@ -186,13 +186,14 @@ export function Review(){
     const deleteSelectedRows = (rowSelection: unknown) => {
         // rowSelection format:
         // { selectedRowIndex: true } // TODO: should we change it to saving the row info instead?
+        let wordIdsToDelete: string[] = []
         // @ts-ignore
         Object.keys(rowSelection).forEach((selectionDataIndex: string) => {
-            const rowData = wordsSimple.words[parseInt(selectionDataIndex)]
-            //@ts-ignore
-            dispatch(deleteWordById(rowData.id)) // deletes whole word
-            setFinishedDeleting(false)
+            wordIdsToDelete.push(wordsSimple.words[parseInt(selectionDataIndex)].id)
         })
+        // @ts-ignore
+        dispatch(deleteManyWordsById(wordIdsToDelete))
+        setFinishedDeleting(false)
     }
 
     useEffect(() => {
