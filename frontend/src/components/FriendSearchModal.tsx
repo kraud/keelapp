@@ -246,6 +246,10 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                 <Grid
                                     item={true}
                                 >
+                                    {/*
+                                        TODO: this should should also filter users which already have a shareTagRequest
+                                         from current user, related to this tagId
+                                         */}
                                     <AutocompleteSearch
                                         options={getListOfAvailableUsers({
                                             listType: 'SearchResults',
@@ -300,6 +304,10 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                     <Grid
                                         item={true}
                                     >
+                                        {/*
+                                        TODO: this should should also filter users which already have a shareTagRequest
+                                         from current user, related to this tagId
+                                         */}
                                         <FriendList
                                             friendList={getListOfAvailableUsers({
                                                 listType: 'Friendships',
@@ -308,7 +316,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                                 currentUserId: user._id
                                             }) as FriendshipData[]}
                                             onClickAction={(friendshipItem: FriendshipData) => {
-                                                // we add the other user display in the frienship to our selectedUsersList
+                                                // we add the other user display in the friendship to our selectedUsersList
                                                 // we don't check for duplicates before adding, because the displayed userList should already be filtered
                                                 const otherUser = getOtherUserDataFromFriendship(friendshipItem, user._id)
                                                 setSelectedUsersList((prevState: SearchResult[]) => {

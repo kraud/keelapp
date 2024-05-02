@@ -155,11 +155,13 @@ export const Account = (props: AccountProps) => {
 
     const [sendingNotification, setSendingNotification] = useState(false)
 
-    // this is related to dealing with the state after accepting a shareTagRequest
+    // this is related to dealing with the state after sending a shareTagRequest
     useEffect(() => {
         // this will only be true if the share-tag-request has been created and sent to the other user
         if((sendingNotification) && (notificationResponse.length >0) && (!isLoadingNotifications) && (isSuccessNotifications)){
             setSendingNotification(false)
+            setTagIdToShare("")
+            setOpenFriendsModal(false)
             toast.success(`Request to share tag was sent successfully!`)
         }
     }, [notificationResponse, isLoadingNotifications, isSuccessNotifications, sendingNotification])
@@ -483,7 +485,6 @@ export const Account = (props: AccountProps) => {
                 userList={(tagIdToShare !== "") ?activeFriendships :undefined}
                 onClickUserListSelection={(usersIds: SearchResult[]) => {
                     if((usersIds.length > 0) && (tagIdToShare !== "")){
-                        // TODO: add logic for loading bar and closing modal once notification has been sent.
                         setSendingNotification(true)
                         sendShareTagNotification(usersIds, tagIdToShare)
                     }
