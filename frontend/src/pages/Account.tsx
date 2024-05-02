@@ -19,7 +19,7 @@ import {getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
 import {FriendshipData, SearchResult, TagData} from "../ts/interfaces";
 import {clearUserResultData} from "../features/users/userSlice";
 import AddCommentIcon from '@mui/icons-material/AddComment';
-import {getTagsForCurrentUser} from "../features/tags/tagSlice";
+import {clearClonedTagData, getTagsForCurrentUser} from "../features/tags/tagSlice";
 import {FriendList, ChipList} from "../components/GeneralUseComponents";
 import {createNotification} from "../features/notifications/notificationSlice";
 
@@ -40,6 +40,7 @@ export const Account = (props: AccountProps) => {
     const {user, isLoadingAuth, isSuccess} = useSelector((state: any) => state.auth)
     const {friendships, isLoadingFriendships} = useSelector((state: any) => state.friendships)
     const {tags, isLoadingTags} = useSelector((state: any) => state.tags)
+    const {notificationResponse, isSuccessNotifications, isLoadingNotifications} = useSelector((state: any) => state.notifications)
 
     const [allTags, setAllTags] = useState<TagData[]>([])
     const [activeFriendships, setActiveFriendships] = useState<FriendshipData[]>([])
@@ -151,6 +152,17 @@ export const Account = (props: AccountProps) => {
             setReloadTagList(false)
         }
     },[openTagModal, reloadTagList])
+
+    const [sendingNotification, setSendingNotification] = useState(false)
+
+    // this is related to dealing with the state after accepting a shareTagRequest
+    useEffect(() => {
+        // this will only be true if the share-tag-request has been created and sent to the other user
+        if((sendingNotification) && (notificationResponse.length >0) && (!isLoadingNotifications) && (isSuccessNotifications)){
+            setSendingNotification(false)
+            toast.success(`Request to share tag was sent successfully!`)
+        }
+    }, [notificationResponse, isLoadingNotifications, isSuccessNotifications, sendingNotification])
 
     return(
         <Grid
@@ -472,9 +484,11 @@ export const Account = (props: AccountProps) => {
                 onClickUserListSelection={(usersIds: SearchResult[]) => {
                     if((usersIds.length > 0) && (tagIdToShare !== "")){
                         // TODO: add logic for loading bar and closing modal once notification has been sent.
+                        setSendingNotification(true)
                         sendShareTagNotification(usersIds, tagIdToShare)
                     }
                 }}
+                loadingOnClickUserListSelection={isLoadingNotifications}
             />
             <TagInfoModal
                 open={openTagModal}

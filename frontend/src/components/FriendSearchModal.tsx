@@ -46,6 +46,7 @@ type FriendSearchModalProps = {
 type MultipleUserSelection ={
     userList?: FriendshipData[]
     onClickUserListSelection: (usersId: SearchResult[]) => void // this should also be optional?
+    loadingOnClickUserListSelection?: boolean
 }
 
 export const FriendSearchModal = (props: FriendSearchModalProps) => {
@@ -318,6 +319,15 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                             disableNameOnClick={true}
                                         />
                                     </Grid>
+                                    {(props.loadingOnClickUserListSelection!!) &&
+                                        <Grid
+                                            container={true}
+                                            justifyContent={"space-around"}
+                                            item={true}
+                                        >
+                                            <LinearIndeterminate/>
+                                        </Grid>
+                                    }
                                     <Grid
                                         container={true}
                                         justifyContent={"space-around"}

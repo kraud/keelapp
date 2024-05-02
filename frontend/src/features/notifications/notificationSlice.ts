@@ -4,6 +4,7 @@ import {NotificationData} from "../../ts/interfaces";
 
 interface notificationSliceState {
     notifications: any[],
+    notificationResponse: any[], // when sending a notification, if successfully created, they will be stored here
     isError: boolean,
     isSuccessNotifications: boolean,
     isLoadingNotifications: boolean,
@@ -12,6 +13,7 @@ interface notificationSliceState {
 
 const initialState: notificationSliceState = {
     notifications: [],
+    notificationResponse: [],
     isError: false,
     isSuccessNotifications: false,
     isLoadingNotifications: false,
@@ -117,6 +119,7 @@ export const notificationSlice = createSlice({
             .addCase(createNotification.fulfilled, (state, action) => {
                 state.isLoadingNotifications = false
                 state.isSuccessNotifications = true
+                state.notificationResponse = [action.payload]
             })
             .addCase(createNotification.rejected, (state, action) => {
                 state.isLoadingNotifications = false
