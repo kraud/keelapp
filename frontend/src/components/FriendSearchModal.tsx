@@ -5,7 +5,7 @@ import {useEffect, useState} from "react";
 import React from "react";
 import {AutocompleteSearch} from "./AutocompleteSearch";
 import {getUserById, searchUser} from "../features/users/userSlice";
-import {FriendshipData, SearchResult, TagData} from "../ts/interfaces";
+import {FriendshipData, NotificationData, SearchResult, TagData} from "../ts/interfaces";
 import {useDispatch, useSelector} from "react-redux";
 import {UserBadge} from "./UserBadge";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
@@ -15,7 +15,11 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
 import {toast} from "react-toastify";
 import LinearIndeterminate from "./Spinner";
-import {createNotification, deleteNotification} from "../features/notifications/notificationSlice";
+import {
+    createNotification,
+    deleteNotification,
+    getNotificationsUserAsRequester
+} from "../features/notifications/notificationSlice";
 import {
     createFriendship,
     deleteFriendship,
@@ -69,12 +73,13 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
     const dispatch = useDispatch()
     const {user} = useSelector((state: any) => state.auth)
     const {userList, userResult, isLoadingUser} = useSelector((state: any) => state.user)
-    const {isLoadingNotifications, isSuccessNotifications} = useSelector((state: any) => state.notifications)
+    const {requesterNotifications, isLoadingNotifications, isSuccessNotifications} = useSelector((state: any) => state.notifications)
     const {isSuccessFriendships, isLoadingFriendships, friendships} = useSelector((state: any) => state.friendships)
     const [selectedUser, setSelectedUser] = useState<SearchResult | null>(null)
     // this will only be relevant when selecting multiple friends to share them something
     const [selectedUsersList, setSelectedUsersList] = useState<SearchResult[]>([])
-
+    // when sharing a tag, we need to filter those users which already have a shareTagRequest notification from the current user to share that tag
+    const [filteredRequesterNotificationsOtherUserId, setFilteredRequesterNotificationsOtherUsersId] = useState<string[]>([])
 
     const handleOnClose = () => {
         setSelectedUser(null)
@@ -86,6 +91,32 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
     const [sentRequest, setSentRequest] = useState(false)
     const [cancelledRequest, setCancelledRequest] = useState(false)
     const [deletedRequest, setDeletedRequest] = useState(false)
+
+
+    useEffect(() => {
+        // this will only be triggered when the modal is opened as part of the share-tag process
+        if((props.userList !== undefined) && (props.userList.length > 0)){
+            // dispatch action to get all notifications that current user is part of as requester
+            //@ts-ignore
+            dispatch(getNotificationsUserAsRequester())
+        }
+    },[props.userList])
+
+    useEffect(() => {
+        if(requesterNotifications.length > 0){
+            let matchingNotifications: string[] = []
+            requesterNotifications.forEach((notification: NotificationData) => {
+                if(
+                    (notification.variant == 'shareTagRequest') && // TODO: will we need this sort of filtering for other types of notifications?
+                    (notification.content.tagId == fullTagData._id) // fullTagData should match with the last Tag accessed
+                ){
+                    // we force string, because it can also be string[] when creating a notifications
+                    matchingNotifications.push(notification.user as string)
+                }
+            })
+            setFilteredRequesterNotificationsOtherUsersId(matchingNotifications)
+        }
+    },[requesterNotifications])
 
     useEffect(() => {
         if(props.defaultUserId !== undefined){
@@ -246,15 +277,12 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                 <Grid
                                     item={true}
                                 >
-                                    {/*
-                                        TODO: this should should also filter users which already have a shareTagRequest
-                                         from current user, related to this tagId
-                                         */}
                                     <AutocompleteSearch
                                         options={getListOfAvailableUsers({
                                             listType: 'SearchResults',
                                             rawList: userList,
-                                            selectedUsersList: selectedUsersList
+                                            selectedUsersList: selectedUsersList,
+                                            userIdsToIgnore: filteredRequesterNotificationsOtherUserId
                                         }) as SearchResult[]}
                                         getOptions={(inputValue: string) => {
                                             // @ts-ignore
@@ -304,15 +332,12 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                     <Grid
                                         item={true}
                                     >
-                                        {/*
-                                        TODO: this should should also filter users which already have a shareTagRequest
-                                         from current user, related to this tagId
-                                         */}
                                         <FriendList
                                             friendList={getListOfAvailableUsers({
                                                 listType: 'Friendships',
                                                 rawList: props.userList,
                                                 selectedUsersList: selectedUsersList,
+                                                userIdsToIgnore: filteredRequesterNotificationsOtherUserId,
                                                 currentUserId: user._id
                                             }) as FriendshipData[]}
                                             onClickAction={(friendshipItem: FriendshipData) => {

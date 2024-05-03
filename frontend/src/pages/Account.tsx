@@ -21,7 +21,7 @@ import {clearUserResultData} from "../features/users/userSlice";
 import AddCommentIcon from '@mui/icons-material/AddComment';
 import {clearClonedTagData, getTagsForCurrentUser} from "../features/tags/tagSlice";
 import {FriendList, ChipList} from "../components/GeneralUseComponents";
-import {createNotification} from "../features/notifications/notificationSlice";
+import {clearRequesterNotifications, createNotification} from "../features/notifications/notificationSlice";
 
 interface AccountProps {
 
@@ -160,6 +160,7 @@ export const Account = (props: AccountProps) => {
         // this will only be true if the share-tag-request has been created and sent to the other user
         if((sendingNotification) && (notificationResponse.length >0) && (!isLoadingNotifications) && (isSuccessNotifications)){
             setSendingNotification(false)
+            dispatch(clearRequesterNotifications())
             setTagIdToShare("")
             setOpenFriendsModal(false)
             toast.success(`Request to share tag was sent successfully!`)

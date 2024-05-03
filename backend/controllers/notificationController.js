@@ -37,6 +37,36 @@ const getNotificationsByUserId = asyncHandler(async (req, res) => {
         }))
 })
 
+// @desc    Get Notifications where the current user is the requester
+// @route   GET /api/getNotifications
+// @access  Private
+const getNotificationsByUserIdWhereUserIsRequester = asyncHandler(async (req, res) => {
+
+    const request = {
+        "content.requesterId": req.user.id
+    }
+
+    Notification.find(request)
+        .then((data => {
+            if(data){
+                let dismissedNotifications = [];
+                let unreadNotifications = [];
+                (data).map((notification) => {
+                    if(notification.dismissed){
+                        dismissedNotifications.push(notification)
+                    } else {
+                        unreadNotifications.push(notification)
+                    }
+                })
+                dismissedNotifications.sort((a,b) => Date.parse(b) - Date.parse(a))
+                unreadNotifications.sort((a,b) => Date.parse(b) - Date.parse(a))
+                // TODO: new notifications on top, dismissed notifications at the bottom of all new notifications
+                const results = unreadNotifications.concat(dismissedNotifications)
+                res.status(200).json(results)
+            }
+        }))
+})
+
 // @desc    Set Notification
 // @route   POST /api/
 // @access  Private
@@ -213,6 +243,7 @@ const getNotificationDataByRequest = async (req) => {
 
 module.exports = {
     getNotificationsByUserId,
+    getNotificationsByUserIdWhereUserIsRequester,
     createNotification,
     deleteNotification,
     updateNotification

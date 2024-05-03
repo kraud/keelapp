@@ -23,6 +23,16 @@ const getNotifications = async (token: any) => {
     return(response.data)
 }
 
+const getRequesterNotifications = async (token: any) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+    const response = await axios.get(API_URL+'getRequesterNotifications', config)
+    return(response.data)
+}
+
 const deleteNotificationById = async (token: any, id: string) => {
     const config = {
         headers: {
@@ -44,7 +54,7 @@ const updateNotificationById = async (token: any, updatedData: NotificationData)
 }
 
 const notificationService = {
-    getNotifications, createNotification, deleteNotificationById, updateNotificationById
+    getNotifications, createNotification, deleteNotificationById, updateNotificationById, getRequesterNotifications
 }
 
 export default notificationService

@@ -5,6 +5,7 @@ import {NotificationData} from "../../ts/interfaces";
 interface notificationSliceState {
     notifications: any[],
     notificationResponse: any[], // when sending a notification, if successfully created, they will be stored here
+    requesterNotifications: any[], // when sending a notification, if successfully created, they will be stored here
     isError: boolean,
     isSuccessNotifications: boolean,
     isLoadingNotifications: boolean,
@@ -14,6 +15,7 @@ interface notificationSliceState {
 const initialState: notificationSliceState = {
     notifications: [],
     notificationResponse: [],
+    requesterNotifications: [],
     isError: false,
     isSuccessNotifications: false,
     isLoadingNotifications: false,
@@ -26,6 +28,23 @@ export const getNotifications = createAsyncThunk('notifications/getAllNotificati
         // @ts-ignore
         const token = thunkAPI.getState().auth.user.token
         return await notificationService.getNotifications(token)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+// Get notifications by its userID, where the current user is the one that created the notification
+export const getNotificationsUserAsRequester = createAsyncThunk('notifications/getAllRequesterNotifications', async (_, thunkAPI) => {
+    try {
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await notificationService.getRequesterNotifications(token)
     } catch(error: any) {
         const message = (
                 error.response &&
@@ -97,6 +116,12 @@ export const notificationSlice = createSlice({
     initialState,
     reducers: {
         reset: (state: any) => initialState,
+        clearRequesterNotifications: (state: any) => {
+            return({
+                ...state,
+                requesterNotifications:  initialState.requesterNotifications
+            })
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -109,6 +134,19 @@ export const notificationSlice = createSlice({
                 state.notifications = (action.payload)
             })
             .addCase(getNotifications.rejected, (state, action) => {
+                state.isLoadingNotifications = false
+                state.isError = true
+                state.message = action.payload as string
+            })
+            .addCase(getNotificationsUserAsRequester.pending, (state) => {
+                state.isLoadingNotifications = true
+            })
+            .addCase(getNotificationsUserAsRequester.fulfilled, (state, action) => {
+                state.isLoadingNotifications = false
+                state.isSuccessNotifications = true
+                state.requesterNotifications = (action.payload)
+            })
+            .addCase(getNotificationsUserAsRequester.rejected, (state, action) => {
                 state.isLoadingNotifications = false
                 state.isError = true
                 state.message = action.payload as string
@@ -153,5 +191,5 @@ export const notificationSlice = createSlice({
     }
 })
 
-export const {reset} = notificationSlice.actions
+export const {reset, clearRequesterNotifications} = notificationSlice.actions
 export default notificationSlice.reducer

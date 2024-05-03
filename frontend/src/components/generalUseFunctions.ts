@@ -428,6 +428,7 @@ type SearchResultCase = {
 
 type GetListOfAvailableUsersInput = {
     selectedUsersList: SearchResult[]
+    userIdsToIgnore: string[]
 } & (FriendshipCase | SearchResultCase)
 
 export const getListOfAvailableUsers = (inputData: GetListOfAvailableUsersInput) => {
@@ -439,7 +440,10 @@ export const getListOfAvailableUsers = (inputData: GetListOfAvailableUsersInput)
             let availableFriendships: FriendshipData[] = []
             inputData.rawList.forEach((friendshipItem: FriendshipData) => {
                 const otherUserInFriendship = getOtherUserDataFromFriendship(friendshipItem, inputData.currentUserId)
-                if(!selectedUsersId.includes(otherUserInFriendship._id)){
+                if(
+                    (!selectedUsersId.includes(otherUserInFriendship._id)) &&
+                    (!inputData.userIdsToIgnore.includes(otherUserInFriendship._id))
+                ){
                     availableFriendships.push(friendshipItem)
                 }
             })
@@ -448,7 +452,10 @@ export const getListOfAvailableUsers = (inputData: GetListOfAvailableUsersInput)
         case "SearchResults": {
             let availableUsers: SearchResult[] = []
             inputData.rawList.forEach((searchResultItem: SearchResult) => {
-                if(!selectedUsersId.includes(searchResultItem.id)){
+                if(
+                    (!selectedUsersId.includes(searchResultItem.id)) &&
+                    (!inputData.userIdsToIgnore.includes(searchResultItem.id))
+                ){
                     availableUsers.push(searchResultItem)
                 }
             })
