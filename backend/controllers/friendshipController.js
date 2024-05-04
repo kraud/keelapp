@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler')
 
 const Friendship = require('../models/friendshipModel')
 const User = require("../models/userModel");
+const Notification = require("../models/notificationModel");
 
 // TODO: add parameters to req.query to allow specifying if the friendship is accepter/rejected/etc.
 // @desc    Get all Friendships where the provided userId corresponds with one of the friendship participants' id
@@ -105,6 +106,56 @@ const deleteFriendship = asyncHandler(async (req, res) => {
     res.status(200).json(friendship)
 })
 
+// @desc    Delete Friendship request and related notifications
+// @route   DELETE /api/:id
+// @access  Private
+const deleteFriendshipRequest = asyncHandler(async (req, res) => {
+    const friendship = await Friendship.findById(req.params.id)
+    let otherUserId = ''
+    if(friendship.userIds[0] !== req.user.id){
+        otherUserId = friendship.userIds[0]
+    } else {
+        otherUserId = friendship.userIds[1]
+    }
+
+    if(!friendship){
+        res.status(400)
+        throw new Error("Notification not found")
+    }
+    if(friendship.status === 'accepted'){
+        res.status(400)
+        throw new Error("Can't delete friendship request. Friendship already accepted.")
+    }
+
+    // Check for user
+    if(!req.user){
+        res.status(401)
+        throw new Error('User not found')
+    }
+
+    // Make sure the user trying to delete the friendship is part of the friendship
+    if(!friendship.userIds.includes(req.user.id)){
+        res.status(401)
+        throw new Error('Not allowed to delete: user is not part of the friendship')
+    }
+
+    await friendship.deleteOne().then(async (deleteFriendshipResponse) => {
+        // this should only match one notification at most, since a user can't send more than one friend request to another user
+        Notification.find({
+            'user': otherUserId,
+            'variant': 'friendRequest',
+            'content.requesterId': req.user.id
+        }).then((matchingNotification) => {
+            matchingNotification.deleteOne().then((deleteNotificationResponse) => {
+                res.status(200).json({
+                    deletedFriendshipRequest: deleteFriendshipResponse,
+                    deletedNotification: deleteNotificationResponse,
+                })
+            })
+        })
+    })
+})
+
 // @desc    Update Friendship
 // @route   PUT /api/:id
 // @access  Private
@@ -135,5 +186,6 @@ module.exports = {
     getUserFriendshipsByParticipantId,
     createFriendship,
     deleteFriendship,
-    updateFriendship
+    updateFriendship,
+    deleteFriendshipRequest
 }

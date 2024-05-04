@@ -22,7 +22,7 @@ import {
 } from "../features/notifications/notificationSlice";
 import {
     createFriendship,
-    deleteFriendship,
+    deleteFriendship, deleteFriendshipRequestAndNotification,
     getFriendshipsByUserId,
     updateFriendship
 } from "../features/friendships/friendshipSlice";
@@ -199,16 +199,10 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
 
     const cancelRequest = (friendship: FriendshipData) => {
         // @ts-ignore
-        dispatch(deleteFriendship(friendship._id))
+        // dispatch(deleteFriendship(friendship._id))
+        // @ts-ignore
+        dispatch(deleteFriendshipRequestAndNotification(friendship._id))
         setCancelledRequest(true)
-        // TODO:
-        // => delete notification (at selectedUser.id user)
-        // get other userID from friendship
-        // get all notifications for that user (possible with current endpoints? Might be protected by middleware)
-        // find matching notification (variant: friendship, with current userId as other ID)
-        // delete notification by ID
-
-        // alternative: create full endpoint for deleting other users notifications? specify type and id/ids to match?
 
     }
 

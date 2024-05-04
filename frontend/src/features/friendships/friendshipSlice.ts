@@ -71,6 +71,23 @@ export const deleteFriendship = createAsyncThunk(`friendships/deleteFriendshipBy
     }
 })
 
+export const deleteFriendshipRequestAndNotification = createAsyncThunk(`friendships/deleteFriendshipRequest`, async (friendshipId: string, thunkAPI) => {
+    try {
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await friendshipService.deleteFriendshipRequest(token, friendshipId)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
 // Update a friendship data by its id
 export const updateFriendship = createAsyncThunk(`friendship/updateFriendshipById`, async (updatedData: FriendshipData, thunkAPI) => {
     try {

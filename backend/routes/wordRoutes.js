@@ -20,7 +20,7 @@ router.post('/', protect, setWord)
 
 router.put('/:id', protect, updateWord)
 
-// NB! order of delete is important! if reversed, the path always matches for deleteWord and we can't deleteMany
+// NB! order of delete is important! if reversed, the path always matches for deleteWord, and we can't deleteMany
 router.delete('/deleteMany', protect, deleteManyWords)
 router.delete('/:id', protect, deleteWord)
 

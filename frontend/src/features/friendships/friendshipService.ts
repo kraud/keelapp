@@ -38,6 +38,16 @@ const deleteFriendshipById = async (token: any, id: string) => {
     return(response.data)
 }
 
+const deleteFriendshipRequest = async (token: any, id: string) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+    const response = await axios.delete(`${API_URL}/deleteRequestAndNotifications/${id}`, config)
+    return(response.data)
+}
+
 const updateFriendshipById = async (token: any, updatedData: FriendshipData) => {
     const config = {
         headers: {
@@ -49,7 +59,7 @@ const updateFriendshipById = async (token: any, updatedData: FriendshipData) => 
 }
 
 const friendshipService = {
-    createFriendship, getFriendships, deleteFriendshipById, updateFriendshipById
+    createFriendship, getFriendships, deleteFriendshipById, updateFriendshipById, deleteFriendshipRequest
 }
 
 export default friendshipService
