@@ -88,6 +88,23 @@ export const deleteFriendshipRequestAndNotification = createAsyncThunk(`friendsh
     }
 })
 
+export const acceptFriendshipRequestAndDeleteNotification = createAsyncThunk(`friendships/acceptFriendshipRequest`, async (friendshipId: string, thunkAPI) => {
+    try {
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await friendshipService.acceptFriendshipRequest(token, friendshipId)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
 // Update a friendship data by its id
 export const updateFriendship = createAsyncThunk(`friendship/updateFriendshipById`, async (updatedData: FriendshipData, thunkAPI) => {
     try {
@@ -165,6 +182,32 @@ export const friendshipSlice = createSlice({
                 state.friendships = (action.payload)
             })
             .addCase(getFriendshipsByUserId.rejected, (state, action) => {
+                state.isLoadingFriendships = false
+                state.isError = true
+                state.message = action.payload as string
+            })
+            .addCase(deleteFriendshipRequestAndNotification.pending, (state) => {
+                state.isLoadingFriendships = true
+            })
+            .addCase(deleteFriendshipRequestAndNotification.fulfilled, (state, action) => {
+                state.isLoadingFriendships = false
+                state.isSuccessFriendships = true
+                // TODO: should we do something with the response?
+            })
+            .addCase(deleteFriendshipRequestAndNotification.rejected, (state, action) => {
+                state.isLoadingFriendships = false
+                state.isError = true
+                state.message = action.payload as string
+            })
+            .addCase(acceptFriendshipRequestAndDeleteNotification.pending, (state) => {
+                state.isLoadingFriendships = true
+            })
+            .addCase(acceptFriendshipRequestAndDeleteNotification.fulfilled, (state, action) => {
+                state.isLoadingFriendships = false
+                state.isSuccessFriendships = true
+                // TODO: should we do something with the response?
+            })
+            .addCase(acceptFriendshipRequestAndDeleteNotification.rejected, (state, action) => {
                 state.isLoadingFriendships = false
                 state.isError = true
                 state.message = action.payload as string

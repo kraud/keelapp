@@ -48,6 +48,17 @@ const deleteFriendshipRequest = async (token: any, id: string) => {
     return(response.data)
 }
 
+const acceptFriendshipRequest = async (token: any, id: string) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+    // NB! update data is 'undefined' because we don't have info to update. We simply changed friendship to accepted.
+    const response = await axios.put(`${API_URL}/acceptRequestAndDeleteNotifications/${id}`, {status: 'accepted'}, config)
+    return(response.data)
+}
+
 const updateFriendshipById = async (token: any, updatedData: FriendshipData) => {
     const config = {
         headers: {
@@ -59,7 +70,7 @@ const updateFriendshipById = async (token: any, updatedData: FriendshipData) => 
 }
 
 const friendshipService = {
-    createFriendship, getFriendships, deleteFriendshipById, updateFriendshipById, deleteFriendshipRequest
+    createFriendship, getFriendships, deleteFriendshipById, updateFriendshipById, deleteFriendshipRequest, acceptFriendshipRequest
 }
 
 export default friendshipService

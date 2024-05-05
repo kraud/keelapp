@@ -17,17 +17,15 @@ import {toast} from "react-toastify";
 import LinearIndeterminate from "./Spinner";
 import {
     createNotification,
-    deleteNotification,
     getNotificationsUserAsRequester
 } from "../features/notifications/notificationSlice";
 import {
+    acceptFriendshipRequestAndDeleteNotification,
     createFriendship,
     deleteFriendship, deleteFriendshipRequestAndNotification,
     getFriendshipsByUserId,
-    updateFriendship
 } from "../features/friendships/friendshipSlice";
 import {
-    acceptFriendRequest,
     checkIfAlreadyFriend,
     getFriendRequestButtonLabel, getListOfAvailableUsers,
     getOtherUserDataFromFriendship, userDataToSearchResultConversion
@@ -90,6 +88,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
 
     const [sentRequest, setSentRequest] = useState(false)
     const [cancelledRequest, setCancelledRequest] = useState(false)
+    const [acceptedRequest, setAcceptedRequest] = useState(false)
     const [deletedRequest, setDeletedRequest] = useState(false)
 
 
@@ -145,12 +144,12 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
     useEffect(() => {
         if(
             (
-                // delete&cancel request does not trigger notifications-loading sate, so we make it an exception
-                ((isSuccessNotifications && !isLoadingNotifications) || deletedRequest || cancelledRequest)
+                // accept,delete and cancel request do not trigger notifications-loading sate, so we make it an exception
+                ((isSuccessNotifications && !isLoadingNotifications) || deletedRequest || cancelledRequest || acceptedRequest)
                 && // it's a '&&', so toast is triggered only when both notification and friendship have been updated successfully.
                 (isSuccessFriendships && !isLoadingFriendships)
             ) &&
-            (sentRequest || cancelledRequest || deletedRequest)
+            (sentRequest || cancelledRequest || deletedRequest || acceptedRequest)
         ){
             if(sentRequest){
                 toast.info("Friend request sent")
@@ -160,17 +159,21 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                 toast.info("Friend request deleted")
                 setCancelledRequest(false)
             }
+            if(acceptedRequest){
+                toast.info("Friend request accepted")
+                setAcceptedRequest(false)
+            }
             if(deletedRequest){
                 toast.info("Friendship deleted")
                 setDeletedRequest(false)
             }
-            if(sentRequest || cancelledRequest || deletedRequest){
+            if(sentRequest || cancelledRequest || deletedRequest || acceptedRequest){
                 // this will update the button labels
                 // @ts-ignore
                 dispatch(getFriendshipsByUserId(user._id))
             }
         }
-    }, [isSuccessFriendships, isSuccessNotifications, isLoadingNotifications, isLoadingFriendships, sentRequest, cancelledRequest, deletedRequest])
+    }, [isSuccessFriendships, isSuccessNotifications, isLoadingNotifications, isLoadingFriendships, sentRequest, cancelledRequest, deletedRequest, acceptedRequest])
 
     const sendFriendRequestNotification = (selectedUser: SearchResult) => {
         const newNotification = {
@@ -204,6 +207,12 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
 
     }
 
+    const acceptRequest = (friendship: FriendshipData) => {
+        // @ts-ignore
+        dispatch(acceptFriendshipRequestAndDeleteNotification(friendship._id))
+        setAcceptedRequest(true)
+    }
+
     const deleteActiveFriendship = (friendship: FriendshipData) => {
         // @ts-ignore
         dispatch(deleteFriendship(friendship._id))
@@ -213,7 +222,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
         }
     }
 
-    const {otherUserTags, fullTagData, isSuccessTags, isLoadingTags} = useSelector((state: any) => state.tags)
+    const {otherUserTags, fullTagData, isLoadingTags} = useSelector((state: any) => state.tags)
     const [allTags, setAllTags] = useState<TagData[]>([])
 
     useEffect(() => {
@@ -301,7 +310,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                         sxPropsInput={{
                                             color: 'black',
                                         }}
-                                        placeholder={"Search for friends...."}
+                                        placeholder={"Search for friends..."}
                                         iconColor={"primary"}
                                     />
                                 </Grid>
@@ -456,6 +465,9 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                                     }
                                                     case 1: { // potentialFriendship listed first => they made the request
                                                         // accept request => delete notification (at currently logged-in user) + update friendship
+                                                        if(potentialFriendship !== undefined){
+                                                            acceptRequest(potentialFriendship)
+                                                        }
                                                         break
                                                     }
                                                     case 2: { // potentialFriendship listed first => they made the request

@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const { createFriendship, updateFriendship, deleteFriendship, getUserFriendshipsByParticipantId,
-    deleteFriendshipRequest
+    deleteFriendshipRequest, acceptFriendshipRequest
 } = require('../controllers/friendshipController')
 const {protect} = require('../middleware/authMiddleware')
 
@@ -10,6 +10,7 @@ router.post('/', protect, createFriendship)
 // NB! delete-routes order matters. Should remain like this, to avoid going prematurely to 'deleteFriendship'
 router.delete('/deleteRequestAndNotifications/:id', protect, deleteFriendshipRequest)
 router.delete('/:id', protect, deleteFriendship)
+router.put('/acceptRequestAndDeleteNotifications/:id', protect, acceptFriendshipRequest)
 router.put('/:id', protect, updateFriendship)
 
 

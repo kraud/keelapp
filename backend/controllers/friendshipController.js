@@ -156,6 +156,56 @@ const deleteFriendshipRequest = asyncHandler(async (req, res) => {
     })
 })
 
+// @desc    Accept Friendship request and delete related notification
+// @route   PUT /api/deleteRequestAndNotifications/:id
+// @access  Private
+const acceptFriendshipRequest = asyncHandler(async (req, res) => {
+    const friendship = await Friendship.findById(req.params.id)
+    let otherUserId = ""
+    if(friendship.userIds[0].toString() !== req.user.id){
+        otherUserId = friendship.userIds[0]
+    } else {
+        otherUserId = friendship.userIds[1]
+    }
+
+    if(!friendship){
+        res.status(400)
+        throw new Error("Notification not found")
+    }
+    if(friendship.status === 'accepted'){
+        res.status(400)
+        throw new Error("Can't accept friendship request. Friendship already accepted.")
+    }
+
+    // Check for user
+    if(!req.user){
+        res.status(401)
+        throw new Error('User not found')
+    }
+
+    // Make sure the user trying to delete the friendship is part of the friendship
+    if(!friendship.userIds.includes(req.user.id)){
+        res.status(401)
+        throw new Error('Not allowed to delete: user is not part of the friendship')
+    }
+
+    Friendship.findByIdAndUpdate(req.params.id, req.body)
+        .then(async (acceptedFriendshipResponse) => {
+        // this should only match one notification at most, since a user can't send more than one friend request to another user
+        const notificationRequest = {
+            "user": mongoose.Types.ObjectId(req.user.id),
+            "variant": "friendRequest",
+            "content.requesterId": otherUserId.toString()
+        }
+        Notification.findOneAndDelete(notificationRequest).then((deleteNotificationResponse) => {
+            res.status(200).json({
+                deletedFriendshipRequest: acceptedFriendshipResponse,
+                deletedNotification: deleteNotificationResponse,
+            })
+        })
+    })
+})
+
 // @desc    Update Friendship
 // @route   PUT /api/:id
 // @access  Private
@@ -187,5 +237,6 @@ module.exports = {
     createFriendship,
     deleteFriendship,
     updateFriendship,
-    deleteFriendshipRequest
+    deleteFriendshipRequest,
+    acceptFriendshipRequest
 }
