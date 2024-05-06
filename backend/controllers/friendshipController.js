@@ -3,6 +3,7 @@ const asyncHandler = require('express-async-handler')
 const Friendship = require('../models/friendshipModel')
 const User = require("../models/userModel");
 const Notification = require("../models/notificationModel");
+const mongoose = require("mongoose");
 
 // TODO: add parameters to req.query to allow specifying if the friendship is accepter/rejected/etc.
 // @desc    Get all Friendships where the provided userId corresponds with one of the friendship participants' id
@@ -111,8 +112,8 @@ const deleteFriendship = asyncHandler(async (req, res) => {
 // @access  Private
 const deleteFriendshipRequest = asyncHandler(async (req, res) => {
     const friendship = await Friendship.findById(req.params.id)
-    let otherUserId = ''
-    if(friendship.userIds[0] !== req.user.id){
+    let otherUserId = ""
+    if(friendship.userIds[0].toString() !== req.user.id){
         otherUserId = friendship.userIds[0]
     } else {
         otherUserId = friendship.userIds[1]
@@ -141,16 +142,15 @@ const deleteFriendshipRequest = asyncHandler(async (req, res) => {
 
     await friendship.deleteOne().then(async (deleteFriendshipResponse) => {
         // this should only match one notification at most, since a user can't send more than one friend request to another user
-        Notification.find({
-            'user': otherUserId,
-            'variant': 'friendRequest',
-            'content.requesterId': req.user.id
-        }).then((matchingNotification) => {
-            matchingNotification.deleteOne().then((deleteNotificationResponse) => {
-                res.status(200).json({
-                    deletedFriendshipRequest: deleteFriendshipResponse,
-                    deletedNotification: deleteNotificationResponse,
-                })
+        const notificationRequest = {
+            "user": mongoose.Types.ObjectId(otherUserId),
+            "variant": "friendRequest",
+            "content.requesterId": req.user.id
+        }
+        Notification.findOneAndDelete(notificationRequest).then((deleteNotificationResponse) => {
+            res.status(200).json({
+                deletedFriendshipRequest: deleteFriendshipResponse,
+                deletedNotification: deleteNotificationResponse,
             })
         })
     })

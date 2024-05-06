@@ -145,8 +145,8 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
     useEffect(() => {
         if(
             (
-                // delete request does not trigger notifications, so we make it an exception
-                ((isSuccessNotifications && !isLoadingNotifications) || deletedRequest)
+                // delete&cancel request does not trigger notifications-loading sate, so we make it an exception
+                ((isSuccessNotifications && !isLoadingNotifications) || deletedRequest || cancelledRequest)
                 && // it's a '&&', so toast is triggered only when both notification and friendship have been updated successfully.
                 (isSuccessFriendships && !isLoadingFriendships)
             ) &&
@@ -198,8 +198,6 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
     }
 
     const cancelRequest = (friendship: FriendshipData) => {
-        // @ts-ignore
-        // dispatch(deleteFriendship(friendship._id))
         // @ts-ignore
         dispatch(deleteFriendshipRequestAndNotification(friendship._id))
         setCancelledRequest(true)
@@ -303,7 +301,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                         sxPropsInput={{
                                             color: 'black',
                                         }}
-                                        placeholder={"Search for friends..."}
+                                        placeholder={"Search for friends...."}
                                         iconColor={"primary"}
                                     />
                                 </Grid>
@@ -482,7 +480,8 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                                 variant: "contained",
                                                 color: ["primary", "success", "error", "error"][getFriendRequestButtonLabel(friendships, selectedUser.id)],
                                                 fullWidth: true,
-                                                startIcon: [<PersonAddIcon/>, <CheckCircleIcon/>, <CancelIcon/>, <CancelIcon/>][getFriendRequestButtonLabel(friendships, selectedUser.id)]
+                                                startIcon: [<PersonAddIcon/>, <CheckCircleIcon/>, <CancelIcon/>, <CancelIcon/>][getFriendRequestButtonLabel(friendships, selectedUser.id)],
+                                                disabled: (isLoadingNotifications || isLoadingFriendships)
                                             }}
                                             ignoreConfirmation={
                                                 getFriendRequestButtonLabel(friendships, selectedUser.id) === 0
@@ -509,6 +508,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                             }}
                                             fullWidth={true}
                                             endIcon={<ClearIcon />}
+                                            disabled={(isLoadingNotifications || isLoadingFriendships)}
                                         >
                                             Cancel
                                         </Button>
