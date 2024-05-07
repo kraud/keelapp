@@ -19,7 +19,7 @@ import {getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
 import {FriendshipData, SearchResult, TagData} from "../ts/interfaces";
 import {clearUserResultData} from "../features/users/userSlice";
 import AddCommentIcon from '@mui/icons-material/AddComment';
-import {clearClonedTagData, getTagsForCurrentUser} from "../features/tags/tagSlice";
+import {getTagsForCurrentUser} from "../features/tags/tagSlice";
 import {FriendList, ChipList} from "../components/GeneralUseComponents";
 import {clearRequesterNotifications, createNotification} from "../features/notifications/notificationSlice";
 

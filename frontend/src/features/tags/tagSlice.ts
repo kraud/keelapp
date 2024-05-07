@@ -8,6 +8,7 @@ interface tagSliceState {
     fullTagData: TagData | undefined,
     currentTagAmountWords: number,
     clonedTagResponse: { clonedTag: TagData, clonedWords: WordDataBE[] } | undefined
+    tagLabelIsAlreadyInUse: boolean
 
     isLoadingTags: boolean,
     isSuccessTags: boolean,
@@ -21,6 +22,7 @@ const initialState: tagSliceState = {
     fullTagData: undefined,
     clonedTagResponse: undefined,
     currentTagAmountWords: 0,
+    tagLabelIsAlreadyInUse: false,
     isLoadingTags: false,
     isSuccessTags: false,
     isError: false,
@@ -123,6 +125,24 @@ export const createTag = createAsyncThunk('tags/createTag', async (tag: TagData,
         // @ts-ignore
         const token = thunkAPI.getState().auth.user.token
         return await tagService.createTag(tag, token)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+
+export const checkIfTagLabelIsAlreadyInUse = createAsyncThunk('tags/isTagLabelAlreadyInUse', async (labelUserData: {tagLabel: string, userId: string}, thunkAPI) => {
+    try {
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await tagService.checkIfTagLabelInUse(labelUserData, token)
     } catch(error: any) {
         const message = (
                 error.response &&
@@ -238,6 +258,12 @@ export const tagSlice = createSlice({
                 otherUserTags: initialState.otherUserTags
             })
         },
+        clearTagLabelIsAlreadyInUse: (state: any) => {
+            return({
+                ...state,
+                tagLabelIsAlreadyInUse: initialState.tagLabelIsAlreadyInUse
+            })
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -315,6 +341,19 @@ export const tagSlice = createSlice({
                 state.fullTagData = (action.payload)
             })
             .addCase(createTag.rejected, (state, action) => {
+                state.isLoadingTags = false
+                state.isError = true
+                state.message = action.payload as string
+            })
+            .addCase(checkIfTagLabelIsAlreadyInUse.pending, (state) => {
+                state.isLoadingTags = true
+            })
+            .addCase(checkIfTagLabelIsAlreadyInUse.fulfilled, (state, action) => {
+                state.isLoadingTags = false
+                state.isSuccessTags = true
+                state.tagLabelIsAlreadyInUse = (action.payload.tagLabelIsInUse)
+            })
+            .addCase(checkIfTagLabelIsAlreadyInUse.rejected, (state, action) => {
                 state.isLoadingTags = false
                 state.isError = true
                 state.message = action.payload as string

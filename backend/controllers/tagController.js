@@ -171,6 +171,26 @@ const addExternalTag = asyncHandler(async (req, res) => {
         })
 })
 
+// @desc    Returns boolean. Value depends on tag's label availability for the specified user.
+// @route   POST /api/tags
+// @access  Private
+const checkIfTagLabelInUse = asyncHandler(async (req, res) => {
+    const labelUserData = req.body
+
+    Tag.find({
+        "label": labelUserData.tagLabel,
+        "author": mongoose.Types.ObjectId(labelUserData.userId),
+    }).then((findResponse) => {
+        let response = {
+            tagLabelIsInUse: false
+        }
+        if((findResponse.length > 0) && (findResponse[0].label === labelUserData.tagLabel)){
+            response.tagLabelIsInUse = true
+        }
+        res.status(200).json(response)
+    })
+})
+
 // @desc    Create Tag
 // @route   POST /api/tags
 // @access  Private
@@ -501,5 +521,6 @@ module.exports = {
     getAmountByTag,
     getOtherUserTags,
     getTagDataByRequest,
-    addExternalTag
+    addExternalTag,
+    checkIfTagLabelInUse
 }

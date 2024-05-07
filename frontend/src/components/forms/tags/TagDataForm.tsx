@@ -18,6 +18,7 @@ import {getWordChipDataByLangInOrder, stringAvatar} from "../../generalUseFuncti
 import {CountryFlag} from "../../GeneralUseComponents";
 import Avatar from "@mui/material/Avatar";
 import {getPartOfSpeechAbbreviated} from "../commonFunctions";
+import {checkIfTagLabelIsAlreadyInUse} from "../../../features/tags/tagSlice";
 
 interface TagDataFormProps {
     currentTagData: TagData,
@@ -30,17 +31,32 @@ export const TagDataForm = (props: TagDataFormProps) => {
 
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const {isLoadingTags} = useSelector((state: any) => state.tags)
+    const {isLoadingTags, tagLabelIsAlreadyInUse} = useSelector((state: any) => state.tags)
     const {user} = useSelector((state: any) => state.auth)
     const {userResult, isLoadingUser} = useSelector((state: any) => state.user)
     const {searchResults, isSearchLoading} = useSelector((state: any) => state.words)
 
+    function checkLabelAvailability(label: string){
+        //@ts-ignore
+        dispatch(checkIfTagLabelIsAlreadyInUse({taglabel: label, userId: auth.id}))
+        return(tagLabelIsAlreadyInUse)
+    }
+
     const validationSchema = Yup.object().shape({
         public: Yup.string().required("Required")
             .oneOf(['Public', 'Private', 'Friends-Only'], "Required"),
-        label: Yup.string()// TODO: make it so it MUST be a single word?
+        label: Yup.string()
             .required("A tag label is required")
+            .matches(/^\S+$/, "Label does not allow spaces. Try CamelCasing or snake_casing instead.")
             .min(2, 'Label must be longer than 2 characters')
+            /*.test(
+                'checkIfLabelIsUniqueForThisUser',
+                'That label is already in use',
+                // (label: string) => checkLabelAvailability(label)
+                function (label: string) {
+                    return checkLabelAvailability(label)
+                }
+            )*/
             .max(30, 'Label is too long'),
         description: Yup.string().nullable()
             .min(5, 'Description must be longer than 5 characters')
