@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const {
     searchTags, getUserTags, getTagById, createTag, deleteTag, updateTag, getAmountByTag, getOtherUserTags,
-    getTagDataByRequest, addExternalTag, checkIfTagLabelInUse
+    getTagDataByRequest, addExternalTag, checkIfTagLabelAvailable
 } = require('../controllers/tagController')
 const {protect} = require('../middleware/authMiddleware')
 
@@ -12,7 +12,7 @@ router.get('/searchTags', protect, searchTags)
 router.get('/filterTags', protect, getTagDataByRequest) // TODO: this should be removed? Double check
 router.get('/:id', protect, getTagById)
 router.post('/addExternalTag', protect, addExternalTag)
-router.post('/checkIfTagLabelInUse', protect, checkIfTagLabelInUse)
+router.post('/checkIfTagLabelAvailable', protect, checkIfTagLabelAvailable)
 router.get('/getAmountByTag/:id', protect, getAmountByTag)
 router.post('/', protect, createTag)
 router.delete('/:id', protect, deleteTag)

@@ -60,13 +60,13 @@ const createTag = async (tag: TagData, token: any) => {
     return(response.data)
 }
 
-const checkIfTagLabelInUse = async (labelUserData: {tagLabel: string, userId: string}, token: any) => {
+const checkIfTagLabelAvailable = async (labelUserData: {tagLabel: string, userId: string}, token: any) => {
     const config = {
         headers: {
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.post(`${API_URL}/checkIfTagLabelInUse`, labelUserData, config)
+    const response = await axios.post(`${API_URL}/checkIfTagLabelAvailable`, labelUserData, config)
     return(response.data)
 }
 
@@ -132,7 +132,7 @@ const addExternalTag = async (token: any, tagId: string) => {
 
 const tagService = {
     getUserTags, searchTags, getTagById, createTag, deleteTagById, updateTagById, getTagWordsAmount, getOtherUserTags,
-    filterTags, addExternalTag, checkIfTagLabelInUse
+    filterTags, addExternalTag, checkIfTagLabelAvailable
 }
 
 export default tagService

@@ -138,11 +138,11 @@ export const createTag = createAsyncThunk('tags/createTag', async (tag: TagData,
 })
 
 
-export const checkIfTagLabelIsAlreadyInUse = createAsyncThunk('tags/isTagLabelAlreadyInUse', async (labelUserData: {tagLabel: string, userId: string}, thunkAPI) => {
+export const checkIfTagLabelIsAvailable = createAsyncThunk('tags/isTagLabelAlreadyInUse', async (labelUserData: {tagLabel: string, userId: string}, thunkAPI) => {
     try {
         // @ts-ignore
         const token = thunkAPI.getState().auth.user.token
-        return await tagService.checkIfTagLabelInUse(labelUserData, token)
+        return await tagService.checkIfTagLabelAvailable(labelUserData, token)
     } catch(error: any) {
         const message = (
                 error.response &&
@@ -345,15 +345,15 @@ export const tagSlice = createSlice({
                 state.isError = true
                 state.message = action.payload as string
             })
-            .addCase(checkIfTagLabelIsAlreadyInUse.pending, (state) => {
+            .addCase(checkIfTagLabelIsAvailable.pending, (state) => {
                 state.isLoadingTags = true
             })
-            .addCase(checkIfTagLabelIsAlreadyInUse.fulfilled, (state, action) => {
+            .addCase(checkIfTagLabelIsAvailable.fulfilled, (state, action) => {
                 state.isLoadingTags = false
                 state.isSuccessTags = true
-                state.tagLabelIsAlreadyInUse = (action.payload.tagLabelIsInUse)
+                state.tagLabelIsAlreadyInUse = (action.payload)
             })
-            .addCase(checkIfTagLabelIsAlreadyInUse.rejected, (state, action) => {
+            .addCase(checkIfTagLabelIsAvailable.rejected, (state, action) => {
                 state.isLoadingTags = false
                 state.isError = true
                 state.message = action.payload as string

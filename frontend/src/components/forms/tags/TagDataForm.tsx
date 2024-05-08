@@ -14,11 +14,12 @@ import {Lang} from "../../../ts/enums";
 import {useNavigate} from "react-router-dom";
 import {getUserById, resetUserSliceState} from "../../../features/users/userSlice";
 import LinearIndeterminate from "../../Spinner";
-import {getWordChipDataByLangInOrder, stringAvatar} from "../../generalUseFunctions";
+import {getWordChipDataByLangInOrder} from "../../generalUseFunctions";
 import {CountryFlag} from "../../GeneralUseComponents";
-import Avatar from "@mui/material/Avatar";
 import {getPartOfSpeechAbbreviated} from "../commonFunctions";
-import {checkIfTagLabelIsAlreadyInUse} from "../../../features/tags/tagSlice";
+import {checkIfTagLabelIsAvailable, searchTagsByLabel} from "../../../features/tags/tagSlice";
+import tagService from "../../../features/tags/tagService";
+import {toast} from "react-toastify";
 
 interface TagDataFormProps {
     currentTagData: TagData,
@@ -36,11 +37,29 @@ export const TagDataForm = (props: TagDataFormProps) => {
     const {userResult, isLoadingUser} = useSelector((state: any) => state.user)
     const {searchResults, isSearchLoading} = useSelector((state: any) => state.words)
 
-    function checkLabelAvailability(label: string){
-        //@ts-ignore
-        dispatch(checkIfTagLabelIsAlreadyInUse({taglabel: label, userId: auth.id}))
-        return(tagLabelIsAlreadyInUse)
+    // TODO: see if we can use the redux-method for requests as part of validation, instead of sending request directly?
+    // function checkLabelAvailabilityRedux(label: string){
+    //     //@ts-ignore
+    //     dispatch(checkIfTagLabelIsAvailable({tagLabel: label, userId: user._id}))
+    //     return(tagLabelIsAlreadyInUse)
+    // }
+
+    async function checkLabelAvailability(label: string){
+        if(label.length > 2){
+            try{
+                console.log('Testing')
+                return await tagService.checkIfTagLabelAvailable({tagLabel: label, userId: user._id}, user.token)
+            } catch(error){
+                toast.error('There was an error while processing that label.')
+            }
+        } else { return true }
     }
+
+    //@ts-ignore
+    let delayTimer: any = null
+    let isOk: boolean = false
+    //@ts-ignore
+    let resolveRef: any = null
 
     const validationSchema = Yup.object().shape({
         public: Yup.string().required("Required")
@@ -48,16 +67,37 @@ export const TagDataForm = (props: TagDataFormProps) => {
         label: Yup.string()
             .required("A tag label is required")
             .matches(/^\S+$/, "Label does not allow spaces. Try CamelCasing or snake_casing instead.")
-            .min(2, 'Label must be longer than 2 characters')
-            /*.test(
-                'checkIfLabelIsUniqueForThisUser',
-                'That label is already in use',
-                // (label: string) => checkLabelAvailability(label)
-                function (label: string) {
-                    return checkLabelAvailability(label)
-                }
-            )*/
-            .max(30, 'Label is too long'),
+            .min(3, 'Label must be longer than 2 characters')
+            .max(30, 'Label is too long')
+            .test({
+                name: 'checkIfLabelIsUniqueForThisUser',
+                message: 'That label is already in use',
+                test: (labelCandidate: string) => checkLabelAvailability(labelCandidate)
+            }),
+            // TODO: find a way to include a timer, so we don't make a request after every keystroke.
+            // .test(
+            //     'checkIfLabelIsUniqueForThisUser',
+            //     'That label is already in use',
+            //     //@ts-ignore
+            //     async (label: string) => {
+            //         clearTimeout(delayTimer)
+            //
+            //         if (resolveRef) {
+            //             resolveRef(isOk)
+            //             resolveRef = null
+            //         }
+            //
+            //         return await new Promise((resolve) => {
+            //             resolveRef = resolve;
+            //             delayTimer = setTimeout(async () => {
+            //                 isOk = await checkLabelAvailability(label)
+            //
+            //                 resolve(isOk)
+            //                 resolveRef = null;
+            //             }, 2500)
+            //         })
+            //     }
+            // ),
         description: Yup.string().nullable()
             .min(5, 'Description must be longer than 5 characters')
             .max(250, 'Description is too long'),
