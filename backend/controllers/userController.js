@@ -86,11 +86,20 @@ const loginUser = asyncHandler(async(req, res) => {
 const updateUser = asyncHandler(async(req, res) => {
     const {email, name, username} = req.body
 
+    const usernameExists = await User.findOne({username: username})
+    // NB! ._id returns the 'new ObjectId("idString") object. Instead, we use .id to access the "idString" value directly.
+    if((usernameExists !== null) && (usernameExists.id !== req.user.id)){
+        res.status(400)
+            // .json('Username already in use')
+        throw new Error('Username already in use!')
+    }
+
     const userData = await User.findOne({email: email})
     if(userData.id === req.user.id){
         const updatedUser = await User.findByIdAndUpdate(userData.id,{
             name: name,
             username: username,
+            // if more fields are added to user, add them to the update here
         },{new: true}).select({ password: 0, createdAt: 0 , updatedAt: 0, __v: 0 })
         res.status(200).json(updatedUser)
     } else {

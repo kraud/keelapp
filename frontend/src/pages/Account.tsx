@@ -37,7 +37,7 @@ export interface UserBadgeData {
 export const Account = (props: AccountProps) => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const {user, isLoadingAuth, isSuccess} = useSelector((state: any) => state.auth)
+    const {user, isLoadingAuth, isSuccess, isError, message} = useSelector((state: any) => state.auth)
     const {friendships, isLoadingFriendships} = useSelector((state: any) => state.friendships)
     const {tags, isLoadingTags} = useSelector((state: any) => state.tags)
     const {notificationResponse, isSuccessNotifications, isLoadingNotifications} = useSelector((state: any) => state.notifications)
@@ -49,6 +49,7 @@ export const Account = (props: AccountProps) => {
     const [openTagModal, setOpenTagModal] = useState(false)
     const [selectedTag, setSelectedTag] = useState("")
     const [isEditing, setIsEditing] = useState(false)
+    const [isUpdatingUserData, setIsUpdatingUserData] = useState(false)
     const [localUserData, setLocalUserData] = useState<UserBadgeData | null>(null)
     const [reloadTagList, setReloadTagList] = useState(false)
     const [tagIdToShare, setTagIdToShare] = useState("")
@@ -99,15 +100,14 @@ export const Account = (props: AccountProps) => {
         dispatch(clearUserResultData())
     },[])
 
-    useEffect(() => {
-        if(!isLoadingAuth && isSuccess && !openFriendsModal){
-            toast.info("User data updated successfully!")
-        }
-    },[isLoadingAuth, isSuccess])
-
     const onSaveChanges = (newLocalUserData: UserBadgeData) => {
+        setIsUpdatingUserData(true)
         // @ts-ignore
         dispatch(updateUser(newLocalUserData))
+    }
+    const onCancel = () => {
+        setLocalUserData(user)
+        setIsEditing(false)
     }
 
     const [defaultModalUserId, setDefaultModalUserId] = useState<string|undefined>(undefined)
@@ -166,6 +166,22 @@ export const Account = (props: AccountProps) => {
             toast.success(`Request to share tag was sent successfully!`)
         }
     }, [notificationResponse, isLoadingNotifications, isSuccessNotifications, sendingNotification])
+
+    useEffect(() => {
+        if(isUpdatingUserData) {
+            if(isError) {
+                toast.error(message)
+                if(isUpdatingUserData){
+                    onCancel()
+                    setIsUpdatingUserData(false)
+                }
+            }
+            if(!isLoadingAuth && isSuccess && !openFriendsModal){
+                toast.success("User data updated successfully!")
+                setIsUpdatingUserData(false)
+            }
+        }
+    }, [isLoadingAuth, isError, isSuccess, message, isUpdatingUserData])
 
     return(
         <Grid
@@ -313,8 +329,7 @@ export const Account = (props: AccountProps) => {
                                 variant={"contained"}
                                 color={"error"}
                                 onClick={() => {
-                                    setLocalUserData(user)
-                                    setIsEditing(false)
+                                    onCancel()
                                 }}
                                 fullWidth={true}
                                 endIcon={<ClearIcon/>}
