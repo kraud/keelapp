@@ -66,7 +66,7 @@ export const UserBadge = (props: UserBadgeProps) => {
                                     xs: 'h4',
                                     md: 'h2',
                                 },
-                                textTransform: "capitalize"
+                                // textTransform: "capitalize"
                             }}
                         >
                             {props.userData.name}

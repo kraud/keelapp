@@ -248,7 +248,7 @@ export const FriendList = (props: FriendListProps) => {
                                             sm: 'h4',
                                             md: 'h3',
                                         },
-                                        textTransform: "capitalize",
+                                        // textTransform: "capitalize",
                                         cursor: (props.disableNameOnClick!!) ? undefined : 'pointer',
                                     }}
                                     noWrap={true}
