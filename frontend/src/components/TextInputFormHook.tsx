@@ -12,6 +12,7 @@ interface TextInputFormWithHookProps {
     fullWidth?: boolean
     onChange?: (value: any) => void // Needed to inform parent component about the Textfield current value
     disabled?: boolean
+    triggerOnEnterKeyPress?: () => void
 }
 
 export const TextInputFormWithHook = (props: TextInputFormWithHookProps) => {
@@ -37,6 +38,11 @@ export const TextInputFormWithHook = (props: TextInputFormWithHookProps) => {
             defaultValue={props.defaultValue}
             render={({ field, fieldState  }) => (
                 <TextField
+                    onKeyDown={(e: any) => {
+                        if((e.key === 'Enter') && (props.triggerOnEnterKeyPress !== undefined)){
+                            props.triggerOnEnterKeyPress()
+                        }
+                    }}
                     inputRef={field.ref}
                     onChange={(value: any) => {
                         if(props.onChange!){ // if added, we share with parent the new value

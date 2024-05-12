@@ -136,6 +136,9 @@ export function Login() {
                                 errors={errors.password}
                                 type={"password"}
                                 fullWidth={true}
+                                triggerOnEnterKeyPress={() => {
+                                    handleSubmit(onSubmit)
+                                }}
                             />
                         </Grid>
                         <Grid
