@@ -137,7 +137,7 @@ export function Login() {
                                 type={"password"}
                                 fullWidth={true}
                                 triggerOnEnterKeyPress={() => {
-                                    handleSubmit(onSubmit)
+                                    handleSubmit(onSubmit)()
                                 }}
                             />
                         </Grid>
@@ -157,7 +157,7 @@ export function Login() {
                                 xs={4}
                             >
                                 <Button
-                                    onClick={handleSubmit(onSubmit)}
+                                    onClick={() => handleSubmit(onSubmit)()}
                                     variant={"outlined"}
                                     fullWidth={true}
                                     color={"success"}
