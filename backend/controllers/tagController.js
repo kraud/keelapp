@@ -181,9 +181,14 @@ const checkIfTagLabelAvailable = asyncHandler(async (req, res) => {
         "label": labelUserData.tagLabel,
         "author": mongoose.Types.ObjectId(labelUserData.userId),
     }).then((findResponse) => {
-        let response = true
+        let response = {
+            isAvailable: true
+        }
         if((findResponse.length > 0) && (findResponse[0].label === labelUserData.tagLabel)){
-            response = false
+            response = {
+                isAvailable: false,
+                tagId: findResponse[0].id
+            }
         }
         res.status(200).json(response)
     })

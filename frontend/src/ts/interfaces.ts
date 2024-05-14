@@ -160,3 +160,14 @@ type PartOfSpeechFilter = {
     type: 'PoS'
     partOfSpeech: PartOfSpeech,
 }
+
+export type TagLabelAvailabilityStatus = {
+} & (TagLabelNotAvailable | TagLabelAvailable)
+
+type TagLabelNotAvailable = {
+    isAvailable: false,
+    tagId: string,
+}
+type TagLabelAvailable = {
+    isAvailable: true,
+}

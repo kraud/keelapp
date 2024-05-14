@@ -1,5 +1,5 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {SearchResult, TagData, WordDataBE} from "../../ts/interfaces";
+import {SearchResult, TagData, TagLabelAvailabilityStatus, WordDataBE} from "../../ts/interfaces";
 import tagService from "./tagService";
 
 interface tagSliceState {
@@ -8,7 +8,7 @@ interface tagSliceState {
     fullTagData: TagData | undefined,
     currentTagAmountWords: number,
     clonedTagResponse: { clonedTag: TagData, clonedWords: WordDataBE[] } | undefined
-    tagLabelIsAlreadyInUse: boolean
+    tagLabelIsAlreadyInUse: TagLabelAvailabilityStatus
 
     isLoadingTags: boolean,
     isSuccessTags: boolean,
@@ -22,7 +22,7 @@ const initialState: tagSliceState = {
     fullTagData: undefined,
     clonedTagResponse: undefined,
     currentTagAmountWords: 0,
-    tagLabelIsAlreadyInUse: false,
+    tagLabelIsAlreadyInUse: {isAvailable: true},
     isLoadingTags: false,
     isSuccessTags: false,
     isError: false,

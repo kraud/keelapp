@@ -17,7 +17,6 @@ import LinearIndeterminate from "../../Spinner";
 import {getWordChipDataByLangInOrder} from "../../generalUseFunctions";
 import {CountryFlag} from "../../GeneralUseComponents";
 import {getPartOfSpeechAbbreviated} from "../commonFunctions";
-import {checkIfTagLabelIsAvailable, searchTagsByLabel} from "../../../features/tags/tagSlice";
 import tagService from "../../../features/tags/tagService";
 import {toast} from "react-toastify";
 
@@ -47,8 +46,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
     async function checkLabelAvailability(label: string){
         if(label.length > 2){
             try{
-                console.log('Testing')
-                return await tagService.checkIfTagLabelAvailable({tagLabel: label, userId: user._id}, user.token)
+                return(await tagService.checkIfTagLabelAvailable({tagLabel: label, userId: user._id}, user.token))
             } catch(error){
                 toast.error('There was an error while processing that label.')
             }
@@ -72,7 +70,18 @@ export const TagDataForm = (props: TagDataFormProps) => {
             .test({
                 name: 'checkIfLabelIsUniqueForThisUser',
                 message: 'That label is already in use',
-                test: (labelCandidate: string) => checkLabelAvailability(labelCandidate)
+                test: async (labelCandidate: string) => {
+                    const tagLabelStatus = await checkLabelAvailability(labelCandidate)
+                    // logic can be simplified, but this is easier to read.
+                    if(
+                        !tagLabelStatus.isAvailable &&  // if there is a tag with this label
+                        (tagLabelStatus.tagId !== props.currentTagData._id) // and it is not the current tag
+                    ){
+                        return false // then the label is being used by another tag
+                    } else {
+                        return true // else, the label is not being used OR we're currently editing the tag with that label
+                    }
+                }
             }),
             // TODO: find a way to include a timer, so we don't make a request after every keystroke.
             // .test(
