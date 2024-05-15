@@ -20,8 +20,11 @@ import {AutocompleteSearch} from "./AutocompleteSearch";
 import globalTheme from "../theme/theme";
 import {searchWordByAnyTranslation} from "../features/words/wordSlice";
 import {NotificationData, SearchResult} from "../ts/interfaces";
-import {Badge} from "@mui/material";
+import {Badge, Grid, Switch} from "@mui/material";
 import {stringAvatar} from "./generalUseFunctions";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import {useState} from "react";
+import {searchTagsByLabel} from "../features/tags/tagSlice";
 
 const pages = ['Add word', 'Practice', 'Review'];
 const settings = ['Notifications', 'Account', 'Dashboard', 'Logout'];
@@ -34,6 +37,8 @@ function ResponsiveAppBar() {
     const {user} = useSelector((state: any) => state.auth)
     const {searchResults, isSearchLoading} = useSelector((state: any) => state.words)
     const {notifications, isLoadingNotifications, isSuccessNotifications} = useSelector((state: any) => state.notifications)
+    const {tags, isLoadingTags} = useSelector((state: any) => state.tags)
+    const [isWordSearch, setIsWordSearch] = useState(true)
 
     const componentStyles = {
         appBar: {
@@ -132,6 +137,28 @@ function ResponsiveAppBar() {
                 return(!(notification.dismissed!!))
             })
         )
+    }
+
+    const onSearch = (searchValue: string) => {
+        if(isWordSearch){
+            // @ts-ignore
+            dispatch(searchWordByAnyTranslation(searchValue))
+        } else { // then is tag search
+            //@ts-ignore
+            dispatch(searchTagsByLabel({
+                query: searchValue,
+                includeOtherUsersTags: true
+            }))
+        }
+    }
+
+    const onSelect = (option: SearchResult) => {
+        if(isWordSearch){
+            navigate(`/word/${option.id}`) // should we somehow check if value.id is something valid?
+        } else { // then is tag search
+            // @ts-ignore
+            navigate(`/tag/${option._id}`) // TODO: fix searchTagByLabel so it returns SearchResult (currently returns TagData)
+        }
     }
 
     return (
@@ -263,17 +290,34 @@ function ResponsiveAppBar() {
                             marginRight: globalTheme.spacing(6)
                         }}
                     >
+                        <Grid
+                            item={true}
+                            container={true}
+                            alignContent={"center"}
+                            xs={"auto"}
+                        >
+                            <Grid
+                                item={true}
+                            >
+                                <FormControlLabel
+                                    value={isWordSearch}
+                                    control={<Switch color={"secondary"} checked={isWordSearch} />}
+                                    label={""}
+                                    labelPlacement={"start"}
+                                    onChange={() => setIsWordSearch(!isWordSearch)}
+                                    sx={{
+                                        marginRight: 0,
+                                    }}
+                                />
+                            </Grid>
+                        </Grid>
                         <AutocompleteSearch
-                            options={searchResults}
-                            getOptions={(inputValue: string) => {
-                                // @ts-ignore
-                                dispatch(searchWordByAnyTranslation(inputValue))
-                            }}
-                            onSelect={(selection: SearchResult) => {
-                                navigate(`/word/${selection.id}`) // should we somehow check if value.id is something valid?
-                            }}
-                            isSearchLoading={isSearchLoading}
+                            options={isWordSearch ?searchResults :tags}
+                            getOptions={(inputValue: string) => onSearch(inputValue)}
+                            onSelect={(selection: SearchResult) => onSelect(selection)}
+                            isSearchLoading={isSearchLoading || isLoadingTags}
                             textColor={'white'}
+                            placeholder={isWordSearch ? "Search words..." : "Search tags..."}
                         />
                     </Box>
                     {/* USER ICON */}

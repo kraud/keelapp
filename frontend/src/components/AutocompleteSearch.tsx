@@ -121,6 +121,7 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                     </Grid>
                 )
             }
+            // TODO: add icon for tags
             default: {
                 return null
             }
@@ -171,6 +172,7 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                     </>
                 )
             }
+            // TODO: add second layer info for tags
             default: {
                 return null
             }

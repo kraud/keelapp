@@ -359,7 +359,6 @@ export function Review(){
                                 item={true}
                                 xs={10}
                             >
-                                {/* TODO: fix dispatching request to display tag-names after clicking on tag from table*/}
                                 <AutocompleteMultiple
                                     type={'tag'}
                                     values={getAllIndividualTagDataFromFilterItem(currentTagFilters)}

@@ -60,6 +60,7 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
 
     useEffect(() => {
         // TODO: this returns full Tag data. Refactor AutocompleteMultiple to work with this data (and save label+id?)
+        //  alternative: searchTagsByLabel will return SearchResult[] and we'll extract TagData from there for AutocompleteMultiple (STILL SHOULD FIX THIS LATER ON!)
         setOptions(tags)
     },[tags])
 
