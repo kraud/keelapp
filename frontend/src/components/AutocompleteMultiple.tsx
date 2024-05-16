@@ -6,7 +6,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import globalTheme from "../theme/theme";
 import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
-import {FilterItem, TagData} from "../ts/interfaces";
+import {FilterItem, SearchResult, TagData} from "../ts/interfaces";
 import {searchTagsByLabel} from "../features/tags/tagSlice";
 import LinearIndeterminate from "./Spinner";
 
@@ -58,10 +58,22 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
         return () => clearTimeout(timeout)
     }, [inputValue])
 
+    const searchResultToTag = (searchResultList: SearchResult[]) => {
+        return(searchResultList.map((searchResultItem: SearchResult) => {
+            if((searchResultItem.type === 'tag') && (searchResultItem.completeTagInfo !== undefined)){ //always true
+                return({
+                    ...searchResultItem.completeTagInfo
+                    })
+            } else {
+                return({})
+            }
+        }))
+    }
+
     useEffect(() => {
         // TODO: this returns full Tag data. Refactor AutocompleteMultiple to work with this data (and save label+id?)
         //  alternative: searchTagsByLabel will return SearchResult[] and we'll extract TagData from there for AutocompleteMultiple (STILL SHOULD FIX THIS LATER ON!)
-        setOptions(tags)
+        setOptions(searchResultToTag(tags))
     },[tags])
 
     // Depending on the type of AutocompleteMultiple, the returned data will be structured differently.

@@ -157,7 +157,7 @@ function ResponsiveAppBar() {
             navigate(`/word/${option.id}`) // should we somehow check if value.id is something valid?
         } else { // then is tag search
             // @ts-ignore
-            navigate(`/tag/${option._id}`) // TODO: fix searchTagByLabel so it returns SearchResult (currently returns TagData)
+            navigate(`/tag/${option.id}`) // TODO: fix searchTagByLabel so it returns SearchResult (currently returns TagData so we use ._id instead of .id)
         }
     }
 
