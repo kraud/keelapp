@@ -37,7 +37,7 @@ function ResponsiveAppBar() {
     const {user} = useSelector((state: any) => state.auth)
     const {searchResults, isSearchLoading} = useSelector((state: any) => state.words)
     const {notifications, isLoadingNotifications, isSuccessNotifications} = useSelector((state: any) => state.notifications)
-    const {tags, isLoadingTags} = useSelector((state: any) => state.tags)
+    const {tags, isLoadingTagSearch} = useSelector((state: any) => state.tags)
     const [isWordSearch, setIsWordSearch] = useState(true)
 
     const componentStyles = {
@@ -315,7 +315,7 @@ function ResponsiveAppBar() {
                             options={isWordSearch ?searchResults :tags}
                             getOptions={(inputValue: string) => onSearch(inputValue)}
                             onSelect={(selection: SearchResult) => onSelect(selection)}
-                            isSearchLoading={isSearchLoading || isLoadingTags}
+                            isSearchLoading={isSearchLoading || isLoadingTagSearch}
                             textColor={'white'}
                             placeholder={isWordSearch ? "Search words..." : "Search tags..."}
                         />

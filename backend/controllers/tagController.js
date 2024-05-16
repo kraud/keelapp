@@ -5,7 +5,6 @@ const Word = require("../models/wordModel");
 const WordTag = require("../models/intermediary/tagWordModel");
 const TagWord = require("../models/intermediary/tagWordModel");
 const Friendship = require("../models/friendshipModel");
-const {WordDataBE, InternalStatus, TagData} = require("../../frontend/src/ts/interfaces");
 
 
 // @desc    Search for tags with a regex matching (partially or fully) a request query (string) with the tag label
@@ -33,22 +32,6 @@ const searchTags = asyncHandler(async (req, res) => {
 
     // first we get all tag arrays from stored words, where at least 1 matches the query
     const tags = await getTagDataByRequest(undefined, getPrivateOrPublicQuery())
-
-    // TagData = {
-    //     _id?: string, // can be undefined when creating a new tag
-    //     author: string,
-    //     label: string,
-    //     description: string,
-    //     public: 'Public' | 'Private' | 'Friends-Only',
-    //     words: WordDataBE[]
-    // } & (InternalStatus)
-
-    // SearchResult = {
-    //     id: string,
-    //     label: string,
-    //     type: "tag"
-    //     completeTagInfo?: TagData,
-    // }
 
     const searchResultTags = tags.map(tagData => {
         return {

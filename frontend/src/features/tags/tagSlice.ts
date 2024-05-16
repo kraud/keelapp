@@ -11,6 +11,7 @@ interface tagSliceState {
     tagLabelIsAlreadyInUse: TagLabelAvailabilityStatus
 
     isLoadingTags: boolean,
+    isLoadingTagSearch: boolean, // NB! we use a different loading for search, to avoid triggering tag-loading-bar elsewhere
     isSuccessTags: boolean,
     isError: boolean,
     message: string,
@@ -24,6 +25,7 @@ const initialState: tagSliceState = {
     currentTagAmountWords: 0,
     tagLabelIsAlreadyInUse: {isAvailable: true},
     isLoadingTags: false,
+    isLoadingTagSearch: false,
     isSuccessTags: false,
     isError: false,
     message: "",
@@ -294,15 +296,15 @@ export const tagSlice = createSlice({
                 state.message = action.payload as string
             })
             .addCase(searchTagsByLabel.pending, (state) => {
-                state.isLoadingTags = true
+                state.isLoadingTagSearch = true
             })
             .addCase(searchTagsByLabel.fulfilled, (state, action) => {
-                state.isLoadingTags = false
+                state.isLoadingTagSearch = false
                 state.isSuccessTags = true
                 state.tags = (action.payload)
             })
             .addCase(searchTagsByLabel.rejected, (state, action) => {
-                state.isLoadingTags = false
+                state.isLoadingTagSearch = false
                 state.isError = true
                 state.message = action.payload as string
             })

@@ -63,16 +63,15 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
             if((searchResultItem.type === 'tag') && (searchResultItem.completeTagInfo !== undefined)){ //always true
                 return({
                     ...searchResultItem.completeTagInfo
-                    })
+                    } as TagData)
             } else {
-                return({})
+                return({} as TagData)
             }
         }))
     }
 
+    // TODO: AutocompleteMultiple should work with SearchResult instead of TagData? Should refactor refactor.
     useEffect(() => {
-        // TODO: this returns full Tag data. Refactor AutocompleteMultiple to work with this data (and save label+id?)
-        //  alternative: searchTagsByLabel will return SearchResult[] and we'll extract TagData from there for AutocompleteMultiple (STILL SHOULD FIX THIS LATER ON!)
         setOptions(searchResultToTag(tags))
     },[tags])
 

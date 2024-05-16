@@ -13,6 +13,7 @@ import {OverridableStringUnion} from "@mui/types";
 import HowToRegIcon from '@mui/icons-material/HowToReg';
 import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
 import QuizIcon from '@mui/icons-material/Quiz';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import {getPartOfSpeechAbbreviated} from "./forms/commonFunctions";
 import {getFriendRequestButtonLabel} from "./generalUseFunctions";
 import {useSelector} from "react-redux";
@@ -121,7 +122,15 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                     </Grid>
                 )
             }
-            // TODO: add icon for tags
+            case ("tag"): {
+                return(
+                    <Grid
+                        item={true}
+                    >
+                        <LocalOfferIcon color={"primary"}/>
+                    </Grid>
+                )
+            }
             default: {
                 return null
             }
@@ -145,7 +154,6 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                     </Typography>
                 )
             }
-
             case ("user"): {
                 const statusIconSx = {
                     marginBottom: '-5px',
@@ -172,7 +180,21 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                     </>
                 )
             }
-            // TODO: add second layer info for tags
+            case ("tag"): {
+                return(
+                    <Typography
+                        variant={'body2'}
+                        color={'primary'}
+                        alignSelf={"left"}
+                        sx={{
+                            display: 'inline',
+                            paddingLeft: globalTheme.spacing(1),
+                        }}
+                    >
+                        {option.completeTagInfo!!.public}
+                    </Typography>
+                )
+            }
             default: {
                 return null
             }
