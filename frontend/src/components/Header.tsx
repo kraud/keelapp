@@ -24,7 +24,7 @@ import {Badge, Grid, Switch} from "@mui/material";
 import {stringAvatar} from "./generalUseFunctions";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import {useState} from "react";
-import {searchTagsByLabel} from "../features/tags/tagSlice";
+import {clearSearchResultTags, searchTagsByLabel} from "../features/tags/tagSlice";
 
 const pages = ['Add word', 'Practice', 'Review'];
 const settings = ['Notifications', 'Account', 'Dashboard', 'Logout'];
@@ -37,7 +37,7 @@ function ResponsiveAppBar() {
     const {user} = useSelector((state: any) => state.auth)
     const {searchResults, isSearchLoading} = useSelector((state: any) => state.words)
     const {notifications, isLoadingNotifications, isSuccessNotifications} = useSelector((state: any) => state.notifications)
-    const {tags, isLoadingTagSearch} = useSelector((state: any) => state.tags)
+    const {searchResultTags, isLoadingTagSearch} = useSelector((state: any) => state.tags)
     const [isWordSearch, setIsWordSearch] = useState(true)
 
     const componentStyles = {
@@ -157,7 +157,8 @@ function ResponsiveAppBar() {
             navigate(`/word/${option.id}`) // should we somehow check if value.id is something valid?
         } else { // then is tag search
             // @ts-ignore
-            navigate(`/tag/${option.id}`) // TODO: fix searchTagByLabel so it returns SearchResult (currently returns TagData so we use ._id instead of .id)
+            navigate(`/tag/${option.id}`)
+            dispatch(clearSearchResultTags())
         }
     }
 
@@ -312,7 +313,7 @@ function ResponsiveAppBar() {
                             </Grid>
                         </Grid>
                         <AutocompleteSearch
-                            options={isWordSearch ?searchResults :tags}
+                            options={isWordSearch ?searchResults :searchResultTags}
                             getOptions={(inputValue: string) => onSearch(inputValue)}
                             onSelect={(selection: SearchResult) => onSelect(selection)}
                             isSearchLoading={isSearchLoading || isLoadingTagSearch}

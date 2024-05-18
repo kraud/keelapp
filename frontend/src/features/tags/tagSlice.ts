@@ -5,6 +5,7 @@ import tagService from "./tagService";
 interface tagSliceState {
     tags: SearchResult[],
     otherUserTags: SearchResult[],
+    searchResultTags: SearchResult[],
     fullTagData: TagData | undefined,
     currentTagAmountWords: number,
     clonedTagResponse: { clonedTag: TagData, clonedWords: WordDataBE[] } | undefined
@@ -20,6 +21,7 @@ interface tagSliceState {
 const initialState: tagSliceState = {
     tags: [],
     otherUserTags: [],
+    searchResultTags: [],
     fullTagData: undefined,
     clonedTagResponse: undefined,
     currentTagAmountWords: 0,
@@ -260,6 +262,12 @@ export const tagSlice = createSlice({
                 otherUserTags: initialState.otherUserTags
             })
         },
+        clearSearchResultTags: (state: any) => {
+            return({
+                ...state,
+                searchResultTags: initialState.searchResultTags
+            })
+        },
         clearTagLabelIsAlreadyInUse: (state: any) => {
             return({
                 ...state,
@@ -301,7 +309,7 @@ export const tagSlice = createSlice({
             .addCase(searchTagsByLabel.fulfilled, (state, action) => {
                 state.isLoadingTagSearch = false
                 state.isSuccessTags = true
-                state.tags = (action.payload)
+                state.searchResultTags = (action.payload)
             })
             .addCase(searchTagsByLabel.rejected, (state, action) => {
                 state.isLoadingTagSearch = false
@@ -415,5 +423,5 @@ export const tagSlice = createSlice({
     }
 })
 
-export const {reset, clearFullTagData, clearOtherUserTags, clearFullTagDataWords, clearClonedTagData} = tagSlice.actions
+export const {reset, clearFullTagData, clearOtherUserTags, clearFullTagDataWords, clearClonedTagData, clearSearchResultTags} = tagSlice.actions
 export default tagSlice.reducer

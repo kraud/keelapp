@@ -11,27 +11,47 @@ const Friendship = require("../models/friendshipModel");
 // @route   GET /api/tags
 // @access  Private
 const searchTags = asyncHandler(async (req, res) => {
-    const getPrivateOrPublicQuery = () => {
-        if(req.query.includeOtherUsersTags){
-            return([
+    const getPrivateOrPublicQuery = async () => {
+        if (req.query.includeOtherUsersTags) { // this includes all possible types: 'private'/'public'/'friends-only'
+            // all documents where userIds is an array that contains the string in "req.user.id" as one of its elements:
+            const matchingQuery = await Friendship.find({
+                userIds: req.user.id,
+                status: 'accepted'
+            }, {userIds: 1, _id: 0}).then(async (matchingFriendships) => {
+                const friendUserIds = matchingFriendships.map(friendshipItem => {
+                    if (friendshipItem.userIds[0] === req.user.id) {
+                        return (friendshipItem.userIds[1])
+                    } else {
+                        return (friendshipItem.userIds[0])
+                    }
+                })
+                return ([
+                    {"label": {$regex: `${req.query.query}`, $options: "i"}},
+                    {
+                        $or: [
+                            {author: req.user.id}, // option 1: current user is the author
+                            {public: 'Public'}, // option 2: tag is public
+                            { // option 3: tag is for friends only, and author is friend of current user
+                                $and: [
+                                    {public: 'Friends-Only'},
+                                    {author: {$in: friendUserIds}}
+                                ]
+                            }
+                        ]
+                    }
+                ])
+            })
+            return (matchingQuery)
+        } else {
+            return ([
                 {"label": {$regex: `${req.query.query}`, $options: "i"}},
                 {"author": mongoose.Types.ObjectId(req.user.id)}
             ])
-        } else {
-            return({
-                $and: [
-                    {"label": {$regex: `${req.query.query}`, $options: "i"}},
-                    { $or: [
-                        {public: {$in: ['Public']}}, // TODO: in the future add 'Friends-Only' to array, IF user is friends with tag author
-                        {author: req.user.id}
-                    ]}
-                ]
-            })
         }
     }
-
+    const dynamicQuery = await getPrivateOrPublicQuery()
     // first we get all tag arrays from stored words, where at least 1 matches the query
-    const tags = await getTagDataByRequest(undefined, getPrivateOrPublicQuery())
+    const tags = await getTagDataByRequest(undefined, dynamicQuery)
 
     const searchResultTags = tags.map(tagData => {
         return {
