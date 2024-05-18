@@ -53,7 +53,8 @@ const searchTags = asyncHandler(async (req, res) => {
     // first we get all tag arrays from stored words, where at least 1 matches the query
     const tags = await getTagDataByRequest(undefined, dynamicQuery)
 
-    const searchResultTags = tags.map(tagData => {
+    // NB! search function must return SearchResult-list type data.
+    let searchResultTags = tags.map(tagData => {
         return {
             id: tagData._id,
             label: tagData.label,
@@ -61,6 +62,7 @@ const searchTags = asyncHandler(async (req, res) => {
             completeTagInfo: tagData,
         }
     })
+    searchResultTags.sort((a, b) => a.label.localeCompare(b.label))
     res.status(200).json(searchResultTags)
 })
 

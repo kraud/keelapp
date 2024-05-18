@@ -14,6 +14,7 @@ import HowToRegIcon from '@mui/icons-material/HowToReg';
 import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
 import QuizIcon from '@mui/icons-material/Quiz';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined';
 import {getPartOfSpeechAbbreviated} from "./forms/commonFunctions";
 import {getFriendRequestButtonLabel} from "./generalUseFunctions";
 import {useSelector} from "react-redux";
@@ -49,6 +50,7 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
     const [open, setOpen] = useState(false)
     const [loadingLocal, setLoadingLocal] = useState(false)
     const {friendships} = useSelector((state: any) => state.friendships)
+    const {user} = useSelector((state: any) => state.auth)
 
     // if we simply depend on isLoading, the text on the first option reads "no matches" for a second, before "Loading.."
     useEffect(() => {
@@ -127,7 +129,10 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                     <Grid
                         item={true}
                     >
-                        <LocalOfferIcon color={"primary"}/>
+                        {(option.completeTagInfo?.author!! === user._id)
+                            ? <LocalOfferIcon color={"primary"}/> // if current user is the author, we display filled-icon
+                            : <LocalOfferOutlinedIcon color={"primary"}/> // if not, we display outlined-icon
+                        }
                     </Grid>
                 )
             }
@@ -180,7 +185,7 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                     </>
                 )
             }
-            case ("tag"): {
+            case ("tag"): { // TODO: clarify if current user is the author?
                 return(
                     <Typography
                         variant={'body2'}
