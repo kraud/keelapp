@@ -318,6 +318,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
                     }
                 </Grid>
             }
+            {/* TODO: when copying, we should save somewhere the original author of the tag, and display it here as well */}
             <Grid
                 item={true}
                 xs={12}

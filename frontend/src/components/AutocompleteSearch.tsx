@@ -153,6 +153,7 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                         sx={{
                             display: 'inline',
                             paddingLeft: globalTheme.spacing(1),
+                            marginRight: globalTheme.spacing(2),
                         }}
                     >
                         {getPartOfSpeechAbbreviated(option.completeWordInfo.partOfSpeech)}
@@ -174,6 +175,7 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                             sx={{
                                 display: 'inline',
                                 paddingLeft: globalTheme.spacing(1),
+                                marginRight: globalTheme.spacing(2),
                             }}
                         >
                             {option.username}
@@ -185,7 +187,7 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                     </>
                 )
             }
-            case ("tag"): { // TODO: clarify if current user is the author?
+            case ("tag"): {
                 return(
                     <Typography
                         variant={'body2'}
@@ -194,6 +196,7 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                         sx={{
                             display: 'inline',
                             paddingLeft: globalTheme.spacing(1),
+                            marginRight: globalTheme.spacing(2),
                         }}
                     >
                         {option.completeTagInfo!!.public}
@@ -211,11 +214,14 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
             open={open}
             forcePopupIcon={false}
             clearIcon={<ClearIcon />}
+            // this will allow the search-input to remain the same size,
+            // and only the list of results will grow to match the option's width
+            componentsProps={{ popper: { style: { width: 'fit-content' } } }}
             sx={{
-                width: 250,
+                minWidth: '250px',
                 ...props.sxPropsAutocomplete,
                 color: (props.textColor !== undefined) ? props.textColor : undefined,
-        }}
+            }}
             getOptionLabel={(option: SearchResult) => option.label}
             isOptionEqualToValue={(option, value) => option.id === value.id}
             filterOptions={(x: any) => x} // necessary to implement filter on server

@@ -7,10 +7,11 @@ import globalTheme from "../theme/theme";
 import {LoadingScreen} from "../components/LoadingScreen";
 import {useNavigate, useParams} from "react-router-dom";
 import {Button, Grid} from "@mui/material";
-import {clearFullTagData, getTagById} from "../features/tags/tagSlice";
+import {acceptExternalTag, clearClonedTagData, clearFullTagData, getTagById} from "../features/tags/tagSlice";
 import {TagDataForm} from "../components/forms/tags/TagDataForm";
 import {TagData} from "../ts/interfaces";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import BookmarkAddIcon from "@mui/icons-material/BookmarkAdd";
 
 interface RouterTagProps{
     tagId: string
@@ -24,7 +25,8 @@ export function DisplayTag(props: DisplayTagProps){
     const dispatch = useDispatch()
     // @ts-ignore
     const { tagId } = useParams<RouterTagProps>()
-    const {fullTagData, tags, isLoadingTags, isSuccessTags, isError, message} = useSelector((state: any) => state.tags)
+    const {clonedTagResponse, fullTagData, tags, isLoadingTags, isSuccessTags, isError, message} = useSelector((state: any) => state.tags)
+    const {user} = useSelector((state: any) => state.auth)
 
     const emptyTagData = {
         author: "",
@@ -38,6 +40,7 @@ export function DisplayTag(props: DisplayTagProps){
     const [isDeleting, setIsDeleting] = useState(false)
     const [tagCurrentData, setTagCurrentData] = useState<TagData>(emptyTagData)
     const [currentTagHasBeenDeleted, setIsCurrentTagHasBeenDeleted] = useState(false)
+    const [currentlyCopyingTag, setCurrentlyCopyingTag] = useState(false)
 
     useEffect(() => {
         if(tagId!!) {
@@ -47,7 +50,8 @@ export function DisplayTag(props: DisplayTagProps){
     },[])
 
     useEffect(() => {
-        if(isLoadingTags){
+        // currentlyCopyingTag is there to avoid displaying loading cycle when copying tag
+        if(isLoadingTags && !currentlyCopyingTag){
             setDisplayContent(false)
         }
     },[isLoadingTags])
@@ -74,6 +78,23 @@ export function DisplayTag(props: DisplayTagProps){
             setIsEditing(false)
         }
     },[fullTagData, isSuccessTags, isLoadingTags]) // TODO: add isDeleting to array?
+
+    // TODO: this could be re-factored into a custom hook to handle toast display logic to be user elsewhere?
+    // these next 2 useEffect are related to dealing with the state after clicking on copy tag+words
+    useEffect(() => {
+        if(currentlyCopyingTag){
+            //@ts-ignore
+            dispatch(acceptExternalTag(fullTagData._id))
+        }
+    }, [currentlyCopyingTag])
+    useEffect(() => {
+        // this will only be true if the tag request has been accepted and successfully cloned
+        if((clonedTagResponse !== undefined) && (!isLoadingTags) && (isSuccessTags)){
+            // we don't need the cloned tag data anymore, so we reset the state
+            dispatch(clearClonedTagData())
+            toast.success(`Tag and words were successfully added to your account!`)
+        }
+    }, [isLoadingTags, isSuccessTags, clonedTagResponse])
 
     return(
         <Grid
@@ -114,26 +135,55 @@ export function DisplayTag(props: DisplayTagProps){
                     display: (displayContent) ?undefined :"none",
                 }}
             >
-
                 <Grid
+                    container={true}
+                    spacing={2}
                     item={true}
                     xs
                     sx={{
                         paddingBottom: globalTheme.spacing(4)
                     }}
                 >
-                    <Button
-                        variant={"contained"}
-                        color={"secondary"}
-                        onClick={() => {
-                            navigate(-1)
-                            dispatch(clearFullTagData())
-                        }}
-                        fullWidth={true}
-                        startIcon={<ArrowBackIcon />}
+                    <Grid
+                        item={true}
+                        xs
                     >
-                        Return
-                    </Button>
+                        <Button
+                            variant={"contained"}
+                            color={"secondary"}
+                            onClick={() => {
+                                navigate(-1)
+                                dispatch(clearFullTagData())
+                            }}
+                            fullWidth={true}
+                            startIcon={<ArrowBackIcon />}
+                        >
+                            Return
+                        </Button>
+                    </Grid>
+                    {(
+                        (fullTagData !== undefined) &&
+                        (fullTagData.author !== user._id) &&
+                        (fullTagData.public === 'Public')
+                    ) &&
+                        <Grid
+                            item={true}
+                            xs
+                        >
+                            <Button
+                                variant={"contained"}
+                                color={"primary"}
+                                disabled={isLoadingTags}
+                                onClick={() => {
+                                    setCurrentlyCopyingTag(true)
+                                }}
+                                fullWidth={true}
+                                startIcon={<BookmarkAddIcon/>}
+                            >
+                                Copy tag and words
+                            </Button>
+                        </Grid>
+                    }
                 </Grid>
                 {/*
                     TODO: will be refactored into DisplayTagData component,

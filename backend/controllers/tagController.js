@@ -175,6 +175,7 @@ const addExternalTag = asyncHandler(async (req, res) => {
                 ).then(async (completeOriginalWordData) => {
                     // we then create the new cloned words, from the original's data
                     return await Word.insertMany(
+                        // before inserting, we must modify the word-data so the current user is set as the creator
                         (completeOriginalWordData).map((originalWordItem) => {
                             return({
                                 ...originalWordItem.toObject(),
