@@ -216,7 +216,8 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
             clearIcon={<ClearIcon />}
             // this will allow the search-input to remain the same size,
             // and only the list of results will grow to match the option's width
-            componentsProps={{ popper: { style: { width: 'fit-content' } } }}
+            // also, min-width in pop-up must match the input-component
+            componentsProps={{ popper: { style: {minWidth: '250px', width: 'fit-content'} } }}
             sx={{
                 minWidth: '250px',
                 ...props.sxPropsAutocomplete,

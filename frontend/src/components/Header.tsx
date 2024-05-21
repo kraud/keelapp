@@ -25,6 +25,7 @@ import {stringAvatar} from "./generalUseFunctions";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import {useState} from "react";
 import {clearSearchResultTags, searchTagsByLabel} from "../features/tags/tagSlice";
+import {SwitchWithIcons} from "./StyledSwitch";
 
 const pages = ['Add word', 'Practice', 'Review'];
 const settings = ['Notifications', 'Account', 'Dashboard', 'Logout'];
@@ -302,7 +303,8 @@ function ResponsiveAppBar() {
                             >
                                 <FormControlLabel
                                     value={isWordSearch}
-                                    control={<Switch color={"secondary"} checked={isWordSearch} />}
+                                    // control={<Switch color={"secondary"} checked={isWordSearch} />}
+                                    control={<SwitchWithIcons color={"secondary"} checked={isWordSearch} />}
                                     label={""}
                                     labelPlacement={"start"}
                                     onChange={() => setIsWordSearch(!isWordSearch)}
