@@ -18,7 +18,7 @@ import {useNavigate} from "react-router-dom";
 import {getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
 import {FriendshipData, SearchResult, TagData} from "../ts/interfaces";
 import {clearUserResultData} from "../features/users/userSlice";
-import AddCommentIcon from '@mui/icons-material/AddComment';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import {getTagsForCurrentUser} from "../features/tags/tagSlice";
 import {FriendList, ChipList} from "../components/GeneralUseComponents";
 import {clearRequesterNotifications, createNotification} from "../features/notifications/notificationSlice";
@@ -260,7 +260,7 @@ export const Account = (props: AccountProps) => {
                                     color={"info"}
                                     onClick={() => setOpenTagModal(true)}
                                     fullWidth={true}
-                                    startIcon={<AddCommentIcon />}
+                                    startIcon={<LocalOfferIcon />}
                                 >
                                     Create tag
                                 </Button>
