@@ -1,4 +1,4 @@
-import {Grid, Slide, Typography} from "@mui/material";
+import {Button, Grid, Modal, Slide, Typography} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import globalTheme from "../theme/theme";
 import {useNavigate, useParams, useSearchParams} from "react-router-dom";
@@ -16,10 +16,31 @@ import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp
 import {AutocompleteMultiple} from "../components/AutocompleteMultiple";
 import {createColumnsReviewTable} from "../components/table/columns/ReviewTableColumns";
 import {FilterItem, TagData} from "../ts/interfaces";
-import {getAllIndividualTagDataFromFilterItem} from "../components/generalUseFunctions";
+import {
+    extractTagsArrayFromUnknownFormat,
+    getAllIndividualTagDataFromFilterItem
+} from "../components/generalUseFunctions";
 import {getTagById} from "../features/tags/tagSlice";
+import Box from "@mui/material/Box";
 
 export function Review(){
+    const componentStyles = {
+        mainContainer: {
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 'min(80vw, max-content)',
+            background: 'white',
+            border: '4px solid #0072CE',
+            borderRadius: '25px',
+            padding: globalTheme.spacing(3),
+            boxShadow: 24,
+        },
+        text: {
+            // cursor: (! props.onlyForDisplay!) ?"pointer" : "default",
+        }
+    }
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const {user} = useSelector((state: any) => state.auth)
@@ -29,6 +50,8 @@ export function Review(){
     const [otherLanguages, setOtherLanguages] = useState<string[]>([])
     const [displayFilers, setDisplayFilers] = useState(true)
     const [finishedDeleting, setFinishedDeleting] = useState(true)
+    const [openAssignTagModal, setOpenAssignTagModal] = useState(false)
+    const [selectedTagsData, setSelectedTagsData] = useState<TagData[]>([])
 
     const {wordsSimple, isLoading, isError, message} = useSelector((state: any) => state.words)
     const {fullTagData, isLoadingTags} = useSelector((state: any) => state.tags)
@@ -210,6 +233,11 @@ export function Review(){
             dispatch(getWordsSimplified()) // to update the list of words displayed on the table
         }
     }, [isLoading, finishedDeleting])
+
+    const handleOnModalClose = () => {
+        setOpenAssignTagModal(false)
+        setSelectedTagsData([])
+    }
 
 
     return(
@@ -423,6 +451,20 @@ export function Review(){
                             },
                         },
                         {
+                            id: "assign-tag",
+                            variant: "outlined",
+                            color: "secondary",
+                            disabled: false,
+                            label: "Assign-tag", //
+                            onClick: (rowSelection: unknown) => {
+                                setOpenAssignTagModal(true)
+                                // return({}) // TODO: fix row selection data in TranslationTable => change unknown to unknown[] ? // now to reset set {}
+                            },
+                            displayBySelectionAmount: (amountSelected: number) => {
+                                return (amountSelected > 0)
+                            },
+                        },
+                        {
                             id: "delete-selected",
                             variant: "outlined",
                             color: "error",
@@ -443,6 +485,87 @@ export function Review(){
                     ]}
                 />
             </Grid>
+            {/* TODO: should it be refactored into separate generic-modal-component? */}
+            <Modal
+                open={openAssignTagModal}
+                onClose={() => handleOnModalClose()}
+                disableAutoFocus={true}
+            >
+                <Box
+                    sx={componentStyles.mainContainer}
+                >
+                    <Grid
+                        item={true}
+                        container={true}
+                        direction={"column"}
+                    >
+                        <Grid
+                            item={true}
+                            container={true}
+                            justifyContent={"flex-end"}
+                            spacing={2}
+                            sx={{
+                                marginBottom: globalTheme.spacing(2)
+                            }}
+                            xs={"auto"}
+                        >
+                            {/* Part of speech TITLE */}
+                            <Grid
+                                container={true}
+                                item={true}
+                                alignContent={"center"}
+                                xs
+                            >
+
+                                <Typography
+                                    variant={"h4"}
+                                >
+                                    Assign tag
+                                </Typography>
+
+                            </Grid>
+                            <Grid
+                                item={true}
+                            >
+                                <Button
+                                    variant={"outlined"}
+                                    color={"error"}
+                                    onClick={() => {
+                                    }}
+                                >
+                                    cancel
+                                </Button>
+                            </Grid>
+                            <Grid
+                                item={true}
+                            >
+                                <Button
+                                    variant={"outlined"}
+                                    color={"success"}
+                                    onClick={() => {
+                                    }}
+                                >
+                                    apply
+                                </Button>
+                            </Grid>
+                        </Grid>
+                        <AutocompleteMultiple
+                            type={'tag'}
+                            values={selectedTagsData}
+                            saveResults={(results: FilterItem[]) => {
+                                // AutocompleteMultiple returns FilterItem[] => we must convert it to TagData[]
+                                // filters might be additive or restrictive, depending on AutocompleteMultiple settings,
+                                // so we use this function to calculate how to extract it
+                                setSelectedTagsData(extractTagsArrayFromUnknownFormat(results))
+                            }}
+                            allowNewOptions={true}
+                            disabled={false} // TODO: should depend on word-ownership?
+                            limitTags={4}
+                        />
+                    </Grid>
+
+                </Box>
+            </Modal>
         </Grid>
     )
 }

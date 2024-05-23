@@ -31,18 +31,18 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
     const [open, setOpen] = useState(false)
     const [loadingLocal, setLoadingLocal] = useState(false)
     const dispatch = useDispatch()
-    const {tags, isLoadingTags} = useSelector((state: any) => state.tags)
+    const {searchResultTags, isLoadingTagSearch} = useSelector((state: any) => state.tags)
 
     // if we simply depend on isLoading, the text on the first option reads "no matches" for a second, before "Loading.."
     useEffect(() => {
-        if(!isLoadingTags && loadingLocal){ // only valid once isLoading catches up with loadingLocal, and then finishes
+        if(!isLoadingTagSearch && loadingLocal){ // only valid once isLoading catches up with loadingLocal, and then finishes
             setLoadingLocal(false)
         } else {
-            if(isLoadingTags){
+            if(isLoadingTagSearch){
                 setOptions([])
             }
         }
-    }, [isLoadingTags])
+    }, [isLoadingTagSearch])
 
     // this triggers when we type something on the search field
     useEffect(() => {
@@ -70,10 +70,10 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
         }))
     }
 
-    // TODO: AutocompleteMultiple should work with SearchResult instead of TagData? Should refactor refactor.
+    // TODO: AutocompleteMultiple should work with SearchResult instead of TagData? Should refactor.
     useEffect(() => {
-        setOptions(searchResultToTag(tags))
-    },[tags])
+        setOptions(searchResultToTag(searchResultTags))
+    },[searchResultTags])
 
     // Depending on the type of AutocompleteMultiple, the returned data will be structured differently.
     // e.g. if matchAll prop is true => returned data will include restrictiveArray,
@@ -144,7 +144,7 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
             // @ts-ignore
             getOptionLabel={(option: TagData) => option.label}
             filterOptions={(x: any) => x} // necessary to implement filter on server
-            options={(loadingLocal || isLoadingTags) ?[] :options}
+            options={(loadingLocal || isLoadingTagSearch) ?[] :options}
             includeInputInList
             // NB! issues when clearing on blur where triggering reset reason at onInputChange on every character-temp fix?
             clearOnBlur={false}
@@ -153,7 +153,7 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
             }}
 
             value={props.values}
-            noOptionsText={(loadingLocal || isLoadingTags) ?"Loading..." :"No matches"}
+            noOptionsText={(loadingLocal || isLoadingTagSearch) ?"Loading..." :"No matches"}
             //@ts-ignore
             onChange={(event: any, newValue: TagData[]) => {
                 if(newValue.length > 0) {
@@ -231,7 +231,7 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
                                     }}
                                 >
                                     {(
-                                        ((loadingLocal || isLoadingTags) && open)
+                                        ((loadingLocal || isLoadingTagSearch) && open)
                                         ||
                                         (props.forceLoadingState)
                                     )
