@@ -195,6 +195,29 @@ export const updateTag = createAsyncThunk(`tags/updateTagById`, async (updatedDa
     }
 })
 
+export interface AddTagsToWordsData {
+    selectedWords: string[],
+    newTagsToApply: string[]
+}
+
+// Add selected tags to the corresponding words
+export const applyNewTagToSelectedWordsById = createAsyncThunk(`tags/addTagsToWords`, async (newTagAndWordData: AddTagsToWordsData, thunkAPI) => {
+    try {
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await tagService.addTagsToWords(token, newTagAndWordData)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
 // TODO: never used. Not properly implemented? Check if needed. If not, delete.
 // Get the amount of words that have a certain tag associated to it
 export const getAmountByTag = createAsyncThunk(`words/getAmountByTag`, async (id: string, thunkAPI) => {
@@ -390,6 +413,19 @@ export const tagSlice = createSlice({
                 state.fullTagData = (action.payload)
             })
             .addCase(updateTag.rejected, (state, action) => {
+                state.isLoadingTags = false
+                state.isError = true
+                state.message = action.payload as string
+            })
+            .addCase(applyNewTagToSelectedWordsById.pending, (state) => {
+                state.isLoadingTags = true
+            })
+            .addCase(applyNewTagToSelectedWordsById.fulfilled, (state, action) => {
+                state.isLoadingTags = false
+                state.isSuccessTags = true
+                // state.fullTagData = (action.payload) // TODO: where to store the new tag+word response data?
+            })
+            .addCase(applyNewTagToSelectedWordsById.rejected, (state, action) => {
                 state.isLoadingTags = false
                 state.isError = true
                 state.message = action.payload as string

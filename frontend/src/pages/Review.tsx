@@ -20,7 +20,7 @@ import {
     extractTagsArrayFromUnknownFormat,
     getAllIndividualTagDataFromFilterItem
 } from "../components/generalUseFunctions";
-import {getTagById} from "../features/tags/tagSlice";
+import {applyNewTagToSelectedWordsById, getTagById} from "../features/tags/tagSlice";
 import Box from "@mui/material/Box";
 
 export function Review(){
@@ -206,17 +206,37 @@ export function Review(){
         }
     }
 
-    const deleteSelectedRows = (rowSelection: unknown) => {
-        // rowSelection format:
-        // { selectedRowIndex: true } // TODO: should we change it to saving the row info instead?
+    const getWordsIdFromRowSelection = (rowSelection: unknown) => {
         let wordIdsToDelete: string[] = []
         // @ts-ignore
         Object.keys(rowSelection).forEach((selectionDataIndex: string) => {
             wordIdsToDelete.push(wordsSimple.words[parseInt(selectionDataIndex)].id)
         })
+        return(wordIdsToDelete)
+    }
+
+    const deleteSelectedRows = (rowSelection: unknown) => {
+        // rowSelection format:
+        // { selectedRowIndex: true } // TODO: should we change it to saving the row info instead?
+        // let wordIdsToDelete: string[] = []
+        // // @ts-ignore
+        // Object.keys(rowSelection).forEach((selectionDataIndex: string) => {
+        //     wordIdsToDelete.push(wordsSimple.words[parseInt(selectionDataIndex)].id)
+        // })
+        // dispatch(deleteManyWordsById(wordIdsToDelete))
         // @ts-ignore
-        dispatch(deleteManyWordsById(wordIdsToDelete))
+        dispatch(deleteManyWordsById(getWordsIdFromRowSelection(rowSelection)))
         setFinishedDeleting(false)
+    }
+
+    const onRowSelectionApplyNewTags = (rowSelection: unknown) => {
+        const selectedWordsId = getWordsIdFromRowSelection(rowSelection)
+        const selectedTagsId = selectedTagsData.map((tag: TagData) => {
+            return(tag._id)
+        })
+        // @ts-ignore
+        dispatch(applyNewTagToSelectedWordsById({selectedWords: selectedWordsId, newTagsToApply: selectedTagsId}))
+        // TODO: add display-loading bar logic
     }
 
     useEffect(() => {
@@ -551,7 +571,7 @@ export function Review(){
                         </Grid>
                         <AutocompleteMultiple
                             type={'tag'}
-                            values={selectedTagsData}
+                            values={selectedTagsData} // TODO: results should NOT include tags that ANY of the words already have.
                             saveResults={(results: FilterItem[]) => {
                                 // AutocompleteMultiple returns FilterItem[] => we must convert it to TagData[]
                                 // filters might be additive or restrictive, depending on AutocompleteMultiple settings,
