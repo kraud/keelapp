@@ -205,7 +205,7 @@ export const applyNewTagToSelectedWordsById = createAsyncThunk(`tags/addTagsToWo
     try {
         // @ts-ignore
         const token = thunkAPI.getState().auth.user.token
-        return await tagService.addTagsToWords(token, newTagAndWordData)
+        return await tagService.addTagsInBulkToWords(token, newTagAndWordData)
     } catch(error: any) {
         const message = (
                 error.response &&

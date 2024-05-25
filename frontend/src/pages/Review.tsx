@@ -51,6 +51,7 @@ export function Review(){
     const [displayFilers, setDisplayFilers] = useState(true)
     const [finishedDeleting, setFinishedDeleting] = useState(true)
     const [openAssignTagModal, setOpenAssignTagModal] = useState(false)
+    const [selectedRowsForBulkTagAssign, setSelectedRowsForBulkTagAssign] = useState<string[]>([])
     const [selectedTagsData, setSelectedTagsData] = useState<TagData[]>([])
 
     const {wordsSimple, isLoading, isError, message} = useSelector((state: any) => state.words)
@@ -229,13 +230,12 @@ export function Review(){
         setFinishedDeleting(false)
     }
 
-    const onRowSelectionApplyNewTags = (rowSelection: unknown) => {
-        const selectedWordsId = getWordsIdFromRowSelection(rowSelection)
+    const onRowSelectionApplyNewTags = (rowSelection: string[]) => {
         const selectedTagsId = selectedTagsData.map((tag: TagData) => {
             return(tag._id)
         })
         // @ts-ignore
-        dispatch(applyNewTagToSelectedWordsById({selectedWords: selectedWordsId, newTagsToApply: selectedTagsId}))
+        dispatch(applyNewTagToSelectedWordsById({selectedWords: rowSelection, newTagsToApply: selectedTagsId}))
         // TODO: add display-loading bar logic
     }
 
@@ -257,6 +257,7 @@ export function Review(){
     const handleOnModalClose = () => {
         setOpenAssignTagModal(false)
         setSelectedTagsData([])
+        setSelectedRowsForBulkTagAssign([])
     }
 
 
@@ -478,7 +479,7 @@ export function Review(){
                             label: "Assign-tag", //
                             onClick: (rowSelection: unknown) => {
                                 setOpenAssignTagModal(true)
-                                // return({}) // TODO: fix row selection data in TranslationTable => change unknown to unknown[] ? // now to reset set {}
+                                setSelectedRowsForBulkTagAssign(getWordsIdFromRowSelection(rowSelection))
                             },
                             displayBySelectionAmount: (amountSelected: number) => {
                                 return (amountSelected > 0)
@@ -550,8 +551,7 @@ export function Review(){
                                 <Button
                                     variant={"outlined"}
                                     color={"error"}
-                                    onClick={() => {
-                                    }}
+                                    onClick={() => handleOnModalClose()}
                                 >
                                     cancel
                                 </Button>
@@ -563,6 +563,8 @@ export function Review(){
                                     variant={"outlined"}
                                     color={"success"}
                                     onClick={() => {
+                                        // selectedRows state is defined when opening the modal
+                                        onRowSelectionApplyNewTags(selectedRowsForBulkTagAssign)
                                     }}
                                 >
                                     apply

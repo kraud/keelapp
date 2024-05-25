@@ -150,6 +150,41 @@ const getTagById = asyncHandler(async (req, res) => {
     res.status(200).json(singleTagData[0])
 })
 
+// @desc    Assigns the selected tags to all the selected words simultaneously
+// @route   POST /api/tags
+// @access  Private
+const addTagsInBulkToWords = asyncHandler(async (req, res) => {
+    // allows any tag to be selected, and we'll only add them to those words that don't have them yet
+    const tagIds = req.body.newTagsToApply // string[]
+    const wordsIds = req.body.selectedWords // string[]
+
+    // For each selected Tag, we cycle through their relevant TagWord documents, and new ones from wordsIds (avoiding duplicates)
+    Promise.all(tagIds.map(async (tagIdToAssign) => {
+        return TagWord.find(
+            {tagId: tagIdToAssign},
+            {_id: 0, tagId: 0, createdAt: 0, updatedAt: 0, __v: 0} // this will only return wordId
+        )
+            .then(async (matchingWordsIdData) => {
+                const allWordIdsRelatedToTag = matchingWordsIdData.map((wordIdData) => {
+                    return((wordIdData.wordId).toString()) // toString() transforms ObjectId() to string
+                })
+                let tagWordsToBeCreated = []
+                wordsIds.forEach((wordId) => { // some selected words might already be related to this tag, so we filter them first
+                    if(!allWordIdsRelatedToTag.includes(wordId)){ // if tag already has a relation with the wordId, we don't have to create it
+                        tagWordsToBeCreated.push({
+                            wordId: wordId,
+                            tagId: tagIdToAssign
+                        })
+                    }
+                })
+                // now we create all the missing TagWord relationships related to this tag
+                return TagWord.insertMany(tagWordsToBeCreated)
+            })
+    })).then(async (responseFromCreatingAllNewTagWords) => {
+        res.status(200).json(responseFromCreatingAllNewTagWords)
+    })
+})
+
 // @desc    Copies the tag and words data into this account (alongside the TagWord documents).
 // @route   POST /api/tags
 // @access  Private
@@ -557,5 +592,6 @@ module.exports = {
     getOtherUserTags,
     getTagDataByRequest,
     addExternalTag,
-    checkIfTagLabelAvailable
+    checkIfTagLabelAvailable,
+    addTagsInBulkToWords
 }

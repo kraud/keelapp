@@ -91,18 +91,14 @@ const updateTagById = async (token: any, updatedData: TagData) => {
     return(response.data)
 }
 
-// TODO: evaluate if it should be a PUT operation or what else.
-const addTagsToWords = async (token: any, newTagAndWordData: AddTagsToWordsData) => {
+const addTagsInBulkToWords = async (token: any, newTagAndWordData: AddTagsToWordsData) => {
     const config = {
         headers: {
             Authorization: `Bearer ${token}`
-        },
-        params: {
-            ...newTagAndWordData
         }
     }
-    // const response = await axios.put(`${API_URL}/addTagToWords/${updatedData._id}`, updatedData, config)
-    // return(response.data)
+    const response = await axios.post(`${API_URL}/addTagInBulkToWords`, newTagAndWordData, config)
+    return(response.data)
 }
 
 const getTagWordsAmount = async (token: any, id: string) => {
@@ -147,7 +143,7 @@ const addExternalTag = async (token: any, tagId: string) => {
 
 const tagService = {
     getUserTags, searchTags, getTagById, createTag, deleteTagById, updateTagById, getTagWordsAmount, getOtherUserTags,
-    filterTags, addExternalTag, checkIfTagLabelAvailable, addTagsToWords
+    filterTags, addExternalTag, checkIfTagLabelAvailable, addTagsInBulkToWords
 }
 
 export default tagService
