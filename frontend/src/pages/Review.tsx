@@ -4,7 +4,7 @@ import globalTheme from "../theme/theme";
 import {useNavigate, useParams, useSearchParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
-import {deleteManyWordsById, deleteWordById, getWordsSimplified} from "../features/words/wordSlice";
+import {deleteManyWordsById, getWordsSimplified} from "../features/words/wordSlice";
 import {DnDLanguageOrderSelector} from "../components/DnDLanguageOrderSelector";
 import {Lang, NounCases, PartOfSpeech} from "../ts/enums";
 import {TranslationsTable} from "../components/table/TranslationsTable";
@@ -22,6 +22,7 @@ import {
 } from "../components/generalUseFunctions";
 import {applyNewTagToSelectedWordsById, getTagById} from "../features/tags/tagSlice";
 import Box from "@mui/material/Box";
+import LinearIndeterminate from "../components/Spinner";
 
 export function Review(){
     const componentStyles = {
@@ -53,9 +54,10 @@ export function Review(){
     const [openAssignTagModal, setOpenAssignTagModal] = useState(false)
     const [selectedRowsForBulkTagAssign, setSelectedRowsForBulkTagAssign] = useState<string[]>([])
     const [selectedTagsData, setSelectedTagsData] = useState<TagData[]>([])
+    const [isAddingTags, setIsAddingTags] = useState(false)
 
     const {wordsSimple, isLoading, isError, message} = useSelector((state: any) => state.words)
-    const {fullTagData, isLoadingTags} = useSelector((state: any) => state.tags)
+    const {fullTagData, isLoadingTags, isSuccessTags} = useSelector((state: any) => state.tags)
     // @ts-ignore
     const { filtersURL } = useParams<RouterWordProps>()
     let [searchParams, setSearchParams]  = useSearchParams();
@@ -231,6 +233,7 @@ export function Review(){
     }
 
     const onRowSelectionApplyNewTags = (rowSelection: string[]) => {
+        setIsAddingTags(true)
         const selectedTagsId = selectedTagsData.map((tag: TagData) => {
             return(tag._id)
         })
@@ -254,12 +257,21 @@ export function Review(){
         }
     }, [isLoading, finishedDeleting])
 
+    useEffect(() => {
+        if(isAddingTags && !isLoadingTags && isSuccessTags){
+            // closeModal
+            toast.success(`Tags were added successfully`)
+            handleOnModalClose()
+            //@ts-ignore
+            dispatch(getWordsSimplified()) // to update the list of words displayed on the table
+        }
+    }, [isLoadingTags, isSuccessTags])
+
     const handleOnModalClose = () => {
         setOpenAssignTagModal(false)
         setSelectedTagsData([])
         setSelectedRowsForBulkTagAssign([])
     }
-
 
     return(
         <Grid
@@ -506,7 +518,10 @@ export function Review(){
                     ]}
                 />
             </Grid>
-            {/* TODO: should it be refactored into separate generic-modal-component? */}
+            {/*
+                TODO: should it be refactored into separate generic-modal-component?
+                 Also used in ExtraTableComponents' TableDataCell modal
+            */}
             <Modal
                 open={openAssignTagModal}
                 onClose={() => handleOnModalClose()}
@@ -544,6 +559,7 @@ export function Review(){
                                     Assign tag
                                 </Typography>
 
+                                {(isLoadingTags) && <LinearIndeterminate/>}
                             </Grid>
                             <Grid
                                 item={true}
