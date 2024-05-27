@@ -12,6 +12,7 @@ import {TagDataForm} from "../components/forms/tags/TagDataForm";
 import {TagData} from "../ts/interfaces";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import BookmarkAddIcon from "@mui/icons-material/BookmarkAdd";
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 interface RouterTagProps{
     tagId: string
@@ -167,27 +168,51 @@ export function DisplayTag(props: DisplayTagProps){
                         (fullTagData.public === 'Public')
                     ) &&
                         <Grid
+                            container={true}
+                            spacing={2}
                             item={true}
                             xs
                         >
-                            <Button
-                                variant={"contained"}
-                                color={"primary"}
-                                disabled={isLoadingTags}
-                                onClick={() => {
-                                    setCurrentlyCopyingTag(true)
-                                }}
-                                fullWidth={true}
-                                startIcon={<BookmarkAddIcon/>}
+                            <Grid
+                                item={true}
+                                xs={6}
                             >
-                                Copy tag and words
-                            </Button>
+                                <Button
+                                    variant={"contained"}
+                                    color={"primary"}
+                                    disabled={isLoadingTags}
+                                    onClick={() => {
+                                        setCurrentlyCopyingTag(true)
+                                    }}
+                                    fullWidth={true}
+                                    startIcon={<ContentCopyIcon/>}
+                                >
+                                    Clone tag and words
+                                </Button>
+                            </Grid>
+                            <Grid
+                                item={true}
+                                xs={6}
+                            >
+                                <Button
+                                    variant={"contained"}
+                                    color={"primary"}
+                                    disabled={true}
+                                    onClick={() => {
+
+                                    }}
+                                    fullWidth={true}
+                                    startIcon={<BookmarkAddIcon/>}
+                                >
+                                    Follow tag
+                                </Button>
+                            </Grid>
                         </Grid>
                     }
                 </Grid>
                 {/*
                     TODO: will be refactored into DisplayTagData component,
-                    which will include prop for list of action buttons, and another prop to define where to display them (top-bot)
+                     which will include prop for list of action buttons, and another prop to define where to display them (top-bot)
                 */}
                 <TagDataForm
                     currentTagData={tagCurrentData}

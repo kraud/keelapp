@@ -182,7 +182,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
             if(props.currentTagData.words !== undefined){
                 setSelectedWords(props.currentTagData.words)
             }
-
+            // when the author of the tag is not the current user => we get username from BE
             if((props.currentTagData.author !== user._id)){
                 // @ts-ignore
                 dispatch(getUserById(props.currentTagData.author))

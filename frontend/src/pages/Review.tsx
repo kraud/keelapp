@@ -239,7 +239,6 @@ export function Review(){
         })
         // @ts-ignore
         dispatch(applyNewTagToSelectedWordsById({selectedWords: rowSelection, newTagsToApply: selectedTagsId}))
-        // TODO: add display-loading bar logic
     }
 
     useEffect(() => {
@@ -589,7 +588,7 @@ export function Review(){
                         </Grid>
                         <AutocompleteMultiple
                             type={'tag'}
-                            values={selectedTagsData} // TODO: results should NOT include tags that ANY of the words already have.
+                            values={selectedTagsData}
                             saveResults={(results: FilterItem[]) => {
                                 // AutocompleteMultiple returns FilterItem[] => we must convert it to TagData[]
                                 // filters might be additive or restrictive, depending on AutocompleteMultiple settings,

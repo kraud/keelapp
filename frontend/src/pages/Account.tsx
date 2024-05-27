@@ -19,7 +19,7 @@ import {getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
 import {FriendshipData, SearchResult, TagData} from "../ts/interfaces";
 import {clearUserResultData} from "../features/users/userSlice";
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
-import {getTagsForCurrentUser} from "../features/tags/tagSlice";
+import {clearFullTagData, getTagsForCurrentUser} from "../features/tags/tagSlice";
 import {FriendList, ChipList} from "../components/GeneralUseComponents";
 import {clearRequesterNotifications, createNotification} from "../features/notifications/notificationSlice";
 
@@ -98,6 +98,7 @@ export const Account = (props: AccountProps) => {
         // @ts-ignore
         dispatch(getFriendshipsByUserId(user._id))
         dispatch(clearUserResultData())
+        // dispatch(clearFullTagData()) // TODO: review this, since it's causing issues when creating a new tag after reviewing another before that
     },[])
 
     const onSaveChanges = (newLocalUserData: UserBadgeData) => {
