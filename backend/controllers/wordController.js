@@ -227,7 +227,6 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
     })
     let originalResults = []
 
-    // if(filters.length > 0){
     if(newSortedFilters.length > 0){
         for (const filter of newSortedFilters) {
             const request = {
@@ -269,7 +268,8 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
             searchResults: wordWithTagData
         })
     }
-
+    // TODO: add to originalResults the words related to other-users-tags, that the current user follows.
+    //  Should be another async request here for TagUser items, matching current user. From there, match wordData using TagWord.
 
     let wordsSimplified = []
     // we merge all the items with the same "type" into the same array
@@ -279,7 +279,7 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
     if((originalResults.length === 1) && (originalResults[0].type === 'none')){
         processedResults = (originalResults[0].searchResults)
     } else {
-        originalResults.forEach((originalResult, indexOGResult) => {
+        originalResults.forEach((originalResult) => {
             // first item will be added directly
             if(groupedResults.length === 0){
                 groupedResults.push({
@@ -339,7 +339,7 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
             })
             const finalIds = (allIds[0]).filter(wordId => allIds.every(typeArray => typeArray.includes(wordId)))
             let checked = new Set()
-            uniqueResults.forEach((uniqueItem, index) => {
+            uniqueResults.forEach((uniqueItem) => {
                 uniqueItem.forEach((item) => {
                     if (
                         (finalIds.includes((item._id).toString())) &&
@@ -388,7 +388,6 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
 // @route   GET /api/words
 // @access  Private
 const getWordById = asyncHandler(async (req, res) => {
-    // const word = await Word.findById(req.params.id)
     const word = await Word.aggregate([
         // filtering related to data present in word => apply here
         {
@@ -404,7 +403,6 @@ const getWordById = asyncHandler(async (req, res) => {
         // filtering related to data present in tagWord => apply here
         { '$lookup': {
             'from': TagWord.collection.name,
-            // 'let': { 'id': '$_id', 'wordAuthor': '$user' }, // from Word
             'let': { 'wordAuthor': '$user' }, // from Word
             'pipeline': [
                 {
