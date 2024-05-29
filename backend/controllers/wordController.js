@@ -33,8 +33,9 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
                     {"user": mongoose.Types.ObjectId(req.user.id)},
                 ]
             }
-            // NB! This is not being used. We currently use an alternative workaround filtering by tagsId in TagWord,
-            // but a query like this, implemented in pipeline would be a better solution.
+            // **** NB! This is not being used! ****
+            // We currently use an alternative workaround filtering by tagsId in TagWord
+            // A query like this, implemented in pipeline would be a better solution.
             case 'tag': {
                 // NB! in this case, filter.tagIds for type === "tag" will be an array of strings
                 // so each filter further restricts the results when included
@@ -66,6 +67,7 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
                     break
                 }
             }
+            // **** ****
             case 'PoS': {
                 return [
                     {"user": mongoose.Types.ObjectId(req.user.id)},

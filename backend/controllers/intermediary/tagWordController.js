@@ -1,6 +1,6 @@
 const asyncHandler = require('express-async-handler')
 
-const TagWord = require('../models/intermediary/tagWordModel')
+const TagWord = require('../../models/intermediary/tagWordModel')
 
 // @desc    Set tagWord
 // @route   POST --
@@ -14,7 +14,7 @@ const createTagWord = asyncHandler(async (req, res) => {
     res.status(200).json(tagWord)
 })
 
-// @desc    Set tagWord
+// @desc    Set many tagWord simultaneously
 // @route   POST --
 // @access  Private
 const createManyTagWord = asyncHandler(async (req, res) => {
@@ -65,8 +65,6 @@ const deleteTagWord = asyncHandler(async (req, res) => {
     await tagWord.deleteOne()
     res.status(200).json(tagWord)
 })
-
-
 
 module.exports = {
     createTagWord,
