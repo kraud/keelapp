@@ -4,7 +4,7 @@ const Word = require('../models/wordModel')
 const Tag = require('../models/tagModel')
 const mongoose = require("mongoose");
 const TagWord = require("../models/intermediary/tagWordModel");
-const {raw} = require("express");
+const {getWordsIdFromFollowedTagsByUserId} = require("./intermediary/userFollowingTagController");
 
 // @desc    Get Words
 // @route   GET /api/words
@@ -12,6 +12,14 @@ const {raw} = require("express");
 const getWords = asyncHandler(async (req, res) => {
     const words = await Word.find({ user: req.user.id})
     res.status(200).json(words)
+})
+
+// @desc    Get list of wordsId corresponding to a tag, followed by a user that is NOT the creator of the tag
+// @route   GET --
+// @access  Private
+const getWordsByFollowedTag = asyncHandler(async (req, res) => {
+    const matchingWordsId = await getWordsIdFromFollowedTagsByUserId(req.params.id)
+    res.status(200).json(matchingWordsId)
 })
 
 // @desc    Get Words with simplified data
@@ -196,6 +204,11 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
         }
     }
 
+    // TODO: add to originalResults the words related to other-users-tags, that the current user follows.
+    //  Should be another async request here for TagUser items, matching current user. From there, match wordData using TagWord.
+    const matchingWordsId = await getWordsIdFromFollowedTagsByUserId(req.user.id)
+    console.log('matchingWordsId', matchingWordsId)
+
     const filters = (req.query.filters !== undefined) ?req.query.filters :[]
 
     // all filters of the same type must be merged into 1 filter, to avoid multiple requests to collection for each type
@@ -270,8 +283,6 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
             searchResults: wordWithTagData
         })
     }
-    // TODO: add to originalResults the words related to other-users-tags, that the current user follows.
-    //  Should be another async request here for TagUser items, matching current user. From there, match wordData using TagWord.
 
     let wordsSimplified = []
     // we merge all the items with the same "type" into the same array
@@ -960,5 +971,6 @@ module.exports = {
     deleteWord,
     filterWordByAnyTranslation,
     getWordDataByRequest,
-    deleteManyWords
+    deleteManyWords,
+    getWordsByFollowedTag
 }

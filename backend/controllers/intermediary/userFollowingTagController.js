@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler')
 
 const UserFollowingTag = require('../../models/intermediary/userFollowingTagModel')
+const TagWord = require('../../models/intermediary/tagWordModel')
 
 // @desc    Set userFollowingTag
 // @route   POST --
@@ -66,10 +67,24 @@ const deleteTagWord = asyncHandler(async (req, res) => {
     res.status(200).json(userFollowingTag)
 })
 
+// NB! For internal use. Not available through routes
+const getWordsIdFromFollowedTagsByUserId = async (userId) => {
+    return UserFollowingTag.distinct('tagId', {followerUserId: userId})
+        .then((matchingTagsIdResponse) => {
+            console.log('arrayOfTAGSIdResponse', matchingTagsIdResponse)
+            return TagWord.distinct('wordId', {tagId: {$in: userId}})
+                .then((matchingWordsIdResponse) => {
+                    console.log('arrayOfWORDSIdResponse', matchingWordsIdResponse)
+                    return(matchingWordsIdResponse)
+                })
+        })
+}
+
 module.exports = {
     createUserFollowingTag,
     createManyUserFollowingTag,
     getAllUSerFollowingTagsRelatedToTagId,
     getAllUSerFollowingTagsRelatedToUserId,
-    deleteTagWord
+    deleteTagWord,
+    getWordsIdFromFollowedTagsByUserId
 }

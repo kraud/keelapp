@@ -5,8 +5,11 @@ const {
     getWordDataByRequest, deleteManyWords
 } = require('../controllers/wordController')
 const {protect} = require('../middleware/authMiddleware')
+const {getWordsByFollowedTag} = require("../controllers/wordController");
 
 router.get('/', protect, getWords)
+
+router.get('/getWordsRelatedToFollowedTag', protect, getWordsByFollowedTag)
 
 router.get('/simple', protect, getWordsSimplified)
 
