@@ -8,7 +8,8 @@ interface tagSliceState {
     searchResultTags: SearchResult[],
     fullTagData: TagData | undefined,
     currentTagAmountWords: number,
-    clonedTagResponse: { clonedTag: TagData, clonedWords: WordDataBE[] } | undefined
+    clonedTagResponse: { clonedTag: TagData, clonedWords: WordDataBE[] } | undefined,
+    followedTagResponse: any | undefined // TODO: Define type for 'followedTagResponse' according to BE response
     tagLabelIsAlreadyInUse: TagLabelAvailabilityStatus
 
     isLoadingTags: boolean,
@@ -24,6 +25,7 @@ const initialState: tagSliceState = {
     searchResultTags: [],
     fullTagData: undefined,
     clonedTagResponse: undefined,
+    followedTagResponse: undefined,
     currentTagAmountWords: 0,
     tagLabelIsAlreadyInUse: {isAvailable: true},
     isLoadingTags: false,
@@ -256,6 +258,24 @@ export const acceptExternalTag = createAsyncThunk(`tags/addExternalTag`, async (
     }
 })
 
+// Get full tag data by its id
+export const followTag = createAsyncThunk(`tags/followExternalTag`, async (data:{tagId: string, userId: string}, thunkAPI) => {
+    try {
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await tagService.followTagByAnotherUser(token, data)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
 export const tagSlice = createSlice({
     name: 'tag',
     initialState,
@@ -271,6 +291,12 @@ export const tagSlice = createSlice({
             return({
                 ...state,
                 clonedTagResponse: initialState.clonedTagResponse
+            })
+        },
+        clearFollowedTagData: (state: any) => {
+            return({
+                ...state,
+                followedTagResponse: initialState.followedTagResponse
             })
         },
         clearFullTagDataWords: (state: any) => {
@@ -456,8 +482,25 @@ export const tagSlice = createSlice({
                 state.isError = true
                 state.message = action.payload as string
             })
+            .addCase(followTag.pending, (state) => {
+                state.isLoadingTags = true
+            })
+            .addCase(followTag.fulfilled, (state, action) => {
+                state.isLoadingTags = false
+                state.isSuccessTags = true
+                state.followedTagResponse = (action.payload)
+            })
+            .addCase(followTag.rejected, (state, action) => {
+                state.isLoadingTags = false
+                state.isError = true
+                state.message = action.payload as string
+            })
     }
 })
 
-export const {reset, clearFullTagData, clearOtherUserTags, clearFullTagDataWords, clearClonedTagData, clearSearchResultTags} = tagSlice.actions
+export const {
+    reset, clearFullTagData, clearOtherUserTags,
+    clearFullTagDataWords, clearClonedTagData, clearFollowedTagData,
+    clearSearchResultTags
+} = tagSlice.actions
 export default tagSlice.reducer

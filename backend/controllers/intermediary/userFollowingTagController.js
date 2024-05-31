@@ -71,10 +71,8 @@ const deleteTagWord = asyncHandler(async (req, res) => {
 const getWordsIdFromFollowedTagsByUserId = async (userId) => {
     return UserFollowingTag.distinct('tagId', {followerUserId: userId})
         .then((matchingTagsIdResponse) => {
-            console.log('arrayOfTAGSIdResponse', matchingTagsIdResponse)
-            return TagWord.distinct('wordId', {tagId: {$in: userId}})
+            return TagWord.distinct('wordId', {tagId: {$in: matchingTagsIdResponse}})
                 .then((matchingWordsIdResponse) => {
-                    console.log('arrayOfWORDSIdResponse', matchingWordsIdResponse)
                     return(matchingWordsIdResponse)
                 })
         })

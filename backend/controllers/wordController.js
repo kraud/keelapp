@@ -26,6 +26,10 @@ const getWordsByFollowedTag = asyncHandler(async (req, res) => {
 // @route   GET /api/words/simple
 // @access  Private
 const getWordsSimplified = asyncHandler(async (req, res) => {
+
+    // adds to originalResults the words related to other-users-tags, that the current user follows.
+    const matchingWordsId = await getWordsIdFromFollowedTagsByUserId(req.user.id)
+
     const getFilterQuery = (filter) => {
         switch(filter.type) {
             case 'gender': {
@@ -38,7 +42,10 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
                             }
                         }
                     },
-                    {"user": mongoose.Types.ObjectId(req.user.id)},
+                    { $or: [
+                        {"user": mongoose.Types.ObjectId(req.user.id)},
+                        {"_id": {$in: matchingWordsId}}
+                    ]}
                 ]
             }
             // **** NB! This is not being used! ****
@@ -77,14 +84,21 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
             }
             // **** ****
             case 'PoS': {
-                return [
-                    {"user": mongoose.Types.ObjectId(req.user.id)},
+                return [{
+                        $or: [
+                            {"user": mongoose.Types.ObjectId(req.user.id)},
+                            {"_id": {$in: matchingWordsId}}
+                        ]
+                    },
                     {"partOfSpeech": {$in: filter.filterValue}},
                 ]
             }
             default: { // NO FILTER?
                 return {
-                    "user": req.user.id,
+                    $or: [
+                        {"user": mongoose.Types.ObjectId(req.user.id)},
+                        {"_id": {$in: matchingWordsId}}
+                    ]
                 }
             }
         }
@@ -204,11 +218,6 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
         }
     }
 
-    // TODO: add to originalResults the words related to other-users-tags, that the current user follows.
-    //  Should be another async request here for TagUser items, matching current user. From there, match wordData using TagWord.
-    const matchingWordsId = await getWordsIdFromFollowedTagsByUserId(req.user.id)
-    console.log('matchingWordsId', matchingWordsId)
-
     const filters = (req.query.filters !== undefined) ?req.query.filters :[]
 
     // all filters of the same type must be merged into 1 filter, to avoid multiple requests to collection for each type
@@ -246,7 +255,10 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
         for (const filter of newSortedFilters) {
             const request = {
                 query: {
-                    user: req.user.id,
+                    $or: [
+                        {"user": req.user.id},
+                        {"_id": {$in: matchingWordsId}}
+                    ]
                 }
             }
             if(filter.type === 'tag'){
@@ -261,7 +273,7 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
             } else {
                 // this should work for type 'gender' and 'PoS'.
                 const wordWithTagData = await getWordDataByRequest(
-                    request, // this will always be ignored if there's a (non-tag) filter
+                    request, // this will always be ignored if there's a (non-tag) filter, like in this case
                     getFilterQuery(filter)
                 )
                 originalResults.push({
@@ -271,13 +283,17 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
             }
         }
     } else {
-        const request = {
-            query: {
-                user: req.user.id,
+        const request = [
+            {
+                $or: [
+                    {"user": mongoose.Types.ObjectId(req.user.id)},
+                    {"_id": {$in: matchingWordsId}}
+                ]
             }
-        }
-        // no need for further parameters in getWordDataByRequest, since they're only required when using filters
-        const wordWithTagData = await getWordDataByRequest(request)
+        ]
+        // NB! request is not a simple filter by fields, since it must also match 'matchingWordsId',
+        //  so we use the force-request parameter in getWordDataByRequest
+        const wordWithTagData = await getWordDataByRequest(undefined, request)
         originalResults.push({
             type: 'none',
             searchResults: wordWithTagData
@@ -408,7 +424,7 @@ const getWordById = asyncHandler(async (req, res) => {
                 $and:[
                     // filter the Word to match the requested id
                     {"_id": mongoose.Types.ObjectId(req.params.id)},
-                    // Make sure the logged-in user matches the word user
+                    // Make sure the logged-in user matches the word user // TODO: this should change, to accommodate follow-tag logic
                     {"user": mongoose.Types.ObjectId(req.user.id)},
                 ]
             }
@@ -868,6 +884,7 @@ const getWordsByTagFiltering = async (tagFilters) => {
     const tagIds = tagFilters.map(tagFilter => {
         return (tagFilter._id)
     })
+    // TODO: replace 'find' with 'distinct', to avoid having to filter unique items later
     const filteredWordsWithTagData = await TagWord.find(
         {
             "tagId" : {

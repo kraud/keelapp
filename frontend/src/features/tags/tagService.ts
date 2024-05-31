@@ -141,9 +141,19 @@ const addExternalTag = async (token: any, tagId: string) => {
     return(response.data)
 }
 
+const followTagByAnotherUser = async (token: any, data: {tagId: string, userId: string}) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+    const response = await axios.post(`${API_URL}/followTag`, data, config)
+    return(response.data)
+}
+
 const tagService = {
     getUserTags, searchTags, getTagById, createTag, deleteTagById, updateTagById, getTagWordsAmount, getOtherUserTags,
-    filterTags, addExternalTag, checkIfTagLabelAvailable, addTagsInBulkToWords
+    filterTags, addExternalTag, checkIfTagLabelAvailable, addTagsInBulkToWords, followTagByAnotherUser
 }
 
 export default tagService

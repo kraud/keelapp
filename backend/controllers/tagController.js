@@ -5,6 +5,7 @@ const Word = require("../models/wordModel");
 const WordTag = require("../models/intermediary/tagWordModel");
 const TagWord = require("../models/intermediary/tagWordModel");
 const Friendship = require("../models/friendshipModel");
+const UserFollowingTag = require('../models/intermediary/userFollowingTagModel')
 
 
 // @desc    Search for tags with a regex matching (partially or fully) a request query (string) with the tag label
@@ -183,6 +184,29 @@ const addTagsInBulkToWords = asyncHandler(async (req, res) => {
     })).then(async (responseFromCreatingAllNewTagWords) => {
         res.status(200).json(responseFromCreatingAllNewTagWords)
     })
+})
+
+// @desc    Creates a UserFollowingTag document related to a user and a tag whose author is a different user.
+//          This gives access to that user to all the words stored in that tag.
+// @route   POST /api/tags
+// @access  Private
+const followTag = asyncHandler(async (req, res) => {
+    // Check for user
+    if(!req.body.userId){
+        res.status(401)
+        throw new Error('User not found!')
+    }
+    // Check for tag
+    if(!req.body.tagId){
+        res.status(401)
+        throw new Error('Tag not found!')
+    }
+
+    const userFollowingTag = await UserFollowingTag.create({
+        tagId: req.body.tagId,
+        followerUserId: req.body.userId,
+    })
+    res.status(200).json(userFollowingTag)
 })
 
 // @desc    Copies the tag and words data into this account (alongside the TagWord documents).
@@ -593,5 +617,6 @@ module.exports = {
     getTagDataByRequest,
     addExternalTag,
     checkIfTagLabelAvailable,
-    addTagsInBulkToWords
+    addTagsInBulkToWords,
+    followTag
 }
