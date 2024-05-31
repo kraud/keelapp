@@ -455,7 +455,7 @@ export function Review(){
                     sortedAndSelectedLanguages={allSelectedLanguages}
                     rowData={wordsSimple.words}
                     calculateColumns={(displayGender: boolean) => {
-                        return(createColumnsReviewTable(allSelectedLanguages, displayGender))
+                        return(createColumnsReviewTable(allSelectedLanguages, displayGender, user))
                     }}
                     partsOfSpeech={wordsSimple.partsOfSpeechIncluded}
                     setOrderColumns={(languages: string[]) => changeLanguageOrderFromTable(languages)}

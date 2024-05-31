@@ -100,7 +100,7 @@ interface TableDataCellProps {
 
 export function TableDataCell(props: TableDataCellProps){
     const componentStyles = {
-        mainContainer: {
+        mainModalContainer: {
             position: 'absolute',
             top: '50%',
             left: '50%',
@@ -747,7 +747,7 @@ export function TableDataCell(props: TableDataCellProps){
                 disableAutoFocus={true}
             >
                 <Box
-                    sx={componentStyles.mainContainer}
+                    sx={componentStyles.mainModalContainer}
                 >
                     {(
                         isLoading &&

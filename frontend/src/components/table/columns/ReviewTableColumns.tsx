@@ -3,11 +3,17 @@ import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
 import {createColumnHelper, Row} from "@tanstack/react-table";
 import {IndeterminateCheckbox, TableDataCell, TableHeaderCell} from "../ExtraTableComponents";
-import {getCurrentLangTranslated} from "../../generalUseFunctions";
+import {getCurrentLangTranslated, stringAvatar} from "../../generalUseFunctions";
 import React from "react";
+import Avatar from "@mui/material/Avatar";
+import GroupIcon from '@mui/icons-material/Group';
+import {UserData} from "../../../ts/interfaces";
+import globalTheme from "../../../theme/theme";
+import {Grid} from "@mui/material";
 
 export type TableWordData = {
     id: string,
+    user: string,
     creationDate?: string,
     lastUpdate?: string,
     partOfSpeech: PartOfSpeech,
@@ -29,7 +35,7 @@ export type TableWordData = {
 }
 
 // As the order of selected languages changes, so should the order they are displayed on the table
-export const createColumnsReviewTable = (selectedLanguagesList: string[], displayGender: boolean) => {
+export const createColumnsReviewTable = (selectedLanguagesList: string[], displayGender: boolean, user: UserData) => {
     const newColumnHelper = createColumnHelper<TableWordData>()
 
     const newlySortedColumns = selectedLanguagesList.map((language: string) => {
@@ -158,8 +164,9 @@ export const createColumnsReviewTable = (selectedLanguagesList: string[], displa
     })
     return (
         [
-            {
-                id: 'select',
+            // {
+            //     id: 'select',
+            newColumnHelper.accessor('user', {
                 // @ts-ignore
                 header: ({ table }) => (
                     <TableDataCell
@@ -175,27 +182,68 @@ export const createColumnsReviewTable = (selectedLanguagesList: string[], displa
                         type={"other"}
                         textAlign={"center"}
                         onlyForDisplay={true}
+                        sxProps={{
+                            paddingLeft: globalTheme.spacing(  6),
+                            paddingRight: globalTheme.spacing(  2),
+                        }}
                     />
                 ),
                 // @ts-ignore
-                cell: ({ row }) => (
+                cell: ({ row, getValue }) => (
                     <TableDataCell
                         content={
-                            <IndeterminateCheckbox
-                                {...{
-                                    checked: row.getIsSelected(),
-                                    disabled: !row.getCanSelect(),
-                                    indeterminate: row.getIsSomeSelected(),
-                                    onChange: row.getToggleSelectedHandler(),
-                                }}
-                            />
+                            <Grid
+                                container={true}
+                            >
+                                <Grid
+                                    item={true}
+                                    xs
+                                    sx={{
+                                        alignContent: 'center'
+                                    }}
+                                >
+                                    {(getValue() === user._id)
+                                        // TODO: create avatar wrapper to include a tooltip with username?
+                                        ? <Avatar
+                                            alt="User photo"
+                                            src={(user) ? "" : "/"}
+                                            {...stringAvatar((user!!) ?user.name :"-")}
+                                            sx={{
+                                                width: '30px',
+                                                height: '30px',
+                                                fontSize: '1.1rem'
+                                            }}
+                                        />
+                                        :
+                                        <GroupIcon/>
+                                    }
+                                </Grid>
+                                <Grid
+                                    item={true}
+                                    xs
+                                >
+                                    <IndeterminateCheckbox
+                                        {...{
+                                            checked: row.getIsSelected(),
+                                            disabled: !row.getCanSelect(),
+                                            indeterminate: row.getIsSomeSelected(),
+                                            onChange: row.getToggleSelectedHandler(),
+                                        }}
+                                    />
+                                </Grid>
+                            </Grid>
                         }
                         type={"other"}
                         textAlign={"center"}
                         onlyForDisplay={true}
+                        sxProps={{
+                            paddingLeft: globalTheme.spacing(1),
+                            paddingRight: globalTheme.spacing(2),
+                        }}
                     />
                 ),
-            },
+                enableColumnFilter: false,
+            }),
             newColumnHelper.accessor('partOfSpeech', {
                 header: ({column}) =>
                     <TableHeaderCell
