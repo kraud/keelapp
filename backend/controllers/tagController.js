@@ -6,12 +6,17 @@ const WordTag = require("../models/intermediary/tagWordModel");
 const TagWord = require("../models/intermediary/tagWordModel");
 const Friendship = require("../models/friendshipModel");
 const UserFollowingTag = require('../models/intermediary/userFollowingTagModel')
+const {getTagsIdFromFollowedTagsByUserId} = require("./intermediary/userFollowingTagController");
 
 
 // @desc    Search for tags with a regex matching (partially or fully) a request query (string) with the tag label
 // @route   GET /api/tags
 // @access  Private
 const searchTags = asyncHandler(async (req, res) => {
+
+    // adds to originalResults the words related to other-users-tags, that the current user follows.
+    const matchingTagsId = await getTagsIdFromFollowedTagsByUserId(req.user.id)
+
     const getPrivateOrPublicQuery = async () => {
         if (req.query.includeOtherUsersTags) { // this includes all possible types: 'private'/'public'/'friends-only'
             // all documents where userIds is an array that contains the string in "req.user.id" as one of its elements:
@@ -37,6 +42,9 @@ const searchTags = asyncHandler(async (req, res) => {
                                     {public: 'Friends-Only'},
                                     {author: {$in: friendUserIds}}
                                 ]
+                            },
+                            { // option 4: user currently follows this tag
+                                "_id": {$in: matchingWordsId}
                             }
                         ]
                     }
@@ -46,7 +54,10 @@ const searchTags = asyncHandler(async (req, res) => {
         } else {
             return ([
                 {"label": {$regex: `${req.query.query}`, $options: "i"}},
-                {"author": mongoose.Types.ObjectId(req.user.id)}
+                { $or: [
+                    {"author": mongoose.Types.ObjectId(req.user.id)},
+                    {"_id": {$in: matchingTagsId}}
+                ]}
             ])
         }
     }

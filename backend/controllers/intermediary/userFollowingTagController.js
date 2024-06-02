@@ -78,11 +78,20 @@ const getWordsIdFromFollowedTagsByUserId = async (userId) => {
         })
 }
 
+// NB! For internal use. Not available through routes
+const getTagsIdFromFollowedTagsByUserId = async (userId) => {
+    return UserFollowingTag.distinct('tagId', {followerUserId: userId})
+        .then((matchingTagsIdResponse) => {
+            return(matchingTagsIdResponse)
+        })
+}
+
 module.exports = {
     createUserFollowingTag,
     createManyUserFollowingTag,
     getAllUSerFollowingTagsRelatedToTagId,
     getAllUSerFollowingTagsRelatedToUserId,
     deleteTagWord,
-    getWordsIdFromFollowedTagsByUserId
+    getWordsIdFromFollowedTagsByUserId,
+    getTagsIdFromFollowedTagsByUserId
 }
