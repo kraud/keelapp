@@ -314,6 +314,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
                                             : `Created by: ${userResult.username}`
                                     }
                                 </Typography>
+                                // TODO: add data about amount of people that follow this tag
                             )
                     }
                 </Grid>

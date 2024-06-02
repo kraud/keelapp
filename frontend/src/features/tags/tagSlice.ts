@@ -71,6 +71,24 @@ export const getTagsByAnotherUserID = createAsyncThunk('tags/getOtherUserTags', 
     }
 })
 
+// Get tags followed by userID
+export const getFollowedTagsByUser = createAsyncThunk('tags/getFollowedTags', async (userId: string, thunkAPI) => {
+    try {
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await tagService.getFollowedTagsByUserId(token, userId)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
 // Get a tag data by its label (total or partial match)
 export const searchTagsByLabel = createAsyncThunk(`tags/searchTag`, async (request: {query: string, includeOtherUsersTags?: boolean}, thunkAPI) => {
     try {
@@ -276,6 +294,24 @@ export const followTag = createAsyncThunk(`tags/followExternalTag`, async (data:
     }
 })
 
+// Delete follow relationship between user and tag
+export const unfollowTag = createAsyncThunk(`tags/unfollowExternalTag`, async (data:{tagId: string, userId: string}, thunkAPI) => {
+    try {
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await tagService.unfollowTagByAnotherUser(token, data)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
 export const tagSlice = createSlice({
     name: 'tag',
     initialState,
@@ -348,6 +384,19 @@ export const tagSlice = createSlice({
                 state.otherUserTags = (action.payload)
             })
             .addCase(getTagsByAnotherUserID.rejected, (state, action) => {
+                state.isLoadingTags = false
+                state.isError = true
+                state.message = action.payload as string
+            })
+            .addCase(getFollowedTagsByUser.pending, (state) => {
+                state.isLoadingTags = true
+            })
+            .addCase(getFollowedTagsByUser.fulfilled, (state, action) => {
+                state.isLoadingTags = false
+                state.isSuccessTags = true
+                state.otherUserTags = (action.payload)
+            })
+            .addCase(getFollowedTagsByUser.rejected, (state, action) => {
                 state.isLoadingTags = false
                 state.isError = true
                 state.message = action.payload as string
@@ -491,6 +540,19 @@ export const tagSlice = createSlice({
                 state.followedTagResponse = (action.payload)
             })
             .addCase(followTag.rejected, (state, action) => {
+                state.isLoadingTags = false
+                state.isError = true
+                state.message = action.payload as string
+            })
+            .addCase(unfollowTag.pending, (state) => {
+                state.isLoadingTags = true
+            })
+            .addCase(unfollowTag.fulfilled, (state, action) => {
+                state.isLoadingTags = false
+                state.isSuccessTags = true
+                state.followedTagResponse = (action.payload)
+            })
+            .addCase(unfollowTag.rejected, (state, action) => {
                 state.isLoadingTags = false
                 state.isError = true
                 state.message = action.payload as string

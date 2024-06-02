@@ -14,7 +14,7 @@ const {getTagsIdFromFollowedTagsByUserId} = require("./intermediary/userFollowin
 // @access  Private
 const searchTags = asyncHandler(async (req, res) => {
 
-    // adds to originalResults the words related to other-users-tags, that the current user follows.
+    // other-users-tags, that the current user follows.
     const matchingTagsId = await getTagsIdFromFollowedTagsByUserId(req.user.id)
 
     const getPrivateOrPublicQuery = async () => {
@@ -44,7 +44,7 @@ const searchTags = asyncHandler(async (req, res) => {
                                 ]
                             },
                             { // option 4: user currently follows this tag
-                                "_id": {$in: matchingWordsId}
+                                "_id": {$in: matchingTagsId}
                             }
                         ]
                     }
@@ -89,6 +89,22 @@ const getUserTags = asyncHandler(async (req, res) => {
     }
     const tagsData = await getTagDataByRequest(request)
     res.status(200).json(tagsData)
+})
+
+// @desc    Returns the ids matching all the tags that the userId follows
+// @route   GET /api/tags
+// @access  Private
+const getTagsFollowedByUser = asyncHandler(async (req, res) => {
+    // Check for user
+    if(!req.query.userId){
+        res.status(401)
+        throw new Error('User-query not found')
+    }
+
+    // other-users-tags, that the current user follows.
+    const matchingTagsId = await getTagsIdFromFollowedTagsByUserId(req.query.userId)
+
+    res.status(200).json(matchingTagsId)
 })
 
 // @desc    Get all tags where user id matches the one in the request
@@ -205,12 +221,12 @@ const followTag = asyncHandler(async (req, res) => {
     // Check for user
     if(!req.body.userId){
         res.status(401)
-        throw new Error('User not found!')
+        throw new Error('User not found')
     }
     // Check for tag
     if(!req.body.tagId){
         res.status(401)
-        throw new Error('Tag not found!')
+        throw new Error('Tag not found')
     }
 
     const userFollowingTag = await UserFollowingTag.create({
@@ -384,6 +400,33 @@ const deleteTag = asyncHandler(async (req, res) => {
                     throw new Error("Tag-Word (from tag) deleteMany failed")
                 })
         })
+})
+
+// @desc    Delete userFollowingTag (unfollow tag)
+// @route   DELETE /api/tags/unfollowTag/:id
+// @access  Private
+const deleteUserFollowingTag = asyncHandler(async (req, res) => {
+    const tagId = req.params.id
+    const userId = req.body.userId
+
+    if(!tagId){
+        res.status(400)
+        throw new Error("Missing tag id")
+    }
+
+    // Check for user
+    if(!userId){
+        res.status(401)
+        throw new Error('Missing user id')
+    }
+
+    const userFollowingTag = await UserFollowingTag.findOne({
+        tagId: tagId,
+        followerUserId: userId
+    })
+
+    const deleteResponse = await userFollowingTag.deleteOne()
+    res.status(200).json(deleteResponse)
 })
 
 // @desc    Update Tag
@@ -629,5 +672,7 @@ module.exports = {
     addExternalTag,
     checkIfTagLabelAvailable,
     addTagsInBulkToWords,
-    followTag
+    followTag,
+    getTagsFollowedByUser,
+    deleteUserFollowingTag
 }

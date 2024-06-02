@@ -27,6 +27,19 @@ const getOtherUserTags = async (token: any, otherUserId: string) => {
     return(response.data)
 }
 
+const getFollowedTagsByUserId = async (token: any, userId: string) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        },
+        params: {
+            userId: userId
+        }
+    }
+    const response = await axios.get(API_URL+'getFollowedTagsIdByUserId', config)
+    return(response.data)
+}
+
 const searchTags = async (token: any, query: string, includeOtherUsersTags?: boolean) => {
     const config = {
         headers: {
@@ -151,9 +164,23 @@ const followTagByAnotherUser = async (token: any, data: {tagId: string, userId: 
     return(response.data)
 }
 
+const unfollowTagByAnotherUser = async (token: any, data: {tagId: string, userId: string}) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        },
+        data: {
+            userId: data.userId,
+        }
+    }
+    const response = await axios.delete(`${API_URL}/unfollowTag/${data.tagId}`, config)
+    return(response.data)
+}
+
 const tagService = {
     getUserTags, searchTags, getTagById, createTag, deleteTagById, updateTagById, getTagWordsAmount, getOtherUserTags,
-    filterTags, addExternalTag, checkIfTagLabelAvailable, addTagsInBulkToWords, followTagByAnotherUser
+    filterTags, addExternalTag, checkIfTagLabelAvailable, addTagsInBulkToWords, followTagByAnotherUser,
+    getFollowedTagsByUserId, unfollowTagByAnotherUser
 }
 
 export default tagService

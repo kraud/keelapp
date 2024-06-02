@@ -385,6 +385,7 @@ export const Account = (props: AccountProps) => {
                                         setSelectedTag(tagId)
                                     }}
                                 />
+                                // TODO: add list of followed-tag here
                                 :
                                 <>
                                     <Typography

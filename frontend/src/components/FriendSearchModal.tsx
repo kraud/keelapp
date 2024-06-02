@@ -119,6 +119,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
 
     useEffect(() => {
         if(props.defaultUserId !== undefined){
+            // TODO: this could be a single request, using aggregate/lookup/etc. between user+tags
             // @ts-ignore
             dispatch(getUserById(props.defaultUserId))
             // @ts-ignore

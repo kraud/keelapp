@@ -11,13 +11,14 @@ import {
     acceptExternalTag,
     clearClonedTagData, clearFollowedTagData,
     clearFullTagData,
-    followTag,
-    getTagById
+    followTag, getFollowedTagsByUser,
+    getTagById, unfollowTag
 } from "../features/tags/tagSlice";
 import {TagDataForm} from "../components/forms/tags/TagDataForm";
 import {TagData} from "../ts/interfaces";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import BookmarkAddIcon from "@mui/icons-material/BookmarkAdd";
+import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 interface RouterTagProps{
@@ -32,7 +33,7 @@ export function DisplayTag(props: DisplayTagProps){
     const dispatch = useDispatch()
     // @ts-ignore
     const { tagId } = useParams<RouterTagProps>()
-    const {followedTagResponse, clonedTagResponse, fullTagData, isLoadingTags, isSuccessTags, isError, message} = useSelector((state: any) => state.tags)
+    const {otherUserTags, followedTagResponse, clonedTagResponse, fullTagData, isLoadingTags, isSuccessTags, isError, message} = useSelector((state: any) => state.tags)
     const {user} = useSelector((state: any) => state.auth)
 
     const emptyTagData = {
@@ -48,18 +49,29 @@ export function DisplayTag(props: DisplayTagProps){
     const [tagCurrentData, setTagCurrentData] = useState<TagData>(emptyTagData)
     const [currentTagHasBeenDeleted, setIsCurrentTagHasBeenDeleted] = useState(false)
     const [currentlyCopyingTag, setCurrentlyCopyingTag] = useState(false)
-    const [currentlyFollowingTag, setCurrentlyFollowingTag] = useState(false)
+    const [currentlyFollowingOrUnfollowingTag, setCurrentlyFollowingOrUnfollowingTag] = useState(false)
+    const [userFollowsTag, setUserFollowsTag] = useState(false)
+
+    useEffect(() => {
+        if((otherUserTags.length > 0) && (fullTagData !== undefined) && !userFollowsTag){
+            if(otherUserTags.includes(fullTagData._id)){
+                setUserFollowsTag(true)
+            }
+        }
+    },[otherUserTags])
 
     useEffect(() => {
         if(tagId!!) {
             //@ts-ignore
             dispatch(getTagById(tagId))
+            //@ts-ignore
+            dispatch(getFollowedTagsByUser(user._id))
         }
     },[])
 
     useEffect(() => {
-        // currentlyCopyingTag is there to avoid displaying loading cycle when copying tag
-        if(isLoadingTags && !currentlyCopyingTag){
+        // currentlyFollowingOrUnfollowingTag is there to avoid displaying loading cycle when copying/following tag
+        if(isLoadingTags && !(currentlyCopyingTag || currentlyFollowingOrUnfollowingTag)){
             setDisplayContent(false)
         }
     },[isLoadingTags])
@@ -72,8 +84,6 @@ export function DisplayTag(props: DisplayTagProps){
         }
     }, [isError, message])
 
-    // once the request is made and the results come in, we save them into a local copy of the state,
-    // this way the original remains in Redux, and we can access it to reverse changes if needed.
     useEffect(() => {
         if(!isLoadingTags && isSuccessTags && (fullTagData !== undefined)){
             if(!isEditing && isDeleting){ // if not editing and fullTagData updated => just deleted that tag now stored in fullTagData
@@ -95,6 +105,7 @@ export function DisplayTag(props: DisplayTagProps){
             dispatch(acceptExternalTag(fullTagData._id))
         }
     }, [currentlyCopyingTag])
+
     useEffect(() => {
         // this will only be true if the tag request has been accepted and successfully cloned
         if((clonedTagResponse !== undefined) && (!isLoadingTags) && (isSuccessTags)){
@@ -104,21 +115,35 @@ export function DisplayTag(props: DisplayTagProps){
         }
     }, [isLoadingTags, isSuccessTags, clonedTagResponse])
     //---------------
-    // these next 2 useEffect are related to dealing with the state after clicking on follow tag
+    // this is related to dealing with the state after clicking on follow tag
     useEffect(() => {
-        if(currentlyFollowingTag){
+        // this will only be true if the tag follow/unfollow request has been successful
+        if((followedTagResponse !== undefined) && (!isLoadingTags) && (isSuccessTags)){
+            setCurrentlyFollowingOrUnfollowingTag(false)
+            if(userFollowsTag){
+                toast.success(`You do not follow this tag anymore`)
+                //@ts-ignore
+                dispatch(getFollowedTagsByUser(user._id))
+                setUserFollowsTag(false)
+            } else {
+                toast.success(`You are now following this tag`)
+                setUserFollowsTag(true)
+            }
+            // we don't need the cloned tag data anymore, so we reset the state
+            dispatch(clearFollowedTagData())
+        }
+    }, [isLoadingTags, isSuccessTags, followedTagResponse])
+
+    const onClickFollow = (currentUserFollowsTag: boolean) => {
+        setCurrentlyFollowingOrUnfollowingTag(true)
+        if(currentUserFollowsTag){
+            //@ts-ignore
+            dispatch(unfollowTag({tagId: fullTagData._id, userId: user._id}))
+        } else {
             //@ts-ignore
             dispatch(followTag({tagId: fullTagData._id, userId: user._id}))
         }
-    }, [currentlyFollowingTag])
-    useEffect(() => {
-        // this will only be true if the tag request has been accepted and successfully cloned
-        if((followedTagResponse !== undefined) && (!isLoadingTags) && (isSuccessTags)){
-            // we don't need the cloned tag data anymore, so we reset the state
-            dispatch(clearFollowedTagData())
-            toast.success(`You are now following this tag!`)
-        }
-    }, [isLoadingTags, isSuccessTags, followedTagResponse])
+    }
 
     return(
         <Grid
@@ -219,15 +244,15 @@ export function DisplayTag(props: DisplayTagProps){
                             >
                                 <Button
                                     variant={"contained"}
-                                    color={"primary"}
-                                    disabled={false}
+                                    color={(userFollowsTag) ?"warning" :"primary"}
+                                    disabled={isLoadingTags}
                                     onClick={() => {
-                                        setCurrentlyFollowingTag(true)
+                                        onClickFollow(userFollowsTag)
                                     }}
                                     fullWidth={true}
-                                    startIcon={<BookmarkAddIcon/>}
+                                    startIcon={(userFollowsTag) ? <BookmarkRemoveIcon/> :<BookmarkAddIcon/>}
                                 >
-                                    Follow tag
+                                    {(userFollowsTag) ?'Unfollow tag' :'Follow tag'}
                                 </Button>
                             </Grid>
                         </Grid>
