@@ -15,7 +15,7 @@ import {
     getTagById, unfollowTag
 } from "../features/tags/tagSlice";
 import {TagDataForm} from "../components/forms/tags/TagDataForm";
-import {TagData} from "../ts/interfaces";
+import {SearchResult, TagData} from "../ts/interfaces";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import BookmarkAddIcon from "@mui/icons-material/BookmarkAdd";
 import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
@@ -54,7 +54,10 @@ export function DisplayTag(props: DisplayTagProps){
 
     useEffect(() => {
         if((otherUserTags.length > 0) && (fullTagData !== undefined) && !userFollowsTag){
-            if(otherUserTags.includes(fullTagData._id)){
+            if((otherUserTags.map((tagSearchResult: SearchResult) => {
+                //@ts-ignore
+                return(tagSearchResult._id)
+            })).includes(fullTagData._id)){
                 setUserFollowsTag(true)
             }
         }
