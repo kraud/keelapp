@@ -55,8 +55,7 @@ export function DisplayTag(props: DisplayTagProps){
     useEffect(() => {
         if((otherUserTags.length > 0) && (fullTagData !== undefined) && !userFollowsTag){
             if((otherUserTags.map((tagSearchResult: SearchResult) => {
-                //@ts-ignore
-                return(tagSearchResult._id)
+                return(tagSearchResult.id)
             })).includes(fullTagData._id)){
                 setUserFollowsTag(true)
             }

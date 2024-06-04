@@ -104,7 +104,18 @@ const getTagsFollowedByUser = asyncHandler(async (req, res) => {
     // other-users-tags, that the current user follows.
     const matchingTagsId = await getTagsIdFromFollowedTagsByUserId(req.query.userId)
     const matchingTagsFullData = await Tag.find({"_id": {$in: matchingTagsId}})
-    res.status(200).json(matchingTagsFullData)
+    // const searchResults =
+    res.status(200).json(
+        matchingTagsFullData.map((fullTagData) => {
+            return({
+                id: fullTagData._id,
+                label: fullTagData.label,
+                type: "tag",
+                completeTagInfo: fullTagData
+            })
+        })
+    )
+    // res.status(200).json(searchResults)
 })
 
 // @desc    Get all tags where user id matches the one in the request

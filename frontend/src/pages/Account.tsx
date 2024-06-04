@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react"
 import {motion} from "framer-motion";
 import {routeVariantsAnimation} from "./management/RoutesWithAnimation";
 import globalTheme from "../theme/theme";
-import {Button, Grid, Typography} from "@mui/material";
+import {Button, Divider, Grid, Typography} from "@mui/material";
 import {useDispatch, useSelector} from "react-redux";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -19,7 +19,7 @@ import {getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
 import {FriendshipData, SearchResult, TagData} from "../ts/interfaces";
 import {clearUserResultData} from "../features/users/userSlice";
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
-import {clearFullTagData, getTagsForCurrentUser} from "../features/tags/tagSlice";
+import {clearFullTagData, getTagsForCurrentUser, getFollowedTagsByUser} from "../features/tags/tagSlice";
 import {FriendList, ChipList} from "../components/GeneralUseComponents";
 import {clearRequesterNotifications, createNotification} from "../features/notifications/notificationSlice";
 
@@ -39,10 +39,11 @@ export const Account = (props: AccountProps) => {
     const dispatch = useDispatch()
     const {user, isLoadingAuth, isSuccess, isError, message} = useSelector((state: any) => state.auth)
     const {friendships, isLoadingFriendships} = useSelector((state: any) => state.friendships)
-    const {tags, isLoadingTags} = useSelector((state: any) => state.tags)
+    const {tags, otherUserTags, isLoadingTags} = useSelector((state: any) => state.tags)
     const {notificationResponse, isSuccessNotifications, isLoadingNotifications} = useSelector((state: any) => state.notifications)
 
     const [allTags, setAllTags] = useState<TagData[]>([])
+    const [followedTags, setFollowedTags] = useState<TagData[]>([])
     const [activeFriendships, setActiveFriendships] = useState<FriendshipData[]>([])
     const [openFriendsModal, setOpenFriendsModal] = useState(false)
     const [triggerGetFriendships, setTriggerGetFriendships] = useState(false)
@@ -86,6 +87,10 @@ export const Account = (props: AccountProps) => {
         setAllTags(tags)
     },[tags])
 
+    useEffect(() => {
+        setFollowedTags(otherUserTags)
+    },[otherUserTags])
+
     // so when we edit the profile data, it also changes the local data
     useEffect(() => {
         setLocalUserData(user)
@@ -94,7 +99,9 @@ export const Account = (props: AccountProps) => {
     useEffect(() => {
         setDefaultModalUserId(undefined)
         // @ts-ignore
-        dispatch(getTagsForCurrentUser(user._id))
+        dispatch(getTagsForCurrentUser(user._id)) // TODO: should this function get ALL tags, including followed tags?
+        // @ts-ignore
+        dispatch(getFollowedTagsByUser(user._id)) // TODO: should this function get ALL tags, including followed tags?
         // @ts-ignore
         dispatch(getFriendshipsByUserId(user._id))
         dispatch(clearUserResultData())
@@ -379,13 +386,12 @@ export const Account = (props: AccountProps) => {
                         <>
                             {(allTags.length > 0)
                                 ?
-                                <ChipList
-                                    itemList={allTags}
-                                    onClickAction={(tagId: string) => {
-                                        setSelectedTag(tagId)
-                                    }}
-                                />
-                                // TODO: add list of followed-tag here
+                                    <ChipList
+                                        itemList={allTags}
+                                        onClickAction={(tagId: string) => {
+                                            setSelectedTag(tagId)
+                                        }}
+                                    />
                                 :
                                 <>
                                     <Typography
@@ -407,7 +413,56 @@ export const Account = (props: AccountProps) => {
                                     >
                                         Click here to go review your saved words and add tags!
                                     </Button>
-                                </>}
+                                </>
+                            }
+                            <Grid
+                                container={true}
+                                justifyContent={'center'}
+                                sx={{
+                                    marginTop: globalTheme.spacing(2),
+                                    marginBottom: globalTheme.spacing(1)
+                                }}
+                            >
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <Divider
+                                        orientation="horizontal"
+                                        flexItem={true}
+                                        sx={{
+                                            "&::before, &::after": {
+                                                borderColor: "black",
+                                            },
+                                        }}
+                                    >
+                                        Followed tags
+                                    </Divider>
+                                </Grid>
+                            </Grid>
+                            {(followedTags.length > 0)
+                                ?
+                                    <ChipList
+                                        itemList={followedTags}
+                                        onClickAction={(tagId: string) => {
+                                            setSelectedTag(tagId)
+                                        }}
+                                    />
+                                :
+                                <>
+                                    <Typography
+                                        sx={{
+                                            typography: {
+                                                xs: 'body2',
+                                                sm: 'h6',
+                                                md: 'h5',
+                                            },
+                                        }}
+                                    >
+                                        You haven't followed any tags yet.
+                                    </Typography>
+                                </>
+                            }
                         </>
                     }
                 </Grid>
