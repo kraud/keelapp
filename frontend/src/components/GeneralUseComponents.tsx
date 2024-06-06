@@ -116,6 +116,8 @@ export const ChipList = (props: ChipListProps) => {
             props.onClickAction(item._id)
         } else { // then is SearchResult
             // no action specified yet for onClick SearchResult
+            //@ts-ignore
+            props.onClickAction(item.id)
         }
     }
 

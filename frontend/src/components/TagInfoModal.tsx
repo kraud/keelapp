@@ -5,6 +5,7 @@ import React, {useEffect, useState} from "react";
 import SendIcon from '@mui/icons-material/Send';
 import ClearIcon from '@mui/icons-material/Clear';
 import SaveIcon from '@mui/icons-material/Save';
+import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import SaveAsIcon from '@mui/icons-material/SaveAs';
 import EditIcon from '@mui/icons-material/Edit';
@@ -54,10 +55,12 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
     // 'fullTagData' will remain the same as it in BE. In case we need to cancel changes, we have this to copy the info from.
     const {fullTagData, isSuccessTags, isLoadingTags} = useSelector((state: any) => state.tags)
     const {isLoading, isSuccess} = useSelector((state: any) => state.words)
+    const {user} = useSelector((state: any) => state.auth)
 
     const handleOnClose = () => {
         props.setOpen(false)
         setIsEditing(false)
+        setUserIsAuthor(false)
         setTagCurrentData(emptyTagData)
         dispatch(clearFullTagData())
         if(currentTagHasBeenDeleted){
@@ -76,6 +79,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
     // This also includes the internalStatus properties, to know if form is valid and/or dirty, to help with button logic
     const [tagCurrentData, setTagCurrentData] = useState<TagData>(emptyTagData)
     const [isEditing, setIsEditing] = useState(false)
+    const [userIsAuthor, setUserIsAuthor] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
     const [isDeletingWords, setIsDeletingWords] = useState(false)
     const [isUpdating, setIsUpdating] = useState(false)
@@ -121,6 +125,12 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
             setIsEditing(false)
         }
     },[fullTagData, isSuccessTags, isLoadingTags, isDeleting, isUpdating, isCreating])
+
+    useEffect(() => {
+        if(fullTagData !== undefined){
+            setUserIsAuthor((fullTagData.author) === user._id)
+        }
+    },[fullTagData])
 
     useEffect(() => {
         if(fullTagData !== undefined){
@@ -241,80 +251,120 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                 </>)
             }
         } else {
-            // reviewing: send to friends - delete words - cancel (close modal)
-            return(
-                <>
-                    {(!currentTagHasBeenDeleted) &&
-                        <>
-                            <Grid
-                                item={true}
-                                xs={12}
-                                md={3}
-                            >
-                                <Button
-                                    variant={"contained"}
-                                    color={"primary"}
-                                    onClick={() => props.triggerAction!(tagCurrentData._id!!)}
-                                    fullWidth={true}
-                                    startIcon={<SendIcon/>}
-                                    disabled={false}
-                                >
-                                    Send to friend
-                                </Button>
-                            </Grid>
-                            <Grid
-                                item={true}
-                                xs={12}
-                                md={3}
-                            >
-                                <ConfirmationButton
-                                    onConfirm={() => deleteTagWords()}
-                                    buttonLabel={'Delete All Words'}
-                                    buttonProps={{
-                                        variant: "contained",
-                                        color: "warning",
-                                        fullWidth: true,
-                                        endIcon: <DeleteForeverIcon/>,
-                                        disabled: !((tagCurrentData.words!!) && (tagCurrentData.words.length > 0))
-                                    }}
-                                />
-                            </Grid>
-                            <Grid
-                                item={true}
-                                xs={12}
-                                md={3}
-                            >
-                                <Button
-                                    variant={"contained"}
-                                    color={"secondary"}
-                                    onClick={() => setIsEditing(true)}
-                                    fullWidth={true}
-                                    endIcon={<EditIcon/>}
-                                >
-                                    Edit
-                                </Button>
-                            </Grid>
-                        </>
-                    }
+            if(userIsAuthor){
+                // reviewing: send to friends - delete words - cancel (close modal)
+                return(
                     <>
-                    <Grid
-                        item={true}
-                        xs={12}
-                        md={3}
-                    >
-                        <Button
-                            variant={"contained"}
-                            color={"info"}
-                            onClick={() => handleOnClose()}
-                            fullWidth={true}
-                            endIcon={<ClearIcon />}
+                        {(!currentTagHasBeenDeleted) &&
+                            <>
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                    md={3}
+                                >
+                                    <Button
+                                        variant={"contained"}
+                                        color={"primary"}
+                                        onClick={() => props.triggerAction!(tagCurrentData._id!!)}
+                                        fullWidth={true}
+                                        startIcon={<SendIcon/>}
+                                        disabled={false}
+                                    >
+                                        Send to friend
+                                    </Button>
+                                </Grid>
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                    md={3}
+                                >
+                                    <ConfirmationButton
+                                        onConfirm={() => deleteTagWords()}
+                                        buttonLabel={'Delete All Words'}
+                                        buttonProps={{
+                                            variant: "contained",
+                                            color: "warning",
+                                            fullWidth: true,
+                                            endIcon: <DeleteForeverIcon/>,
+                                            disabled: !((tagCurrentData.words!!) && (tagCurrentData.words.length > 0))
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                    md={3}
+                                >
+                                    <Button
+                                        variant={"contained"}
+                                        color={"secondary"}
+                                        onClick={() => setIsEditing(true)}
+                                        fullWidth={true}
+                                        endIcon={<EditIcon/>}
+                                    >
+                                        Edit
+                                    </Button>
+                                </Grid>
+                            </>
+                        }
+                        <>
+                        <Grid
+                            item={true}
+                            xs={12}
+                            md={3}
                         >
-                            Close
-                        </Button>
-                    </Grid>
+                            <Button
+                                variant={"contained"}
+                                color={"info"}
+                                onClick={() => handleOnClose()}
+                                fullWidth={true}
+                                endIcon={<ClearIcon />}
+                            >
+                                Close
+                            </Button>
+                        </Grid>
+                        </>
                     </>
-                </>
-                    )
+                )
+            } else { // not editing & not author => user follows tag?
+                // reviewing: send to friends - delete words - cancel (close modal)
+                return(
+                    <>
+                        <Grid
+                            item={true}
+                            xs={12}
+                            md={5}
+                        >
+                            <ConfirmationButton
+                                onConfirm={() => null}
+                                buttonLabel={'Unfollow tag'}
+                                buttonProps={{
+                                    variant: "contained",
+                                    color: "warning",
+                                    fullWidth: true,
+                                    startIcon: <BookmarkRemoveIcon/>,
+                                    disabled: isLoadingTags
+                                }}
+                            />
+                        </Grid>
+                        <Grid
+                            item={true}
+                            xs={12}
+                            md={5}
+                        >
+                            <Button
+                                variant={"contained"}
+                                color={"info"}
+                                onClick={() => handleOnClose()}
+                                fullWidth={true}
+                                endIcon={<ClearIcon />}
+                            >
+                                Close
+                            </Button>
+                        </Grid>
+                    </>
+                )
+            }
         }
     }
 
