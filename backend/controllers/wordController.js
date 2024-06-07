@@ -754,6 +754,9 @@ const deleteManyWords = asyncHandler(async (req, res) => {
 // @route   Get /api/words/searchWord
 // @access  Private
 const filterWordByAnyTranslation = asyncHandler(async (req, res) => {
+    // adds to originalResults the words related to other-users-tags, that the current user follows.
+    const wordsFromFollowedTags = await getWordsIdFromFollowedTagsByUserId(req.user.id)
+
     if(!(req.query)){
         res.status(400)
         throw new Error("Missing search query text")
@@ -765,18 +768,28 @@ const filterWordByAnyTranslation = asyncHandler(async (req, res) => {
         throw new Error('User not found')
     }
 
-    await Word.find({
-        "translations.cases": {
-            $elemMatch: {
-                "word": {$regex: `${req.query.query}`, $options: "i"},
-                "caseName": {
-                    $not: {$regex: "^gender", $options: "i"},
-                    $not: {$regex: "^gradable", $options: "i"}
-                }, // To avoid filtering by fields that don't represent translation-data
-            }
-        },
-        "user": req.user
-    })
+    await Word.find(
+        {
+            $and: [
+                {
+                    "translations.cases": {
+                        $elemMatch: {
+                            "word": {$regex: `${req.query.query}`, $options: "i"},
+                            "caseName": {
+                                $not: {$regex: "^gender", $options: "i"},
+                                $not: {$regex: "^gradable", $options: "i"}
+                            }, // To avoid filtering by fields that don't represent translation-data
+                        }
+                    }
+                },
+                // TODO: add conditional so we allow request to limit results to "own-words" (no followed-tag words)
+                { $or: [
+                    {"user": mongoose.Types.ObjectId(req.user)},
+                    {"_id": {$in: wordsFromFollowedTags}}
+                ]}
+            ]
+        }
+    )
     // this will return an array of options, representing one or more translation PER word,
     // in case that more than one translation in a word matches the search query
     .then((data) => {
