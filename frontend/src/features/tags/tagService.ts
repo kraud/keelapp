@@ -47,7 +47,8 @@ const searchTags = async (token: any, query: string, includeOtherUsersTags?: boo
         },
         params: {
             query: query,
-            includeOtherUsersTags: includeOtherUsersTags,
+            // NB! this will be sent as string, NOT boolean
+            includeOtherUsersTags: includeOtherUsersTags!!,
         }
     }
     const response = await axios.get(`${API_URL}/searchTags`, config)

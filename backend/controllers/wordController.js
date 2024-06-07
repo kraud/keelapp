@@ -425,8 +425,9 @@ const getWordById = asyncHandler(async (req, res) => {
                 $and:[
                     // filter the Word to match the requested id
                     {"_id": mongoose.Types.ObjectId(req.params.id)},
-                    // Make sure the logged-in user matches the word user // TODO: this should change, to accommodate follow-tag logic
-                    {"user": mongoose.Types.ObjectId(req.user.id)},
+                    // NB! this was changed, to accommodate follow-tag logic.
+                    // Might eventually need to be refactored into an optional parameter
+                    // {"user": mongoose.Types.ObjectId(req.user.id)}, // Make sure the logged-in user matches the word user
                 ]
             }
         },

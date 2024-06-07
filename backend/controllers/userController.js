@@ -245,5 +245,6 @@ module.exports = {
     getMe,
     getUsersBy,
     updateUser,
-    getUserById
+    getUserById,
+    queryParamToBool
 }

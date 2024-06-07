@@ -18,6 +18,7 @@ interface TranslationFormProps {
     title: string,
     subTitle: string,
     defaultDisabled?: boolean
+    disableEditing?: boolean
 }
 
 // stores the complete *Word* Data
@@ -45,7 +46,7 @@ export function WordForm(props: TranslationFormProps) {
     const [disabledForms, setDisabledForms] = useState(false)
 
     useEffect(() => {
-        if(props.defaultDisabled!){
+        if((props.defaultDisabled!) || (props.disableEditing!)){
             setDisabledForms(true)
         }
     }, [props.defaultDisabled])
@@ -349,6 +350,8 @@ export function WordForm(props: TranslationFormProps) {
                                      Should there always be a "delete word" button next to "edit" when reviewing an existing word?
                                     */
                                     // disabled={(props.initialState !== undefined) && !disabledForms}
+                                    // there are cases when it should not be possible to edit a word (e.g. word from followed-tag).
+                                    disabled={props.disableEditing!!}
                                 >
                                     {(disabledForms)
                                         ? "Edit"

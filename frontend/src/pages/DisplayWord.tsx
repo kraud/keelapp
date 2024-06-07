@@ -25,6 +25,7 @@ export function DisplayWord(props: DisplayWordProps){
     // @ts-ignore
     const { wordId } = useParams<RouterWordProps>()
     const {word, currentlySelectedPoS, isLoading, isError, message} = useSelector((state: any) => state.words)
+    const {user} = useSelector((state: any) => state.auth)
     const [displayContent, setDisplayContent] = useState(false)
     const [finishedUpdating, setFinishedUpdating] = useState(true)
 
@@ -94,7 +95,7 @@ export function DisplayWord(props: DisplayWordProps){
                         // but when not we simply display it as it normally would ('undefined' changes)
                         display: (!displayContent) ?undefined :"none",
                     }}
-                    displayTime={2500}
+                    displayTime={2000}
                 />
             }
             <div
@@ -142,6 +143,7 @@ export function DisplayWord(props: DisplayWordProps){
                     }}
                     initialState={word}
                     defaultDisabled={props.defaultDisabled}
+                    disableEditing={word.user !== user._id}
                 />
             </div>
         </Grid>

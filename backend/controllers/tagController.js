@@ -7,6 +7,7 @@ const TagWord = require("../models/intermediary/tagWordModel");
 const Friendship = require("../models/friendshipModel");
 const UserFollowingTag = require('../models/intermediary/userFollowingTagModel')
 const {getTagsIdFromFollowedTagsByUserId} = require("./intermediary/userFollowingTagController");
+const {queryParamToBool} = require("./userController");
 
 
 // @desc    Search for tags with a regex matching (partially or fully) a request query (string) with the tag label
@@ -14,11 +15,14 @@ const {getTagsIdFromFollowedTagsByUserId} = require("./intermediary/userFollowin
 // @access  Private
 const searchTags = asyncHandler(async (req, res) => {
 
+    // Hotfix. includeOtherUsersTags it's a string and anything !== "" is truthy => we calculate boolean
+    const includeOtherUserTags = queryParamToBool(req.query.includeOtherUsersTags)
+
     // other-users-tags, that the current user follows.
     const matchingTagsId = await getTagsIdFromFollowedTagsByUserId(req.user.id)
 
     const getPrivateOrPublicQuery = async () => {
-        if (req.query.includeOtherUsersTags) { // this includes all possible types: 'private'/'public'/'friends-only'
+        if (includeOtherUserTags) { // this includes all possible types: 'private'/'public'/'friends-only'
             // all documents where userIds is an array that contains the string in "req.user.id" as one of its elements:
             const matchingQuery = await Friendship.find({
                 userIds: req.user.id,
@@ -51,13 +55,10 @@ const searchTags = asyncHandler(async (req, res) => {
                 ])
             })
             return (matchingQuery)
-        } else {
+        } else { // this only includes types: 'private' and made by the current user
             return ([
                 {"label": {$regex: `${req.query.query}`, $options: "i"}},
-                { $or: [
-                    {"author": mongoose.Types.ObjectId(req.user.id)},
-                    {"_id": {$in: matchingTagsId}}
-                ]}
+                {"author": mongoose.Types.ObjectId(req.user.id)},
             ])
         }
     }
