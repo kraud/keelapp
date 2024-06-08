@@ -123,11 +123,14 @@ export function TableDataCell(props: TableDataCellProps){
     const dispatch = useDispatch()
     let  [searchParams, setSearchParams]  = useSearchParams();
     const [isHovering, setIsHovering] = useState(false)
-    const [open, setOpen] = useState(false)
+    const [openWordModal, setOpenWordModal] = useState(false)
     const [selectedTranslationData, setSelectedTranslationData] = useState<TranslationItem>()
     const [selectedWordTagsData, setSelectedWordTagsData] = useState<TagsData>({tags: []})
     const {word, isLoading, isError, message, currentlySelectedPoS} = useSelector((state: any) => state.words)
+    const {user} = useSelector((state: any) => state.auth)
+    // TODO: Find better name for displayOnly. Also add description for its use.
     const [displayOnly, setDisplayOnly] = useState(true)
+    const [userIsWordAuthor, setUserIsWordAuthor] = useState(true)
     const [finishedUpdating, setFinishedUpdating] = useState(true)
     const [finishedDeleting, setFinishedDeleting] = useState(true)
 
@@ -144,8 +147,14 @@ export function TableDataCell(props: TableDataCellProps){
                 dispatch(setSelectedPoS(props.partOfSpeech))
             }
         }
-        setOpen(true)
+        setOpenWordModal(true)
     }
+
+    useEffect(() => {
+        if(openWordModal){
+            setUserIsWordAuthor(user._id === word.user)
+        }
+    }, [user, word, openWordModal])
 
     useEffect(() => {
         if(isError){
@@ -199,7 +208,7 @@ export function TableDataCell(props: TableDataCellProps){
             case ("text"): {
                 if(
                     (word.translations.length > 0) &&
-                    open &&
+                    openWordModal &&
                     (props.content !== undefined) // to avoid setting a value when opening an empty form (i.e. a translation that doesn't yet exist)
                 ){
                     setSelectedTranslationData({
@@ -213,11 +222,12 @@ export function TableDataCell(props: TableDataCellProps){
             break
             default: return
         }
-    }, [word, open])
+    }, [word, openWordModal])
 
     const handleOnClose = () => {
-        setOpen(false)
+        setOpenWordModal(false)
         setDisplayOnly(true)
+        setUserIsWordAuthor(true) // revert back to initial state
         setSelectedTranslationData(undefined)
         //@ts-ignore
         dispatch(resetSelectedPoS())
@@ -741,8 +751,9 @@ export function TableDataCell(props: TableDataCellProps){
                     </IconButton>
                 }
             </Grid>
+            {/* TODO: are these being rendered even when displayed? That could affect performance. REVIEW!*/}
             <Modal
-                open={open}
+                open={openWordModal}
                 onClose={() => handleOnClose()}
                 disableAutoFocus={true}
             >
@@ -862,17 +873,24 @@ export function TableDataCell(props: TableDataCellProps){
                                         variant={"outlined"}
                                         color={"secondary"}
                                         disabled={(
-                                            (!displayOnly) &&
+                                            // TODO: disable editing if user is not author
                                             (
-                                                (
-                                                    props.type === "text" &&
-                                                    !selectedTranslationData!.completionState! // (!) selectedTranslationData will never be undefined when type === "text"
-                                                )
+                                                displayOnly && !userIsWordAuthor
+                                            )
                                                 ||
+                                            (
+                                                (!displayOnly) &&
                                                 (
-                                                    (props.type === "array") &&
-                                                    (selectedWordTagsData.completionState === undefined) // TODO: fix logic to hide cancel button on new tags
-                                                ) // it should always be allowed to edit/cancel/save any tags
+                                                    (
+                                                        props.type === "text" &&
+                                                        !selectedTranslationData!.completionState! // (!) selectedTranslationData will never be undefined when type === "text"
+                                                    )
+                                                    ||
+                                                    (
+                                                        (props.type === "array") &&
+                                                        (selectedWordTagsData.completionState === undefined) // TODO: fix logic to hide cancel button on new tags
+                                                    ) // it should always be allowed to edit/cancel/save any tags
+                                                )
                                             )
                                         )}
                                         onClick={() => editSaveCancelChangesOnClick()}
