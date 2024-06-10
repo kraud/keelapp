@@ -1,10 +1,12 @@
 import globalTheme from "../theme/theme";
 import {CircularProgress, Grid, TextField, Typography} from "@mui/material";
 import Avatar from "@mui/material/Avatar";
-import React from "react";
+import React, {useState} from "react";
 import {UserBadgeData} from "../pages/Account";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import {useTheme} from "@mui/material/styles";
+import {DnDLanguageOrderSelector} from "./DnDLanguageOrderSelector";
+import {Lang} from "../ts/enums";
 
 type EditingProps = {
     isEditing?: boolean // when true => user and username become TextFields
@@ -19,6 +21,8 @@ type UserBadgeProps = {
 export const UserBadge = (props: UserBadgeProps) => {
     const theme = useTheme()
     const lessThanMd = useMediaQuery(theme.breakpoints.down("md"))
+    const [allSelectedLanguages, setAllSelectedLanguages] = useState<string[]>((Object.values(Lang).filter((v) => isNaN(Number(v)))) as unknown as Array<keyof typeof Lang>)
+    // const [allSelectedLanguages, setAllSelectedLanguages] = useState<string[]>((Object.values(Lang).filter((v) => isNaN(Number(v)))) as unknown as Array<keyof typeof Lang>)
 
     return(
         <Grid
@@ -185,6 +189,23 @@ export const UserBadge = (props: UserBadgeProps) => {
                         </span>
                     }
                 </Grid>
+            </Grid>
+            <Grid
+                item={true}
+                container={true}
+                justifyContent={"center"}
+                xs={12}
+            >
+                <DnDLanguageOrderSelector
+                    allSelectedItems={allSelectedLanguages}
+                    setAllSelectedItems={(languages: string[]) => setAllSelectedLanguages(languages)}
+                    otherItems={[]}
+                    setOtherItems={(languages: string[]) => null}
+                    direction={"horizontal"}
+                    singleContainer={true}
+                    disabled={!props.isEditing!!}
+                    selectedItemsTitle={""}
+                />
             </Grid>
         </Grid>
     )

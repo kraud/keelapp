@@ -56,7 +56,7 @@ export function DnDSortableItem(props: DnDSortableItemProps){
                 >
                     {
                         (props.index !== undefined)
-                            ? `#${props.index + 1}: ${props.id}`
+                            ? `#${props.index + 1}: ${props.id}` // TODO: add option to display text, flag or combo flag+text
                             : props.id
                     }
                 </Button>

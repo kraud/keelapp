@@ -29,7 +29,7 @@ export type TableWordData = {
     singularNominativDE?: string,
     registeredCasesDE?: number
 
-    genderES?: string, // Only required fields for German
+    genderES?: string, // Only required fields for Spanish
     singularES?: string,
     registeredCasesES?: number
 }

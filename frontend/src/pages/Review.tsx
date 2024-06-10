@@ -381,6 +381,8 @@ export function Review(){
                                 otherItems={otherLanguages}
                                 setOtherItems={(languages: string[]) => setOtherLanguages(languages)}
                                 direction={"horizontal"}
+                                selectedItemsTitle={"Active"}
+                                otherItemsTitle={"Hidden"}
                             />
                         </Grid>
                         <Grid
