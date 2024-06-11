@@ -5,6 +5,8 @@ import React from "react";
 import globalTheme from "../theme/theme";
 import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
+import {CountryFlag} from "./GeneralUseComponents";
+import {Lang} from "../ts/enums";
 
 interface DnDSortableItemProps{
     id: string,
@@ -13,6 +15,7 @@ interface DnDSortableItemProps{
     invisible?: boolean
     disableAll?: boolean
     sxProps?: SxProps<Theme>
+    // displayItems?: {}
 }
 
 export function DnDSortableItem(props: DnDSortableItemProps){
@@ -54,11 +57,20 @@ export function DnDSortableItem(props: DnDSortableItemProps){
                     onClick={() => null}
                     disabled={props.disableAll!}
                 >
-                    {
-                        (props.index !== undefined)
-                            ? `#${props.index + 1}: ${props.id}` // TODO: add option to display text, flag or combo flag+text
-                            : props.id
-                    }
+                    <>
+                        {
+                            (props.index !== undefined)
+                                ? `#${props.index + 1}: ${props.id}` // TODO: add option to display text, flag or combo flag+text
+                                : props.id
+                        }
+                        <CountryFlag
+                            country={props.id as Lang}
+                            border={true}
+                            sxProps={{
+                                marginLeft: '10px',
+                            }}
+                        />
+                    </>
                 </Button>
             }
         </Grid>
