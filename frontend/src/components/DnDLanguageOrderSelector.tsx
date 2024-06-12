@@ -20,6 +20,7 @@ interface DnDLanguageOrderSelectorProps{
     setAllSelectedItems: (items: string[]) => void
     setOtherItems: (items: string[]) => void
     direction: "vertical" | "horizontal"
+    displayItems?: 'text' | 'flag' | 'both'
     justifyContent?: "center" | "flex-end" | "flex-start"
     singleContainer?: boolean // by default, we have 2 containers ('selected' and 'other'). With this prop we can display only 'selected'
     disabled?: boolean // to avoid allowing the elements to be moved
@@ -154,6 +155,7 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                                         key={index}
                                         id={item}
                                         direction={props.direction}
+                                        displayItems={props.displayItems}
                                         index={index}
                                         sxProps={(index === (props.allSelectedItems.length -1))
                                             ?
@@ -217,6 +219,7 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                                                     key={index}
                                                     id={item}
                                                     direction={props.direction}
+                                                    displayItems={props.displayItems}
                                                 />
                                             )
                                         })

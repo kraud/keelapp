@@ -541,48 +541,52 @@ export const Account = (props: AccountProps) => {
                     }
                 </Grid>
             </Grid>
-            <FriendSearchModal
-                open={openFriendsModal}
-                setOpen={(value: boolean) => {
-                    setOpenFriendsModal(value)
-                    // in case we were sending a tag to a Friend and closed the tag, we reset tagIdToShare
-                    if(!value && (tagIdToShare !== "")){
-                        setTagIdToShare("")
-                        setSelectedTag("")
-                    }
-                }}
-                defaultUserId={defaultModalUserId}
-                reloadFriendList={() => setTriggerGetFriendships(true)}
-                title={(tagIdToShare !== "") ?'Select a friend:' :'Search friends:'}
-                // this prop is only used when sharing tag with friends
-                userList={(tagIdToShare !== "") ?activeFriendships :undefined}
-                onClickUserListSelection={(usersIds: SearchResult[]) => {
-                    if((usersIds.length > 0) && (tagIdToShare !== "")){
-                        setSendingNotification(true)
-                        sendShareTagNotification(usersIds, tagIdToShare)
-                    }
-                }}
-                loadingOnClickUserListSelection={isLoadingNotifications}
-            />
-            <TagInfoModal
-                open={openTagModal}
-                setOpen={(value: boolean) => {
-                    if(!value){
-                        setSelectedTag("")
-                    }
-                    setOpenTagModal(value)
-                }}
-                tagId={selectedTag}
-                setMadeChangesToTagList={(status: boolean) => {
-                    setReloadTagList(status)
-                }}
-                triggerAction={(tagId: string) => {
-                    setTagIdToShare(tagId)
-                    setOpenTagModal(false)
-                    setOpenFriendsModal(true)
-                }}
-                title={(selectedTag !== "") ?undefined :'Create new tag:'}
-            />
+            {(openFriendsModal) &&
+                <FriendSearchModal
+                    open={openFriendsModal}
+                    setOpen={(value: boolean) => {
+                        setOpenFriendsModal(value)
+                        // in case we were sending a tag to a Friend and closed the tag, we reset tagIdToShare
+                        if(!value && (tagIdToShare !== "")){
+                            setTagIdToShare("")
+                            setSelectedTag("")
+                        }
+                    }}
+                    defaultUserId={defaultModalUserId}
+                    reloadFriendList={() => setTriggerGetFriendships(true)}
+                    title={(tagIdToShare !== "") ?'Select a friend:' :'Search friends:'}
+                    // this prop is only used when sharing tag with friends
+                    userList={(tagIdToShare !== "") ?activeFriendships :undefined}
+                    onClickUserListSelection={(usersIds: SearchResult[]) => {
+                        if((usersIds.length > 0) && (tagIdToShare !== "")){
+                            setSendingNotification(true)
+                            sendShareTagNotification(usersIds, tagIdToShare)
+                        }
+                    }}
+                    loadingOnClickUserListSelection={isLoadingNotifications}
+                />
+            }
+            {(openTagModal) &&
+                <TagInfoModal
+                    open={openTagModal}
+                    setOpen={(value: boolean) => {
+                        if(!value){
+                            setSelectedTag("")
+                        }
+                        setOpenTagModal(value)
+                    }}
+                    tagId={selectedTag}
+                    setMadeChangesToTagList={(status: boolean) => {
+                        setReloadTagList(status)
+                    }}
+                    triggerAction={(tagId: string) => {
+                        setTagIdToShare(tagId)
+                        setOpenTagModal(false)
+                        setOpenFriendsModal(true)
+                    }}
+                    title={(selectedTag !== "") ?undefined :'Create new tag:'}
+                />
+            }
         </Grid>
     )
 }

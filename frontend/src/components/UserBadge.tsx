@@ -205,6 +205,7 @@ export const UserBadge = (props: UserBadgeProps) => {
                     singleContainer={true}
                     disabled={!props.isEditing!!}
                     selectedItemsTitle={""}
+                    displayItems={'flag'}
                 />
             </Grid>
         </Grid>

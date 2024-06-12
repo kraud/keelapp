@@ -15,7 +15,7 @@ interface DnDSortableItemProps{
     invisible?: boolean
     disableAll?: boolean
     sxProps?: SxProps<Theme>
-    // displayItems?: {}
+    displayItems?: 'text' | 'flag' | 'both'
 }
 
 export function DnDSortableItem(props: DnDSortableItemProps){
@@ -31,6 +31,57 @@ export function DnDSortableItem(props: DnDSortableItemProps){
     const style = {
         transform: CSS.Transform.toString(transform),
         transition: transition
+    }
+
+    const getDisplayElements = () => {
+        const displayContentWithIndex = (displayItem: any) => {
+            return(
+                (props.index !== undefined)
+                    ? `#${props.index + 1}: ${displayItem}`
+                    : displayItem
+            )
+        }
+
+        switch(props.displayItems){
+            case('text'): {
+                return(displayContentWithIndex(props.id))
+            }
+            case('flag'): {
+                return(
+                    <>
+                        {displayContentWithIndex("")}
+                        <CountryFlag
+                            country={props.id as Lang}
+                            border={true}
+                            sxProps={{
+                                marginLeft: '10px',
+                            }}
+                        />
+                    </>
+                )
+            }
+            case('both'): {
+                return(
+                    <>
+                        {displayContentWithIndex(props.id)}
+                        <CountryFlag
+                            country={props.id as Lang}
+                            border={true}
+                            sxProps={{
+                                marginLeft: '10px',
+                            }}
+                        />
+                    </>
+                )
+            }
+            default: {
+                return(
+                    (props.index !== undefined)
+                        ? `#${props.index + 1}: ${props.id}`
+                        : props.id
+                )
+            }
+        }
     }
 
     return(
@@ -57,20 +108,7 @@ export function DnDSortableItem(props: DnDSortableItemProps){
                     onClick={() => null}
                     disabled={props.disableAll!}
                 >
-                    <>
-                        {
-                            (props.index !== undefined)
-                                ? `#${props.index + 1}: ${props.id}` // TODO: add option to display text, flag or combo flag+text
-                                : props.id
-                        }
-                        <CountryFlag
-                            country={props.id as Lang}
-                            border={true}
-                            sxProps={{
-                                marginLeft: '10px',
-                            }}
-                        />
-                    </>
+                    {getDisplayElements()}
                 </Button>
             }
         </Grid>

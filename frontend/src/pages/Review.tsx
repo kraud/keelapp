@@ -523,88 +523,90 @@ export function Review(){
                 TODO: should it be refactored into separate generic-modal-component?
                  Also used in ExtraTableComponents' TableDataCell modal
             */}
-            <Modal
-                open={openAssignTagModal}
-                onClose={() => handleOnModalClose()}
-                disableAutoFocus={true}
-            >
-                <Box
-                    sx={componentStyles.mainContainer}
+            {(openAssignTagModal) &&
+                <Modal
+                    open={openAssignTagModal}
+                    onClose={() => handleOnModalClose()}
+                    disableAutoFocus={true}
                 >
-                    <Grid
-                        item={true}
-                        container={true}
-                        direction={"column"}
+                    <Box
+                        sx={componentStyles.mainContainer}
                     >
                         <Grid
                             item={true}
                             container={true}
-                            justifyContent={"flex-end"}
-                            spacing={2}
-                            sx={{
-                                marginBottom: globalTheme.spacing(2)
-                            }}
-                            xs={"auto"}
+                            direction={"column"}
                         >
-                            {/* Part of speech TITLE */}
                             <Grid
+                                item={true}
                                 container={true}
-                                item={true}
-                                alignContent={"center"}
-                                xs
+                                justifyContent={"flex-end"}
+                                spacing={2}
+                                sx={{
+                                    marginBottom: globalTheme.spacing(2)
+                                }}
+                                xs={"auto"}
                             >
+                                {/* Part of speech TITLE */}
+                                <Grid
+                                    container={true}
+                                    item={true}
+                                    alignContent={"center"}
+                                    xs
+                                >
 
-                                <Typography
-                                    variant={"h4"}
-                                >
-                                    Assign tag
-                                </Typography>
+                                    <Typography
+                                        variant={"h4"}
+                                    >
+                                        Assign tag
+                                    </Typography>
 
-                                {(isLoadingTags) && <LinearIndeterminate/>}
-                            </Grid>
-                            <Grid
-                                item={true}
-                            >
-                                <Button
-                                    variant={"outlined"}
-                                    color={"error"}
-                                    onClick={() => handleOnModalClose()}
+                                    {(isLoadingTags) && <LinearIndeterminate/>}
+                                </Grid>
+                                <Grid
+                                    item={true}
                                 >
-                                    cancel
-                                </Button>
-                            </Grid>
-                            <Grid
-                                item={true}
-                            >
-                                <Button
-                                    variant={"outlined"}
-                                    color={"success"}
-                                    onClick={() => {
-                                        // selectedRows state is defined when opening the modal
-                                        onRowSelectionApplyNewTags(selectedRowsForBulkTagAssign)
-                                    }}
+                                    <Button
+                                        variant={"outlined"}
+                                        color={"error"}
+                                        onClick={() => handleOnModalClose()}
+                                    >
+                                        cancel
+                                    </Button>
+                                </Grid>
+                                <Grid
+                                    item={true}
                                 >
-                                    apply
-                                </Button>
+                                    <Button
+                                        variant={"outlined"}
+                                        color={"success"}
+                                        onClick={() => {
+                                            // selectedRows state is defined when opening the modal
+                                            onRowSelectionApplyNewTags(selectedRowsForBulkTagAssign)
+                                        }}
+                                    >
+                                        apply
+                                    </Button>
+                                </Grid>
                             </Grid>
+                            <AutocompleteMultiple
+                                type={'tag'}
+                                values={selectedTagsData}
+                                saveResults={(results: FilterItem[]) => {
+                                    // AutocompleteMultiple returns FilterItem[] => we must convert it to TagData[]
+                                    // filters might be additive or restrictive, depending on AutocompleteMultiple settings,
+                                    // so we use this function to calculate how to extract it
+                                    setSelectedTagsData(extractTagsArrayFromUnknownFormat(results))
+                                }}
+                                allowNewOptions={true}
+                                disabled={false} // TODO: should depend on word-ownership?
+                                limitTags={4}
+                            />
                         </Grid>
-                        <AutocompleteMultiple
-                            type={'tag'}
-                            values={selectedTagsData}
-                            saveResults={(results: FilterItem[]) => {
-                                // AutocompleteMultiple returns FilterItem[] => we must convert it to TagData[]
-                                // filters might be additive or restrictive, depending on AutocompleteMultiple settings,
-                                // so we use this function to calculate how to extract it
-                                setSelectedTagsData(extractTagsArrayFromUnknownFormat(results))
-                            }}
-                            allowNewOptions={true}
-                            disabled={false} // TODO: should depend on word-ownership?
-                            limitTags={4}
-                        />
-                    </Grid>
 
-                </Box>
-            </Modal>
+                    </Box>
+                </Modal>
+            }
         </Grid>
     )
 }

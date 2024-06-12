@@ -751,174 +751,175 @@ export function TableDataCell(props: TableDataCellProps){
                     </IconButton>
                 }
             </Grid>
-            {/* TODO: are these being rendered even when displayed? That could affect performance. REVIEW!*/}
-            <Modal
-                open={openWordModal}
-                onClose={() => handleOnClose()}
-                disableAutoFocus={true}
-            >
-                <Box
-                    sx={componentStyles.mainModalContainer}
+            {(openWordModal) &&
+                <Modal
+                    open={openWordModal}
+                    onClose={() => handleOnClose()}
+                    disableAutoFocus={true}
                 >
-                    {(
-                        isLoading &&
-                        !(selectedTranslationData !== undefined) && // to display form while isLoading is true, because we're saving changes
-                        !(selectedWordTagsData.completionState !== undefined)
-                    )
-                        ?
-                            <Grid
-                                container={true}
-                                rowSpacing={3}
-                                justifyContent={'center'}
-                            >
+                    <Box
+                        sx={componentStyles.mainModalContainer}
+                    >
+                        {(
+                            isLoading &&
+                            !(selectedTranslationData !== undefined) && // to display form while isLoading is true, because we're saving changes
+                            !(selectedWordTagsData.completionState !== undefined)
+                        )
+                            ?
                                 <Grid
-                                    item={true}
-                                    xs={6}
+                                    container={true}
+                                    rowSpacing={3}
+                                    justifyContent={'center'}
                                 >
-                                    <LinearIndeterminate/>
-                                </Grid>
-                                <Grid
-                                    item={true}
-                                    xs={12}
-                                >
-                                    <Typography
-                                        variant={"h4"}
-                                        textAlign={"center"}
+                                    <Grid
+                                        item={true}
+                                        xs={6}
                                     >
-                                        Loading...
-                                    </Typography>
+                                        <LinearIndeterminate/>
+                                    </Grid>
+                                    <Grid
+                                        item={true}
+                                        xs={12}
+                                    >
+                                        <Typography
+                                            variant={"h4"}
+                                            textAlign={"center"}
+                                        >
+                                            Loading...
+                                        </Typography>
+                                    </Grid>
                                 </Grid>
-                            </Grid>
-                        : (
-                            (
-                                (selectedTranslationData !== undefined) &&
-                                (props.type === "text")
-                            )
-                            ||
-                            (
-                                (selectedWordTagsData !== undefined) &&
-                                (props.type === "array")
-                            )
-                        ) &&
-                        <Grid
-                            item={true}
-                            container={true}
-                            direction={"column"}
-                        >
+                            : (
+                                (
+                                    (selectedTranslationData !== undefined) &&
+                                    (props.type === "text")
+                                )
+                                ||
+                                (
+                                    (selectedWordTagsData !== undefined) &&
+                                    (props.type === "array")
+                                )
+                            ) &&
                             <Grid
                                 item={true}
                                 container={true}
-                                justifyContent={"flex-end"}
-                                spacing={2}
-                                sx={{
-                                    marginBottom: globalTheme.spacing(2)
-                                }}
-                                xs={"auto"}
+                                direction={"column"}
                             >
-                                {/* Part of speech TITLE */}
                                 <Grid
+                                    item={true}
                                     container={true}
-                                    item={true}
-                                    alignContent={"center"}
-                                    xs
+                                    justifyContent={"flex-end"}
+                                    spacing={2}
+                                    sx={{
+                                        marginBottom: globalTheme.spacing(2)
+                                    }}
+                                    xs={"auto"}
                                 >
-                                    {(currentlySelectedPoS !== undefined) &&
-                                        <Typography
-                                            variant={"h4"}
-                                        >
-                                            {currentlySelectedPoS}
+                                    {/* Part of speech TITLE */}
+                                    <Grid
+                                        container={true}
+                                        item={true}
+                                        alignContent={"center"}
+                                        xs
+                                    >
+                                        {(currentlySelectedPoS !== undefined) &&
+                                            <Typography
+                                                variant={"h4"}
+                                            >
+                                                {currentlySelectedPoS}
 
-                                        {(props.language !== undefined) &&
-                                            <CountryFlag
-                                                country={props.language!!}
-                                                border={true}
-                                                sxProps={{
-                                                    marginLeft: '10px',
-                                                    marginTop: '-5px',
-                                                    display: 'inline-block'
-                                                }}
-                                            />
-                                        }
-                                        </Typography>
-                                    }
-                                    {(isLoading) && <LinearIndeterminate/>}
-                                </Grid>
-                                <Grid
-                                    item={true}
-                                >
-                                    <ConfirmationButton
-                                        onConfirm={() => {
-                                            deleteOnClick()
-                                        }}
-                                        buttonLabel={'Delete'}
-                                        buttonProps={{
-                                            variant: "outlined",
-                                            color: "warning",
-                                            disabled: (props.type === "text") &&
-                                                (
-                                                    (word.translations.length < 3)
-                                                    ||
-                                                    !(checkCurrentLanguageIncludedInTranslations()) // if not included => we can simply click away, no need to delete
-                                                ),
-                                            sx: {
-                                                display: (props.type === "array") ?"none" :"initial"
+                                            {(props.language !== undefined) &&
+                                                <CountryFlag
+                                                    country={props.language!!}
+                                                    border={true}
+                                                    sxProps={{
+                                                        marginLeft: '10px',
+                                                        marginTop: '-5px',
+                                                        display: 'inline-block'
+                                                    }}
+                                                />
                                             }
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid
-                                    item={true}
-                                >
-                                    <Button
-                                        variant={"outlined"}
-                                        color={"secondary"}
-                                        disabled={(
-                                            // TODO: disable editing if user is not author
-                                            (
-                                                displayOnly && !userIsWordAuthor
-                                            )
-                                                ||
-                                            (
-                                                (!displayOnly) &&
+                                            </Typography>
+                                        }
+                                        {(isLoading) && <LinearIndeterminate/>}
+                                    </Grid>
+                                    <Grid
+                                        item={true}
+                                    >
+                                        <ConfirmationButton
+                                            onConfirm={() => {
+                                                deleteOnClick()
+                                            }}
+                                            buttonLabel={'Delete'}
+                                            buttonProps={{
+                                                variant: "outlined",
+                                                color: "warning",
+                                                disabled: (props.type === "text") &&
+                                                    (
+                                                        (word.translations.length < 3)
+                                                        ||
+                                                        !(checkCurrentLanguageIncludedInTranslations()) // if not included => we can simply click away, no need to delete
+                                                    ),
+                                                sx: {
+                                                    display: (props.type === "array") ?"none" :"initial"
+                                                }
+                                            }}
+                                        />
+                                    </Grid>
+                                    <Grid
+                                        item={true}
+                                    >
+                                        <Button
+                                            variant={"outlined"}
+                                            color={"secondary"}
+                                            disabled={(
+                                                // TODO: disable editing if user is not author
                                                 (
+                                                    displayOnly && !userIsWordAuthor
+                                                )
+                                                    ||
+                                                (
+                                                    (!displayOnly) &&
+                                                    (
+                                                        (
+                                                            props.type === "text" &&
+                                                            !selectedTranslationData!.completionState! // (!) selectedTranslationData will never be undefined when type === "text"
+                                                        )
+                                                        ||
+                                                        (
+                                                            (props.type === "array") &&
+                                                            (selectedWordTagsData.completionState === undefined) // TODO: fix logic to hide cancel button on new tags
+                                                        ) // it should always be allowed to edit/cancel/save any tags
+                                                    )
+                                                )
+                                            )}
+                                            onClick={() => editSaveCancelChangesOnClick()}
+                                        >
+                                            {(displayOnly)
+                                                ? "Edit"
+                                                : (
                                                     (
                                                         props.type === "text" &&
-                                                        !selectedTranslationData!.completionState! // (!) selectedTranslationData will never be undefined when type === "text"
+                                                        (selectedTranslationData!.isDirty) // (!) selectedTranslationData will never be undefined when type === "text"
                                                     )
                                                     ||
                                                     (
-                                                        (props.type === "array") &&
-                                                        (selectedWordTagsData.completionState === undefined) // TODO: fix logic to hide cancel button on new tags
-                                                    ) // it should always be allowed to edit/cancel/save any tags
+                                                        props.type === "array" &&
+                                                        (selectedWordTagsData.isDirty)
+                                                    )
                                                 )
-                                            )
-                                        )}
-                                        onClick={() => editSaveCancelChangesOnClick()}
-                                    >
-                                        {(displayOnly)
-                                            ? "Edit"
-                                            : (
-                                                (
-                                                    props.type === "text" &&
-                                                    (selectedTranslationData!.isDirty) // (!) selectedTranslationData will never be undefined when type === "text"
-                                                )
-                                                ||
-                                                (
-                                                    props.type === "array" &&
-                                                    (selectedWordTagsData.isDirty)
-                                                )
-                                            )
-                                                ?"Save changes"
-                                                :"Cancel"
-                                        }
-                                    </Button>
+                                                    ?"Save changes"
+                                                    :"Cancel"
+                                            }
+                                        </Button>
+                                    </Grid>
                                 </Grid>
+                                {getModalComponent()}
                             </Grid>
-                            {getModalComponent()}
-                        </Grid>
-                    }
-                </Box>
-            </Modal>
+                        }
+                    </Box>
+                </Modal>
+            }
         </>
     )
 }
