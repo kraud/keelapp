@@ -188,7 +188,7 @@ export function TranslationFormGeneric(props: WordFormGenericProps) {
                             currentLang={currentLang}
                             currentTranslationData={props.currentTranslationData}
                             partOfSpeech={props.partOfSpeech}
-                            displayOnly={props.defaultDisabled}
+                            displayFieldsAsText={props.defaultDisabled}
                             updateFormData={(formData: TranslationItem) => {
                                 props.updateFormData(
                                     {

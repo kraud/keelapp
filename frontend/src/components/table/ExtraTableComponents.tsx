@@ -128,8 +128,8 @@ export function TableDataCell(props: TableDataCellProps){
     const [selectedWordTagsData, setSelectedWordTagsData] = useState<TagsData>({tags: []})
     const {word, isLoading, isError, message, currentlySelectedPoS} = useSelector((state: any) => state.words)
     const {user} = useSelector((state: any) => state.auth)
-    // TODO: Find better name for displayOnly. Also add description for its use.
-    const [displayOnly, setDisplayOnly] = useState(true)
+    // displayComponentAsLabels: when true, all components will be displayed in label form.
+    const [displayComponentAsLabels, setDisplayComponentAsLabels] = useState(true)
     const [userIsWordAuthor, setUserIsWordAuthor] = useState(true)
     const [finishedUpdating, setFinishedUpdating] = useState(true)
     const [finishedDeleting, setFinishedDeleting] = useState(true)
@@ -226,7 +226,7 @@ export function TableDataCell(props: TableDataCellProps){
 
     const handleOnClose = () => {
         setOpenWordModal(false)
-        setDisplayOnly(true)
+        setDisplayComponentAsLabels(true)
         setUserIsWordAuthor(true) // revert back to initial state
         setSelectedTranslationData(undefined)
         //@ts-ignore
@@ -578,7 +578,7 @@ export function TableDataCell(props: TableDataCellProps){
                             })
                         }}
                         allowNewOptions={true}
-                        disabled={displayOnly}
+                        disabled={displayComponentAsLabels}
                         limitTags={3}
                     />
                 )
@@ -590,7 +590,7 @@ export function TableDataCell(props: TableDataCellProps){
                         currentTranslationData={selectedTranslationData!}
                         partOfSpeech={props.partOfSpeech}
                         updateFormData={(formData: TranslationItem) => {
-                            if(!displayOnly && !(isLoading)){ // && (formData.isDirty) for extra security?
+                            if(!displayComponentAsLabels && !(isLoading)){ // && (formData.isDirty) for extra security?
                                 setSelectedTranslationData({
                                     ...formData,
                                     // To avoid saving empty cases,
@@ -598,7 +598,7 @@ export function TableDataCell(props: TableDataCellProps){
                                 })
                             }
                         }}
-                        displayOnly={displayOnly}
+                        displayFieldsAsText={displayComponentAsLabels}
                     />
                 )
             }
@@ -609,8 +609,8 @@ export function TableDataCell(props: TableDataCellProps){
     const editSaveCancelChangesOnClick = () => {
         switch (props.type){
             case ("array"): {
-                if(displayOnly){
-                    setDisplayOnly(false)
+                if(displayComponentAsLabels){
+                    setDisplayComponentAsLabels(false)
                 } else {
                     if(selectedWordTagsData.isDirty){
                         const updatedWordData = {
@@ -621,17 +621,17 @@ export function TableDataCell(props: TableDataCellProps){
                         //@ts-ignore
                         dispatch(updateWordById(updatedWordData))
                         setFinishedUpdating(false)
-                        setDisplayOnly(true)
+                        setDisplayComponentAsLabels(true)
                     } else {
-                        setDisplayOnly(true)
+                        setDisplayComponentAsLabels(true)
                     }
                 }
             }
             break
             case ("text"): {
                 if(selectedTranslationData !== undefined){
-                    if(displayOnly){
-                        setDisplayOnly(false)
+                    if(displayComponentAsLabels){
+                        setDisplayComponentAsLabels(false)
                     } else {
                         if(selectedTranslationData.isDirty){
                             let updatedList: TranslationItem[]
@@ -660,9 +660,9 @@ export function TableDataCell(props: TableDataCellProps){
                             //@ts-ignore
                             dispatch(updateWordById(updatedWordData))
                             setFinishedUpdating(false)
-                            setDisplayOnly(true)
+                            setDisplayComponentAsLabels(true)
                         } else {
-                            setDisplayOnly(true)
+                            setDisplayComponentAsLabels(true)
                         }
                     }
                 }
@@ -737,7 +737,7 @@ export function TableDataCell(props: TableDataCellProps){
                         onClick={() => {
                             if (!props.onlyForDisplay!) {
                                 openModal()
-                                setDisplayOnly(false)
+                                setDisplayComponentAsLabels(false)
                                 setSelectedTranslationData({
                                     language: props.language!,
                                     cases: [],
@@ -873,13 +873,12 @@ export function TableDataCell(props: TableDataCellProps){
                                             variant={"outlined"}
                                             color={"secondary"}
                                             disabled={(
-                                                // TODO: disable editing if user is not author
                                                 (
-                                                    displayOnly && !userIsWordAuthor
+                                                    displayComponentAsLabels && !userIsWordAuthor
                                                 )
                                                     ||
                                                 (
-                                                    (!displayOnly) &&
+                                                    (!displayComponentAsLabels) &&
                                                     (
                                                         (
                                                             props.type === "text" &&
@@ -895,7 +894,7 @@ export function TableDataCell(props: TableDataCellProps){
                                             )}
                                             onClick={() => editSaveCancelChangesOnClick()}
                                         >
-                                            {(displayOnly)
+                                            {(displayComponentAsLabels)
                                                 ? "Edit"
                                                 : (
                                                     (

@@ -18,7 +18,7 @@ interface WordFormSelectorProps {
     currentTranslationData: TranslationItem,
     partOfSpeech?: PartOfSpeech,
     updateFormData: (formData: TranslationItem) => void
-    displayOnly?: boolean
+    displayFieldsAsText?: boolean
 }
 
 // returns the required form, depending on the selected language and part of speech
@@ -51,7 +51,7 @@ export function WordFormSelector(props: WordFormSelectorProps) {
                         updateFormData={(formData: TranslationItem) => {
                             props.updateFormData(formData)
                         }}
-                        displayOnly={props.displayOnly}
+                        displayOnly={props.displayFieldsAsText}
                     />
                 )
             }
@@ -62,7 +62,7 @@ export function WordFormSelector(props: WordFormSelectorProps) {
                         updateFormData={(formData: TranslationItem) => {
                             props.updateFormData(formData)
                         }}
-                        displayOnly={props.displayOnly}
+                        displayOnly={props.displayFieldsAsText}
                     />
                 )
             }
@@ -73,7 +73,7 @@ export function WordFormSelector(props: WordFormSelectorProps) {
                         updateFormData={(formData: TranslationItem) => {
                             props.updateFormData(formData)
                         }}
-                        displayOnly={props.displayOnly}
+                        displayOnly={props.displayFieldsAsText}
                     />
                 )
             }
@@ -93,7 +93,7 @@ export function WordFormSelector(props: WordFormSelectorProps) {
                         updateFormData={(formData: TranslationItem) => {
                             props.updateFormData(formData)
                         }}
-                        displayOnly={props.displayOnly}
+                        displayOnly={props.displayFieldsAsText}
                     />
                 )
             }
@@ -104,7 +104,7 @@ export function WordFormSelector(props: WordFormSelectorProps) {
                         updateFormData={(formData: TranslationItem) => {
                             props.updateFormData(formData)
                         }}
-                        displayOnly={props.displayOnly}
+                        displayOnly={props.displayFieldsAsText}
                     />
                 )
             }
@@ -115,7 +115,7 @@ export function WordFormSelector(props: WordFormSelectorProps) {
                         updateFormData={(formData: TranslationItem) => {
                             props.updateFormData(formData)
                         }}
-                        displayOnly={props.displayOnly}
+                        displayOnly={props.displayFieldsAsText}
                     />
                 )
             }
@@ -126,7 +126,7 @@ export function WordFormSelector(props: WordFormSelectorProps) {
                         updateFormData={(formData: TranslationItem) => {
                             props.updateFormData(formData)
                         }}
-                        displayOnly={props.displayOnly}
+                        displayOnly={props.displayFieldsAsText}
                     />
                 )
             }
@@ -145,7 +145,7 @@ export function WordFormSelector(props: WordFormSelectorProps) {
                         updateFormData={(formData: TranslationItem) => {
                             props.updateFormData(formData)
                         }}
-                        displayOnly={props.displayOnly}
+                        displayOnly={props.displayFieldsAsText}
                     />
                 )
             }
@@ -156,7 +156,7 @@ export function WordFormSelector(props: WordFormSelectorProps) {
                         updateFormData={(formData: TranslationItem) => {
                             props.updateFormData(formData)
                         }}
-                        displayOnly={props.displayOnly}
+                        displayOnly={props.displayFieldsAsText}
                     />
                 )
             }
@@ -167,7 +167,7 @@ export function WordFormSelector(props: WordFormSelectorProps) {
                         updateFormData={(formData: TranslationItem) => {
                             props.updateFormData(formData)
                         }}
-                        displayOnly={props.displayOnly}
+                        displayOnly={props.displayFieldsAsText}
                     />
                 )
             }
@@ -178,7 +178,7 @@ export function WordFormSelector(props: WordFormSelectorProps) {
                         updateFormData={(formData: TranslationItem) => {
                             props.updateFormData(formData)
                         }}
-                        displayOnly={props.displayOnly}
+                        displayOnly={props.displayFieldsAsText}
                     />
                 )
             }
