@@ -22,6 +22,7 @@ import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import {clearFullTagData, getTagsForCurrentUser, getFollowedTagsByUser} from "../features/tags/tagSlice";
 import {FriendList, ChipList} from "../components/GeneralUseComponents";
 import {clearRequesterNotifications, createNotification} from "../features/notifications/notificationSlice";
+import {Lang} from "../ts/enums";
 
 interface AccountProps {
 
@@ -54,6 +55,17 @@ export const Account = (props: AccountProps) => {
     const [localUserData, setLocalUserData] = useState<UserBadgeData | null>(null)
     const [reloadTagList, setReloadTagList] = useState(false)
     const [tagIdToShare, setTagIdToShare] = useState("")
+    const [sortedLanguages, setSortedLanguages] = useState<Lang[]>([])
+
+    useEffect(() => {
+        if(user.sortedLanguages!!){
+            const allLangs: string[] = (Object.values(Lang).filter((v) => isNaN(Number(v))) as unknown as Array<keyof typeof Lang>)
+            // TODO: filter by user.sortedLanguages and set in sortedLanguages
+            setSortedLanguages(allLangs as Lang[])
+        } else {
+            setSortedLanguages([])
+        }
+    },[friendships])
 
     useEffect(() => {
         if(friendships!!){
