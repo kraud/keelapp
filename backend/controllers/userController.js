@@ -50,6 +50,7 @@ const registerUser = asyncHandler(async(req, res) => {
             name: user.name,
             email: user.email,
             username: user.username,
+            languages: [], // user will select them once they login in
             token: generateToken(user._id)
         })
     } else {
@@ -72,6 +73,7 @@ const loginUser = asyncHandler(async(req, res) => {
             name: user.name,
             email: user.email,
             username: user.username,
+            languages: user.languages,
             token: generateToken(user._id)
         })
     } else {
@@ -84,7 +86,7 @@ const loginUser = asyncHandler(async(req, res) => {
 // @route   PUT /api/users/updateUser
 // @access  Public
 const updateUser = asyncHandler(async(req, res) => {
-    const {email, name, username} = req.body
+    const {email, name, username, languages} = req.body
 
     const usernameExists = await User.findOne({username: username})
     // NB! ._id returns the 'new ObjectId("idString") object. Instead, we use .id to access the "idString" value directly.
@@ -99,6 +101,8 @@ const updateUser = asyncHandler(async(req, res) => {
         const updatedUser = await User.findByIdAndUpdate(userData.id,{
             name: name,
             username: username,
+            // NB! email can't be changed
+            languages: languages,
             // if more fields are added to user, add them to the update here
         },{new: true}).select({ password: 0, createdAt: 0 , updatedAt: 0, __v: 0 })
         res.status(200).json(updatedUser)
@@ -137,6 +141,7 @@ const getUsersBy = asyncHandler(async(req, res) => {
                     label: matchingUser.name,
                     username: matchingUser.username,
                     email: matchingUser.email,
+                    languages: matchingUser.languages,
                 })
             }
         })

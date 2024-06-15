@@ -21,10 +21,23 @@ type UserBadgeProps = {
 export const UserBadge = (props: UserBadgeProps) => {
     const theme = useTheme()
     const lessThanMd = useMediaQuery(theme.breakpoints.down("md"))
-    const [allSelectedLanguages, setAllSelectedLanguages] = useState<string[]>((Object.values(Lang).filter((v) => isNaN(Number(v)))) as unknown as Array<keyof typeof Lang>)
+    const [allAvailableLanguages, setAllAvailableLanguages] = useState<string[]>()
+
     // const [allSelectedLanguages, setAllSelectedLanguages] = useState<string[]>((Object.values(Lang).filter((v) => isNaN(Number(v)))) as unknown as Array<keyof typeof Lang>)
 
-
+    const calculateRemainingLanguages = () => {
+        const allLanguages = (Object.values(Lang).filter((v) => isNaN(Number(v)))) as unknown as Array<keyof typeof Lang>
+        console.log('props.userData.languages', props.userData.languages)
+        const unselectedLanguages = allLanguages.filter((rawLanguage) => {
+            console.log('rawLanguage', rawLanguage)
+            return(
+                !(props.userData.languages.includes(rawLanguage as Lang)) // if language is not included in selected list, we save it
+            )
+        })
+        console.log('-----------------')
+        console.log('unselectedLanguages', unselectedLanguages)
+        return(unselectedLanguages)
+    }
 
     return(
         <Grid
@@ -208,10 +221,10 @@ export const UserBadge = (props: UserBadgeProps) => {
                             })
                         }
                     }}
-                    otherItems={[]}
+                    otherItems={!props.isEditing ?[] : calculateRemainingLanguages()}
                     setOtherItems={(languages: string[]) => null}
                     direction={"horizontal"}
-                    singleContainer={true}
+                    singleContainer={!props.isEditing} // we display second container only when editing, to select more languages
                     disabled={!props.isEditing!!}
                     selectedItemsTitle={""}
                     displayItems={'flag'}
