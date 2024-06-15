@@ -135,7 +135,8 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                 label: userResult.name,
                 type: 'user',
                 email: userResult.email,
-                username: userResult.username
+                username: userResult.username,
+                languages: (userResult.languages!!) ? userResult.languages : []
             })
         } else {
             setSelectedUser(null)
@@ -405,6 +406,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                         name: selectedUser?.label,
                                         email: (selectedUser.type === "user") ?selectedUser?.email : "",
                                         username: (selectedUser.type === "user") ?selectedUser?.username : "",
+                                        languages: (selectedUser.type === "user") ?selectedUser?.languages : [],
                                     }}
                                 />
                                 {/* TODO: display friends-list of currently selected user */}

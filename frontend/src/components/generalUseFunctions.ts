@@ -83,6 +83,7 @@ export const getOtherUserDataFromFriendship = (friendship: FriendshipData, curre
                 name: 'no-matching-name',
                 username: 'no-matching-username',
                 email: 'no-matching-email',
+                languages: [],
             })
 
         }
@@ -95,6 +96,7 @@ export const getOtherUserDataFromFriendship = (friendship: FriendshipData, curre
             name: 'no-name-available',
             username: 'no-username-available',
             email: 'no-email-available',
+            languages: [],
         })
     }
 }
@@ -105,7 +107,8 @@ export const userDataToSearchResultConversion = (userDataItem: UserData) => {
         type: "user"  as const,
         label: userDataItem.name,
         email: userDataItem.email,
-        username: userDataItem.username
+        username: userDataItem.username,
+        languages: userDataItem.languages
     })
 }
 

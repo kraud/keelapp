@@ -24,6 +24,8 @@ export const UserBadge = (props: UserBadgeProps) => {
     const [allSelectedLanguages, setAllSelectedLanguages] = useState<string[]>((Object.values(Lang).filter((v) => isNaN(Number(v)))) as unknown as Array<keyof typeof Lang>)
     // const [allSelectedLanguages, setAllSelectedLanguages] = useState<string[]>((Object.values(Lang).filter((v) => isNaN(Number(v)))) as unknown as Array<keyof typeof Lang>)
 
+
+
     return(
         <Grid
             container={true}
@@ -197,8 +199,15 @@ export const UserBadge = (props: UserBadgeProps) => {
                 xs={12}
             >
                 <DnDLanguageOrderSelector
-                    allSelectedItems={allSelectedLanguages}
-                    setAllSelectedItems={(languages: string[]) => setAllSelectedLanguages(languages)}
+                    allSelectedItems={props.userData.languages as string[]}
+                    setAllSelectedItems={(languages: string[]) => {
+                        if(props.returnFieldsData !== undefined){
+                            props.returnFieldsData({
+                                ...props.userData,
+                                languages: languages as Lang[],
+                            })
+                        }
+                    }}
                     otherItems={[]}
                     setOtherItems={(languages: string[]) => null}
                     direction={"horizontal"}

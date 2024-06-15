@@ -6,7 +6,7 @@ import {UserRegisterData} from "../../pages/Register";
 const user = JSON.parse(localStorage.getItem('user')! )
 
 interface AuthSliceState {
-    user: any,
+    user: any, // TODO: define user interface/type and use it here.
 
     isError: boolean,
     isSuccess: boolean,

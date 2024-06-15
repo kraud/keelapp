@@ -32,7 +32,8 @@ export interface UserBadgeData {
     id: string,
     name: string,
     username: string,
-    email: string
+    email: string,
+    languages: Lang[]
 }
 
 export const Account = (props: AccountProps) => {
@@ -55,17 +56,7 @@ export const Account = (props: AccountProps) => {
     const [localUserData, setLocalUserData] = useState<UserBadgeData | null>(null)
     const [reloadTagList, setReloadTagList] = useState(false)
     const [tagIdToShare, setTagIdToShare] = useState("")
-    const [sortedLanguages, setSortedLanguages] = useState<Lang[]>([])
 
-    useEffect(() => {
-        if(user.sortedLanguages!!){
-            const allLangs: string[] = (Object.values(Lang).filter((v) => isNaN(Number(v))) as unknown as Array<keyof typeof Lang>)
-            // TODO: filter by user.sortedLanguages and set in sortedLanguages
-            setSortedLanguages(allLangs as Lang[])
-        } else {
-            setSortedLanguages([])
-        }
-    },[friendships])
 
     useEffect(() => {
         if(friendships!!){
@@ -105,7 +96,13 @@ export const Account = (props: AccountProps) => {
 
     // so when we edit the profile data, it also changes the local data
     useEffect(() => {
-        setLocalUserData(user)
+        setLocalUserData({
+            ...user,
+            // TODO: revert once cleaning old users from DB
+            // NB! Originally, users did not have a list of languages.
+            // So we first check if there is language data, and if not, we set an empty array.
+            languages: (user.languages!!) ? user.languages : []
+        })
     },[user])
 
     useEffect(() => {
@@ -225,7 +222,8 @@ export const Account = (props: AccountProps) => {
                     id: "",
                     name: "",
                     email: "",
-                    username: ""
+                    username: "",
+                    languages: []
                 }}
                 isEditing={isEditing}
                 returnFieldsData={(updatedData) => {
@@ -234,6 +232,7 @@ export const Account = (props: AccountProps) => {
                             ...localUserData,
                             username: updatedData.username!,
                             name: updatedData.name,
+                            languages: updatedData.languages
                         })
                     }
                 }}

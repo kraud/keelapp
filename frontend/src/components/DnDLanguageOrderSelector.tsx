@@ -149,24 +149,35 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                                 componentStyles.sortableContextInnerContainer
                             }
                         >
-                            {props.allSelectedItems.map((item: string, index: number) => {
-                                return (
-                                    <DnDSortableItem
-                                        key={index}
-                                        id={item}
-                                        direction={props.direction}
-                                        displayItems={props.displayItems}
-                                        index={index}
-                                        sxProps={(index === (props.allSelectedItems.length -1))
-                                            ?
-                                                {
-                                                    paddingRight: '0px',
-                                                }
-                                            : undefined
-                                    }
-                                    />
+                            {(props.allSelectedItems.length === 0)
+                                ?
+                                <DnDSortableItem
+                                    invisible={true} // not be displayed - only to make SortableContext work properly
+                                    id={'do-not-display'}
+                                    direction={props.direction}
+                                />
+                                :
+                                (
+                                    props.allSelectedItems.map((item: string, index: number) => {
+                                        return (
+                                            <DnDSortableItem
+                                                key={index}
+                                                id={item}
+                                                direction={props.direction}
+                                                displayItems={props.displayItems}
+                                                index={index}
+                                                sxProps={(index === (props.allSelectedItems.length -1))
+                                                    ?
+                                                        {
+                                                            paddingRight: '0px',
+                                                        }
+                                                    : undefined
+                                            }
+                                            />
+                                        )
+                                    })
                                 )
-                            })}
+                            }
                         </Grid>
                     </SortableContext>
                 </Grid>

@@ -50,6 +50,7 @@ type UserSearch = {
     type: "user",
     email: string,
     username: string,
+    languages: Lang[]
     // eventually, add profile picture info
 }
 
@@ -58,6 +59,7 @@ export type UserData = {
     name: string,
     username: string,
     email: string,
+    languages: Lang[]
 }
 
 export type NotificationData = {
