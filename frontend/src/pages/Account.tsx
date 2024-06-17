@@ -41,7 +41,7 @@ export const Account = (props: AccountProps) => {
     const dispatch = useDispatch()
     const {user, isLoadingAuth, isSuccess, isError, message} = useSelector((state: any) => state.auth)
     const {friendships, isLoadingFriendships} = useSelector((state: any) => state.friendships)
-    const {tags, otherUserTags, isLoadingTags} = useSelector((state: any) => state.tags)
+    const {tags, isLoadingTags, followedTagsByUser} = useSelector((state: any) => state.tags)
     const {notificationResponse, isSuccessNotifications, isLoadingNotifications} = useSelector((state: any) => state.notifications)
 
     const [allTags, setAllTags] = useState<TagData[]>([])
@@ -91,8 +91,15 @@ export const Account = (props: AccountProps) => {
     },[tags])
 
     useEffect(() => {
-        setFollowedTags(otherUserTags)
-    },[otherUserTags])
+        // we only update the local copy of followedTags when we're *not* looking at a modal
+        // because inside a modal we might make a request that updated 'otherUsersTags'
+        // TODO: before setting, check if list changed
+        //  if true => call for followedTags again
+        //  if not => do not run setFollowedTags? WOULDN'T WORK
+        if(!(openFriendsModal || openTagModal)){
+            setFollowedTags(followedTagsByUser)
+        }
+    },[followedTagsByUser])
 
     // so when we edit the profile data, it also changes the local data
     useEffect(() => {
@@ -451,7 +458,8 @@ export const Account = (props: AccountProps) => {
                                     </Divider>
                                 </Grid>
                             </Grid>
-                            {(followedTags.length > 0)
+                            {/*{(followedTags.length > 0)*/}
+                            {(followedTags!!)
                                 ?
                                     <ChipList
                                         itemList={followedTags}

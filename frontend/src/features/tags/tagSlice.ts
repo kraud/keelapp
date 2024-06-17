@@ -4,7 +4,8 @@ import tagService from "./tagService";
 
 interface tagSliceState {
     tags: SearchResult[],
-    otherUserTags: SearchResult[],
+    otherUserTags: SearchResult[], // used when displaying data about a user
+    followedTagsByUser: SearchResult[], // used in account-screen
     searchResultTags: SearchResult[],
     fullTagData: TagData | undefined,
     currentTagAmountWords: number,
@@ -12,8 +13,9 @@ interface tagSliceState {
     followedTagResponse: any | undefined // TODO: Define type for 'followedTagResponse' according to BE response
     tagLabelIsAlreadyInUse: TagLabelAvailabilityStatus
 
-    isLoadingTags: boolean,
     isLoadingTagSearch: boolean, // NB! we use a different loading for search, to avoid triggering tag-loading-bar elsewhere
+
+    isLoadingTags: boolean,
     isSuccessTags: boolean,
     isError: boolean,
     message: string,
@@ -23,13 +25,15 @@ const initialState: tagSliceState = {
     tags: [],
     otherUserTags: [],
     searchResultTags: [],
+    followedTagsByUser: [],
     fullTagData: undefined,
     clonedTagResponse: undefined,
     followedTagResponse: undefined,
     currentTagAmountWords: 0,
     tagLabelIsAlreadyInUse: {isAvailable: true},
-    isLoadingTags: false,
+
     isLoadingTagSearch: false,
+    isLoadingTags: false,
     isSuccessTags: false,
     isError: false,
     message: "",
@@ -394,7 +398,7 @@ export const tagSlice = createSlice({
             .addCase(getFollowedTagsByUser.fulfilled, (state, action) => {
                 state.isLoadingTags = false
                 state.isSuccessTags = true
-                state.otherUserTags = (action.payload)
+                state.followedTagsByUser = (action.payload)
             })
             .addCase(getFollowedTagsByUser.rejected, (state, action) => {
                 state.isLoadingTags = false

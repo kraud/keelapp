@@ -14,7 +14,7 @@ import {
     clearFullTagData,
     clearFullTagDataWords,
     createTag,
-    deleteTag,
+    deleteTag, getFollowedTagsByUser,
     getTagById,
     updateTag
 } from "../features/tags/tagSlice";
@@ -24,6 +24,7 @@ import LinearIndeterminate from "./Spinner";
 import {toast} from "react-toastify";
 import {ConfirmationButton} from "./ConfirmationButton";
 import {deleteManyWordsById} from "../features/words/wordSlice";
+import {useFollowUnfollowTag, useIsUserFollowingTag} from "../hooks/useFollowUnfollowTag";
 
 
 interface FriendSearchModalProps {
@@ -53,7 +54,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
     }
     const dispatch = useDispatch()
     // 'fullTagData' will remain the same as it in BE. In case we need to cancel changes, we have this to copy the info from.
-    const {fullTagData, isSuccessTags, isLoadingTags} = useSelector((state: any) => state.tags)
+    const {fullTagData, isSuccessTags, isLoadingTags, followedTagsByUser} = useSelector((state: any) => state.tags)
     const {isLoading, isSuccess} = useSelector((state: any) => state.words)
     const {user} = useSelector((state: any) => state.auth)
 
@@ -85,6 +86,26 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
     const [isUpdating, setIsUpdating] = useState(false)
     const [isCreating, setIsCreating] = useState(false)
     const [currentTagHasBeenDeleted, setIsCurrentTagHasBeenDeleted] = useState(false)
+
+    // --------------- CUSTOM HOOKS ---------------
+    const {userFollowsTag, setUserFollowsTag} = useIsUserFollowingTag({
+        tagList: followedTagsByUser,
+        tagIdToCheck: (fullTagData!!) ? fullTagData._id : ""
+    })
+    const {currentlyFollowingOrUnfollowingTag, onClickFollowUnfollow} = useFollowUnfollowTag({
+        isUserFollowingTag: userFollowsTag,
+        setIsUserFollowingTag: setUserFollowsTag
+    })
+
+    useEffect(() => {
+        // after following/unfollowing we must update the list of followed tags
+        // 'currentlyFollowingOrUnfollowingTag' cycles from:
+        // false (initial) => true (while following/unfollowing) => false (once operation was successful
+        if(!currentlyFollowingOrUnfollowingTag){
+            // @ts-ignore
+            dispatch(getFollowedTagsByUser(user._id))
+        }
+    },[currentlyFollowingOrUnfollowingTag])
 
     useEffect(() => {
         // If props.tagId is empty => we're creating a new tag
@@ -326,8 +347,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                         </>
                     </>
                 )
-            } else { // not editing & not author => user follows tag?
-                // reviewing: send to friends - delete words - cancel (close modal)
+            } else { // not editing & not author => user follows tag
                 return(
                     <>
                         <Grid
@@ -336,8 +356,8 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                             md={5}
                         >
                             <ConfirmationButton
-                                onConfirm={() => null}
-                                buttonLabel={'Unfollow tag'}
+                                onConfirm={() => onClickFollowUnfollow()}
+                                buttonLabel={userFollowsTag ?'Unfollow tag' :'Follow tag'}
                                 buttonProps={{
                                     variant: "contained",
                                     color: "warning",

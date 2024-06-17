@@ -33,7 +33,7 @@ export function DisplayTag(props: DisplayTagProps){
     const dispatch = useDispatch()
     // @ts-ignore
     const { tagId } = useParams<RouterTagProps>()
-    const {otherUserTags, followedTagResponse, clonedTagResponse, fullTagData, isLoadingTags, isSuccessTags, isError, message} = useSelector((state: any) => state.tags)
+    const {followedTagsByUser, followedTagResponse, clonedTagResponse, fullTagData, isLoadingTags, isSuccessTags, isError, message} = useSelector((state: any) => state.tags)
     const {user} = useSelector((state: any) => state.auth)
 
     const emptyTagData = {
@@ -53,14 +53,14 @@ export function DisplayTag(props: DisplayTagProps){
     const [userFollowsTag, setUserFollowsTag] = useState(false)
 
     useEffect(() => {
-        if((otherUserTags.length > 0) && (fullTagData !== undefined) && !userFollowsTag){
-            if((otherUserTags.map((tagSearchResult: SearchResult) => {
+        if((followedTagsByUser.length > 0) && (fullTagData !== undefined) && !userFollowsTag){
+            if((followedTagsByUser.map((tagSearchResult: SearchResult) => {
                 return(tagSearchResult.id)
             })).includes(fullTagData._id)){
                 setUserFollowsTag(true)
             }
         }
-    },[otherUserTags])
+    },[followedTagsByUser])
 
     useEffect(() => {
         if(tagId!!) {

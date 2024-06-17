@@ -50,7 +50,7 @@ const registerUser = asyncHandler(async(req, res) => {
             name: user.name,
             email: user.email,
             username: user.username,
-            languages: [], // user will select them once they login in
+            languages: [], // user will select them once they log in
             token: generateToken(user._id)
         })
     } else {
