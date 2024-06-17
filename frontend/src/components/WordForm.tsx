@@ -25,6 +25,7 @@ interface TranslationFormProps {
 export function WordForm(props: TranslationFormProps) {
     const dispatch = useDispatch()
     const {isSuccess, isLoading} = useSelector((state: any) => state.words)
+    const {user} = useSelector((state: any) => state.auth)
 
     // Type of word to be added (noun/verb/adjective/etc.)
     const [partOfSpeech, setPartOfSpeech] = useState<PartOfSpeech | undefined>(undefined)
@@ -190,7 +191,8 @@ export function WordForm(props: TranslationFormProps) {
 
 
     const setAvailableLanguagesList = () => {
-        const allLangs: string[] = (Object.values(Lang).filter((v) => isNaN(Number(v))) as unknown as Array<keyof typeof Lang>)
+        // const allLangs: string[] = (Object.values(Lang).filter((v) => isNaN(Number(v))) as unknown as Array<keyof typeof Lang>)
+        const allLangs: string[] = (user.languages!!) ? user.languages : []
         let filteredLangs: Lang[] = []
         if((completeWordData.translations).length > 0){
             let selectedLangs: string[] = [];
@@ -429,6 +431,8 @@ export function WordForm(props: TranslationFormProps) {
                                 justifyContent={"center"}
                             >
                                 {
+                                    // TODO: list of translations should be sorted/filtered according to user.languages
+                                    //  and there should be an option to reveal translations for languages not included in user.languages, if they exist
                                     completeWordData.translations.map((translation: TranslationItem, index) => {
                                         return(
                                             <TranslationFormGeneric

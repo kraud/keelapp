@@ -36,7 +36,7 @@ export const useFollowUnfollowTag = (props: useFollowUnfollowTagProps) => {
                 toast.success(`You are now following this tag`)
                 props.setIsUserFollowingTag(true)
             }
-            // we don't need the cloned tag data anymore, so we reset the state
+            // we don't need the followed tag data anymore, so we reset the state
             dispatch(clearFollowedTagData())
         }
     }, [isLoadingTags, isSuccessTags, followedTagResponse])
@@ -79,7 +79,6 @@ export const useIsUserFollowingTag = (props: useIsUserFollowingTagProps) => {
                 ).includes(props.tagIdToCheck)
             )
         }
-        console.log()
     },[props.tagList, props.tagIdToCheck])
 
     return({userFollowsTag: userFollowsTag, setUserFollowsTag: setUserFollowsTag})

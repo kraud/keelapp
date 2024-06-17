@@ -97,11 +97,13 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
         setIsUserFollowingTag: setUserFollowsTag
     })
 
+    // TODO: should this be part of follow/unfollow hook?
     useEffect(() => {
         // after following/unfollowing we must update the list of followed tags
         // 'currentlyFollowingOrUnfollowingTag' cycles from:
-        // false (initial) => true (while following/unfollowing) => false (once operation was successful
-        if(!currentlyFollowingOrUnfollowingTag){
+        // false (initial) => true (while following/unfollowing) => false (once operation was successful)
+        // NB! fullTagData is here so this is not triggered unnecessarily while loading tag data
+        if((!currentlyFollowingOrUnfollowingTag) && (fullTagData!!)){
             // @ts-ignore
             dispatch(getFollowedTagsByUser(user._id))
         }

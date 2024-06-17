@@ -93,12 +93,7 @@ export const Account = (props: AccountProps) => {
     useEffect(() => {
         // we only update the local copy of followedTags when we're *not* looking at a modal
         // because inside a modal we might make a request that updated 'otherUsersTags'
-        // TODO: before setting, check if list changed
-        //  if true => call for followedTags again
-        //  if not => do not run setFollowedTags? WOULDN'T WORK
-        if(!(openFriendsModal || openTagModal)){
-            setFollowedTags(followedTagsByUser)
-        }
+        setFollowedTags(followedTagsByUser)
     },[followedTagsByUser])
 
     // so when we edit the profile data, it also changes the local data
@@ -458,7 +453,6 @@ export const Account = (props: AccountProps) => {
                                     </Divider>
                                 </Grid>
                             </Grid>
-                            {/*{(followedTags.length > 0)*/}
                             {(followedTags!!)
                                 ?
                                     <ChipList

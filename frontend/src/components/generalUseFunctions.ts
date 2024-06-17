@@ -317,7 +317,8 @@ export const getWordChipDataByLangInOrder = (word: WordDataBE, langPriorityList:
         } else {
             if(currentIndex >= (langPriorityList.length -1)){
                 // if no match is found, and we checked all the items in langPriorityList
-                // => there's probably a mistake: we return the first item
+                // => the word does not have a translation in any of the languages selected by the user.
+                // Regardless, we return the fist item from the list
                 const displayLabel = getRequiredFieldsData(word.translations[0], currentPartOfSpeech)
                 return({
                     ...word.translations[0],

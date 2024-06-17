@@ -407,7 +407,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
                         wordId: string,
                     } & (TranslationItem)
 
-                    const wordDataToDisplay: WordChipDisplayData = getWordChipDataByLangInOrder(selectedWordItem, [Lang.EN,Lang.DE, Lang.EE, Lang.ES]) as WordChipDisplayData
+                    const wordDataToDisplay: WordChipDisplayData = getWordChipDataByLangInOrder(selectedWordItem, user.languages) as WordChipDisplayData
                     return (
                         <Grid
                             item={true}
@@ -448,11 +448,6 @@ export const TagDataForm = (props: TagDataFormProps) => {
                                 }}
                                 size={"medium"}
                                 icon={<>
-                                    {/*<Avatar*/}
-                                    {/*    alt="Part of speech"*/}
-                                    {/*    src={(user) ? "" : "/"}*/}
-                                    {/*    {...stringAvatar((selectedWordItem.partOfSpeech!!) ?selectedWordItem.partOfSpeech :"-")}*/}
-                                    {/*/>*/}
                                     <CountryFlag
                                         country={wordDataToDisplay.language}
                                         border={true}

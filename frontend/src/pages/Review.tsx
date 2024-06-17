@@ -46,7 +46,7 @@ export function Review(){
     const dispatch = useDispatch()
     const {user} = useSelector((state: any) => state.auth)
     // Languages currently displayed as columns on the table
-    const [allSelectedLanguages, setAllSelectedLanguages] = useState<string[]>((Object.values(Lang).filter((v) => isNaN(Number(v)))) as unknown as Array<keyof typeof Lang>)
+    const [allSelectedLanguages, setAllSelectedLanguages] = useState<string[]>(user.languages)
     // Languages currently not displayed as columns on the table
     const [otherLanguages, setOtherLanguages] = useState<string[]>([])
     const [displayFilers, setDisplayFilers] = useState(true)
