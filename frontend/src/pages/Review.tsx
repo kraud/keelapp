@@ -18,7 +18,7 @@ import {createColumnsReviewTable} from "../components/table/columns/ReviewTableC
 import {FilterItem, TagData} from "../ts/interfaces";
 import {
     extractTagsArrayFromUnknownFormat,
-    getAllIndividualTagDataFromFilterItem
+    getAllIndividualTagDataFromFilterItem, getIntersectionBetweenLists
 } from "../components/generalUseFunctions";
 import {applyNewTagToSelectedWordsById, getTagById} from "../features/tags/tagSlice";
 import Box from "@mui/material/Box";
@@ -272,6 +272,21 @@ export function Review(){
         setSelectedRowsForBulkTagAssign([])
     }
 
+    // if the words we get from getSimplifiedWords does not have at least one translation in any of the currently selected languages,
+    // we don't display that row.
+    // TODO: we could add a toggle for this in the future, which we only display IF at least one row is hidden
+    const filterWordsWithNoMatchesWithLanguageList = (rawListOfWords: any[]) => {
+        let filteredList: any[] = []
+        if(rawListOfWords!!){
+            rawListOfWords.forEach((simpleWordRaw) => {
+                if(getIntersectionBetweenLists(simpleWordRaw.storedLanguages, user.languages).length > 0 ){
+                    filteredList.push(simpleWordRaw)
+                }
+            })
+        }
+        return(filteredList)
+    }
+
     return(
         <Grid
             component={motion.div} // to implement animations with Framer Motion
@@ -455,7 +470,7 @@ export function Review(){
                     rowDataIsLoading={isLoading}
                     displayGlobalSearch={true}
                     sortedAndSelectedLanguages={allSelectedLanguages}
-                    rowData={wordsSimple.words}
+                    rowData={filterWordsWithNoMatchesWithLanguageList(wordsSimple.words)}
                     calculateColumns={(displayGender: boolean) => {
                         return(createColumnsReviewTable(allSelectedLanguages, displayGender, user))
                     }}

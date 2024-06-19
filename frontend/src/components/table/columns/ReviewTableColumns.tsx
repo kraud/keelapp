@@ -243,6 +243,7 @@ export const createColumnsReviewTable = (selectedLanguagesList: string[], displa
                     />
                 ),
                 enableColumnFilter: false,
+                enableSorting: false,
             }),
             newColumnHelper.accessor('partOfSpeech', {
                 header: ({column}) =>

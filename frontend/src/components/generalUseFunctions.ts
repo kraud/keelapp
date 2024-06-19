@@ -467,3 +467,8 @@ export const getListOfAvailableUsers = (inputData: GetListOfAvailableUsersInput)
         }
     }
 }
+
+export function getIntersectionBetweenLists (a: any[], b: any[]) {
+    const setA = new Set(a);
+    return b.filter((value: any) => setA.has(value));
+}

@@ -57,6 +57,7 @@ export function WordForm(props: TranslationFormProps) {
         if(props.initialState !== undefined){
             if(props.initialState.translations !== undefined){
                 setCompleteWordData({
+                    // TODO: this list should filter by user.languages. And might/should be reversible by potential toggle?
                     translations: (props.initialState.translations).map((translation: TranslationItem) => {
                         return({
                             ...translation,
@@ -441,6 +442,8 @@ export function WordForm(props: TranslationFormProps) {
                                                 partOfSpeech={partOfSpeech}
                                                 availableLanguages={availableLanguages}
                                                 currentTranslationData={translation}
+                                                // TODO: if editing an existing word, amountOfFormsOnScreen should be calculated,
+                                                //  according to the forms actually being displayed (after filtering by user.languages)
                                                 amountOfFormsOnScreen={completeWordData.translations.length}
                                                 defaultDisabled={disabledForms}
 

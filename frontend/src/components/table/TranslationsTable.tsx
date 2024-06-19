@@ -19,7 +19,7 @@ import {ConfirmationButton} from "../ConfirmationButton";
 
 interface TranslationsTableProps {
     sortedAndSelectedLanguages: string[]
-    rowData: any
+    rowData: any // TODO: define a type for row data (from wordsSimplified in wordController).
     calculateColumns: (displayGender: boolean) => unknown[]
     setOrderColumns: (items: string[]) => void
 

@@ -385,6 +385,7 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
     // Filtering complete => setting up format to be displayed on table
     if((processedResults !== undefined) && (processedResults.length > 0)){
         processedResults.forEach((completeWord) => {
+            const storedLanguages = new Set()
             // we must go through all the languages listed on "translations" and create simplified versions of each
             let simplifiedWord = {
                 tags: completeWord.tags,
@@ -397,13 +398,18 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
             partsOfSpeech.add(completeWord.partOfSpeech)
             // from each translated language, we only retrieve the necessary data
             completeWord.translations.forEach((translation) => {
+                storedLanguages.add(translation.language)
                 simplifiedWord = {
                     ...simplifiedWord,
                     ...(getRequiredFieldsData(translation, completeWord.partOfSpeech)),
                     [getFieldName(translation.language)]: translation.cases.length
                 }
             })
-            wordsSimplified.push(simplifiedWord)
+            const simplifiedWordWithLanguages = {
+                ...simplifiedWord,
+                storedLanguages: Array.from(storedLanguages)
+            }
+            wordsSimplified.push(simplifiedWordWithLanguages)
         })
     }
     const result = {

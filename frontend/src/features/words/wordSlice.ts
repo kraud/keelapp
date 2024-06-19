@@ -7,7 +7,7 @@ interface wordSliceState {
     // list with full translation info for all words might not be needed?
     // wordSimple + request for specific data in word can be enough?
     words: WordData[],
-    wordsSimple: any[],
+    wordsSimple: any[], // TODO: replace any with a specific type
     word?: WordData,
     searchResults: SearchResult[],
     tags: string[], // TODO: change this to TagData[] eventually

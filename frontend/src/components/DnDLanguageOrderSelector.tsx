@@ -114,8 +114,9 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                     container={true}
                     item={true}
                     direction={"column"}
+                    // xs // NB! This makes both columns be displayed side by side
                     sx={{
-                        width: 'max-content'
+                        // width: 'max-content'
                     }}
                 >
                     {(props.selectedItemsTitle !== "") &&
@@ -185,7 +186,8 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                     <Grid
                         container={true}
                         item={true}
-                        xs={'auto'}
+                        // xs={'auto'}
+                        xs
                         direction={"column"}
                     >
                         {(props.otherItemsTitle!!) &&
