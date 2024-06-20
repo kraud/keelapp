@@ -37,7 +37,7 @@ export function WordForm(props: TranslationFormProps) {
     // object containing all the translations and extra info about the word
     const [completeWordData, setCompleteWordData] = useState<WordData>(
         {
-            translations: [ // TODO: check if this could be replaced by some sort of empty TranslationItem instead of Object?
+            translations: [
                 Object as unknown as TranslationItem,
                 Object as unknown as TranslationItem
             ]
@@ -52,19 +52,48 @@ export function WordForm(props: TranslationFormProps) {
         }
     }, [props.defaultDisabled])
 
+    // When reviewing an already created word, there might me translations assigned to that word,
+    // which correspond to languages not relevant to the current user.
+    // This might be because they used to have that language in their selected list, or because the word comes from a followed-tag.
+    // On these cases, we don't display those translations. // TODO: should be reversible by potential toggle
+    const filterAvailableTranslationsBySelectedLanguages = (availableTranslations: TranslationItem[]) => {
+        let filteredAndFormattedTranslationsList: TranslationItem[] = []
+        availableTranslations.forEach((availableTranslation: TranslationItem) => {
+            if((user.languages).includes(availableTranslation.language)){
+                filteredAndFormattedTranslationsList.push({
+                    ...availableTranslation,
+                    completionState: true,
+                    isDirty: false,
+                })
+            }
+        })
+        return(filteredAndFormattedTranslationsList)
+    }
+
+    const reverseChangesInLocalWordState = () => {
+        if(props.initialState !== undefined){
+            // NB! We don't simply spread props.initial state, because there might be other fields not relevant to local state.
+            // We only store in local state the values that we actually use.
+            setCompleteWordData({
+                translations: filterAvailableTranslationsBySelectedLanguages(props.initialState.translations),
+                partOfSpeech: props.initialState.partOfSpeech,
+                clue: props.initialState.clue,
+                tags: props.initialState.tags,
+
+            })
+            setHideView(true)
+            setDisabledForms(true)
+        }
+    }
+
     // In case we're loading an already existing word into the form, we need to set that data into the local state
     useEffect(() => {
         if(props.initialState !== undefined){
             if(props.initialState.translations !== undefined){
+                // NB! We don't simply spread props.initial state, because there might be other fields not relevant to local state.
+                // We only store in local state the values that we actually use.
                 setCompleteWordData({
-                    // TODO: this list should filter by user.languages. And might/should be reversible by potential toggle?
-                    translations: (props.initialState.translations).map((translation: TranslationItem) => {
-                        return({
-                            ...translation,
-                            completionState: true,
-                            isDirty: false,
-                        })
-                    }),
+                    translations: filterAvailableTranslationsBySelectedLanguages(props.initialState.translations),
                     partOfSpeech: props.initialState.partOfSpeech,
                     clue: props.initialState.clue,
                     tags: props.initialState.tags
@@ -76,7 +105,7 @@ export function WordForm(props: TranslationFormProps) {
                 dispatch(setSelectedPoS(props.initialState.partOfSpeech))
             }
         }
-    },[props.initialState]) // TODO: should this be [] instead?
+    },[props.initialState])
 
     // This function is used to update the list of currently selected languages and their status
     // It basically checks if the new data received corresponds to a language already stored.
@@ -192,7 +221,6 @@ export function WordForm(props: TranslationFormProps) {
 
 
     const setAvailableLanguagesList = () => {
-        // const allLangs: string[] = (Object.values(Lang).filter((v) => isNaN(Number(v))) as unknown as Array<keyof typeof Lang>)
         const allLangs: string[] = (user.languages!!) ? user.languages : []
         let filteredLangs: Lang[] = []
         if((completeWordData.translations).length > 0){
@@ -266,7 +294,7 @@ export function WordForm(props: TranslationFormProps) {
 
     // hack to trigger re-rendering - alternative would've required changes in all language forms
     // and could cause unforeseen side effects
-    // TODO: add timeout and during it display an animation?
+    // TODO: add timeout and during it, display an animation?
     const [hideView, setHideView] = useState(false)
     useEffect(() => {
         setHideView(false)
@@ -337,22 +365,12 @@ export function WordForm(props: TranslationFormProps) {
                                         if(disabledForms){
                                             setDisabledForms(false)
                                         } else if(props.initialState !== undefined) {
-                                            setCompleteWordData(props.initialState)
-                                            setHideView(true)
-                                            setDisabledForms(true)
+                                            reverseChangesInLocalWordState()
                                         } else {
                                             resetAll()
                                         }
                                     }}
                                     fullWidth={true}
-                                    /*
-                                    TODO: temporary fix - until we decide what this button should say/do when editing an existing word
-                                     Should we be able to fully reset a word to choose Part of Speech again,
-                                     (rta: NO, that would require to switch forms; better delete and restart)
-                                     or should it simply allow to delete whole word? (rta: should be possible from here too)
-                                     Should there always be a "delete word" button next to "edit" when reviewing an existing word?
-                                    */
-                                    // disabled={(props.initialState !== undefined) && !disabledForms}
                                     // there are cases when it should not be possible to edit a word (e.g. word from followed-tag).
                                     disabled={props.disableEditing!!}
                                 >
@@ -432,8 +450,6 @@ export function WordForm(props: TranslationFormProps) {
                                 justifyContent={"center"}
                             >
                                 {
-                                    // TODO: list of translations should be sorted/filtered according to user.languages
-                                    //  and there should be an option to reveal translations for languages not included in user.languages, if they exist
                                     completeWordData.translations.map((translation: TranslationItem, index) => {
                                         return(
                                             <TranslationFormGeneric
@@ -442,7 +458,6 @@ export function WordForm(props: TranslationFormProps) {
                                                 partOfSpeech={partOfSpeech}
                                                 availableLanguages={availableLanguages}
                                                 currentTranslationData={translation}
-                                                // TODO: if editing an existing word, amountOfFormsOnScreen should be calculated,
                                                 //  according to the forms actually being displayed (after filtering by user.languages)
                                                 amountOfFormsOnScreen={completeWordData.translations.length}
                                                 defaultDisabled={disabledForms}
