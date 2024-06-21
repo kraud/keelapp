@@ -400,6 +400,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
                 item={true}
                 xs={12}
             >
+                {/* TODO: review if it is possible to refactor/replace with ChipList component */}
                 {(selectedWords.map((selectedWordItem: WordDataBE, index: number) => {
                     // TranslationItem + displayLabel
                     type WordChipDisplayData = {

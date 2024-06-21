@@ -91,8 +91,6 @@ export const Account = (props: AccountProps) => {
     },[tags])
 
     useEffect(() => {
-        // we only update the local copy of followedTags when we're *not* looking at a modal
-        // because inside a modal we might make a request that updated 'otherUsersTags'
         setFollowedTags(followedTagsByUser)
     },[followedTagsByUser])
 

@@ -5,7 +5,7 @@ import tagService from "./tagService";
 interface tagSliceState {
     tags: SearchResult[],
     otherUserTags: SearchResult[], // used when displaying data about a user
-    followedTagsByUser: SearchResult[], // used in account-screen
+    followedTagsByUser: TagData[], // used in account-screen
     searchResultTags: SearchResult[],
     fullTagData: TagData | undefined,
     currentTagAmountWords: number,

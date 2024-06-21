@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {SearchResult} from "../ts/interfaces";
+import {TagData} from "../ts/interfaces";
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
 import {clearFollowedTagData, followTag, getFollowedTagsByUser, unfollowTag} from "../features/tags/tagSlice";
@@ -59,7 +59,7 @@ export const useFollowUnfollowTag = (props: useFollowUnfollowTagProps) => {
 }
 
 interface useIsUserFollowingTagProps {
-    tagList: SearchResult[],
+    tagList: TagData[],
     tagIdToCheck: string
 }
 
@@ -72,8 +72,8 @@ export const useIsUserFollowingTag = (props: useIsUserFollowingTagProps) => {
             setUserFollowsTag(
                 (
                     props.tagList.map(
-                        (tagSearchResult: SearchResult) => {
-                            return(tagSearchResult.id)
+                        (tagDataItem: TagData) => {
+                            return(tagDataItem._id)
                         }
                     )
                 ).includes(props.tagIdToCheck)
