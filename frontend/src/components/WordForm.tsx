@@ -55,7 +55,8 @@ export function WordForm(props: TranslationFormProps) {
     // When reviewing an already created word, there might me translations assigned to that word,
     // which correspond to languages not relevant to the current user.
     // This might be because they used to have that language in their selected list, or because the word comes from a followed-tag.
-    // On these cases, we don't display those translations. // TODO: should be reversible by potential toggle
+    // On these cases, we don't display those translations.
+    // TODO: this should be reversible with a toggle, and there should be a small note somewhere alerting the user of the amount of 'hidden' translations.
     const filterAvailableTranslationsBySelectedLanguages = (availableTranslations: TranslationItem[]) => {
         let filteredAndFormattedTranslationsList: TranslationItem[] = []
         availableTranslations.forEach((availableTranslation: TranslationItem) => {

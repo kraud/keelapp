@@ -10,8 +10,6 @@ interface wordSliceState {
     wordsSimple: any[], // TODO: replace any with a specific type
     word?: WordData,
     searchResults: SearchResult[],
-    tags: string[], // TODO: change this to TagData[] eventually
-    currentTagAmount: number,
     currentlySelectedPoS?: PartOfSpeech, // when adding a new word, we need to know the PoS, so we can display the proper labels
 
     // state-tracking properties
@@ -20,7 +18,6 @@ interface wordSliceState {
     isLoading: boolean,
     // different loading status for search, since it's displayed simultaneously with other components that depend on isLoading
     isSearchLoading: boolean,
-    isTagSearchLoading: boolean,
     message: string,
 }
 
@@ -31,14 +28,11 @@ const initialState: wordSliceState = {
         translations: []
     },
     searchResults: [],
-    tags: [],
-    currentTagAmount: 0,
     currentlySelectedPoS: undefined,
     isError: false,
     isSuccess: false,
     isLoading: false,
     isSearchLoading: false,
-    isTagSearchLoading: false,
     message: "",
 }
 
