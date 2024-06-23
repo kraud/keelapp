@@ -1,4 +1,4 @@
-import {closestCenter, DndContext} from "@dnd-kit/core";
+import {closestCenter, DndContext, KeyboardSensor, MouseSensor, useSensor, useSensors} from "@dnd-kit/core";
 import {
     arrayMove,
     SortableContext,
@@ -44,42 +44,72 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
         }
     }
 
+    const mouseSensor = useSensor(MouseSensor, {
+        activationConstraint: {
+            // this prevents the handleDragEnd event to run, until we move the item 5px
+            distance: 5,
+        },
+    })
+    const keyboardSensor = useSensor(KeyboardSensor)
+    const sensors = useSensors(mouseSensor, keyboardSensor)
+
+    const sortingLogicBetweenDifferentContainers = (destinationContainer: 'selected'|'other', currentIndex: number, destinationIndex: number, itemId: string) => {
+        switch(destinationContainer){
+            case('selected'): {
+                let newOthers = props.otherItems
+                newOthers.splice(currentIndex, 1) // remove 1 item at activeIndex
+                props.setOtherItems(newOthers)
+
+                // NB! This will only run once, when item first comes into container. Any other movement afterwards
+                // is recognized as a "within-same-container-movement"
+                let updatedSelectedLanguages = [
+                    ...props.allSelectedItems.slice(0, destinationIndex+1), // all items up to destinationIndex
+                    itemId,
+                    ...props.allSelectedItems.slice(destinationIndex + 1), // all the items after destinationIndex
+                ]
+                props.setAllSelectedItems(updatedSelectedLanguages)
+                break
+            }
+            case('other'): {
+                if(props.allSelectedItems.length > 2) {
+                    props.setOtherItems([...props.otherItems, (props.allSelectedItems[currentIndex])]) // order not important (yet)
+                    let newSelected = [...props.allSelectedItems] // NB! Spreading this prop is NECESSARY for it to re-render the table.
+                    newSelected.splice(currentIndex, 1) // remove 1 item at activeIndex from newSelected
+                    props.setAllSelectedItems(newSelected)
+                } else {
+                    toast.error("You can't have less than 2 languages displayed.", {
+                        toastId: "always-2-lang",
+                        autoClose: 2500,
+                    })
+                }
+                break
+            }
+            default: {
+                toast.error("There was an error. Try again", {
+                    toastId: "always-2-lang",
+                    autoClose: 2500,
+                })
+            }
+        }
+    }
+
     function handleDragEnd(event: any) {
         const {active, over } = event
 
         if(!props.disabled!!){
             if(active.id !== over.id){
                 if(active.data.current.sortable.containerId !== over.data.current.sortable.containerId){  // BETWEEN DIFFERENT CONTAINERS
-                    if(over.data.current.sortable.containerId == "other"){ // destination is "other" container
-                        if(props.allSelectedItems.length > 2) {
-                            const activeIndex = props.allSelectedItems.indexOf(active.id) // original index of the item - we use it to remove it from the selected list
-                            props.setOtherItems([...props.otherItems, (props.allSelectedItems[activeIndex])]) // order not important (yet)
-                            let newSelected = [...props.allSelectedItems] // NB! Spreading this prop is NECESSARY for it to re-render the table.
-                            newSelected.splice(activeIndex, 1) // remove 1 item at activeIndex from newSelected
-                            props.setAllSelectedItems(newSelected)
-                        } else {
-                            toast.error("You can't have less than 2 languages displayed.", {
-                                toastId: "always-2-lang",
-                                autoClose: 2500,
-                            })
-                        }
-                    } else { // destination is "selected" container
-                        const overIndex = props.allSelectedItems.indexOf(over.id) // index at which it's hovering at the selected container
-
-                        const activeIndex = props.otherItems.indexOf(active.id) // index which the item used to be at inside "others"
-                        let newOthers = props.otherItems
-                        newOthers.splice(activeIndex, 1) // remove 1 item at activeIndex
-                        props.setOtherItems(newOthers)
-
-                        // NB! This will only run once, when item first comes into container. Any other movement afterwards
-                        // is recognized as a "within-same-container-movement"
-                        let updatedSelectedLanguages = [
-                            ...props.allSelectedItems.slice(0, overIndex+1), // all items up to overIndex
-                            active.id,
-                            ...props.allSelectedItems.slice(overIndex + 1), // all the items after overIndex
-                        ]
-                        props.setAllSelectedItems(updatedSelectedLanguages)
-                    }
+                    const destinationContainer = (over.data.current.sortable.containerId == "other") ?'other' :'selected'
+                    sortingLogicBetweenDifferentContainers(
+                        destinationContainer,
+                        (destinationContainer === 'selected')
+                            ? (props.otherItems.indexOf(active.id)) // if destination is 'selected' => current location comes from 'other'
+                            : (props.allSelectedItems.indexOf(active.id)), // if destination is 'other' => current location comes from 'selected'
+                        (destinationContainer === 'selected')
+                            ? (props.allSelectedItems.indexOf(over.id))
+                            : 0, // this number won't be used when moving into 'other'. This is a placeholder.
+                        active.id // language Id
+                    )
                 } else { // WITHIN SAME CONTAINER MOVEMENT
                     if(active.data.current.sortable.containerId == "selected"){ // inside movement at the "selected" container
                         const activeIndex = props.allSelectedItems.indexOf(active.id)
@@ -99,6 +129,20 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
         }
     }
 
+    const moveLanguageToOtherContainer = (languageId: string, destinationContainer: 'selected' | 'other') => {
+        sortingLogicBetweenDifferentContainers(
+            destinationContainer,
+            (destinationContainer === 'selected')
+                ? (props.otherItems.indexOf(languageId))
+                : (props.allSelectedItems.indexOf(languageId)),
+            (destinationContainer === 'selected')
+                // new language will be added to the end of the list by default
+                ? (props.allSelectedItems.length)
+                : (props.otherItems.length),
+            languageId
+        )
+    }
+
     return(
         <Grid
             container={true}
@@ -109,6 +153,7 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                 collisionDetection={closestCenter}
                 // onDragEnd={handleDragEnd} // Works better to avoid too much re-rendering while dragging - but animations are not working
                 onDragOver={handleDragEnd}
+                sensors={sensors} // NB! Sensors are required to delay onDragOver trigger, so we can run 'onClick' inside DnDSortableItem
             >
                 <Grid
                     container={true}
@@ -156,6 +201,8 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                                     invisible={true} // not be displayed - only to make SortableContext work properly
                                     id={'do-not-display'}
                                     direction={props.direction}
+                                    containerLabel={'selected'}
+                                    onActionButtonClick={() => null} //NB! This item should have no action
                                 />
                                 :
                                 (
@@ -164,8 +211,10 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                                             <DnDSortableItem
                                                 key={index}
                                                 id={item}
+                                                containerLabel={'selected'}
                                                 direction={props.direction}
                                                 displayItems={props.displayItems}
+                                                disabled={props.disabled}
                                                 index={index}
                                                 sxProps={(index === (props.allSelectedItems.length -1))
                                                     ?
@@ -173,7 +222,10 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                                                             paddingRight: '0px',
                                                         }
                                                     : undefined
-                                            }
+                                                }
+                                                onActionButtonClick={(languageId: string) => {
+                                                    moveLanguageToOtherContainer(languageId, 'other')
+                                                }}
                                             />
                                         )
                                     })
@@ -222,17 +274,24 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                                         <DnDSortableItem
                                             invisible={true} // not be displayed - only to make SortableContext work properly
                                             id={'do-not-display'}
+                                            containerLabel={'other'}
                                             direction={props.direction}
+                                            disabled={props.disabled}
+                                            onActionButtonClick={() => null} //NB! This item should have no action
                                         />
                                     :
                                         props.otherItems.map((item: string, index: number) => {
                                             return (
                                                 <DnDSortableItem
-                                                    disableAll={true}
+                                                    disabled={props.disabled}
                                                     key={index}
+                                                    containerLabel={'other'}
                                                     id={item}
                                                     direction={props.direction}
                                                     displayItems={props.displayItems}
+                                                    onActionButtonClick={(languageId: string) => {
+                                                        moveLanguageToOtherContainer(languageId, 'selected')
+                                                    }}
                                                 />
                                             )
                                         })

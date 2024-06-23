@@ -11,14 +11,35 @@ import {Lang} from "../ts/enums";
 interface DnDSortableItemProps{
     id: string,
     direction: "vertical" | "horizontal",
+    containerLabel: 'selected' | 'other'
     index?: number
     invisible?: boolean
-    disableAll?: boolean
+    disabled?: boolean
     sxProps?: SxProps<Theme>
-    displayItems?: 'text' | 'flag' | 'both'
+    displayItems?: 'text' | 'flag' | 'both',
+    onActionButtonClick: (itemId: string) => void
 }
 
 export function DnDSortableItem(props: DnDSortableItemProps){
+    const componentStyles = {
+        descriptionButton: {
+            borderRadius: (props.disabled!!) ?'5px' :'5px 0px 0px 5px',
+            marginRight: '1px',
+            "&.Mui-disabled": {
+                background: "#0072CE",
+                color: "#fff"
+            },
+            cursor: (props.disabled!!) ?'default' :'move',
+        },
+        actionButton: {
+            borderRadius: '0px 5px 5px 0px',
+            minWidth: '21px',
+            paddingRight: '1px',
+            paddingLeft: '1px',
+            background: (props.containerLabel === 'selected') ?globalTheme.palette.error.main :globalTheme.palette.success.main,
+            color: "#fff"
+        },
+    }
 
     const {
         attributes,
@@ -97,19 +118,39 @@ export function DnDSortableItem(props: DnDSortableItemProps){
                 paddingRight: globalTheme.spacing(1),
                 paddingTop: globalTheme.spacing(1),
                 paddingBottom: globalTheme.spacing(1),
-                cursor: 'pointer',
                 ...props.sxProps
             }}
         >
-            {!(props.invisible === true) &&
-                <Button
-                    variant={"contained"}
-                    color={"secondary"}
-                    onClick={() => null}
-                    disabled={props.disableAll!}
-                >
-                    {getDisplayElements()}
-                </Button>
+            {/*
+                NB! This prop is only used when displaying an empty list in the container.
+                We need at least one element (even if invisible), to "hold" some room,
+                so when we drag a new item, the container has a "space" to drop the item into.
+            */}
+            {!(props.invisible!!) &&
+                <>
+                    <Button
+                        variant={"contained"}
+                        color={"info"}
+                        onClick={(e: any) => console.log('0')}
+                        disabled={props.disabled!}
+                        sx={componentStyles.descriptionButton}
+                    >
+                        {getDisplayElements()}
+                    </Button>
+                    {!(props.disabled!) &&
+                        <Button
+                            variant={"contained"}
+                            color={"info"}
+                            onClick={() => {
+                                props.onActionButtonClick(props.id)
+                            }}
+                            disabled={props.disabled!}
+                            sx={componentStyles.actionButton}
+                        >
+                            {(props.containerLabel === 'selected') ?'-' :'+'}
+                        </Button>
+                    }
+                </>
             }
         </Grid>
     )

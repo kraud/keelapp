@@ -20,7 +20,7 @@ import {AutocompleteSearch} from "./AutocompleteSearch";
 import globalTheme from "../theme/theme";
 import {searchWordByAnyTranslation} from "../features/words/wordSlice";
 import {NotificationData, SearchResult} from "../ts/interfaces";
-import {Badge, Grid, Switch} from "@mui/material";
+import {Badge, Grid} from "@mui/material";
 import {stringAvatar} from "./generalUseFunctions";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import {useState} from "react";
