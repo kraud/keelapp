@@ -134,7 +134,11 @@ export const ChipList = (props: ChipListProps) => {
 
     // TODO: separate chip, to include a small section at the end, with a different color, with number of words associated with it
     return(
-        <>
+        <Grid
+            container={true}
+            spacing={1}
+            justifyContent={"center"}
+        >
             {(props.itemList.map((item: TagData|SearchResult, index: number) => {
                 return (
                     <Grid
@@ -162,7 +166,7 @@ export const ChipList = (props: ChipListProps) => {
                     </Grid>
                 )
             }))}
-        </>
+        </Grid>
     )
 }
 

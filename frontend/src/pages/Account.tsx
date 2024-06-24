@@ -212,344 +212,387 @@ export const Account = (props: AccountProps) => {
                 marginTop: globalTheme.spacing(4),
             }}
             rowSpacing={2}
+            spacing={4}
             xs={12}
-            md={6}
-            lg={4}
+            md={8}
+            lg={10}
         >
-            {/* USER DATA */}
-            <UserBadge
-                userData={(localUserData!!) ?localUserData :{
-                    id: "",
-                    name: "",
-                    email: "",
-                    username: "",
-                    languages: []
-                }}
-                isEditing={isEditing}
-                returnFieldsData={(updatedData) => {
-                    if(localUserData !== null){
-                        setLocalUserData({
-                            ...localUserData,
-                            username: updatedData.username!,
-                            name: updatedData.name,
-                            languages: updatedData.languages
-                        })
-                    }
-                }}
-                isLoading={isLoadingAuth && !(openFriendsModal || openTagModal)}
-            />
-            {/* BUTTONS */}
+            {/* FIRST COLUMN */}
             <Grid
                 container={true}
                 justifyContent={"space-around"}
+                rowSpacing={2}
                 item={true}
                 xs={12}
+                lg={6}
+                sx={{
+                    height: 'fit-content'
+                }}
             >
-                {(!isEditing) &&
-                    <>
-                        <Grid
-                            item={true}
-                            xs={4}
-                        >
-                            <Button
-                                variant={"contained"}
-                                color={"primary"}
-                                onClick={() => {
-                                    setTagIdToShare("") // we make sure that no list will be displayed on FriendSearchModal
-                                    setOpenFriendsModal(true)
-                                }}
-                                fullWidth={true}
-                                startIcon={<PersonAddIcon />}
-                            >
-                                Add friends
-                            </Button>
-                        </Grid>
-                        <Grid
-                            container={true}
-                            item={true}
-                            justifyContent={"center"}
-                            xs={4}
-                        >
+                {/* USER DATA */}
+                <UserBadge
+                    userData={(localUserData!!) ?localUserData :{
+                        id: "",
+                        name: "",
+                        email: "",
+                        username: "",
+                        languages: []
+                    }}
+                    isEditing={isEditing}
+                    returnFieldsData={(updatedData) => {
+                        if(localUserData !== null){
+                            setLocalUserData({
+                                ...localUserData,
+                                username: updatedData.username!,
+                                name: updatedData.name,
+                                languages: updatedData.languages
+                            })
+                        }
+                    }}
+                    isLoading={isLoadingAuth && !(openFriendsModal || openTagModal)}
+                />
+                {/* BUTTONS */}
+                <Grid
+                    container={true}
+                    justifyContent={"space-around"}
+                    item={true}
+                    xs={12}
+                >
+                    {(!isEditing) &&
+                        <>
                             <Grid
                                 item={true}
-                                xs={"auto"}
+                                xs={4}
                             >
                                 <Button
                                     variant={"contained"}
-                                    color={"info"}
-                                    onClick={() => setOpenTagModal(true)}
+                                    color={"primary"}
+                                    onClick={() => {
+                                        setTagIdToShare("") // we make sure that no list will be displayed on FriendSearchModal
+                                        setOpenFriendsModal(true)
+                                    }}
                                     fullWidth={true}
-                                    startIcon={<LocalOfferIcon />}
+                                    startIcon={<PersonAddIcon />}
                                 >
-                                    Create tag
+                                    Add friends
                                 </Button>
                             </Grid>
-                        </Grid>
-                    </>
-                }
+                            <Grid
+                                container={true}
+                                item={true}
+                                justifyContent={"center"}
+                                xs={4}
+                            >
+                                <Grid
+                                    item={true}
+                                    xs={"auto"}
+                                >
+                                    <Button
+                                        variant={"contained"}
+                                        color={"info"}
+                                        onClick={() => setOpenTagModal(true)}
+                                        fullWidth={true}
+                                        startIcon={<LocalOfferIcon />}
+                                    >
+                                        Create tag
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </>
+                    }
 
-                <Grid
-                    container={true}
-                    justifyContent={"center"}
-                    item={true}
-                    xs={isEditing ?10 :4}
-                    spacing={1}
-                >
                     <Grid
+                        container={true}
+                        justifyContent={"center"}
                         item={true}
-                        xs
+                        xs={isEditing ?10 :4}
+                        spacing={1}
                     >
-                        <Button
-                            variant={"contained"}
-                            color={(isEditing) ?"success" :"secondary"}
-                            onClick={() => {
-                                if(isEditing && (localUserData !== null)){
-                                    onSaveChanges(localUserData)
-                                    setIsEditing(false)
-                                } else {
-                                    setIsEditing(true)
-                                }
-                            }}
-                            fullWidth={true}
-                            endIcon={(isEditing) ?<CheckIcon /> :<SettingsIcon />}
-                            disabled={
-                                (
-                                    (isEditing) &&
-                                    (localUserData !== null) &&
-                                    (
-                                        (
-                                            (localUserData.username === "")
-                                            ||
-                                            // TODO: username is missing on some early users
-                                            //  !== undefined check will not be necessary in the future
-                                            (localUserData.username === undefined)
-                                            ||
-                                            ((localUserData.username !== undefined) && localUserData.username.length < 3)
-                                        )
-                                        ||
-                                        (
-                                            (localUserData.name === "")
-                                            ||
-                                            (localUserData.name.length < 3)
-                                        )
-                                    )
-                                )
-                            }
-                        >
-                            {(isEditing) ?"Save" :"Edit profile"}
-                        </Button>
-                    </Grid>
-                    {(isEditing) &&
                         <Grid
                             item={true}
                             xs
                         >
                             <Button
                                 variant={"contained"}
-                                color={"error"}
+                                color={(isEditing) ?"success" :"secondary"}
                                 onClick={() => {
-                                    onCancel()
+                                    if(isEditing && (localUserData !== null)){
+                                        onSaveChanges(localUserData)
+                                        setIsEditing(false)
+                                    } else {
+                                        setIsEditing(true)
+                                    }
                                 }}
                                 fullWidth={true}
-                                endIcon={<ClearIcon/>}
+                                endIcon={(isEditing) ?<CheckIcon /> :<SettingsIcon />}
+                                disabled={
+                                    (
+                                        (isEditing) &&
+                                        (localUserData !== null) &&
+                                        (
+                                            (
+                                                (localUserData.username === "")
+                                                ||
+                                                // TODO: username is missing on some early users
+                                                //  !== undefined check will not be necessary in the future
+                                                (localUserData.username === undefined)
+                                                ||
+                                                ((localUserData.username !== undefined) && localUserData.username.length < 3)
+                                            )
+                                            ||
+                                            (
+                                                (localUserData.name === "")
+                                                ||
+                                                (localUserData.name.length < 3)
+                                            )
+                                        )
+                                    )
+                                }
                             >
-                                Cancel
+                                {(isEditing) ?"Save" :"Edit profile"}
                             </Button>
                         </Grid>
-                    }
+                        {(isEditing) &&
+                            <Grid
+                                item={true}
+                                xs
+                            >
+                                <Button
+                                    variant={"contained"}
+                                    color={"error"}
+                                    onClick={() => {
+                                        onCancel()
+                                    }}
+                                    fullWidth={true}
+                                    endIcon={<ClearIcon/>}
+                                >
+                                    Cancel
+                                </Button>
+                            </Grid>
+                        }
+                    </Grid>
                 </Grid>
-            </Grid>
-            {/* TAGS */}
-            <Grid
-                container={true}
-                justifyContent={"center"}
-                item={true}
-                xs={12}
-                spacing={2}
-            >
+                {/* TAGS */}
                 <Grid
-                    item={true}
-                >
-                    <Typography
-                        sx={{
-                            typography: {
-                                xs: 'h3',
-                                sm: 'h2',
-                                md: 'h1',
-                            },
-                            textTransform: "uppercase",
-                            textDecoration: "underline"
-                        }}
-                    >
-                        Tags:
-                    </Typography>
-                </Grid>
-                <Grid
-                    item={true}
                     container={true}
-                    spacing={1}
                     justifyContent={"center"}
+                    item={true}
+                    xs={12}
+                    // spacing={2}
                 >
-                    {((isLoadingTags) && (!openFriendsModal))
-                        ?
-                        <LinearIndeterminate/>
-                        :
-                        <>
-                            {(allTags.length > 0)
-                                ?
+                    <Grid
+                        item={true}
+                        // xs={12}
+                        // lg={6}
+                    >
+                        <Typography
+                            sx={{
+                                typography: {
+                                    xs: 'h3',
+                                    sm: 'h2',
+                                    md: 'h1',
+                                },
+                                textTransform: "uppercase",
+                                textDecoration: "underline",
+                            }}
+                        >
+                            Tags:
+                        </Typography>
+                    </Grid>
+                    <Grid
+                        item={true}
+                        container={true}
+                        // spacing={1}
+                        justifyContent={"center"}
+                        sx={{
+                            borderRadius: '25px',
+                            border: '2px solid black',
+                            padding: globalTheme.spacing(2),
+                            marginTop: globalTheme.spacing(2)
+                        }}
+                        xs={12}
+                        // lg={6}
+                    >
+                        {((isLoadingTags) && (!openFriendsModal))
+                            ?
+                            <LinearIndeterminate/>
+                            :
+                            <>
+                                {(allTags.length > 0)
+                                    ?
                                     <ChipList
                                         itemList={allTags}
                                         onClickAction={(tagId: string) => {
                                             setSelectedTag(tagId)
                                         }}
                                     />
-                                :
-                                <>
-                                    <Typography
-                                        sx={{
-                                            typography: {
-                                                xs: 'body2',
-                                                sm: 'h6',
-                                                md: 'h5',
-                                            },
-                                        }}
-                                    >
-                                        You haven't added tags to any words yet.
-                                    </Typography>
-                                    <Button
-                                        variant="text"
-                                        size="small"
-                                        color={"primary"}
-                                        onClick={() => navigate('/review')}
-                                    >
-                                        Click here to go review your saved words and add tags!
-                                    </Button>
-                                </>
-                            }
-                            <Grid
-                                container={true}
-                                justifyContent={'center'}
-                                sx={{
-                                    marginTop: globalTheme.spacing(2),
-                                    marginBottom: globalTheme.spacing(1)
-                                }}
-                            >
+                                    :
+                                    <>
+                                        <Typography
+                                            sx={{
+                                                typography: {
+                                                    xs: 'body2',
+                                                    sm: 'h6',
+                                                    md: 'h5',
+                                                },
+                                            }}
+                                        >
+                                            You haven't added tags to any words yet.
+                                        </Typography>
+                                        <Button
+                                            variant="text"
+                                            size="small"
+                                            color={"primary"}
+                                            onClick={() => navigate('/review')}
+                                        >
+                                            Click here to go review your saved words and add tags!
+                                        </Button>
+                                    </>
+                                }
                                 <Grid
-                                    item={true}
-                                    xs={12}
+                                    container={true}
+                                    justifyContent={'center'}
+                                    sx={{
+                                        marginTop: globalTheme.spacing(2),
+                                        marginBottom: globalTheme.spacing(1)
+                                    }}
                                 >
-                                    <Divider
-                                        orientation="horizontal"
-                                        flexItem={true}
-                                        sx={{
-                                            "&::before, &::after": {
-                                                borderColor: "black",
-                                            },
-                                        }}
+                                    <Grid
+                                        item={true}
+                                        xs={12}
                                     >
-                                        Followed tags
-                                    </Divider>
+                                        <Divider
+                                            orientation="horizontal"
+                                            flexItem={true}
+                                            sx={{
+                                                "&::before, &::after": {
+                                                    borderColor: "black",
+                                                },
+                                            }}
+                                        >
+                                            Followed tags
+                                        </Divider>
+                                    </Grid>
                                 </Grid>
-                            </Grid>
-                            {(followedTags!!)
-                                ?
+                                {(followedTags!!)
+                                    ?
                                     <ChipList
                                         itemList={followedTags}
                                         onClickAction={(tagId: string) => {
                                             setSelectedTag(tagId)
                                         }}
                                     />
-                                :
-                                <>
-                                    <Typography
-                                        sx={{
-                                            typography: {
-                                                xs: 'body2',
-                                                sm: 'h6',
-                                                md: 'h5',
-                                            },
-                                        }}
-                                    >
-                                        You haven't followed any tags yet.
-                                    </Typography>
-                                </>
-                            }
-                        </>
-                    }
+                                    :
+                                    <>
+                                        <Typography
+                                            sx={{
+                                                typography: {
+                                                    xs: 'body2',
+                                                    sm: 'h6',
+                                                    md: 'h5',
+                                                },
+                                            }}
+                                        >
+                                            You haven't followed any tags yet.
+                                        </Typography>
+                                    </>
+                                }
+                            </>
+                        }
+                    </Grid>
                 </Grid>
             </Grid>
-            {/* FRIENDS */}
+            {/* SECOND COLUMN */}
             <Grid
                 container={true}
-                justifyContent={"center"}
+                justifyContent={"space-around"}
                 item={true}
                 xs={12}
+                lg={6}
                 rowSpacing={2}
+                sx={{
+                    paddingTop: '0px !important',
+                }}
             >
+                {/* FRIENDS */}
                 <Grid
+                    container={true}
+                    justifyContent={"center"}
                     item={true}
+                    xs={12}
+                    rowSpacing={2}
+                    sx={{
+                        height: 'fit-content'
+                    }}
                 >
-                    <Typography
+                    <Grid
+                        item={true}
                         sx={{
-                            typography: {
-                                xs: 'h3',
-                                sm: 'h2',
-                                md: 'h1',
-                            },
-                            textTransform: "uppercase",
-                            textDecoration: "underline"
+                            // paddingTop: '0px !important',
                         }}
                     >
-                        Friends:
-                    </Typography>
-                </Grid>
-                <Grid
-                    item={true}
-                    container={true}
-                    xs={12}
-                >
-                    {((isLoadingFriendships) && !openFriendsModal)
-                        ?
-                        <LinearIndeterminate/>
-                        :(activeFriendships.length === 0)
-                        ?
-                        <Grid
-                            container={true}
-                            item={true}
-                            justifyContent={"center"}
-                        >
-                            <Grid
-                                item={true}
-                            >
-                                <Typography
-                                    variant={"h6"}
-                                >
-                                    You don't have any friends yet.
-                                </Typography>
-                                <Typography
-                                    variant={"body2"}
-                                    onClick={() => {
-                                        setOpenFriendsModal(true)
-                                    }}
-                                    color={'primary'}
-                                    textAlign={"center"}
-                                    sx={{
-                                        cursor: "pointer"
-                                    }}
-                                    fontWeight={"bold"}
-                                >
-                                    Click here to search and add new friends!
-                                </Typography>
-                            </Grid>
-                        </Grid>
-                        :
-                        <FriendList
-                            friendList={activeFriendships}
-                            onClickAction={(friendshipItem: FriendshipData) => {
-                                displayFriendDetails(friendshipItem)
+                        <Typography
+                            sx={{
+                                typography: {
+                                    xs: 'h3',
+                                    sm: 'h2',
+                                    md: 'h1',
+                                },
+                                textTransform: "uppercase",
+                                textDecoration: "underline"
                             }}
-                        />
-                    }
+                        >
+                            Friends:
+                        </Typography>
+                    </Grid>
+                    <Grid
+                        item={true}
+                        container={true}
+                        xs={12}
+                    >
+                        {((isLoadingFriendships) && !openFriendsModal)
+                            ?
+                            <LinearIndeterminate/>
+                            :(activeFriendships.length === 0)
+                            ?
+                            <Grid
+                                container={true}
+                                item={true}
+                                justifyContent={"center"}
+                            >
+                                <Grid
+                                    item={true}
+                                >
+                                    <Typography
+                                        variant={"h6"}
+                                    >
+                                        You don't have any friends yet.
+                                    </Typography>
+                                    <Typography
+                                        variant={"body2"}
+                                        onClick={() => {
+                                            setOpenFriendsModal(true)
+                                        }}
+                                        color={'primary'}
+                                        textAlign={"center"}
+                                        sx={{
+                                            cursor: "pointer"
+                                        }}
+                                        fontWeight={"bold"}
+                                    >
+                                        Click here to search and add new friends!
+                                    </Typography>
+                                </Grid>
+                            </Grid>
+                            :
+                            <FriendList
+                                friendList={activeFriendships}
+                                onClickAction={(friendshipItem: FriendshipData) => {
+                                    displayFriendDetails(friendshipItem)
+                                }}
+                            />
+                        }
+                    </Grid>
                 </Grid>
             </Grid>
             {(openFriendsModal) &&
