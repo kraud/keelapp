@@ -16,17 +16,15 @@ import {toast} from "react-toastify";
 import {updateUser} from "../features/auth/authSlice";
 import {useNavigate} from "react-router-dom";
 import {getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
-import {FriendshipData, SearchResult, TagData} from "../ts/interfaces";
+import {FriendshipData, NotificationData, SearchResult, TagData} from "../ts/interfaces";
 import {clearUserResultData} from "../features/users/userSlice";
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
-import {clearFullTagData, getTagsForCurrentUser, getFollowedTagsByUser} from "../features/tags/tagSlice";
+import {getTagsForCurrentUser, getFollowedTagsByUser} from "../features/tags/tagSlice";
 import {FriendList, ChipList} from "../components/GeneralUseComponents";
 import {clearRequesterNotifications, createNotification} from "../features/notifications/notificationSlice";
 import {Lang} from "../ts/enums";
+import {AppDispatch} from "../app/store";
 
-interface AccountProps {
-
-}
 
 export interface UserBadgeData {
     id: string,
@@ -36,28 +34,83 @@ export interface UserBadgeData {
     languages: Lang[]
 }
 
-export const Account = (props: AccountProps) => {
+export const Account = () => {
+    // --------------- THIRD-PARTY HOOKS ---------------
     const navigate = useNavigate()
-    const dispatch = useDispatch()
+    const dispatch = useDispatch<AppDispatch>()
+
+    // --------------- REDUX STATE ---------------
     const {user, isLoadingAuth, isSuccess, isError, message} = useSelector((state: any) => state.auth)
     const {friendships, isLoadingFriendships} = useSelector((state: any) => state.friendships)
     const {tags, isLoadingTags, followedTagsByUser} = useSelector((state: any) => state.tags)
     const {notificationResponse, isSuccessNotifications, isLoadingNotifications} = useSelector((state: any) => state.notifications)
 
-    const [allTags, setAllTags] = useState<TagData[]>([])
-    const [followedTags, setFollowedTags] = useState<TagData[]>([])
-    const [activeFriendships, setActiveFriendships] = useState<FriendshipData[]>([])
-    const [openFriendsModal, setOpenFriendsModal] = useState(false)
-    const [triggerGetFriendships, setTriggerGetFriendships] = useState(false)
-    const [openTagModal, setOpenTagModal] = useState(false)
-    const [selectedTag, setSelectedTag] = useState("")
+    // --------------- LOCAL STATE ---------------
+    // Related to logic for UserBadge and changing user data.
+    const [localUserData, setLocalUserData] = useState<UserBadgeData | null>(null)
     const [isEditing, setIsEditing] = useState(false)
     const [isUpdatingUserData, setIsUpdatingUserData] = useState(false)
-    const [localUserData, setLocalUserData] = useState<UserBadgeData | null>(null)
-    const [reloadTagList, setReloadTagList] = useState(false)
+
+    const [activeFriendships, setActiveFriendships] = useState<FriendshipData[]>([])
+    const [triggerGetFriendships, setTriggerGetFriendships] = useState(false)
+
+    const [openFriendsModal, setOpenFriendsModal] = useState(false)
+    const [defaultModalUserId, setDefaultModalUserId] = useState<string|undefined>(undefined)
+
+    const [allTags, setAllTags] = useState<TagData[]>([])
+    const [followedTags, setFollowedTags] = useState<TagData[]>([])
+    const [triggerGetTagList, setTriggerGetTagList] = useState(false)
+
+    // Related to logic for Modal displaying details about a Tag (also used when sharing a tag).
+    const [openTagModal, setOpenTagModal] = useState(false)
+    const [selectedTag, setSelectedTag] = useState("")
+
+    // Related to logic for selecting a Tag and sharing it with another user (friend)
     const [tagIdToShare, setTagIdToShare] = useState("")
+    const [sendingNotification, setSendingNotification] = useState(false)
 
 
+    // --------------- USE-EFFECTS ---------------
+
+    // On first render, this makes all the necessary requests to BE (and stores result data in Redux) to display account-screen info
+    useEffect(() => {
+        setDefaultModalUserId(undefined)
+        dispatch(getTagsForCurrentUser()) // TODO: should this function get ALL tags, including followed tags?
+        dispatch(getFollowedTagsByUser(user._id)) // TODO: should this function get ALL tags, including followed tags?
+        dispatch(getFriendshipsByUserId(user._id))
+        dispatch(clearUserResultData())
+        // dispatch(clearFullTagData()) // TODO: review this, since it's causing issues when creating a new tag after reviewing another before that
+    },[dispatch]) // NB! [] and [dispatch] ARE THE SAME. It's simply there because TS requires it. THIS WILL ONLY RUN AT FIRST RENDER
+
+    // so when we edit the profile data, it also changes the local data
+    useEffect(() => {
+        setLocalUserData({
+            ...user,
+            // TODO: revert once cleaning old users from DB
+            // NB! Originally, users did not have a list of languages.
+            // So we first check if there is language data, and if not, we set an empty array.
+            languages: (user.languages!!) ? user.languages : []
+        })
+    },[user])
+
+    useEffect(() => {
+        if(isUpdatingUserData) {
+            if(isError) {
+                toast.error(message)
+                if(isUpdatingUserData){
+                    onCancelEditingUSer()
+                    setIsUpdatingUserData(false)
+                }
+            }
+            if(!isLoadingAuth && isSuccess && !openFriendsModal){
+                toast.success("User data updated successfully!")
+                setIsUpdatingUserData(false)
+            }
+        }
+    }, [isLoadingAuth, isError, isSuccess, message, isUpdatingUserData])
+
+    // when friendships list is updated in redux-state => we copy to local state ONLY the active friendships,
+    // Friendships in local state will be used to display Friend's list
     useEffect(() => {
         if(friendships!!){
             const acceptedFriendships = friendships.filter((friendship: FriendshipData) => {
@@ -72,19 +125,24 @@ export const Account = (props: AccountProps) => {
     },[friendships])
 
     useEffect(() => {
-        // if while using the modal we changed the friend list we need to update the displayed list
+        if(defaultModalUserId !== undefined){
+            setOpenFriendsModal(true)
+        }
+    },[defaultModalUserId])
+
+    useEffect(() => {
+        if(!openFriendsModal){
+            setDefaultModalUserId(undefined)
+        }
+    },[openFriendsModal])
+
+    // if while using the modal we changed the friend list we need to update the displayed list, ONLY the modal is closed
+    useEffect(() => {
         if(!openFriendsModal && triggerGetFriendships){
-            // @ts-ignore
             dispatch(getFriendshipsByUserId(user._id))
             setTriggerGetFriendships(false)
         }
-    },[triggerGetFriendships, openFriendsModal])
-
-    useEffect(() => {
-        if(selectedTag !== ""){
-            setOpenTagModal(true)
-        }
-    },[selectedTag])
+    },[triggerGetFriendships, openFriendsModal, dispatch])
 
     useEffect(() => {
         setAllTags(tags)
@@ -94,46 +152,54 @@ export const Account = (props: AccountProps) => {
         setFollowedTags(followedTagsByUser)
     },[followedTagsByUser])
 
-    // so when we edit the profile data, it also changes the local data
     useEffect(() => {
-        setLocalUserData({
-            ...user,
-            // TODO: revert once cleaning old users from DB
-            // NB! Originally, users did not have a list of languages.
-            // So we first check if there is language data, and if not, we set an empty array.
-            languages: (user.languages!!) ? user.languages : []
-        })
-    },[user])
+        if(selectedTag !== ""){
+            setOpenTagModal(true)
+        }
+    },[selectedTag])
 
+    // if while using the modal we changed the tag list we need to update the displayed list, ONLY the modal is closed
     useEffect(() => {
-        setDefaultModalUserId(undefined)
-        // @ts-ignore
-        dispatch(getTagsForCurrentUser(user._id)) // TODO: should this function get ALL tags, including followed tags?
-        // @ts-ignore
-        dispatch(getFollowedTagsByUser(user._id)) // TODO: should this function get ALL tags, including followed tags?
-        // @ts-ignore
-        dispatch(getFriendshipsByUserId(user._id))
-        dispatch(clearUserResultData())
-        // dispatch(clearFullTagData()) // TODO: review this, since it's causing issues when creating a new tag after reviewing another before that
-    },[])
+        if(!openTagModal && triggerGetTagList){
+            dispatch(getTagsForCurrentUser())
+            setTriggerGetTagList(false)
+        }
+    },[openTagModal, triggerGetTagList, dispatch])
 
-    const onSaveChanges = (newLocalUserData: UserBadgeData) => {
+    // Related to logic for dealing with the state after sending a shareTagRequest
+    useEffect(() => {
+        // this will only be true if the share-tag-request has been created and sent to the other user
+        if((sendingNotification) && (notificationResponse.length >0) && (!isLoadingNotifications) && (isSuccessNotifications)){
+            setSendingNotification(false)
+            dispatch(clearRequesterNotifications())
+            setTagIdToShare("")
+            setOpenFriendsModal(false)
+            toast.success(`Request to share tag was sent successfully!`)
+        }
+    }, [notificationResponse, isLoadingNotifications, isSuccessNotifications, sendingNotification])
+
+    // --------------- ADDITIONAL FUNCTIONS ---------------
+    // UserBadge related functions
+    const onSaveUserChanges = (newLocalUserData: UserBadgeData) => {
         setIsUpdatingUserData(true)
-        // @ts-ignore
         dispatch(updateUser(newLocalUserData))
     }
-    const onCancel = () => {
+    const onCancelEditingUSer = () => {
         setLocalUserData(user)
         setIsEditing(false)
     }
 
-    const [defaultModalUserId, setDefaultModalUserId] = useState<string|undefined>(undefined)
-
+    // FriendList related functions
+    // This function extracts the other user from a friendship (that is not the current user).
     const displayFriendDetails = (friendshipInfo: FriendshipData) => {
         const friendId: string = (friendshipInfo.userIds[0] === user._id) ? friendshipInfo.userIds[1] : friendshipInfo.userIds[0]
         setDefaultModalUserId(friendId)
     }
 
+    // TagInfoModal & FriendSearchModal related functions (send Tag to another user)
+    // After selecting one of your own tags, and you want to share it with another user from your friend list,
+    // we open the FriendSearchModal, and from there you can search or pick a user from your friend list.
+    // Once selected, we create a notification on their account with this function.
     const sendShareTagNotification = (selectedUser: SearchResult[], tagIdToShare: string) => {
         const usersIds = selectedUser.map((userItem: SearchResult) => {
             return(userItem.id)
@@ -146,59 +212,8 @@ export const Account = (props: AccountProps) => {
                 requesterId: user._id, // user that created the request
             }
         }
-        // @ts-ignore
-        dispatch(createNotification(newNotification))
+        dispatch(createNotification(newNotification as NotificationData))
     }
-
-    useEffect(() => {
-        if(defaultModalUserId !== undefined){
-            setOpenFriendsModal(true)
-        }
-    },[defaultModalUserId])
-
-    useEffect(() => {
-        if(!openFriendsModal){
-            setDefaultModalUserId(undefined)
-        }
-    },[openFriendsModal])
-
-    useEffect(() => {
-        if(!openTagModal && reloadTagList){
-            // @ts-ignore
-            dispatch(getTagsForCurrentUser(user._id))
-            setReloadTagList(false)
-        }
-    },[openTagModal, reloadTagList])
-
-    const [sendingNotification, setSendingNotification] = useState(false)
-
-    // this is related to dealing with the state after sending a shareTagRequest
-    useEffect(() => {
-        // this will only be true if the share-tag-request has been created and sent to the other user
-        if((sendingNotification) && (notificationResponse.length >0) && (!isLoadingNotifications) && (isSuccessNotifications)){
-            setSendingNotification(false)
-            dispatch(clearRequesterNotifications())
-            setTagIdToShare("")
-            setOpenFriendsModal(false)
-            toast.success(`Request to share tag was sent successfully!`)
-        }
-    }, [notificationResponse, isLoadingNotifications, isSuccessNotifications, sendingNotification])
-
-    useEffect(() => {
-        if(isUpdatingUserData) {
-            if(isError) {
-                toast.error(message)
-                if(isUpdatingUserData){
-                    onCancel()
-                    setIsUpdatingUserData(false)
-                }
-            }
-            if(!isLoadingAuth && isSuccess && !openFriendsModal){
-                toast.success("User data updated successfully!")
-                setIsUpdatingUserData(false)
-            }
-        }
-    }, [isLoadingAuth, isError, isSuccess, message, isUpdatingUserData])
 
     return(
         <Grid
@@ -251,7 +266,7 @@ export const Account = (props: AccountProps) => {
                     }}
                     isLoading={isLoadingAuth && !(openFriendsModal || openTagModal)}
                 />
-                {/* BUTTONS */}
+                {/* ACTION BUTTONS */}
                 <Grid
                     container={true}
                     justifyContent={"space-around"}
@@ -317,7 +332,7 @@ export const Account = (props: AccountProps) => {
                                 color={(isEditing) ?"success" :"secondary"}
                                 onClick={() => {
                                     if(isEditing && (localUserData !== null)){
-                                        onSaveChanges(localUserData)
+                                        onSaveUserChanges(localUserData)
                                         setIsEditing(false)
                                     } else {
                                         setIsEditing(true)
@@ -333,11 +348,9 @@ export const Account = (props: AccountProps) => {
                                             (
                                                 (localUserData.username === "")
                                                 ||
-                                                // TODO: username is missing on some early users
-                                                //  !== undefined check will not be necessary in the future
                                                 (localUserData.username === undefined)
                                                 ||
-                                                ((localUserData.username !== undefined) && localUserData.username.length < 3)
+                                                (localUserData.username.length < 3)
                                             )
                                             ||
                                             (
@@ -361,7 +374,7 @@ export const Account = (props: AccountProps) => {
                                     variant={"contained"}
                                     color={"error"}
                                     onClick={() => {
-                                        onCancel()
+                                        onCancelEditingUSer()
                                     }}
                                     fullWidth={true}
                                     endIcon={<ClearIcon/>}
@@ -378,12 +391,9 @@ export const Account = (props: AccountProps) => {
                     justifyContent={"center"}
                     item={true}
                     xs={12}
-                    // spacing={2}
                 >
                     <Grid
                         item={true}
-                        // xs={12}
-                        // lg={6}
                     >
                         <Typography
                             sx={{
@@ -402,7 +412,6 @@ export const Account = (props: AccountProps) => {
                     <Grid
                         item={true}
                         container={true}
-                        // spacing={1}
                         justifyContent={"center"}
                         sx={{
                             borderRadius: '25px',
@@ -411,7 +420,6 @@ export const Account = (props: AccountProps) => {
                             marginTop: globalTheme.spacing(2)
                         }}
                         xs={12}
-                        // lg={6}
                     >
                         {((isLoadingTags) && (!openFriendsModal))
                             ?
@@ -449,6 +457,7 @@ export const Account = (props: AccountProps) => {
                                         </Button>
                                     </>
                                 }
+                                {/* FOLLOWED TAGS */}
                                 <Grid
                                     container={true}
                                     justifyContent={'center'}
@@ -631,7 +640,7 @@ export const Account = (props: AccountProps) => {
                     }}
                     tagId={selectedTag}
                     setMadeChangesToTagList={(status: boolean) => {
-                        setReloadTagList(status)
+                        setTriggerGetTagList(status)
                     }}
                     triggerAction={(tagId: string) => {
                         setTagIdToShare(tagId)
