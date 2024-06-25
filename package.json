@@ -4,7 +4,7 @@
   "description": "Concurrent multi-language learning tool",
   "main": "server.js",
   "scripts": {
-    "build": "npm build --prefix frontend",
+    "build": "npm run build --prefix frontend",
     "start": "node backend/server.js",
     "server": "nodemon backend/server.js",
     "client": "npm start --prefix frontend",
