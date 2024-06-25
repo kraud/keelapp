@@ -37,6 +37,7 @@ export function AdjectiveFormDE(props: AdjectiveFormDEProps) {
     const {
         control, formState: { errors, isValid, isDirty }, setValue
     } = useForm<AdjectiveData>({
+        //@ts-ignore
         resolver: yupResolver(validationSchema),
         mode: "all", // Triggers validation/errors without having to submit
     })
