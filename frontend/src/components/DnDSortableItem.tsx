@@ -30,6 +30,7 @@ export function DnDSortableItem(props: DnDSortableItemProps){
                 color: "#fff"
             },
             cursor: (props.disabled!!) ?'default' :'move',
+            minHeight: '36.5px'
         },
         actionButton: {
             borderRadius: '0px 5px 5px 0px',
@@ -70,12 +71,14 @@ export function DnDSortableItem(props: DnDSortableItemProps){
             case('flag'): {
                 return(
                     <>
+                        {/* NB! We still want to display the '#' symbol and index number, but with no language label */}
                         {displayContentWithIndex("")}
                         <CountryFlag
                             country={props.id as Lang}
                             border={true}
                             sxProps={{
-                                marginLeft: '10px',
+                                 // NB! When NOT displaying '#' and index number, we don't need empty space on the left
+                                marginLeft: (props.index !== undefined) ?'10px' :'0px',
                             }}
                         />
                     </>
@@ -131,7 +134,7 @@ export function DnDSortableItem(props: DnDSortableItemProps){
                     <Button
                         variant={"contained"}
                         color={"info"}
-                        onClick={(e: any) => console.log('0')}
+                        onClick={(e: any) => null}
                         disabled={props.disabled!}
                         sx={componentStyles.descriptionButton}
                     >
