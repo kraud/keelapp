@@ -48,6 +48,7 @@ export function AdjectiveFormEE(props: AdjectiveFormEEProps) {
             .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
     })
 
+    // We assume all fields are strings, since even when field is empty, the value still is ""
     interface AdjectiveData {
         algvorre: string,
         keskvorre: string,
@@ -59,9 +60,21 @@ export function AdjectiveFormEE(props: AdjectiveFormEEProps) {
         pluralOsastav: string,
     }
 
+    // To match definition in validationSchema, we create this separate interface
+    interface AdjectiveDataSchema {
+        algvorre: string,
+        keskvorre: string,
+        ulivorre: string,
+        pluralNimetav: string | undefined,
+        singularOmastav: string | undefined,
+        pluralOmastav: string | undefined,
+        singularOsastav: string | undefined,
+        pluralOsastav: string | undefined,
+    }
+
     const {
         control, formState: {errors, isValid, isDirty}, setValue
-    } = useForm<AdjectiveData>({
+    } = useForm<AdjectiveDataSchema>({
         resolver: yupResolver(validationSchema),
         mode: "all", // Triggers validation/errors without having to submit
     })

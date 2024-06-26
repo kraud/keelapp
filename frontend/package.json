@@ -63,6 +63,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@tsconfig/create-react-app": "^1.0.2"
   }
 }

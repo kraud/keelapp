@@ -46,12 +46,24 @@ export function AdjectiveFormES(props: AdjectiveFormESProps) {
             .matches(/^[^0-9]+$/, 'Must not include numbers'),
     })
 
+    // We assume all fields are strings, since even when field is empty, the value still is ""
     interface AdjectiveData {
         gender: "Neutral" | "M/F" | "",
         maleSingular: string,
         femaleSingular: string,
         malePlural: string,
         femalePlural: string,
+        neutralSingular: string,
+        neutralPlural: string,
+    }
+
+    // To match definition in validationSchema, we create this separate interface
+    interface AdjectiveDataSchema {
+        gender: "Neutral" | "M/F" | "",
+        maleSingular: string,
+        femaleSingular: string,
+        malePlural: string | undefined,
+        femalePlural: string | undefined,
         neutralSingular: string,
         neutralPlural: string,
     }
@@ -67,7 +79,7 @@ export function AdjectiveFormES(props: AdjectiveFormESProps) {
     })
     const {
         control, formState: { errors, isValid, isDirty }, setValue
-    } = useForm<AdjectiveData>({
+    } = useForm<AdjectiveDataSchema>({
         resolver: yupResolver((adjective.gender === "Neutral") ?validationSchemaNeutral :validationSchemaByGender),
         mode: "all", // Triggers validation/errors without having to submit
     })
