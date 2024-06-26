@@ -16,3 +16,5 @@ export const store = configureStore({
     tags: tagReducer,
   },
 });
+
+export type AppDispatch = typeof store.dispatch

@@ -13,6 +13,7 @@ import {register, resetState} from '../features/auth/authSlice'
 import LinearIndeterminate from "../components/Spinner";
 import {motion} from "framer-motion";
 import {childVariantsAnimation, routeVariantsAnimation} from "./management/RoutesWithAnimation";
+import {AppDispatch} from "../app/store";
 
 export interface UserRegisterData {
     name: string
@@ -22,8 +23,8 @@ export interface UserRegisterData {
     password2?: string
 }
 
-
 export function Register() {
+    // --------------- STYLING ---------------
     const componentStyles = {
         mainContainer: {
             marginTop: globalTheme.spacing(6),
@@ -35,6 +36,7 @@ export function Register() {
         }
     }
 
+    // --------------- FORM VALIDATION SCHEMA ---------------
     const validationSchema = Yup.object().shape({
         name: Yup.string().required("Name is required"),
         email: Yup.string().required("E-mail is required").email("Valid e-mail is required"),
@@ -44,28 +46,19 @@ export function Register() {
             .oneOf([Yup.ref('password')], "Passwords don't match"),
     })
 
+    // --------------- THIRD-PARTY HOOKS ---------------
+    const navigate = useNavigate()
+    const dispatch = useDispatch<AppDispatch>()
     const {
         handleSubmit, reset, control, formState: { errors }
     } = useForm<UserRegisterData>({
         resolver: yupResolver(validationSchema),
     })
 
+    // --------------- REDUX STATE ---------------
     const {user, isLoadingAuth, isError, isSuccess, message} = useSelector((state: any) => state.auth)
 
-    const onSubmit = (data: UserRegisterData) => {
-        const userData: UserRegisterData = {
-            name: data.name,
-            username: data.username,
-            email: data.email,
-            password: data.password
-        }
-        //@ts-ignore
-        dispatch(register(userData))
-    }
-
-    const navigate = useNavigate()
-    const dispatch = useDispatch()
-
+    // --------------- USE-EFFECTS ---------------
     useEffect(() => {
         if(isError) {
             toast.error(message)
@@ -75,6 +68,17 @@ export function Register() {
         }
         dispatch(resetState())
     }, [user, isError, isSuccess, message, navigate, dispatch])
+
+    // --------------- ADDITIONAL FUNCTIONS ---------------
+    const onSubmit = (data: UserRegisterData) => {
+        const userData: UserRegisterData = {
+            name: data.name,
+            username: data.username,
+            email: data.email,
+            password: data.password
+        }
+        dispatch(register(userData))
+    }
 
     return(
         <Grid
