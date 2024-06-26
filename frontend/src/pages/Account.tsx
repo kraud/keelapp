@@ -69,7 +69,6 @@ export const Account = () => {
     const [tagIdToShare, setTagIdToShare] = useState("")
     const [sendingNotification, setSendingNotification] = useState(false)
 
-
     // --------------- USE-EFFECTS ---------------
 
     // On first render, this makes all the necessary requests to BE (and stores result data in Redux) to display account-screen info

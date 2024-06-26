@@ -13,8 +13,15 @@ import {login, resetState} from "../features/auth/authSlice";
 import {toast} from "react-toastify";
 import {motion} from "framer-motion";
 import {childVariantsAnimation, routeVariantsAnimation} from "./management/RoutesWithAnimation";
+import {AppDispatch} from "../app/store";
+
+interface UserLoginData {
+    email: string;
+    password: string;
+}
 
 export function Login() {
+    // --------------- STYLING ---------------
     const componentStyles = {
         mainContainer: {
             marginTop: globalTheme.spacing(6),
@@ -23,36 +30,26 @@ export function Login() {
             paddingBottom: globalTheme.spacing(2),
         }
     }
-    const navigate = useNavigate()
-    const dispatch = useDispatch()
 
-    const {user, isLoadingAuth, isError, isSuccess, message} = useSelector((state: any) => state.auth)
-
+    // --------------- FORM VALIDATION SCHEMA ---------------
     const validationSchema = Yup.object().shape({
         email: Yup.string().required("Valid e-mail is required").email("Valid e-mail is required"),
         password: Yup.string().required("Password is required"),
     })
 
+    // --------------- THIRD-PARTY HOOKS ---------------
+    const navigate = useNavigate()
+    const dispatch = useDispatch<AppDispatch>()
     const {
         handleSubmit, control, formState: { errors }
     } = useForm<UserLoginData>({
         resolver: yupResolver(validationSchema),
     })
 
-    interface UserLoginData {
-        email: string;
-        password: string;
-    }
+    // --------------- REDUX STATE ---------------
+    const {user, isLoadingAuth, isError, isSuccess, message} = useSelector((state: any) => state.auth)
 
-    const onSubmit = (data: UserLoginData) => {
-        const userData: UserLoginData = {
-            email: data.email,
-            password: data.password
-        }
-        //@ts-ignore
-        dispatch(login(userData))
-    }
-
+    // --------------- USE-EFFECTS ---------------
     useEffect(() => {
         if(isError) {
             toast.error(message)
@@ -62,6 +59,15 @@ export function Login() {
         }
         dispatch(resetState())
     }, [user, isError, isSuccess, message, navigate, dispatch])
+
+    // --------------- ADDITIONAL FUNCTIONS ---------------
+    const onSubmit = (data: UserLoginData) => {
+        const userData: UserLoginData = {
+            email: data.email,
+            password: data.password
+        }
+        dispatch(login(userData))
+    }
 
     return(
         <Grid
