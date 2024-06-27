@@ -33,8 +33,8 @@ export function AdjectiveFormES(props: AdjectiveFormESProps) {
         femalePlural: Yup.string().nullable()
             .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
         // The following values are added to help with TS verifications, so it is compatible with the neutral-schema
-        neutralSingular: Yup.string().nullable(),
-        neutralPlural: Yup.string().nullable(),
+        // neutralSingular: Yup.string().nullable(),
+        // neutralPlural: Yup.string().nullable(),
     })
 
     // validation when adjective varies depending on gender
@@ -48,10 +48,10 @@ export function AdjectiveFormES(props: AdjectiveFormESProps) {
             .required("Neutral plural degree is required")
             .matches(/^[^0-9]+$/, 'Must not include numbers'),
         // The following values are added to help with TS verifications, so it is compatible with the gender-schema
-        maleSingular: Yup.string().nullable(),
-        femaleSingular: Yup.string().nullable(),
-        malePlural: Yup.string().nullable(),
-        femalePlural: Yup.string().nullable(),
+        // maleSingular: Yup.string().nullable(),
+        // femaleSingular: Yup.string().nullable(),
+        // malePlural: Yup.string().nullable(),
+        // femalePlural: Yup.string().nullable(),
     })
 
     interface AdjectiveData {
@@ -76,6 +76,7 @@ export function AdjectiveFormES(props: AdjectiveFormESProps) {
     const {
         control, formState: { errors, isValid, isDirty }, setValue
     } = useForm({
+        //@ts-ignore
         resolver: yupResolver((adjective.gender === "Neutral") ?validationSchemaNeutral :validationSchemaByGender),
         mode: "all", // Triggers validation/errors without having to submit
     })
