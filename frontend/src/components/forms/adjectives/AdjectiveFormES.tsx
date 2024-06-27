@@ -75,7 +75,7 @@ export function AdjectiveFormES(props: AdjectiveFormESProps) {
     })
     const {
         control, formState: { errors, isValid, isDirty }, setValue
-    } = useForm({
+    } = useForm<any, any>({
         //@ts-ignore
         resolver: yupResolver((adjective.gender === "Neutral") ?validationSchemaNeutral :validationSchemaByGender),
         mode: "all", // Triggers validation/errors without having to submit
