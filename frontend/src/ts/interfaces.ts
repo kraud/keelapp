@@ -126,7 +126,7 @@ export interface PropsButtonData {
     calculateDisabled?: (values: any) => boolean
     label?: string
     icon?: any
-    onClick: (values: unknown) => unknown // returns unknown instead of void, in case setSelectionOnClick is true => return value is what to set
+    onClick: (values: any) => unknown // returns unknown instead of void, in case setSelectionOnClick is true => return value is what to set
     setSelectionOnClick?: boolean
     isVisible?: boolean
     displayBySelectionAmount?: (amountSelected: number) => boolean, // greater than number => display

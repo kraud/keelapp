@@ -199,7 +199,7 @@ export function Review(){
         return () => clearTimeout(timeout)
     }, [currentPoSFilters, currentGenderFilters, currentTagFilters])
 
-    const goToDetailedView = (rowSelection: object) => {
+    const goToDetailedView = (rowSelection: any) => {
         // rowSelection format:
         // { selectedRowIndex: true }
         if(Object.keys(rowSelection).length > 0){
@@ -494,7 +494,7 @@ export function Review(){
                             color: "secondary",
                             disabled: false,
                             label: "Detailed View",
-                            onClick: (rowSelection: unknown) => goToDetailedView(rowSelection),
+                            onClick: (rowSelection: any) => goToDetailedView(rowSelection),
                             displayBySelectionAmount: (amountSelected: number) => {
                                 return (amountSelected === 1)
                             },
@@ -505,7 +505,7 @@ export function Review(){
                             color: "secondary",
                             disabled: false,
                             label: "Assign-tag", //
-                            onClick: (rowSelection: unknown) => {
+                            onClick: (rowSelection: any) => {
                                 setOpenAssignTagModal(true)
                                 setSelectedRowsForBulkTagAssign(getWordsIdFromRowSelection(rowSelection))
                             },
@@ -520,7 +520,7 @@ export function Review(){
                             disabled: false,
                             label: "Delete selected",
                             setSelectionOnClick: true, //
-                            onClick: (rowSelection: unknown) => {
+                            onClick: (rowSelection: any) => {
                                 deleteSelectedRows(rowSelection)
                                 // setSelectionOnClick is true => we must return value that will be set as rowSelection
                                 return({}) // TODO: fix row selection data in TranslationTable => change unknown to unknown[] ? // now to reset set {}
