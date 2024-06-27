@@ -70,7 +70,7 @@ export function Register() {
     }, [user, isError, isSuccess, message, navigate, dispatch])
 
     // --------------- ADDITIONAL FUNCTIONS ---------------
-    const onSubmit = (data: UserRegisterData) => {
+    const onSubmit = (data: any) => {
         const userData: UserRegisterData = {
             name: data.name,
             username: data.username,

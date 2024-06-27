@@ -61,7 +61,7 @@ export function Login() {
     }, [user, isError, isSuccess, message, navigate, dispatch])
 
     // --------------- ADDITIONAL FUNCTIONS ---------------
-    const onSubmit = (data: UserLoginData) => {
+    const onSubmit = (data: any) => {
         const userData: UserLoginData = {
             email: data.email,
             password: data.password
