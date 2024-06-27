@@ -32,6 +32,9 @@ export function AdjectiveFormES(props: AdjectiveFormESProps) {
             .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
         femalePlural: Yup.string().nullable()
             .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+        // The following values are added to help with TS verifications, so it is compatible with the neutral-schema
+        neutralSingular: Yup.string().nullable(),
+        neutralPlural: Yup.string().nullable(),
     })
 
     // validation when adjective varies depending on gender
@@ -44,6 +47,11 @@ export function AdjectiveFormES(props: AdjectiveFormESProps) {
         neutralPlural: Yup.string()
             .required("Neutral plural degree is required")
             .matches(/^[^0-9]+$/, 'Must not include numbers'),
+        // The following values are added to help with TS verifications, so it is compatible with the gender-schema
+        maleSingular: Yup.string().nullable(),
+        femaleSingular: Yup.string().nullable(),
+        malePlural: Yup.string().nullable(),
+        femalePlural: Yup.string().nullable(),
     })
 
     interface AdjectiveData {
