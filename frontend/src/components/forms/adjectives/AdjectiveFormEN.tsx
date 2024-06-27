@@ -28,23 +28,15 @@ export function AdjectiveFormEN(props: AdjectiveFormENProps) {
             .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
     })
 
-    // We assume all fields are strings, since even when field is empty, the value still is ""
     interface AdjectiveData {
         positive: string,
         comparative: string,
         superlative: string,
     }
 
-    // To match definition in validationSchema, we create this separate interface
-    interface AdjectiveDataSchema {
-        positive: string,
-        comparative: string | undefined,
-        superlative: string | undefined,
-    }
-
     const {
         control, formState: { errors, isValid, isDirty }, setValue
-    } = useForm<AdjectiveDataSchema>({
+    } = useForm({
         resolver: yupResolver(validationSchema),
         mode: "all", // Triggers validation/errors without having to submit
     })

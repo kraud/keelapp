@@ -31,7 +31,7 @@ export function AdverbFormDE(props: AdverbFormDEProps) {
             .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
     })
 
-    interface AdjectiveData {
+    interface AdverbData {
         gradable: "Gradable" | "Non-gradable" | "",
         adverb: string,
         comparative: string,
@@ -40,12 +40,12 @@ export function AdverbFormDE(props: AdverbFormDEProps) {
 
     const {
         control, formState: { errors, isValid, isDirty }, setValue
-    } = useForm<AdjectiveData>({
+    } = useForm({
         resolver: yupResolver(validationSchema),
         mode: "all", // Triggers validation/errors without having to submit
     })
 
-    const [adjective, setAdjective] = useState<AdjectiveData>({
+    const [adjective, setAdjective] = useState<AdverbData>({
         gradable: "",
         adverb: "",
         comparative: "",

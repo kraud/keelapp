@@ -38,17 +38,7 @@ export function NounFormEE(props: NounFormEEProps) {
 
     const {
         control, formState: { errors, isValid, isDirty }, setValue
-    } = useForm<
-        {
-            singularNimetav: string,
-            pluralNimetav: string,
-            singularOmastav: string,
-            pluralOmastav: string,
-            singularOsastav: string,
-            pluralOsastav: string,
-            shortForm: string,
-        }
-        >({
+    } = useForm({
         resolver: yupResolver(validationSchema),
         mode: "all", // Triggers validation/errors without having to submit
     })
