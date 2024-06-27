@@ -2,7 +2,7 @@ import axios from "axios";
 import {WordData, WordDataBE} from "../../ts/interfaces";
 
 const BE_URL = process.env.REACT_APP_VERCEL_BE_URL
-const API_URL = (BE_URL!!) ?BE_URL :"" +'/api/words/'
+const API_URL = (BE_URL!!) ?BE_URL+'/api/words/' :'/api/words/'
 
 const createWord = async (word: WordData, token: any) => {
     const config = {

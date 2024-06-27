@@ -1,7 +1,7 @@
 import axios from "axios"
 
 const BE_URL = process.env.REACT_APP_VERCEL_BE_URL
-const API_URL = (BE_URL!!) ?BE_URL :"" +'/api/users/' // same as authSlice because they share controller
+const API_URL = (BE_URL!!) ?BE_URL+'/api/users/' :'/api/users/' // same as authSlice because they share controller
 
 // Register user
 const register = async (userData: any) => {

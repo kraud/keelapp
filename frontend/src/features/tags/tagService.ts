@@ -3,7 +3,7 @@ import {TagData} from "../../ts/interfaces";
 import {AddTagsToWordsData} from "./tagSlice";
 
 const BE_URL = process.env.REACT_APP_VERCEL_BE_URL
-const API_URL = (BE_URL!!) ?BE_URL :"" +'/api/tags/'
+const API_URL = (BE_URL!!) ?BE_URL+'/api/tags/' :'/api/tags/'
 
 const getUserTags = async (token: any) => {
     const config = {

@@ -2,7 +2,7 @@ import axios from "axios";
 import {NotificationData} from "../../ts/interfaces";
 
 const BE_URL = process.env.REACT_APP_VERCEL_BE_URL
-const API_URL = (BE_URL!!) ?BE_URL :"" +'/api/notifications/'
+const API_URL = (BE_URL!!) ?BE_URL+'/api/notifications/' :'/api/notifications/'
 
 const createNotification = async (notification: NotificationData, token: any) => {
     const config = {
