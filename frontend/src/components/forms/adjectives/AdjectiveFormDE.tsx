@@ -37,15 +37,15 @@ export function AdjectiveFormDE(props: AdjectiveFormDEProps) {
     }
 
     // To match definition in validationSchema, we create this separate interface
-    interface AdjectiveDataSchema {
-        positive: string,
-        komparativ: string | null | undefined,
-        superlativ: string | null | undefined,
-    }
+    // interface AdjectiveDataSchema {
+    //     positive: string,
+    //     komparativ: string | null | undefined,
+    //     superlativ: string | null | undefined,
+    // }
 
     const {
         control, formState: { errors, isValid, isDirty }, setValue
-    } = useForm<AdjectiveDataSchema>({
+    } = useForm({
     // } = useForm<AdjectiveData>({
         resolver: yupResolver(validationSchema),
         mode: "all", // Triggers validation/errors without having to submit
