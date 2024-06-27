@@ -21,7 +21,6 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import LinearIndeterminate from "../Spinner";
 import Box from "@mui/material/Box";
 import {WordFormSelector} from "../forms/WordFormSelector";
-import {SortDirection} from "@tanstack/table-core/build/lib/features/Sorting";
 import DoneIcon from "@mui/icons-material/Done";
 import {useSearchParams} from "react-router-dom";
 import {AutocompleteMultiple} from "../AutocompleteMultiple";
@@ -29,6 +28,7 @@ import {checkEqualArrayContent, extractTagsArrayFromUnknownFormat} from "../gene
 import {ConfirmationButton} from "../ConfirmationButton";
 import {CountryFlag} from "../GeneralUseComponents";
 import Tooltip from "@mui/material/Tooltip";
+import {SortDirection} from "@tanstack/react-table";
 
 interface TableHeaderCellProps {
     content: any
