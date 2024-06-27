@@ -199,10 +199,10 @@ export function Review(){
         return () => clearTimeout(timeout)
     }, [currentPoSFilters, currentGenderFilters, currentTagFilters])
 
-    const goToDetailedView = (rowSelection: unknown) => {
+    const goToDetailedView = (rowSelection: object) => {
         // rowSelection format:
         // { selectedRowIndex: true }
-        if(rowSelection !== {}){
+        if(Object.keys(rowSelection).length > 0){
             // TODO: CHANGE TO saving the row info instead of index
             // @ts-ignore
             navigate(`/word/${wordsSimple.words[parseInt(Object.keys(rowSelection)[0])].id}`)
