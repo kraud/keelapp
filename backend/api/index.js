@@ -1,5 +1,5 @@
 const express = require('express')
-import cors from 'cors';
+const cors = require('cors')
 const colors = require('colors')
 const dotenv = require('dotenv').config()
 const { errorHandler } = require('../middleware/errorMiddleware')
@@ -11,7 +11,8 @@ connectDB()
 const app = express()
 
 const corsOptions = {
-    origin: '*',
+    // origin: 'https://keelapp-frontend-git-d-cc4519-proyecto-finals-projects-0e9f4d32.vercel.app', // we should have this follow a .env variable
+    origin: '*', // this allows request from any URL
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true

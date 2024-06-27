@@ -1,7 +1,8 @@
 import axios from "axios";
 import {FriendshipData,} from "../../ts/interfaces";
 
-const API_URL = '/api/friendships/'
+const BE_URL = process.env.REACT_APP_VERCEL_BE_URL
+const API_URL = (BE_URL!!) ?BE_URL :"" +'/api/friendships/'
 
 const createFriendship = async (friendship: FriendshipData, token: any) => {
     const config = {

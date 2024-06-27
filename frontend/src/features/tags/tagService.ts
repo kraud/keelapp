@@ -2,7 +2,8 @@ import axios from "axios";
 import {TagData} from "../../ts/interfaces";
 import {AddTagsToWordsData} from "./tagSlice";
 
-const API_URL = '/api/tags/'
+const BE_URL = process.env.REACT_APP_VERCEL_BE_URL
+const API_URL = (BE_URL!!) ?BE_URL :"" +'/api/tags/'
 
 const getUserTags = async (token: any) => {
     const config = {
