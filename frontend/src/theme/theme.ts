@@ -1,6 +1,4 @@
-import {createTheme, PaletteColor, PaletteColorOptions} from "@mui/material"
-import {grey, orange, pink, red} from "@mui/material/colors";
-import {white} from "colors";
+import {createTheme} from "@mui/material"
 
 let globalTheme = createTheme({})
 
