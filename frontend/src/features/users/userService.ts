@@ -1,7 +1,8 @@
 import axios from "axios"
 import {SearchUserQuery} from "./userSlice";
 
-const API_URL = '/api/users/' // same as authSlice because they share controller
+const BE_URL = process.env.REACT_APP_VERCEL_BE_URL
+const API_URL = BE_URL+'/api/users/' // same as authSlice because they share controller
 
 // Get users by name or username
 const getUsersByNameUsername = async (token: any, query: SearchUserQuery) => {
