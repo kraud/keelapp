@@ -114,13 +114,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
 
     const {
         control, formState: { errors, isValid, isDirty }, setValue
-    } = useForm<
-        {
-            public: 'Public' | 'Private' | 'Friends-Only',
-            label: string,
-            description: string,
-        }
-        >({
+    } = useForm({
         resolver: yupResolver(validationSchema),
         mode: "all", // Triggers validation/errors without having to submit
     })
