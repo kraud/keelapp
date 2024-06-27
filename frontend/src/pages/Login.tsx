@@ -42,7 +42,7 @@ export function Login() {
     const dispatch = useDispatch<AppDispatch>()
     const {
         handleSubmit, control, formState: { errors }
-    } = useForm<UserLoginData>({
+    } = useForm({
         resolver: yupResolver(validationSchema),
     })
 

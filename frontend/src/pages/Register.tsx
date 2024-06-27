@@ -51,7 +51,7 @@ export function Register() {
     const dispatch = useDispatch<AppDispatch>()
     const {
         handleSubmit, reset, control, formState: { errors }
-    } = useForm<UserRegisterData>({
+    } = useForm({
         resolver: yupResolver(validationSchema),
     })
 
