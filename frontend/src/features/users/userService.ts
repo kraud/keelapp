@@ -14,7 +14,7 @@ const getUsersByNameUsername = async (token: any, query: SearchUserQuery) => {
             ...query
         }
     }
-    const response = await axios.get(`${API_URL}/searchUser`, config)
+    const response = await axios.get(`${API_URL}searchUser`, config)
     return(response.data)
 }
 

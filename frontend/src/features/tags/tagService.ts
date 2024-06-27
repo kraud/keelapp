@@ -52,7 +52,7 @@ const searchTags = async (token: any, query: string, includeOtherUsersTags?: boo
             includeOtherUsersTags: includeOtherUsersTags!!,
         }
     }
-    const response = await axios.get(`${API_URL}/searchTags`, config)
+    const response = await axios.get(`${API_URL}searchTags`, config)
     return(response.data)
 }
 
@@ -82,7 +82,7 @@ const checkIfTagLabelAvailable = async (labelUserData: {tagLabel: string, userId
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.post(`${API_URL}/checkIfTagLabelAvailable`, labelUserData, config)
+    const response = await axios.post(`${API_URL}checkIfTagLabelAvailable`, labelUserData, config)
     return(response.data)
 }
 
@@ -112,7 +112,7 @@ const addTagsInBulkToWords = async (token: any, newTagAndWordData: AddTagsToWord
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.post(`${API_URL}/addTagInBulkToWords`, newTagAndWordData, config)
+    const response = await axios.post(`${API_URL}addTagInBulkToWords`, newTagAndWordData, config)
     return(response.data)
 }
 
@@ -139,7 +139,7 @@ const filterTags = async (token: any, request: TagData) => {
             public: request.public,
         }
     }
-    const response = await axios.get(`${API_URL}/filterTags`, config)
+    const response = await axios.get(`${API_URL}filterTags`, config)
     return(response.data)
 }
 
@@ -152,7 +152,7 @@ const addExternalTag = async (token: any, tagId: string) => {
     const data = {
         tagId: tagId
     }
-    const response = await axios.post(`${API_URL}/addExternalTag`, data, config)
+    const response = await axios.post(`${API_URL}addExternalTag`, data, config)
     return(response.data)
 }
 
@@ -162,7 +162,7 @@ const followTagByAnotherUser = async (token: any, data: {tagId: string, userId: 
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.post(`${API_URL}/followTag`, data, config)
+    const response = await axios.post(`${API_URL}followTag`, data, config)
     return(response.data)
 }
 
@@ -175,7 +175,7 @@ const unfollowTagByAnotherUser = async (token: any, data: {tagId: string, userId
             userId: data.userId,
         }
     }
-    const response = await axios.delete(`${API_URL}/unfollowTag/${data.tagId}`, config)
+    const response = await axios.delete(`${API_URL}unfollowTag/${data.tagId}`, config)
     return(response.data)
 }
 

@@ -33,7 +33,7 @@ const getWordsSimplified = async (token: any, query: any) => {
             filters: query,
         }
     }
-    const response = await axios.get(`${API_URL}/simple`, config)
+    const response = await axios.get(`${API_URL}simple`, config)
     return(response.data)
 }
 
@@ -66,7 +66,7 @@ const deleteManyWordsById = async (token: any, wordsId: string[]) => {
             wordsId: wordsId,
         }
     }
-    const response = await axios.delete(`${API_URL}/deleteMany`, config)
+    const response = await axios.delete(`${API_URL}deleteMany`, config)
     return(response.data)
 }
 
@@ -89,7 +89,7 @@ const searchWord = async (token: any, query: string) => {
             query: query,
         }
     }
-    const response = await axios.get(`${API_URL}/searchWord`, config)
+    const response = await axios.get(`${API_URL}searchWord`, config)
     return(response.data)
 }
 
