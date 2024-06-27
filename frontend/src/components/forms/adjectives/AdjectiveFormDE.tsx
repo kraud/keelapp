@@ -38,8 +38,8 @@ export function AdjectiveFormDE(props: AdjectiveFormDEProps) {
     // To match definition in validationSchema, we create this separate interface
     interface AdjectiveDataSchema {
         positive: string,
-        komparativ: string | undefined,
-        superlativ: string | undefined,
+        komparativ: string | undefined | null,
+        superlativ: string | undefined | null,
     }
 
     const {
