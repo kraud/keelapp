@@ -18,7 +18,8 @@ export function AdjectiveFormDE(props: AdjectiveFormDEProps) {
 
     const { currentTranslationData } = props
 
-    const validationSchema = Yup.object().shape({
+    // const validationSchema = Yup.object().shape({
+    const validationSchema = Yup.object({
         positive: Yup.string()
             .required("Positive form is required")
             .matches(/^[^0-9]+$/, 'Must not include numbers'),
@@ -36,15 +37,16 @@ export function AdjectiveFormDE(props: AdjectiveFormDEProps) {
     }
 
     // To match definition in validationSchema, we create this separate interface
-    interface AdjectiveDataSchema {
-        positive: string,
-        komparativ: string | undefined | null,
-        superlativ: string | undefined | null,
-    }
+    // interface AdjectiveDataSchema {
+    //     positive: string,
+    //     komparativ: string | undefined | null,
+    //     superlativ: string | undefined | null,
+    // }
 
     const {
         control, formState: { errors, isValid, isDirty }, setValue
-    } = useForm<AdjectiveDataSchema>({
+    // } = useForm<AdjectiveDataSchema>({
+    } = useForm<AdjectiveData>({
         resolver: yupResolver(validationSchema),
         mode: "all", // Triggers validation/errors without having to submit
     })
