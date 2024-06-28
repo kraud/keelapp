@@ -29,7 +29,7 @@ export function AdverbFormES(props: AdverbFormESProps) {
             .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
     })
 
-    interface AdjectiveData {
+    interface AdverbData {
         adverb: string,
         comparative: string,
         superlative: string,
@@ -37,12 +37,12 @@ export function AdverbFormES(props: AdverbFormESProps) {
 
     const {
         control, formState: { errors, isValid, isDirty }, setValue
-    } = useForm<AdjectiveData>({
+    } = useForm({
         resolver: yupResolver(validationSchema),
         mode: "all", // Triggers validation/errors without having to submit
     })
 
-    const [adjective, setAdjective] = useState<AdjectiveData>({
+    const [adjective, setAdjective] = useState<AdverbData>({
         adverb: "",
         comparative: "",
         superlative: "",

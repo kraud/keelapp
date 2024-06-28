@@ -2,7 +2,8 @@ import axios from "axios";
 import {TagData} from "../../ts/interfaces";
 import {AddTagsToWordsData} from "./tagSlice";
 
-const API_URL = '/api/tags/'
+const BE_URL = process.env.REACT_APP_VERCEL_BE_URL
+const API_URL = (BE_URL!!) ?BE_URL+'/api/tags' :'/api/tags'
 
 const getUserTags = async (token: any) => {
     const config = {
@@ -10,7 +11,7 @@ const getUserTags = async (token: any) => {
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.get(API_URL+'getTags', config)
+    const response = await axios.get(API_URL+'/getTags', config)
     return(response.data)
 }
 
@@ -23,7 +24,7 @@ const getOtherUserTags = async (token: any, otherUserId: string) => {
             otherUserId: otherUserId
         }
     }
-    const response = await axios.get(API_URL+'getOtherUserTags', config)
+    const response = await axios.get(API_URL+'/getOtherUserTags', config)
     return(response.data)
 }
 
@@ -36,7 +37,7 @@ const getFollowedTagsByUserId = async (token: any, userId: string) => {
             userId: userId
         }
     }
-    const response = await axios.get(API_URL+'getFollowedTagsIdByUserId', config)
+    const response = await axios.get(API_URL+'/getFollowedTagsIdByUserId', config)
     return(response.data)
 }
 
@@ -51,7 +52,7 @@ const searchTags = async (token: any, query: string, includeOtherUsersTags?: boo
             includeOtherUsersTags: includeOtherUsersTags!!,
         }
     }
-    const response = await axios.get(`${API_URL}/searchTags`, config)
+    const response = await axios.get(API_URL+'/searchTags', config)
     return(response.data)
 }
 
@@ -81,7 +82,7 @@ const checkIfTagLabelAvailable = async (labelUserData: {tagLabel: string, userId
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.post(`${API_URL}/checkIfTagLabelAvailable`, labelUserData, config)
+    const response = await axios.post(API_URL+'/checkIfTagLabelAvailable', labelUserData, config)
     return(response.data)
 }
 
@@ -111,7 +112,7 @@ const addTagsInBulkToWords = async (token: any, newTagAndWordData: AddTagsToWord
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.post(`${API_URL}/addTagInBulkToWords`, newTagAndWordData, config)
+    const response = await axios.post(API_URL+'/addTagInBulkToWords', newTagAndWordData, config)
     return(response.data)
 }
 
@@ -121,7 +122,7 @@ const getTagWordsAmount = async (token: any, id: string) => {
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.get(`${API_URL}getAmountByTag/${id}`, config)
+    const response = await axios.get(`${API_URL}/getAmountByTag/${id}`, config)
     return(response.data)
 }
 
@@ -138,7 +139,7 @@ const filterTags = async (token: any, request: TagData) => {
             public: request.public,
         }
     }
-    const response = await axios.get(`${API_URL}/filterTags`, config)
+    const response = await axios.get(API_URL+'/filterTags', config)
     return(response.data)
 }
 
@@ -151,7 +152,7 @@ const addExternalTag = async (token: any, tagId: string) => {
     const data = {
         tagId: tagId
     }
-    const response = await axios.post(`${API_URL}/addExternalTag`, data, config)
+    const response = await axios.post(API_URL+'/addExternalTag', data, config)
     return(response.data)
 }
 
@@ -161,7 +162,7 @@ const followTagByAnotherUser = async (token: any, data: {tagId: string, userId: 
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.post(`${API_URL}/followTag`, data, config)
+    const response = await axios.post(API_URL+'/followTag', data, config)
     return(response.data)
 }
 

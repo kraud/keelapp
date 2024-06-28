@@ -36,7 +36,7 @@ export function AdjectiveFormEN(props: AdjectiveFormENProps) {
 
     const {
         control, formState: { errors, isValid, isDirty }, setValue
-    } = useForm<AdjectiveData>({
+    } = useForm({
         resolver: yupResolver(validationSchema),
         mode: "all", // Triggers validation/errors without having to submit
     })

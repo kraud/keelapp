@@ -1,6 +1,7 @@
 import axios from "axios"
 
-const API_URL = '/api/users/'
+const BE_URL = process.env.REACT_APP_VERCEL_BE_URL
+const API_URL = (BE_URL!!) ?BE_URL+'/api/users' :'/api/users' // same as authSlice because they share controller
 
 // Register user
 const register = async (userData: any) => {
@@ -15,7 +16,7 @@ const register = async (userData: any) => {
 
 // Login user
 const login = async (userData: any) => {
-    const response = await axios.post(API_URL+'login', userData)
+    const response = await axios.post(API_URL+'/login', userData)
 
     if(response.data) {
         localStorage.setItem('user', JSON.stringify(response.data))
@@ -31,7 +32,7 @@ const updateUser = async (token: any, userData: any) => {
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.put(API_URL+'updateUser', userData, config)
+    const response = await axios.put(API_URL+'/updateUser', userData, config)
 
     if(response.data) {
         localStorage.removeItem('user')

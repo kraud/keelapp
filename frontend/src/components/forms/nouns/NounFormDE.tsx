@@ -21,7 +21,7 @@ export function NounFormDE(props: NounFormDEProps) {
 
     const validationSchema = Yup.object().shape({
         gender: Yup.string().required("Required")
-            .oneOf([GenderDE.M, GenderDE.F, GenderDE.N], "Required"),
+            .oneOf([GenderDE.M as string, GenderDE.F as string, GenderDE.N as string], "Required"),
         singularNominativ: Yup.string()
             .required("Singular nominativ is required")
             .matches(/^[^0-9]+$/, 'Must not include numbers'),
@@ -43,19 +43,7 @@ export function NounFormDE(props: NounFormDEProps) {
 
     const {
         control, formState: { errors, isValid, isDirty }, setValue
-    } = useForm<
-        {
-            gender: string,
-            singularNominativ: string,
-            pluralNominativ: string,
-            singularAkkusativ: string,
-            pluralAkkusativ: string,
-            singularGenitiv: string,
-            pluralGenitiv: string,
-            singularDativ: string,
-            pluralDativ: string,
-        }
-        >({
+    } = useForm({
         resolver: yupResolver(validationSchema),
         mode: "all", // Triggers validation/errors without having to submit
     })

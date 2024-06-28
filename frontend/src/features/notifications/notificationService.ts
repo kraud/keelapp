@@ -1,7 +1,8 @@
 import axios from "axios";
 import {NotificationData} from "../../ts/interfaces";
 
-const API_URL = '/api/notifications/'
+const BE_URL = process.env.REACT_APP_VERCEL_BE_URL
+const API_URL = (BE_URL!!) ?BE_URL+'/api/notifications' :'/api/notifications'
 
 const createNotification = async (notification: NotificationData, token: any) => {
     const config = {
@@ -19,7 +20,7 @@ const getNotifications = async (token: any) => {
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.get(API_URL+'getNotifications', config)
+    const response = await axios.get(API_URL+'/getNotifications', config)
     return(response.data)
 }
 
@@ -29,7 +30,7 @@ const getRequesterNotifications = async (token: any) => {
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.get(API_URL+'getRequesterNotifications', config)
+    const response = await axios.get(API_URL+'/getRequesterNotifications', config)
     return(response.data)
 }
 

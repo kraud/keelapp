@@ -199,7 +199,7 @@ export function WordForm(props: TranslationFormProps) {
     // @ts-ignore
     const update = () => toast.update(toastId.current, {
         render: "The word was saved successfully!",
-        type: toast.TYPE.SUCCESS,
+        type: 'success',
         autoClose: 5000,
         transition: Flip,
         delay: 500
