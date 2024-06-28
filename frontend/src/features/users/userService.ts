@@ -25,7 +25,7 @@ const getUserByUserId = async (token: any, userId: string) => {
             Authorization: `Bearer ${token}`
         },
     }
-    const response = await axios.get(`${API_URL}/getUser/${userId}`, config)
+    const response = await axios.get(`${API_URL}getUser/${userId}`, config)
     return(response.data)
 }
 

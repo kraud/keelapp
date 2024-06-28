@@ -43,7 +43,7 @@ const getWordById = async (token: any, id: string) => {
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.get(`${API_URL}/${id}`, config)
+    const response = await axios.get(`${API_URL}${id}`, config)
     return(response.data)
 }
 
@@ -53,7 +53,7 @@ const deleteWordById = async (token: any, id: string) => {
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.delete(`${API_URL}/${id}`, config)
+    const response = await axios.delete(`${API_URL}${id}`, config)
     return(response.data)
 }
 
@@ -76,7 +76,7 @@ const updateWordById = async (token: any, updatedData: WordDataBE) => {
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.put(`${API_URL}/${updatedData.id}`, updatedData, config)
+    const response = await axios.put(`${API_URL}${updatedData.id}`, updatedData, config)
     return(response.data)
 }
 

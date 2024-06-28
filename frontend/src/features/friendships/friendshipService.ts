@@ -35,7 +35,7 @@ const deleteFriendshipById = async (token: any, id: string) => {
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.delete(`${API_URL}/${id}`, config)
+    const response = await axios.delete(`${API_URL}${id}`, config)
     return(response.data)
 }
 
@@ -45,7 +45,7 @@ const deleteFriendshipRequest = async (token: any, id: string) => {
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.delete(`${API_URL}/deleteRequestAndNotifications/${id}`, config)
+    const response = await axios.delete(`${API_URL}deleteRequestAndNotifications/${id}`, config)
     return(response.data)
 }
 
@@ -56,7 +56,7 @@ const acceptFriendshipRequest = async (token: any, id: string) => {
         }
     }
     // NB! update data is 'undefined' because we don't have info to update. We simply changed friendship to accepted.
-    const response = await axios.put(`${API_URL}/acceptRequestAndDeleteNotifications/${id}`, {status: 'accepted'}, config)
+    const response = await axios.put(`${API_URL}acceptRequestAndDeleteNotifications/${id}`, {status: 'accepted'}, config)
     return(response.data)
 }
 
@@ -66,7 +66,7 @@ const updateFriendshipById = async (token: any, updatedData: FriendshipData) => 
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.put(`${API_URL}/${updatedData._id}`, updatedData, config)
+    const response = await axios.put(`${API_URL}${updatedData._id}`, updatedData, config)
     return(response.data)
 }
 

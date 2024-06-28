@@ -40,7 +40,7 @@ const deleteNotificationById = async (token: any, id: string) => {
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.delete(`${API_URL}/${id}`, config)
+    const response = await axios.delete(`${API_URL}${id}`, config)
     return(response.data)
 }
 
@@ -50,7 +50,7 @@ const updateNotificationById = async (token: any, updatedData: NotificationData)
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.put(`${API_URL}/${updatedData._id}`, updatedData, config)
+    const response = await axios.put(`${API_URL}${updatedData._id}`, updatedData, config)
     return(response.data)
 }
 
