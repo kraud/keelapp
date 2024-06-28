@@ -2,7 +2,7 @@ import axios from "axios";
 import {NotificationData} from "../../ts/interfaces";
 
 const BE_URL = process.env.REACT_APP_VERCEL_BE_URL
-const API_URL = (BE_URL!!) ?BE_URL+'/api/notifications/' :'/api/notifications/'
+const API_URL = (BE_URL!!) ?BE_URL+'/api/notifications' :'/api/notifications'
 
 const createNotification = async (notification: NotificationData, token: any) => {
     const config = {
@@ -20,7 +20,7 @@ const getNotifications = async (token: any) => {
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.get(API_URL+'getNotifications', config)
+    const response = await axios.get(API_URL+'/getNotifications', config)
     return(response.data)
 }
 
@@ -30,7 +30,7 @@ const getRequesterNotifications = async (token: any) => {
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.get(API_URL+'getRequesterNotifications', config)
+    const response = await axios.get(API_URL+'/getRequesterNotifications', config)
     return(response.data)
 }
 
@@ -40,7 +40,7 @@ const deleteNotificationById = async (token: any, id: string) => {
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.delete(`${API_URL}${id}`, config)
+    const response = await axios.delete(`${API_URL}/${id}`, config)
     return(response.data)
 }
 
@@ -50,7 +50,7 @@ const updateNotificationById = async (token: any, updatedData: NotificationData)
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.put(`${API_URL}${updatedData._id}`, updatedData, config)
+    const response = await axios.put(`${API_URL}/${updatedData._id}`, updatedData, config)
     return(response.data)
 }
 

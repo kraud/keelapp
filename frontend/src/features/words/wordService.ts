@@ -2,7 +2,7 @@ import axios from "axios";
 import {WordData, WordDataBE} from "../../ts/interfaces";
 
 const BE_URL = process.env.REACT_APP_VERCEL_BE_URL
-const API_URL = (BE_URL!!) ?BE_URL+'/api/words/' :'/api/words/'
+const API_URL = (BE_URL!!) ?BE_URL+'/api/words' :'/api/words'
 
 const createWord = async (word: WordData, token: any) => {
     const config = {
@@ -33,7 +33,7 @@ const getWordsSimplified = async (token: any, query: any) => {
             filters: query,
         }
     }
-    const response = await axios.get(`${API_URL}simple`, config)
+    const response = await axios.get(API_URL+'/simple', config)
     return(response.data)
 }
 
@@ -43,7 +43,7 @@ const getWordById = async (token: any, id: string) => {
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.get(`${API_URL}${id}`, config)
+    const response = await axios.get(`${API_URL}/${id}`, config)
     return(response.data)
 }
 
@@ -53,7 +53,7 @@ const deleteWordById = async (token: any, id: string) => {
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.delete(`${API_URL}${id}`, config)
+    const response = await axios.delete(`${API_URL}/${id}`, config)
     return(response.data)
 }
 
@@ -66,7 +66,7 @@ const deleteManyWordsById = async (token: any, wordsId: string[]) => {
             wordsId: wordsId,
         }
     }
-    const response = await axios.delete(`${API_URL}deleteMany`, config)
+    const response = await axios.delete(API_URL+'/deleteMany', config)
     return(response.data)
 }
 
@@ -76,7 +76,7 @@ const updateWordById = async (token: any, updatedData: WordDataBE) => {
             Authorization: `Bearer ${token}`
         }
     }
-    const response = await axios.put(`${API_URL}${updatedData.id}`, updatedData, config)
+    const response = await axios.put(`${API_URL}/${updatedData.id}`, updatedData, config)
     return(response.data)
 }
 
@@ -89,7 +89,7 @@ const searchWord = async (token: any, query: string) => {
             query: query,
         }
     }
-    const response = await axios.get(`${API_URL}searchWord`, config)
+    const response = await axios.get(API_URL+'/searchWord', config)
     return(response.data)
 }
 
