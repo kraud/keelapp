@@ -11,6 +11,7 @@ import {PartOfSpeechSelector} from "./PartOfSpeechSelector";
 import {AutocompleteMultiple} from "./AutocompleteMultiple";
 import {getAllIndividualTagDataFromFilterItem} from "./generalUseFunctions";
 import {setSelectedPoS, resetSelectedPoS} from "../features/words/wordSlice";
+import {checkEnvironmentAndIterationToDisplay} from "./forms/commonFunctions";
 
 interface TranslationFormProps {
     onSave: (wordData: WordData) => void,
@@ -214,6 +215,7 @@ export function WordForm(props: TranslationFormProps) {
 
     useEffect(() => {
         if(isSuccess){
+            // TODO: add link to new word in Toast
             update()
             // once the word has been saved, the form must be reset
             resetAll()
@@ -364,7 +366,13 @@ export function WordForm(props: TranslationFormProps) {
                                     color={"error"}
                                     onClick={() => {
                                         if(disabledForms){
-                                            setDisabledForms(false)
+                                            // TODO: ONCE IN 2nd ITERATION, REMOVE THIS!
+                                            // so we disable the "edit" button during the 1st iteration
+                                            if(checkEnvironmentAndIterationToDisplay(2)) {
+                                                setDisabledForms(false)
+                                            } else {
+                                                toast.error("This function is not ready yet, we're sorry!")
+                                            }
                                         } else if(props.initialState !== undefined) {
                                             reverseChangesInLocalWordState()
                                         } else {
@@ -522,32 +530,35 @@ export function WordForm(props: TranslationFormProps) {
                                 </Grid>
                             }
                             {/* TAGS */}
-                            {(!disabledForms || (disabledForms && completeWordData.tags!!)) &&
-                                <Grid
-                                    item={true}
-                                    container={true}
-                                    justifyContent={"center"}
-                                >
+                            {(
+                                (checkEnvironmentAndIterationToDisplay(2)) &&
+                                (!disabledForms || (disabledForms && completeWordData.tags!!))
+                                ) &&
                                     <Grid
                                         item={true}
-                                        xs={12}
-                                        md={4}
+                                        container={true}
+                                        justifyContent={"center"}
                                     >
-                                        <AutocompleteMultiple
-                                            type={'tag'}
-                                            values={(completeWordData.tags) ? completeWordData.tags : []}
-                                            saveResults={(results: FilterItem[]) => {
-                                                setCompleteWordData({
-                                                    ...completeWordData,
-                                                    tags: getAllIndividualTagDataFromFilterItem(results)
-                                                })
-                                                setTagsRecentlyModified(true)
-                                            }}
-                                            allowNewOptions={true}
-                                            disabled={disabledForms}
-                                        />
+                                        <Grid
+                                            item={true}
+                                            xs={12}
+                                            md={4}
+                                        >
+                                            <AutocompleteMultiple
+                                                type={'tag'}
+                                                values={(completeWordData.tags) ? completeWordData.tags : []}
+                                                saveResults={(results: FilterItem[]) => {
+                                                    setCompleteWordData({
+                                                        ...completeWordData,
+                                                        tags: getAllIndividualTagDataFromFilterItem(results)
+                                                    })
+                                                    setTagsRecentlyModified(true)
+                                                }}
+                                                allowNewOptions={true}
+                                                disabled={disabledForms}
+                                            />
+                                        </Grid>
                                     </Grid>
-                                </Grid>
                             }
                             {/* FORM BUTTONS */}
                             {(!disabledForms) &&

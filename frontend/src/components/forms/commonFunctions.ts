@@ -49,3 +49,14 @@ export function getPartOfSpeechAbbreviated(partOfSpeech: PartOfSpeech){
         default: return("-")
     }
 }
+
+// Used to obfuscate in-development functionalities in production environment, according to the current iteration
+export const checkEnvironmentAndIterationToDisplay = (displayFromIterationNumber: number) => {
+    const environment = process.env.REACT_APP_ENVIRONMENT_NAME
+    const iteration = process.env.REACT_APP_ITERATION
+    return(
+        (environment === 'dev')
+        ||
+        (displayFromIterationNumber <= parseInt(iteration as string))
+    )
+}

@@ -1,3 +1,4 @@
 node_modules
+# this also applies to the .env inside frontend
 .env
 .idea

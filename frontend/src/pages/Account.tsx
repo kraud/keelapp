@@ -24,6 +24,7 @@ import {FriendList, ChipList} from "../components/GeneralUseComponents";
 import {clearRequesterNotifications, createNotification} from "../features/notifications/notificationSlice";
 import {Lang} from "../ts/enums";
 import {AppDispatch} from "../app/store";
+import {checkEnvironmentAndIterationToDisplay} from "../components/forms/commonFunctions";
 
 
 export interface UserBadgeData {
@@ -271,59 +272,68 @@ export const Account = () => {
                     justifyContent={"space-around"}
                     item={true}
                     rowSpacing={1}
+                    spacing={{
+                        xs: 0,
+                        sm: 1
+                    }}
                     xs={12}
                 >
                     {(!isEditing) &&
                         <>
-                            <Grid
-                                item={true}
-                                xs={12}
-                                sm={4}
-                            >
-                                <Button
-                                    variant={"contained"}
-                                    color={"primary"}
-                                    onClick={() => {
-                                        setTagIdToShare("") // we make sure that no list will be displayed on FriendSearchModal
-                                        setOpenFriendsModal(true)
-                                    }}
-                                    fullWidth={true}
-                                    startIcon={<PersonAddIcon />}
-                                >
-                                    Add friends
-                                </Button>
-                            </Grid>
-                            <Grid
-                                container={true}
-                                item={true}
-                                justifyContent={"center"}
-                                xs={12}
-                                sm={4}
-                            >
+                            {(checkEnvironmentAndIterationToDisplay(4)) &&
                                 <Grid
                                     item={true}
-                                    xs
+                                    xs={12}
+                                    sm // so it shares all available space equally with other sm items
                                 >
                                     <Button
                                         variant={"contained"}
-                                        color={"info"}
-                                        onClick={() => setOpenTagModal(true)}
+                                        color={"primary"}
+                                        onClick={() => {
+                                            setTagIdToShare("") // we make sure that no list will be displayed on FriendSearchModal
+                                            setOpenFriendsModal(true)
+                                        }}
                                         fullWidth={true}
-                                        startIcon={<LocalOfferIcon />}
+                                        startIcon={<PersonAddIcon />}
                                     >
-                                        Create tag
+                                        Add friends
                                     </Button>
                                 </Grid>
-                            </Grid>
+                            }
+                            {(checkEnvironmentAndIterationToDisplay(2)) &&
+                                <Grid
+                                    container={true}
+                                    item={true}
+                                    justifyContent={"center"}
+                                    xs={12}
+                                    sm // so it shares all available space equally with other sm items
+                                >
+                                    <Grid
+                                        item={true}
+                                        xs
+                                    >
+                                        <Button
+                                            variant={"contained"}
+                                            color={"info"}
+                                            onClick={() => setOpenTagModal(true)}
+                                            fullWidth={true}
+                                            startIcon={<LocalOfferIcon />}
+                                        >
+                                            Create tag
+                                        </Button>
+                                    </Grid>
+                                </Grid>
+                            }
                         </>
                     }
-
+                    {/* Edit user data buttons */}
                     <Grid
                         container={true}
                         justifyContent={"center"}
                         item={true}
                         xs={isEditing ?10 :12}
-                        sm={4}
+                        // sm={4}
+                        sm // so it shares all available space equally with other sm items
                         spacing={1}
                     >
                         <Grid
@@ -389,224 +399,228 @@ export const Account = () => {
                     </Grid>
                 </Grid>
                 {/* TAGS */}
-                <Grid
-                    container={true}
-                    justifyContent={"center"}
-                    item={true}
-                    xs={12}
-                >
+                {(checkEnvironmentAndIterationToDisplay(2)) &&
                     <Grid
-                        item={true}
-                    >
-                        <Typography
-                            sx={{
-                                typography: {
-                                    xs: 'h3',
-                                    sm: 'h2',
-                                    md: 'h1',
-                                },
-                                textTransform: "uppercase",
-                                textDecoration: "underline",
-                            }}
-                        >
-                            Tags:
-                        </Typography>
-                    </Grid>
-                    <Grid
-                        item={true}
                         container={true}
                         justifyContent={"center"}
-                        sx={{
-                            borderRadius: '25px',
-                            border: '2px solid black',
-                            padding: globalTheme.spacing(2),
-                            marginTop: globalTheme.spacing(2)
-                        }}
+                        item={true}
                         xs={12}
                     >
-                        {((isLoadingTags) && (!openFriendsModal))
-                            ?
-                            <LinearIndeterminate/>
-                            :
-                            <>
-                                {(allTags.length > 0)
-                                    ?
-                                    <ChipList
-                                        itemList={allTags}
-                                        onClickAction={(tagId: string) => {
-                                            setSelectedTag(tagId)
-                                        }}
-                                    />
-                                    :
-                                    <>
-                                        <Typography
-                                            sx={{
-                                                typography: {
-                                                    xs: 'body2',
-                                                    sm: 'h6',
-                                                    md: 'h5',
-                                                },
+                        <Grid
+                            item={true}
+                        >
+                            <Typography
+                                sx={{
+                                    typography: {
+                                        xs: 'h3',
+                                        sm: 'h2',
+                                        md: 'h1',
+                                    },
+                                    textTransform: "uppercase",
+                                    textDecoration: "underline",
+                                }}
+                            >
+                                Tags:
+                            </Typography>
+                        </Grid>
+                        <Grid
+                            item={true}
+                            container={true}
+                            justifyContent={"center"}
+                            sx={{
+                                borderRadius: '25px',
+                                border: '2px solid black',
+                                padding: globalTheme.spacing(2),
+                                marginTop: globalTheme.spacing(2)
+                            }}
+                            xs={12}
+                        >
+                            {((isLoadingTags) && (!openFriendsModal))
+                                ?
+                                <LinearIndeterminate/>
+                                :
+                                <>
+                                    {(allTags.length > 0)
+                                        ?
+                                        <ChipList
+                                            itemList={allTags}
+                                            onClickAction={(tagId: string) => {
+                                                setSelectedTag(tagId)
                                             }}
+                                        />
+                                        :
+                                        <>
+                                            <Typography
+                                                sx={{
+                                                    typography: {
+                                                        xs: 'body2',
+                                                        sm: 'h6',
+                                                        md: 'h5',
+                                                    },
+                                                }}
+                                            >
+                                                You haven't added tags to any words yet.
+                                            </Typography>
+                                            <Button
+                                                variant="text"
+                                                size="small"
+                                                color={"primary"}
+                                                onClick={() => navigate('/review')}
+                                            >
+                                                Click here to go review your saved words and add tags!
+                                            </Button>
+                                        </>
+                                    }
+                                    {/* FOLLOWED TAGS */}
+                                    <Grid
+                                        container={true}
+                                        justifyContent={'center'}
+                                        sx={{
+                                            marginTop: globalTheme.spacing(2),
+                                            marginBottom: globalTheme.spacing(1)
+                                        }}
+                                    >
+                                        <Grid
+                                            item={true}
+                                            xs={12}
                                         >
-                                            You haven't added tags to any words yet.
-                                        </Typography>
-                                        <Button
-                                            variant="text"
-                                            size="small"
-                                            color={"primary"}
-                                            onClick={() => navigate('/review')}
-                                        >
-                                            Click here to go review your saved words and add tags!
-                                        </Button>
-                                    </>
-                                }
-                                {/* FOLLOWED TAGS */}
+                                            <Divider
+                                                orientation="horizontal"
+                                                flexItem={true}
+                                                sx={{
+                                                    "&::before, &::after": {
+                                                        borderColor: "black",
+                                                    },
+                                                }}
+                                            >
+                                                Followed tags
+                                            </Divider>
+                                        </Grid>
+                                    </Grid>
+                                    {(followedTags!!)
+                                        ?
+                                        <ChipList
+                                            itemList={followedTags}
+                                            onClickAction={(tagId: string) => {
+                                                setSelectedTag(tagId)
+                                            }}
+                                        />
+                                        :
+                                        <>
+                                            <Typography
+                                                sx={{
+                                                    typography: {
+                                                        xs: 'body2',
+                                                        sm: 'h6',
+                                                        md: 'h5',
+                                                    },
+                                                }}
+                                            >
+                                                You haven't followed any tags yet.
+                                            </Typography>
+                                        </>
+                                    }
+                                </>
+                            }
+                        </Grid>
+                    </Grid>
+                }
+            </Grid>
+            {/* SECOND COLUMN */}
+            {(checkEnvironmentAndIterationToDisplay(4)) &&
+                <Grid
+                    container={true}
+                    justifyContent={"space-around"}
+                    item={true}
+                    xs={12}
+                    lg={6}
+                    rowSpacing={2}
+                    sx={{
+                        paddingTop: '0px !important',
+                    }}
+                >
+                    {/* FRIENDS */}
+                    <Grid
+                        container={true}
+                        justifyContent={"center"}
+                        item={true}
+                        xs={12}
+                        rowSpacing={2}
+                        sx={{
+                            height: 'fit-content'
+                        }}
+                    >
+                        <Grid
+                            item={true}
+                            sx={{
+                                // paddingTop: '0px !important',
+                            }}
+                        >
+                            <Typography
+                                sx={{
+                                    typography: {
+                                        xs: 'h3',
+                                        sm: 'h2',
+                                        md: 'h1',
+                                    },
+                                    textTransform: "uppercase",
+                                    textDecoration: "underline"
+                                }}
+                            >
+                                Friends:
+                            </Typography>
+                        </Grid>
+                        <Grid
+                            item={true}
+                            container={true}
+                            xs={12}
+                        >
+                            {((isLoadingFriendships) && !openFriendsModal)
+                                ?
+                                <LinearIndeterminate/>
+                                :(activeFriendships.length === 0)
+                                ?
                                 <Grid
                                     container={true}
-                                    justifyContent={'center'}
-                                    sx={{
-                                        marginTop: globalTheme.spacing(2),
-                                        marginBottom: globalTheme.spacing(1)
-                                    }}
+                                    item={true}
+                                    justifyContent={"center"}
                                 >
                                     <Grid
                                         item={true}
-                                        xs={12}
                                     >
-                                        <Divider
-                                            orientation="horizontal"
-                                            flexItem={true}
-                                            sx={{
-                                                "&::before, &::after": {
-                                                    borderColor: "black",
-                                                },
-                                            }}
+                                        <Typography
+                                            variant={"h6"}
                                         >
-                                            Followed tags
-                                        </Divider>
+                                            You don't have any friends yet.
+                                        </Typography>
+                                        <Typography
+                                            variant={"body2"}
+                                            onClick={() => {
+                                                setOpenFriendsModal(true)
+                                            }}
+                                            color={'primary'}
+                                            textAlign={"center"}
+                                            sx={{
+                                                cursor: "pointer"
+                                            }}
+                                            fontWeight={"bold"}
+                                        >
+                                            Click here to search and add new friends!
+                                        </Typography>
                                     </Grid>
                                 </Grid>
-                                {(followedTags!!)
-                                    ?
-                                    <ChipList
-                                        itemList={followedTags}
-                                        onClickAction={(tagId: string) => {
-                                            setSelectedTag(tagId)
-                                        }}
-                                    />
-                                    :
-                                    <>
-                                        <Typography
-                                            sx={{
-                                                typography: {
-                                                    xs: 'body2',
-                                                    sm: 'h6',
-                                                    md: 'h5',
-                                                },
-                                            }}
-                                        >
-                                            You haven't followed any tags yet.
-                                        </Typography>
-                                    </>
-                                }
-                            </>
-                        }
+                                :
+                                <FriendList
+                                    friendList={activeFriendships}
+                                    onClickAction={(friendshipItem: FriendshipData) => {
+                                        displayFriendDetails(friendshipItem)
+                                    }}
+                                />
+                            }
+                        </Grid>
                     </Grid>
                 </Grid>
-            </Grid>
-            {/* SECOND COLUMN */}
-            <Grid
-                container={true}
-                justifyContent={"space-around"}
-                item={true}
-                xs={12}
-                lg={6}
-                rowSpacing={2}
-                sx={{
-                    paddingTop: '0px !important',
-                }}
-            >
-                {/* FRIENDS */}
-                <Grid
-                    container={true}
-                    justifyContent={"center"}
-                    item={true}
-                    xs={12}
-                    rowSpacing={2}
-                    sx={{
-                        height: 'fit-content'
-                    }}
-                >
-                    <Grid
-                        item={true}
-                        sx={{
-                            // paddingTop: '0px !important',
-                        }}
-                    >
-                        <Typography
-                            sx={{
-                                typography: {
-                                    xs: 'h3',
-                                    sm: 'h2',
-                                    md: 'h1',
-                                },
-                                textTransform: "uppercase",
-                                textDecoration: "underline"
-                            }}
-                        >
-                            Friends:
-                        </Typography>
-                    </Grid>
-                    <Grid
-                        item={true}
-                        container={true}
-                        xs={12}
-                    >
-                        {((isLoadingFriendships) && !openFriendsModal)
-                            ?
-                            <LinearIndeterminate/>
-                            :(activeFriendships.length === 0)
-                            ?
-                            <Grid
-                                container={true}
-                                item={true}
-                                justifyContent={"center"}
-                            >
-                                <Grid
-                                    item={true}
-                                >
-                                    <Typography
-                                        variant={"h6"}
-                                    >
-                                        You don't have any friends yet.
-                                    </Typography>
-                                    <Typography
-                                        variant={"body2"}
-                                        onClick={() => {
-                                            setOpenFriendsModal(true)
-                                        }}
-                                        color={'primary'}
-                                        textAlign={"center"}
-                                        sx={{
-                                            cursor: "pointer"
-                                        }}
-                                        fontWeight={"bold"}
-                                    >
-                                        Click here to search and add new friends!
-                                    </Typography>
-                                </Grid>
-                            </Grid>
-                            :
-                            <FriendList
-                                friendList={activeFriendships}
-                                onClickAction={(friendshipItem: FriendshipData) => {
-                                    displayFriendDetails(friendshipItem)
-                                }}
-                            />
-                        }
-                    </Grid>
-                </Grid>
-            </Grid>
+            }
             {(openFriendsModal) &&
                 <FriendSearchModal
                     open={openFriendsModal}
