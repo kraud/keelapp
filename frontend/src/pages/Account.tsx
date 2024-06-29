@@ -270,13 +270,15 @@ export const Account = () => {
                     container={true}
                     justifyContent={"space-around"}
                     item={true}
+                    rowSpacing={1}
                     xs={12}
                 >
                     {(!isEditing) &&
                         <>
                             <Grid
                                 item={true}
-                                xs={4}
+                                xs={12}
+                                sm={4}
                             >
                                 <Button
                                     variant={"contained"}
@@ -295,11 +297,12 @@ export const Account = () => {
                                 container={true}
                                 item={true}
                                 justifyContent={"center"}
-                                xs={4}
+                                xs={12}
+                                sm={4}
                             >
                                 <Grid
                                     item={true}
-                                    xs={"auto"}
+                                    xs
                                 >
                                     <Button
                                         variant={"contained"}
@@ -319,7 +322,8 @@ export const Account = () => {
                         container={true}
                         justifyContent={"center"}
                         item={true}
-                        xs={isEditing ?10 :4}
+                        xs={isEditing ?10 :12}
+                        sm={4}
                         spacing={1}
                     >
                         <Grid
