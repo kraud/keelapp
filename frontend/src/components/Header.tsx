@@ -323,36 +323,36 @@ function ResponsiveAppBar() {
                             </Button>
                         ))}
                     </Box>
-                    <Box
-                        sx={{
-                            flexGrow: 1,
-                            display: { xs: 'none', md: 'flex' },
-                            justifyContent: 'end',
-                            marginRight: globalTheme.spacing(6)
-                        }}
-                    >
-                        <Grid
-                            item={true}
-                            container={true}
-                            alignContent={"center"}
-                            xs={"auto"}
+                    {(checkEnvironmentAndIterationToDisplay(2)) &&
+                        <Box
+                            sx={{
+                                flexGrow: 1,
+                                display: { xs: 'none', md: 'flex' },
+                                justifyContent: 'end',
+                                marginRight: globalTheme.spacing(6)
+                            }}
                         >
                             <Grid
                                 item={true}
+                                container={true}
+                                alignContent={"center"}
+                                xs={"auto"}
                             >
-                                <FormControlLabel
-                                    value={isWordSearch}
-                                    control={<MaterialUISwitch checked={isWordSearch} />}
-                                    label={""}
-                                    labelPlacement={"start"}
-                                    onChange={() => setIsWordSearch(!isWordSearch)}
-                                    sx={{
-                                        marginRight: 0,
-                                    }}
-                                />
+                                <Grid
+                                    item={true}
+                                >
+                                    <FormControlLabel
+                                        value={isWordSearch}
+                                        control={<MaterialUISwitch checked={isWordSearch} />}
+                                        label={""}
+                                        labelPlacement={"start"}
+                                        onChange={() => setIsWordSearch(!isWordSearch)}
+                                        sx={{
+                                            marginRight: 0,
+                                        }}
+                                    />
+                                </Grid>
                             </Grid>
-                        </Grid>
-                        {(checkEnvironmentAndIterationToDisplay(2)) &&
                             <AutocompleteSearch
                                 options={isWordSearch ?searchResults :searchResultTags}
                                 getOptions={(inputValue: string) => onSearch(inputValue)}
@@ -361,8 +361,8 @@ function ResponsiveAppBar() {
                                 textColor={'white'}
                                 placeholder={isWordSearch ? "Search words..." : "Search tags..."}
                             />
-                        }
-                    </Box>
+                        </Box>
+                    }
                     {/* USER ICON */}
                     <Box sx={{ flexGrow: 0 }}>
                         <Tooltip title="Open settings">

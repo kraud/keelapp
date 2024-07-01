@@ -53,7 +53,8 @@ export const createWord = createAsyncThunk('words/create', async (word: WordData
         return thunkAPI.rejectWithValue(message)
     }
 })
-// Get user words
+
+// Get user words (complete translation data, but it doesn't include tag data) => NOT IN USE YET (we use getSimple).
 export const getWords = createAsyncThunk('words/getAll', async (_, thunkAPI) => {
     try {
         // @ts-ignore
@@ -223,7 +224,7 @@ export const wordSlice = createSlice({
             .addCase(createWord.fulfilled, (state, action) => {
                 state.isLoading = false
                 state.isSuccess = true
-                state.words.push(action.payload)
+                state.word = action.payload
             })
             .addCase(createWord.rejected, (state, action) => {
                 state.isLoading = false

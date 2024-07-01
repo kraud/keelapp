@@ -12,6 +12,7 @@ import {AutocompleteMultiple} from "./AutocompleteMultiple";
 import {getAllIndividualTagDataFromFilterItem} from "./generalUseFunctions";
 import {setSelectedPoS, resetSelectedPoS} from "../features/words/wordSlice";
 import {checkEnvironmentAndIterationToDisplay} from "./forms/commonFunctions";
+import {useNavigate} from "react-router-dom";
 
 interface TranslationFormProps {
     onSave: (wordData: WordData) => void,
@@ -25,7 +26,8 @@ interface TranslationFormProps {
 // stores the complete *Word* Data
 export function WordForm(props: TranslationFormProps) {
     const dispatch = useDispatch()
-    const {isSuccess, isLoading} = useSelector((state: any) => state.words)
+    const navigate = useNavigate()
+    const {word, isSuccess, isLoading} = useSelector((state: any) => state.words)
     const {user} = useSelector((state: any) => state.auth)
 
     // Type of word to be added (noun/verb/adjective/etc.)
@@ -197,14 +199,40 @@ export function WordForm(props: TranslationFormProps) {
         progress: undefined,
         theme: "colored",
     })
-    // @ts-ignore
-    const update = () => toast.update(toastId.current, {
-        render: "The word was saved successfully!",
-        type: 'success',
-        autoClose: 5000,
-        transition: Flip,
-        delay: 500
-    })
+    const update = (wordId: string) => {
+        // @ts-ignore
+        toast.update(toastId.current, {
+            // render: "The word was saved successfully!",
+            type: 'success',
+            autoClose: 5000,
+            transition: Flip,
+            delay: 500,
+            render: () => {
+                return(
+                    <Grid
+                        container={true}
+                    >
+                        <Typography
+                            variant={"subtitle2"}
+                        >
+                            The word was saved successfully!
+                        </Typography>
+                        <Button
+                            variant={'outlined'}
+                            //@ts-ignore
+                            color={'allWhite'}
+                            fullWidth={true}
+                            onClick={() => {
+                                navigate(`/word/${wordId}`)
+                            }}
+                        >
+                            Click here to see the new word
+                        </Button>
+                    </Grid>
+                )
+            }
+        })
+    }
 
     useEffect(() => {
         if(isLoading && recentlyModified){ // added recentlyModified to avoid triggering modal when loading Form from another screen
@@ -214,13 +242,12 @@ export function WordForm(props: TranslationFormProps) {
     }, [isLoading])
 
     useEffect(() => {
-        if(isSuccess){
-            // TODO: add link to new word in Toast
-            update()
+        if((isSuccess) && (word._id !== undefined)){
+            update(word._id)
             // once the word has been saved, the form must be reset
             resetAll()
         }
-    }, [isSuccess])
+    }, [isSuccess, word._id])
 
 
     const setAvailableLanguagesList = () => {
