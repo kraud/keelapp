@@ -25,6 +25,7 @@ import {toast} from "react-toastify";
 import {ConfirmationButton} from "./ConfirmationButton";
 import {deleteManyWordsById} from "../features/words/wordSlice";
 import {useFollowUnfollowTag, useIsUserFollowingTag} from "../hooks/useFollowUnfollowTag";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 
 interface FriendSearchModalProps {
@@ -37,13 +38,14 @@ interface FriendSearchModalProps {
 }
 
 export const TagInfoModal = (props: FriendSearchModalProps) => {
+    const lessThanSmall = useMediaQuery(globalTheme.breakpoints.down("sm"))
     const componentStyles = {
         mainContainer: {
             position: 'absolute',
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            width: 'min(80vw, max-content)',
+            width: (lessThanSmall) ? '90vw' :'min(80vw, max-content)',
             background: 'white',
             border: '4px solid #0072CE',
             borderRadius: '25px',
@@ -448,9 +450,18 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                         {(props.title !== undefined) &&
                             <Grid
                                 item={true}
+                                // xs={12}
+                                sx={{
+                                    // wordWrap: 'break-word'
+                                    textWrap: 'wrap'
+                                }}
                             >
                                 <Typography
                                     variant={"h4"}
+                                    sx={{
+                                        textWrap: 'wrap',
+                                        wordBreak: 'break-all'
+                                    }}
                                 >
                                     {props.title}
                                 </Typography>

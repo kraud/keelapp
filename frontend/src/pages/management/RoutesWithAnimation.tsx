@@ -9,6 +9,7 @@ import {DisplayWord} from "../DisplayWord";
 import {Account} from "../Account";
 import {NotificationHub} from "../NotificationHub";
 import {DisplayTag} from "../DisplayTag";
+import {checkEnvironmentAndIterationToDisplay} from "../../components/forms/commonFunctions";
 
 export const routeVariantsAnimation = {
     initial: {
@@ -54,12 +55,14 @@ export function RoutesWithAnimation() {
                     <AddWord/>
                 }
             />
-            <Route
-                path='/review/:filtersURL?'
-                element={
-                    <Review/>
-                }
-            />
+            {(checkEnvironmentAndIterationToDisplay(3)) &&
+                <Route
+                    path='/review/:filtersURL?'
+                    element={
+                        <Review/>
+                    }
+                />
+            }
             <Route
                 path='/login'
                 element={
@@ -72,13 +75,15 @@ export function RoutesWithAnimation() {
                     <Register/>
                 }
             />
-            <Route
-                 // TODO: should we reverse this to: '/user/notifications/:userId' ?
-                path='/user/:userId?/notifications'
-                element={
-                    <NotificationHub/>
-                }
-            />
+            {(checkEnvironmentAndIterationToDisplay(3)) &&
+                <Route
+                     // TODO: should we reverse this to: '/user/notifications/:userId' ?
+                    path='/user/:userId?/notifications'
+                    element={
+                        <NotificationHub/>
+                    }
+                />
+            }
             <Route
                 path='/user'
                 element={
@@ -91,12 +96,14 @@ export function RoutesWithAnimation() {
                     <DisplayWord defaultDisabled={true}/>
                 }
             />
-            <Route
-                path='/tag/:tagId?'
-                element={
-                    <DisplayTag defaultDisabled={true}/>
-                }
-            />
+            {(checkEnvironmentAndIterationToDisplay(2)) &&
+                <Route
+                    path='/tag/:tagId?'
+                    element={
+                        <DisplayTag defaultDisabled={true}/>
+                    }
+                />
+            }
         </Routes>
     );
 }

@@ -121,6 +121,7 @@ export function DisplayWord(props: DisplayWordProps){
                     >
                         Return
                     </Button>
+                    {/*  TODO: add remove word button?  */}
                 </Grid>
                 <WordForm
                     title={
