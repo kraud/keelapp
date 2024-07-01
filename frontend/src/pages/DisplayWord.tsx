@@ -95,7 +95,7 @@ export function DisplayWord(props: DisplayWordProps){
                         // but when not we simply display it as it normally would ('undefined' changes)
                         display: (!displayContent) ?undefined :"none",
                     }}
-                    displayTime={2000}
+                    displayTime={4000}
                 />
             }
             <div
