@@ -242,12 +242,12 @@ export function WordForm(props: TranslationFormProps) {
     }, [isLoading])
 
     useEffect(() => {
-        if((isSuccess) && (word._id !== undefined)){
+        if((isSuccess) && (word._id !== undefined) && !(props.initialState !== undefined)){
             update(word._id)
             // once the word has been saved, the form must be reset
             resetAll()
         }
-    }, [isSuccess, word._id])
+    }, [isSuccess, word._id, props.initialState])
 
 
     const setAvailableLanguagesList = () => {

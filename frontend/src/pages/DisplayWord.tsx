@@ -4,7 +4,7 @@ import {motion} from "framer-motion";
 import {routeVariantsAnimation} from "./management/RoutesWithAnimation";
 import globalTheme from "../theme/theme";
 import {WordForm} from "../components/WordForm";
-import {WordData} from "../ts/interfaces";
+import {WordData, WordDataBE} from "../ts/interfaces";
 import {useNavigate, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {getWordById, updateWordById} from "../features/words/wordSlice";
@@ -150,3 +150,160 @@ export function DisplayWord(props: DisplayWordProps){
         </Grid>
     )
 }
+
+// export function DisplayWord(props: DisplayWordProps){
+//     const navigate = useNavigate()
+//     const dispatch = useDispatch()
+//     // @ts-ignore
+//     const { wordId } = useParams<RouterWordProps>()
+//     const {word, currentlySelectedPoS, isSuccess, isLoading, isError, message} = useSelector((state: any) => state.words)
+//     const {user} = useSelector((state: any) => state.auth)
+//     const [displayContent, setDisplayContent] = useState(false)
+//     const [finishedUpdating, setFinishedUpdating] = useState(true)
+//     const [localWordData, setLocalWordData] = useState<WordDataBE | undefined>(undefined)
+//     const [finishedLoadingAnimation, setFinishedLoadingAnimation] = useState(false)
+//
+//     useEffect(() => {
+//         if(wordId!!) {
+//             //@ts-ignore
+//             dispatch(getWordById(wordId))
+//         }
+//     },[])
+//
+//     useEffect(() => {
+//         console.log('word',word)
+//         if((!isLoading) && (isSuccess) && (word._id !== undefined)) {
+//             console.log('changing localWordData')
+//             //@ts-ignore
+//             setLocalWordData(word)
+//         }
+//     },[word._id, isLoading, isSuccess])
+//
+//     // useEffect(() => {
+//     //     if(isLoading){
+//     //         setDisplayContent(false)
+//     //     }
+//     // },[isLoading])
+//
+//     useEffect(() => {
+//         console.log('localWordData', localWordData)
+//         // if((localWordData !== undefined) && finishedLoadingAnimation){
+//         if(localWordData !== undefined){
+//             setDisplayContent(true)
+//         }
+//     },[localWordData])
+//     // },[localWordData, finishedLoadingAnimation])
+//
+//
+//     useEffect(() => {
+//         if(isError){
+//             toast.error(`Something went wrong: ${message}`, {
+//                 toastId: "click-on-modal"
+//             })
+//         }
+//     }, [isError, message])
+//
+//     useEffect(() => {
+//         // isLoading switches back to false once the response from backend is set on redux
+//         // finishedUpdating will only be false while waiting for a response from backend
+//         if(!finishedUpdating && !isLoading){
+//             toast.success(`Word was updated successfully`, {
+//                 toastId: "click-on-modal"
+//             })
+//             // we reverse to the original state, before sending data to update
+//             setFinishedUpdating(true)
+//         }
+//     }, [isLoading, finishedUpdating])
+//
+//     // TODO: should this be a reusable component to simplify having a loading screen or better to do it on a case by case basis?
+//     return(
+//         <Grid
+//             component={motion.div} // to implement animations with Framer Motion
+//             variants={routeVariantsAnimation}
+//             initial="initial"
+//             animate="final"
+//             container={true}
+//             item={true}
+//             justifyContent={"center"}
+//             xs={12}
+//             md={10}
+//             lg={8}
+//             sx={{
+//                 marginTop: globalTheme.spacing(4),
+//                 marginBottom: globalTheme.spacing(4),
+//             }}
+//         >
+//             {(!displayContent) &&
+//                 <LoadingScreen
+//                     loadingTextList={[
+//                         "Loading...",
+//                         "Cargando...",
+//                         "Laadimine...",
+//                         "Laden...",
+//                     ]}
+//                     // callback={() => setDisplayContent(true) }
+//                     callback={() => setFinishedLoadingAnimation(true) }
+//                     sxProps={{
+//                         // when displaying content we hide this (display 'none'),
+//                         // but when not we simply display it as it normally would ('undefined' changes)
+//                         display: (!displayContent) ?undefined :"none",
+//                     }}
+//                     displayTime={3000}
+//                 />
+//             }
+//             {(displayContent && (localWordData !== undefined)) &&
+//                 <div
+//                     style={{
+//                         // display: (displayContent) ?undefined :"none",
+//                     }}
+//                 >
+//                     <Grid
+//                         item={true}
+//                         xs
+//                         sx={{
+//                             paddingBottom: globalTheme.spacing(4)
+//                         }}
+//                     >
+//                         <Button
+//                             variant={"contained"}
+//                             color={"secondary"}
+//                             onClick={() => {
+//                                 navigate(-1)
+//                             }}
+//                             fullWidth={true}
+//                             startIcon={<ArrowBackIcon />}
+//                         >
+//                             Return
+//                         </Button>
+//                         {/*  TODO: add remove word button?  */}
+//                     </Grid>
+//                     <WordForm
+//                         title={
+//                             (currentlySelectedPoS !== undefined)
+//                                 ? `Detailed view: ${currentlySelectedPoS.toLowerCase() }`
+//                                 : "Detailed view"
+//                     }
+//                         subTitle={"All the currently stored translations for this word"}
+//                         onSave={(wordData: WordData) => {
+//                             const updatedWordData = {
+//                                 id: wordId,
+//                                 clue: wordData.clue,
+//                                 tags: wordData.tags,
+//                                 partOfSpeech: wordData.partOfSpeech,
+//                                 translations: wordData.translations,
+//                             }
+//                             //@ts-ignore
+//                             dispatch(updateWordById(updatedWordData))
+//                             setFinishedUpdating(false)
+//                         }}
+//                         // initialState={word}
+//                         initialState={(localWordData as WordData)} // temp fix :word
+//                         defaultDisabled={props.defaultDisabled}
+//                         disableEditing={word.user !== user._id} // TODO: add user to WordData?
+//                         // disableEditing={word.user !== user._id}
+//                     />
+//                 </div>
+//             }
+//         </Grid>
+//     )
+// }

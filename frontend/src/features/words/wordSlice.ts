@@ -8,7 +8,7 @@ interface wordSliceState {
     // wordSimple + request for specific data in word can be enough?
     words: WordData[],
     wordsSimple: any[], // TODO: replace any with a specific type
-    word?: WordData,
+    word?: WordData, // check if it should be WordDataBE
     searchResults: SearchResult[],
     currentlySelectedPoS?: PartOfSpeech, // when adding a new word, we need to know the PoS, so we can display the proper labels
 

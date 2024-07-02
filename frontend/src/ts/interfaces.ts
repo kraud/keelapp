@@ -7,11 +7,11 @@ export interface WordData {
     tags?: TagData[],
 }
 export interface WordDataBE {
-    id: string,
+    id: string, // TODO: should it be _id?
     translations: TranslationItem[],
     partOfSpeech: PartOfSpeech,
     clue?: string,
-    tags?: string[],
+    tags?: TagData[],
 }
 export type TranslationItem = {
     language: Lang,
