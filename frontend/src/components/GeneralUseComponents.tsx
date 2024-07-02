@@ -14,6 +14,9 @@ import {useSelector} from "react-redux";
 import ConstructionIcon from "@mui/icons-material/Construction";
 import LanguageOutlined from "@mui/icons-material/LanguageOutlined";
 import HelpIcon from "@mui/icons-material/Help";
+import {Flip, toast} from "react-toastify";
+import Button from "@mui/material/Button";
+import {ToastOptions} from "react-toastify/dist/types";
 
 type BorderProps = {
     border?: boolean
@@ -336,4 +339,59 @@ export const getIconByEnvironment = (sxProps: any) => {
             )
         }
     }
+}
+
+
+
+interface ToastDetailsContent {
+    description: string,
+    buttonLabel: string,
+    onClickButton: () => void,
+    toastOptions?: ToastOptions,
+    buttonSxProps?: SxProps,
+    descriptionSxProps?: SxProps
+}
+export const triggerToastMessageWithButton = (toastDetails: ToastDetailsContent) => {
+    toast(
+        <Grid
+            container={true}
+            justifyContent={"center"}
+        >
+            <Grid
+                item={true}
+            >
+                <Typography
+                    variant={"subtitle2"}
+                    textAlign={'center'}
+                    sx={{
+                        ...toastDetails.descriptionSxProps
+                    }}
+                >
+                    {toastDetails.description}
+                </Typography>
+                <Button
+                    variant={'contained'}
+                    //@ts-ignore
+                    color={'allWhite'}
+                    fullWidth={true}
+                    onClick={() => {
+                        toastDetails.onClickButton()
+                    }}
+                    sx={{
+                        marginTop: globalTheme.spacing(2),
+                        ...toastDetails.buttonSxProps
+                    }}
+                >
+                    {toastDetails.buttonLabel}
+                </Button>
+            </Grid>
+        </Grid>,
+        {
+            type: 'error',
+            autoClose: 5000,
+            transition: Flip,
+            delay: 500,
+            ...toastDetails.toastOptions
+        }
+    )
 }

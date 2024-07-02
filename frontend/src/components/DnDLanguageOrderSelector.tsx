@@ -24,6 +24,7 @@ interface DnDLanguageOrderSelectorProps{
     justifyContent?: "center" | "flex-end" | "flex-start"
     singleContainer?: boolean // by default, we have 2 containers ('selected' and 'other'). With this prop we can display only 'selected'
     disabled?: boolean // to avoid allowing the elements to be moved
+    noItemsSelectedMessage?: string // when no items are selected, display this text in 'selected' container
 }
 
 export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
@@ -60,7 +61,7 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                 newOthers.splice(currentIndex, 1) // remove 1 item at activeIndex
                 props.setOtherItems(newOthers)
 
-                // NB! This will only run once, when item first comes into container. Any other movement afterwards
+                // NB! This will only run once, when item first comes into container. Any other movement afterward
                 // is recognized as a "within-same-container-movement"
                 let updatedSelectedLanguages = [
                     ...props.allSelectedItems.slice(0, destinationIndex+1), // all items up to destinationIndex
@@ -197,13 +198,27 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                         >
                             {(props.allSelectedItems.length === 0)
                                 ?
-                                <DnDSortableItem
-                                    invisible={true} // not be displayed - only to make SortableContext work properly
-                                    id={'do-not-display'}
-                                    direction={props.direction}
-                                    containerLabel={'selected'}
-                                    onActionButtonClick={() => null} //NB! This item should have no action
-                                />
+                                <>
+                                    {((props.disabled) && (props.noItemsSelectedMessage!!)) &&
+                                        <Typography
+                                            variant={'h6'}
+                                            sx={{
+                                                userSelect: 'none',
+                                                color: '#414141',
+                                                fontStyle: 'italic',
+                                            }}
+                                        >
+                                            {props.noItemsSelectedMessage}
+                                        </Typography>
+                                    }
+                                    <DnDSortableItem
+                                        invisible={true} // not be displayed - only to make SortableContext work properly
+                                        id={'do-not-display'}
+                                        direction={props.direction}
+                                        containerLabel={'selected'}
+                                        onActionButtonClick={() => null} //NB! This item should have no action
+                                    />
+                                </>
                                 :
                                 (
                                     props.allSelectedItems.map((item: string, index: number) => {

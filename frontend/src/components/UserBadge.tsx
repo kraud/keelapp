@@ -221,6 +221,7 @@ export const UserBadge = (props: UserBadgeProps) => {
                     disabled={!props.isEditing!!}
                     selectedItemsTitle={""}
                     displayItems={'flag'}
+                    noItemsSelectedMessage={'Please select at least 2 languages.'}
                 />
             </Grid>
         </Grid>

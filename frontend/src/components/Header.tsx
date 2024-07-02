@@ -26,7 +26,7 @@ import {useState} from "react";
 import {clearSearchResultTags, searchTagsByLabel} from "../features/tags/tagSlice";
 import {MaterialUISwitch} from "./StyledSwitch";
 import {checkEnvironmentAndIterationToDisplay} from "./forms/commonFunctions";
-import {getIconByEnvironment} from "./GeneralUseComponents";
+import {getIconByEnvironment, triggerToastMessageWithButton} from "./GeneralUseComponents";
 
 const pages = ['Add word', 'Practice', 'Review'];
 const settings = ['Notifications', 'Account', 'Dashboard', 'Logout'];
@@ -89,12 +89,28 @@ function ResponsiveAppBar() {
         if(option !== null){
             switch (option){
                 case "Add word": {
-                    navigate('/addWord')
+                    if((user.languages).length > 1){
+                        navigate('/addWord')
+                    } else {
+                        triggerToastMessageWithButton({
+                            description: "You need to select at least 2 languages, before adding a word.",
+                            buttonLabel: "Click here to go to Account and select them.",
+                            onClickButton: () => navigate(`/user`),
+                        })
+                    }
                     break
                 }
                 case "Review": {
                     if(checkEnvironmentAndIterationToDisplay(2)){
-                        navigate('/review')
+                        if((user.languages).length > 1){
+                            navigate('/review')
+                        } else {
+                            triggerToastMessageWithButton({
+                                description: "You need to select at least 2 languages to review their translations.",
+                                buttonLabel: "Click here to go to Account and select them.",
+                                onClickButton: () => navigate(`/user`)
+                            })
+                        }
                     } else {
                         toast.error("This function is not ready yet, we're sorry!")
                     }
