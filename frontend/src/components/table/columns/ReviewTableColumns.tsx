@@ -209,13 +209,18 @@ export const createColumnsReviewTable = (selectedLanguagesList: string[], displa
                                             src={(user) ? "" : "/"}
                                             {...stringAvatar((user!!) ?user.name :"-")}
                                             sx={{
-                                                width: '30px',
-                                                height: '30px',
-                                                fontSize: '1.1rem'
+                                                width: '25px',
+                                                height: '25px',
+                                                fontSize: '0.9rem'
                                             }}
                                         />
                                         :
-                                        <GroupIcon/>
+                                        <GroupIcon
+                                            sx={{
+                                                width: '23px',
+                                                height: '23px',
+                                            }}
+                                        />
                                     }
                                 </Grid>
                                 <Grid
@@ -237,7 +242,7 @@ export const createColumnsReviewTable = (selectedLanguagesList: string[], displa
                         textAlign={"center"}
                         onlyForDisplay={true}
                         sxProps={{
-                            paddingLeft: globalTheme.spacing(1),
+                            paddingLeft: '6px',
                             paddingRight: globalTheme.spacing(2),
                         }}
                     />

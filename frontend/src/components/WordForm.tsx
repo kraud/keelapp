@@ -218,7 +218,7 @@ export function WordForm(props: TranslationFormProps) {
                             The word was saved successfully!
                         </Typography>
                         <Button
-                            variant={'outlined'}
+                            variant={'contained'}
                             //@ts-ignore
                             color={'allWhite'}
                             fullWidth={true}
@@ -526,6 +526,40 @@ export function WordForm(props: TranslationFormProps) {
                                     })
                                 }
                             </Grid>
+                            {/* FORM BUTTONS */}
+                            {(!disabledForms) &&
+                                <Grid
+                                    item={true}
+                                    container={true}
+                                    spacing={2}
+                                    justifyContent={"center"}
+                                >
+                                    <Grid
+                                        item={true}
+                                        xs
+                                    >
+                                        <Button
+                                            onClick={() => {
+                                                addEmptyLanguageForm()
+                                            }}
+                                            variant={"contained"}
+                                            disabled={(
+                                                // only true when all the languages are being used
+                                                (availableLanguages.length === 0)
+                                                ||
+                                                // or when the maximum amount of translations is reached
+                                                (completeWordData.translations.length === 4)
+                                            )}
+                                            fullWidth={true}
+                                            sx={{
+                                                borderRadius: '25px'
+                                            }}
+                                        >
+                                            Add another translation
+                                        </Button>
+                                    </Grid>
+                                </Grid>
+                            }
                             {/* CLUE */}
                             {(!disabledForms || (disabledForms && completeWordData.clue!!)) &&
                                 <Grid
@@ -586,35 +620,6 @@ export function WordForm(props: TranslationFormProps) {
                                             />
                                         </Grid>
                                     </Grid>
-                            }
-                            {/* FORM BUTTONS */}
-                            {(!disabledForms) &&
-                                <Grid
-                                    item={true}
-                                    container={true}
-                                    spacing={2}
-                                    justifyContent={"center"}
-                                >
-                                    <Grid
-                                        item={true}
-                                    >
-                                        <Button
-                                            onClick={() => {
-                                                addEmptyLanguageForm()
-                                            }}
-                                            variant={"outlined"}
-                                            disabled={(
-                                                // only true when all the languages are being used
-                                                (availableLanguages.length === 0)
-                                                ||
-                                                // or when the maximum amount of translations is reached
-                                                (completeWordData.translations.length === 4)
-                                            )}
-                                        >
-                                            Add another translation
-                                        </Button>
-                                    </Grid>
-                                </Grid>
                             }
                         </>
                     }

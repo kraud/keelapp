@@ -104,6 +104,7 @@ export function RoutesWithAnimation() {
                     }
                 />
             }
+            {/* TODO: add 404 page */}
         </Routes>
     );
 }

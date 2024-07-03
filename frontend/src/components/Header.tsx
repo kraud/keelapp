@@ -161,7 +161,11 @@ function ResponsiveAppBar() {
                 break
             }
             case "Notifications": {
-                navigate('/user/'+user._id+'/notifications')
+                if(checkEnvironmentAndIterationToDisplay(3)){
+                    navigate('/user/'+user._id+'/notifications')
+                } else {
+                    toast.error("This function is not ready yet, we're sorry!")
+                }
                 break
             }
             default: {
