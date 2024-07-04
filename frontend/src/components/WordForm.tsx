@@ -10,13 +10,15 @@ import 'react-toastify/dist/ReactToastify.css';
 import {PartOfSpeechSelector} from "./PartOfSpeechSelector";
 import {AutocompleteMultiple} from "./AutocompleteMultiple";
 import {getAllIndividualTagDataFromFilterItem} from "./generalUseFunctions";
-import {setSelectedPoS, resetSelectedPoS} from "../features/words/wordSlice";
+import {setSelectedPoS, resetSelectedPoS, deleteWordById} from "../features/words/wordSlice";
 import {checkEnvironmentAndIterationToDisplay} from "./forms/commonFunctions";
 import {useNavigate} from "react-router-dom";
+import {ConfirmationButton} from "./ConfirmationButton";
+import {AppDispatch} from "../app/store";
 
 interface TranslationFormProps {
     onSave: (wordData: WordData) => void,
-    initialState?: WordData,
+    initialState?: WordData, // change to WordDataBE to include _id?
     title: string,
     subTitle: string,
     defaultDisabled?: boolean
@@ -25,7 +27,7 @@ interface TranslationFormProps {
 
 // stores the complete *Word* Data
 export function WordForm(props: TranslationFormProps) {
-    const dispatch = useDispatch()
+    const dispatch = useDispatch<AppDispatch>()
     const navigate = useNavigate()
     const {word, isSuccess, isLoading} = useSelector((state: any) => state.words)
     const {user} = useSelector((state: any) => state.auth)
@@ -199,7 +201,7 @@ export function WordForm(props: TranslationFormProps) {
         progress: undefined,
         theme: "colored",
     })
-    const update = (wordId: string) => {
+    const update = (wordId?: string) => {
         // @ts-ignore
         toast.update(toastId.current, {
             // render: "The word was saved successfully!",
@@ -215,31 +217,55 @@ export function WordForm(props: TranslationFormProps) {
                         <Typography
                             variant={"subtitle2"}
                         >
-                            The word was saved successfully!
+                            {(wordId!!)
+                                ? 'Word saved successfully.'
+                                : 'Word deleted successfully.'
+                            }
                         </Typography>
-                        <Button
-                            variant={'contained'}
-                            //@ts-ignore
-                            color={'allWhite'}
-                            fullWidth={true}
-                            onClick={() => {
-                                navigate(`/word/${wordId}`)
-                            }}
-                        >
-                            Click here to see the new word
-                        </Button>
+                        {(wordId!!) &&
+                            <Button
+                                variant={'contained'}
+                                //@ts-ignore
+                                color={'allWhite'}
+                                fullWidth={true}
+                                onClick={() => {
+                                    navigate(`/word/${wordId}`)
+                                }}
+                            >
+                                Click here to see the new word
+                            </Button>
+                        }
                     </Grid>
                 )
             }
         })
     }
 
+    const [recentlyModified, setRecentlyModified] = useState(false)
+    const [recentlyDeleted, setRecentlyDeleted] = useState(false)
+    const onClickDeleteWord = () => {
+        setRecentlyDeleted(true)
+        dispatch(deleteWordById(word._id))
+    }
     useEffect(() => {
-        if(isLoading && recentlyModified){ // added recentlyModified to avoid triggering modal when loading Form from another screen
-            notify()
-            setRecentlyModified(false)
+        if(!isLoading && isSuccess && (word._id === undefined) && recentlyDeleted){
+            update()
+            setRecentlyDeleted(false)
+            navigate('/')
         }
-    }, [isLoading])
+    }, [recentlyDeleted, isLoading, isSuccess, word._id])
+
+    useEffect(() => {
+        if(isLoading){
+            if(recentlyModified){ // to avoid triggering modal when loading Form from another screen
+                notify()
+                setRecentlyModified(false)
+            }
+            if(recentlyDeleted){ // to avoid triggering modal when loading Form from another screen
+                notify()
+            }
+        }
+    }, [isLoading, recentlyDeleted, recentlyModified])
 
     useEffect(() => {
         if((isSuccess) && (word._id !== undefined) && !(props.initialState !== undefined)){
@@ -279,7 +305,6 @@ export function WordForm(props: TranslationFormProps) {
 
     const resetAll = () => {
         setPartOfSpeech(undefined)
-        //@ts-ignore
         dispatch(resetSelectedPoS())
         setCompleteWordData(
             {
@@ -301,7 +326,6 @@ export function WordForm(props: TranslationFormProps) {
         })
     }
 
-    const [recentlyModified, setRecentlyModified] = useState(false)
     const sanitizeDataForStorage = () => {
         const cleanData: TranslationItem[] = completeWordData.translations.map((translation: TranslationItem) => {
             // This removes the InternalStatus properties, used during word-input, but that it should not be saved on BE
@@ -384,9 +408,32 @@ export function WordForm(props: TranslationFormProps) {
                             justifyContent={"center"}
                             spacing={2}
                         >
+                            {(
+                                (props.initialState !== undefined) &&
+                                //@ts-ignore
+                                (props.initialState?._id !== undefined) &&
+                                (!props.disableEditing!!)
+                            ) &&
+                                <Grid
+                                    item={true}
+                                    xs={disabledForms ?6 :3}
+                                >
+                                    <ConfirmationButton
+                                        onConfirm={() => {
+                                            onClickDeleteWord()
+                                        }}
+                                        buttonLabel={'Delete'}
+                                        buttonProps={{
+                                            variant: "outlined",
+                                            color: "warning",
+                                        }}
+                                        confirmationButtonLabel={'Confirm delete word'}
+                                    />
+                                </Grid>
+                            }
                             <Grid
                                 item={true}
-                                xs={disabledForms ?6 :4}
+                                xs={disabledForms ?6 :3}
                             >
                                 <Button
                                     variant={"outlined"}
@@ -421,7 +468,7 @@ export function WordForm(props: TranslationFormProps) {
                             {(!disabledForms) &&
                                 <Grid
                                     item={true}
-                                    xs={4}
+                                    xs={3}
                                 >
                                     <Button
                                         onClick={() => sanitizeDataForStorage()}

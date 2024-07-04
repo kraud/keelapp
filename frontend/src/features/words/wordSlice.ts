@@ -316,7 +316,7 @@ export const wordSlice = createSlice({
             .addCase(deleteWordById.fulfilled, (state, action) => {
                 state.isLoading = false
                 state.isSuccess = true
-                // state.word = (action.payload) // TODO: what do we get from the payload?
+                state.word = initialState.word // TODO: what do we get from the payload?
             })
             .addCase(deleteWordById.rejected, (state, action) => {
                 state.isLoading = false
