@@ -11,9 +11,6 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import LanguageOutlined from '@mui/icons-material/LanguageOutlined';
-import HelpIcon from '@mui/icons-material/Help';
-import ConstructionIcon from '@mui/icons-material/Construction';
 import {logout, resetState} from "../features/auth/authSlice";
 import {useLocation, useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
@@ -29,6 +26,7 @@ import {useState} from "react";
 import {clearSearchResultTags, searchTagsByLabel} from "../features/tags/tagSlice";
 import {MaterialUISwitch} from "./StyledSwitch";
 import {checkEnvironmentAndIterationToDisplay} from "./forms/commonFunctions";
+import {getIconByEnvironment} from "./GeneralUseComponents";
 
 const pages = ['Add word', 'Practice', 'Review'];
 const settings = ['Notifications', 'Account', 'Dashboard', 'Logout'];
@@ -69,38 +67,6 @@ function ResponsiveAppBar() {
     }
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElUser(event.currentTarget);
-    }
-
-    const getIconByEnvironment = (sxProps: any) => {
-        switch(process.env.REACT_APP_ENVIRONMENT_NAME){
-            case('dev'): {
-                return(
-                    <ConstructionIcon
-                        sx={{
-                            ...sxProps
-                        }}
-                    />
-                )
-            }
-            case('prod'): {
-                return(
-                    <LanguageOutlined
-                        sx={{
-                            ...sxProps
-                        }}
-                    />
-                )
-            }
-            case('default'): {
-                return(
-                    <HelpIcon
-                        sx={{
-                            ...sxProps
-                        }}
-                    />
-                )
-            }
-        }
     }
 
     const isCurrentOptionSelected = (index: number) => {

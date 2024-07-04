@@ -11,6 +11,9 @@ import {getOtherUserDataFromFriendship, stringAvatar} from "./generalUseFunction
 import IconButton from "@mui/material/IconButton";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import {useSelector} from "react-redux";
+import ConstructionIcon from "@mui/icons-material/Construction";
+import LanguageOutlined from "@mui/icons-material/LanguageOutlined";
+import HelpIcon from "@mui/icons-material/Help";
 
 type BorderProps = {
     border?: boolean
@@ -301,4 +304,36 @@ export const FriendList = (props: FriendListProps) => {
             }))}
         </>
     )
+}
+
+export const getIconByEnvironment = (sxProps: any) => {
+    switch(process.env.REACT_APP_ENVIRONMENT_NAME){
+        case('dev'): {
+            return(
+                <ConstructionIcon
+                    sx={{
+                        ...sxProps
+                    }}
+                />
+            )
+        }
+        case('prod'): {
+            return(
+                <LanguageOutlined
+                    sx={{
+                        ...sxProps
+                    }}
+                />
+            )
+        }
+        case('default'): {
+            return(
+                <HelpIcon
+                    sx={{
+                        ...sxProps
+                    }}
+                />
+            )
+        }
+    }
 }

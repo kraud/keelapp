@@ -10,6 +10,7 @@ import {Account} from "../Account";
 import {NotificationHub} from "../NotificationHub";
 import {DisplayTag} from "../DisplayTag";
 import {checkEnvironmentAndIterationToDisplay} from "../../components/forms/commonFunctions";
+import NotFound from "../NotFound";
 
 export const routeVariantsAnimation = {
     initial: {
@@ -104,7 +105,12 @@ export function RoutesWithAnimation() {
                     }
                 />
             }
-            {/* TODO: add 404 page */}
+            <Route
+                path='*'
+                element={
+                    <NotFound/>
+                }
+            />
         </Routes>
     );
 }
