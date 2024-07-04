@@ -1,3 +1,4 @@
+const { verify } = require('jsonwebtoken')
 const mongoose = require('mongoose')
 
 const userSchema = mongoose.Schema({
@@ -21,7 +22,12 @@ const userSchema = mongoose.Schema({
     },
     languages: [{
         type: String // FE type: Lang
-    }]
+    }],
+    verify: {
+        type: Boolean,
+        default: false
+    }
+
 },
     {
         timestamps: true

@@ -3,6 +3,9 @@ const bcrypt = require('bcryptjs')
 const asyncHandler = require('express-async-handler')
 const User = require('../models/userModel')
 const Friendship = require('../models/friendshipModel')
+const Token = require('../models/token')
+const sendMail = require('../utils/sendEmail')
+const crypto = require('crypto')
 
 function queryParamToBool(value) {
     return ((value+'').toLowerCase() === 'true')
@@ -37,12 +40,22 @@ const registerUser = asyncHandler(async(req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt)
 
     // Create user
-    const user = await User.create({
+    let user = await User.create({
         name,
         email,
         username,
         password: hashedPassword
     })
+
+    const token = await new Token({
+        userId: user._id,
+        token: crypto.randomBytes(32).toString("hex"),
+
+    }).save();
+    const url = `${process.env.BASE_URL}users/${user._id}/verify/${token.token}`
+    await sendMail(user.email, "Verify Email", url);
+
+    res.status(201).send({message: "An Email snet to your account please verify"})
 
     if(user){
         res.status(201).json({
