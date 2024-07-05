@@ -23,6 +23,7 @@ import {
 import {applyNewTagToSelectedWordsById, getTagById} from "../features/tags/tagSlice";
 import Box from "@mui/material/Box";
 import LinearIndeterminate from "../components/Spinner";
+import {AppDispatch} from "../app/store";
 
 export function Review(){
     const componentStyles = {
@@ -43,7 +44,7 @@ export function Review(){
         }
     }
     const navigate = useNavigate()
-    const dispatch = useDispatch()
+    const dispatch = useDispatch<AppDispatch>()
     const {user} = useSelector((state: any) => state.auth)
     // Languages currently displayed as columns on the table
     const [allSelectedLanguages, setAllSelectedLanguages] = useState<string[]>(user.languages)
@@ -76,7 +77,8 @@ export function Review(){
         let {size} = searchParams
         if(size !== 0){
             if(searchParams.getAll("tags").length > 0){
-                //@ts-ignore
+                // TODO: create function so if multiple tagsId exist in URL,
+                //  it sets all of them as parameters at once
                 dispatch(getTagById(searchParams.getAll("tags")[0]))
                 setCurrentTagFilters([{
                     type: 'tag',
@@ -186,13 +188,28 @@ export function Review(){
     const [currentGenderFilters, setCurrentGenderFilters] = useState<FilterItem[]>([])
     const [currentPoSFilters, setCurrentPoSFilters] = useState<FilterItem[]>([])
 
+    // we only send required information to filter.
+    // if we send all the info about the tag as parameters in URL => exceeds limit and triggers error in request
+    const reduceFullTagData = (tagFilters: FilterItem[]) => {
+        const response = tagFilters.map((tagFilter: FilterItem) => {
+            return({
+                ...tagFilter,
+                restrictiveArray: ((tagFilter.type === 'tag') &&(tagFilter.restrictiveArray !== undefined))
+                    ? (tagFilter.restrictiveArray).map((item: TagData) => {
+                        return({_id: item._id} as TagData)
+                    })
+                    : []
+            })
+        })
+        return(response)
+    }
+
     useEffect(() => {
         const timeout = setTimeout(() => {
-            // @ts-ignore
             dispatch(getWordsSimplified([
                 ...currentPoSFilters,
                 ...currentGenderFilters,
-                ...currentTagFilters,
+                ...reduceFullTagData(currentTagFilters),
                 ]))
         }, 10)
 
@@ -208,7 +225,7 @@ export function Review(){
             navigate(`/word/${wordsSimple.words[parseInt(Object.keys(rowSelection)[0])].id}`)
         }
     }
-
+    // TODO: should we change it to saving the row info instead?
     const getWordsIdFromRowSelection = (rowSelection: unknown) => {
         let wordIdsToDelete: string[] = []
         // @ts-ignore
@@ -219,15 +236,6 @@ export function Review(){
     }
 
     const deleteSelectedRows = (rowSelection: unknown) => {
-        // rowSelection format:
-        // { selectedRowIndex: true } // TODO: should we change it to saving the row info instead?
-        // let wordIdsToDelete: string[] = []
-        // // @ts-ignore
-        // Object.keys(rowSelection).forEach((selectionDataIndex: string) => {
-        //     wordIdsToDelete.push(wordsSimple.words[parseInt(selectionDataIndex)].id)
-        // })
-        // dispatch(deleteManyWordsById(wordIdsToDelete))
-        // @ts-ignore
         dispatch(deleteManyWordsById(getWordsIdFromRowSelection(rowSelection)))
         setFinishedDeleting(false)
     }

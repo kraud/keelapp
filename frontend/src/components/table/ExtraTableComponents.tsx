@@ -407,6 +407,9 @@ export function TableDataCell(props: TableDataCellProps){
                                                         maxWidth: "max-content",
                                                     }}
                                                     onClick={() => {
+                                                        // TODO: create function so if a tag already exists in URL,
+                                                        //  it appends new one (instead of replacing completely),
+                                                        //  so we can filter by multiple tags simultaneously
                                                         setSearchParams({"tags": (item._id!!) ?item._id :''}) // also acts as navigate
                                                         dispatch(clearWordsSimple())
                                                     }}
