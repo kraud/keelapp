@@ -52,7 +52,7 @@ const registerUser = asyncHandler(async(req, res) => {
         token: crypto.randomBytes(32).toString("hex"),
 
     }).save();
-    const url = `${process.env.BASE_URL}users/${user._id}/verify/${token.token}`
+    const url = `${process.env.BASE_URL}/users/${user._id}/verify/${token.token}`
     await sendMail(user.email, "Verify Email", url);
 
     res.status(201).send({message: "An Email snet to your account please verify"})
@@ -252,11 +252,35 @@ const getUserById = asyncHandler(async (req, res) => {
     res.status(200).json(user)
 })
 
+const verifyUser = asyncHandler(async(req, res) => {
+    try {
+        const user = await User.findOne({_id: req.params.id});
+        if(!user) return res.status(400).send({message: "Invalid Link"});
+
+        const token = await Token.findOne({
+            userId: user._id,
+            token: req.params.token
+        });
+        if(!token) return res.status(400).send({message:"Invalid Link"});
+
+        await User.findByIdAndUpdate(user.id,{
+            verify: true
+        },{new: false});
+        
+        await token.remove();
+
+        res.status(200).send({message: "Email verified successfully"})
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({message:"Internal Server Error"});
+    }
+
+});
+
 // Generate JWT
 const generateToken = (id) => {
     return jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: '30d'})
 }
-
 module.exports = {
     registerUser,
     loginUser,
@@ -264,5 +288,7 @@ module.exports = {
     getUsersBy,
     updateUser,
     getUserById,
-    queryParamToBool
+    queryParamToBool,
+    verifyUser
 }
+
