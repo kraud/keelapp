@@ -27,18 +27,20 @@ interface TranslationFormProps {
 
 // stores the complete *Word* Data
 export function WordForm(props: TranslationFormProps) {
-    const dispatch = useDispatch<AppDispatch>()
+    // --------------- THIRD-PARTY HOOKS ---------------
     const navigate = useNavigate()
+    const dispatch = useDispatch<AppDispatch>()
+
+    // --------------- REDUX STATE ---------------
     const {word, isSuccess, isLoading} = useSelector((state: any) => state.words)
     const {user} = useSelector((state: any) => state.auth)
 
+    // --------------- LOCAL STATE ---------------
     // Type of word to be added (noun/verb/adjective/etc.)
     const [partOfSpeech, setPartOfSpeech] = useState<PartOfSpeech | undefined>(undefined)
-
     // Languages currently NOT in use for this word - NB! This is calculated automatically, never set directly.
     // It is used by WordFormGeneric to display the correct button-list of available languages
     const [availableLanguages, setAvailableLanguages] = useState<Lang[]>([])
-
     // object containing all the translations and extra info about the word
     const [completeWordData, setCompleteWordData] = useState<WordData>(
         {
@@ -48,15 +50,84 @@ export function WordForm(props: TranslationFormProps) {
             ]
         }
     )
-
     const [disabledForms, setDisabledForms] = useState(false)
+    const [recentlyModified, setRecentlyModified] = useState(false)
+    const [recentlyDeleted, setRecentlyDeleted] = useState(false)
+    const [hideView, setHideView] = useState(false)
+    const [clueRecentlyModified, setClueRecentlyModified] = useState(false)
+    const [tagsRecentlyModified, setTagsRecentlyModified] = useState(false)
+    const toastId = React.useRef(null)
 
+    // --------------- USE-EFFECTS ---------------
     useEffect(() => {
         if((props.defaultDisabled!) || (props.disableEditing!)){
             setDisabledForms(true)
         }
     }, [props.defaultDisabled])
 
+    // In case we're loading an already existing word into the form, we need to set that data into the local state
+    useEffect(() => {
+        if(props.initialState !== undefined){
+            if(props.initialState.translations !== undefined){
+                // NB! We don't simply spread props.initial state, because there might be other fields not relevant to local state.
+                // We only store in local state the values that we actually use.
+                setCompleteWordData({
+                    translations: filterAvailableTranslationsBySelectedLanguages(props.initialState.translations),
+                    partOfSpeech: props.initialState.partOfSpeech,
+                    clue: props.initialState.clue,
+                    tags: props.initialState.tags
+                })
+            }
+            if(props.initialState.partOfSpeech !== undefined){
+                setPartOfSpeech(props.initialState.partOfSpeech as PartOfSpeech)
+                //@ts-ignore
+                dispatch(setSelectedPoS(props.initialState.partOfSpeech))
+            }
+        }
+    },[props.initialState])
+
+    useEffect(() => {
+        if(completeWordData.translations !== undefined){
+            setAvailableLanguagesList()
+        }
+    }, [(completeWordData.translations)])
+
+    useEffect(() => {
+        if(!isLoading && isSuccess && (word._id === undefined) && recentlyDeleted){
+            update()
+            setRecentlyDeleted(false)
+            navigate('/')
+        }
+    }, [recentlyDeleted, isLoading, isSuccess, word._id])
+
+    useEffect(() => {
+        if(isLoading){
+            if(recentlyModified){ // to avoid triggering modal when loading Form from another screen
+                notify()
+                setRecentlyModified(false)
+            }
+            if(recentlyDeleted){ // to avoid triggering modal when loading Form from another screen
+                notify()
+            }
+        }
+    }, [isLoading, recentlyDeleted, recentlyModified])
+
+    useEffect(() => {
+        if((isSuccess) && (word._id !== undefined) && !(props.initialState !== undefined)){
+            update(word._id)
+            // once the word has been saved, the form must be reset
+            resetAll()
+        }
+    }, [isSuccess, word._id, props.initialState])
+
+    // hack to trigger re-rendering - alternative would've required changes in all language forms
+    // and could cause unforeseen side effects
+    // TODO: add timeout and during it, display an animation?
+    useEffect(() => {
+        setHideView(false)
+    }, [hideView])
+
+    // --------------- ADDITIONAL FUNCTIONS ---------------
     // When reviewing an already created word, there might me translations assigned to that word,
     // which correspond to languages not relevant to the current user.
     // This might be because they used to have that language in their selected list, or because the word comes from a followed-tag.
@@ -91,27 +162,6 @@ export function WordForm(props: TranslationFormProps) {
             setDisabledForms(true)
         }
     }
-
-    // In case we're loading an already existing word into the form, we need to set that data into the local state
-    useEffect(() => {
-        if(props.initialState !== undefined){
-            if(props.initialState.translations !== undefined){
-                // NB! We don't simply spread props.initial state, because there might be other fields not relevant to local state.
-                // We only store in local state the values that we actually use.
-                setCompleteWordData({
-                    translations: filterAvailableTranslationsBySelectedLanguages(props.initialState.translations),
-                    partOfSpeech: props.initialState.partOfSpeech,
-                    clue: props.initialState.clue,
-                    tags: props.initialState.tags
-                })
-            }
-            if(props.initialState.partOfSpeech !== undefined){
-                setPartOfSpeech(props.initialState.partOfSpeech as PartOfSpeech)
-                //@ts-ignore
-                dispatch(setSelectedPoS(props.initialState.partOfSpeech))
-            }
-        }
-    },[props.initialState])
 
     // This function is used to update the list of currently selected languages and their status
     // It basically checks if the new data received corresponds to a language already stored.
@@ -180,101 +230,10 @@ export function WordForm(props: TranslationFormProps) {
         })
     }
 
-    useEffect(() => {
-        if(completeWordData.translations !== undefined){
-            setAvailableLanguagesList()
-        }
-    }, [(completeWordData.translations)])
-
-
-    const toastId = React.useRef(null);
-    // @ts-ignore
-    const notify = () => toastId.current = toast.info('Saving...', {
-        position: "bottom-right",
-        // if initialState exist => saving toast should close automatically, because we're editing a word and success is triggered from calling screen
-        // if no initialState => saving should be displayed but not closed, since it'll be replaced by "update" automatically
-        autoClose: (props.initialState! !== undefined) ? 3000 : false,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-    })
-    const update = (wordId?: string) => {
-        // @ts-ignore
-        toast.update(toastId.current, {
-            // render: "The word was saved successfully!",
-            type: 'success',
-            autoClose: 5000,
-            transition: Flip,
-            delay: 500,
-            render: () => {
-                return(
-                    <Grid
-                        container={true}
-                    >
-                        <Typography
-                            variant={"subtitle2"}
-                        >
-                            {(wordId!!)
-                                ? 'Word saved successfully.'
-                                : 'Word deleted successfully.'
-                            }
-                        </Typography>
-                        {(wordId!!) &&
-                            <Button
-                                variant={'contained'}
-                                //@ts-ignore
-                                color={'allWhite'}
-                                fullWidth={true}
-                                onClick={() => {
-                                    navigate(`/word/${wordId}`)
-                                }}
-                            >
-                                Click here to see the new word
-                            </Button>
-                        }
-                    </Grid>
-                )
-            }
-        })
-    }
-
-    const [recentlyModified, setRecentlyModified] = useState(false)
-    const [recentlyDeleted, setRecentlyDeleted] = useState(false)
     const onClickDeleteWord = () => {
         setRecentlyDeleted(true)
         dispatch(deleteWordById(word._id))
     }
-    useEffect(() => {
-        if(!isLoading && isSuccess && (word._id === undefined) && recentlyDeleted){
-            update()
-            setRecentlyDeleted(false)
-            navigate('/')
-        }
-    }, [recentlyDeleted, isLoading, isSuccess, word._id])
-
-    useEffect(() => {
-        if(isLoading){
-            if(recentlyModified){ // to avoid triggering modal when loading Form from another screen
-                notify()
-                setRecentlyModified(false)
-            }
-            if(recentlyDeleted){ // to avoid triggering modal when loading Form from another screen
-                notify()
-            }
-        }
-    }, [isLoading, recentlyDeleted, recentlyModified])
-
-    useEffect(() => {
-        if((isSuccess) && (word._id !== undefined) && !(props.initialState !== undefined)){
-            update(word._id)
-            // once the word has been saved, the form must be reset
-            resetAll()
-        }
-    }, [isSuccess, word._id, props.initialState])
-
 
     const setAvailableLanguagesList = () => {
         const allLangs: string[] = (user.languages!!) ? user.languages : []
@@ -346,16 +305,59 @@ export function WordForm(props: TranslationFormProps) {
         setDisabledForms(true)
     }
 
-    // hack to trigger re-rendering - alternative would've required changes in all language forms
-    // and could cause unforeseen side effects
-    // TODO: add timeout and during it, display an animation?
-    const [hideView, setHideView] = useState(false)
-    useEffect(() => {
-        setHideView(false)
-    }, [hideView])
 
-    const [clueRecentlyModified, setClueRecentlyModified] = useState(false)
-    const [tagsRecentlyModified, setTagsRecentlyModified] = useState(false)
+    // @ts-ignore
+    const notify = () => toastId.current = toast.info('Saving...', {
+        position: "bottom-right",
+        // if initialState exist => saving toast should close automatically, because we're editing a word and success is triggered from calling screen
+        // if no initialState => saving should be displayed but not closed, since it'll be replaced by "update" automatically
+        autoClose: (props.initialState! !== undefined) ? 3000 : false,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+    })
+    const update = (wordId?: string) => {
+        // @ts-ignore
+        toast.update(toastId.current, {
+            // render: "The word was saved successfully!",
+            type: 'success',
+            autoClose: 5000,
+            transition: Flip,
+            delay: 500,
+            render: () => {
+                return(
+                    <Grid
+                        container={true}
+                    >
+                        <Typography
+                            variant={"subtitle2"}
+                        >
+                            {(wordId!!)
+                                ? 'Word saved successfully.'
+                                : 'Word deleted successfully.'
+                            }
+                        </Typography>
+                        {(wordId!!) &&
+                            <Button
+                                variant={'contained'}
+                                //@ts-ignore
+                                color={'allWhite'}
+                                fullWidth={true}
+                                onClick={() => {
+                                    navigate(`/word/${wordId}`)
+                                }}
+                            >
+                                Click here to see the new word
+                            </Button>
+                        }
+                    </Grid>
+                )
+            }
+        })
+    }
 
     return(
         <>
