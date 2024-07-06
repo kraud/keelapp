@@ -24,8 +24,7 @@ const userSchema = mongoose.Schema({
         type: String // FE type: Lang
     }],
     verify: {
-        type: Boolean,
-        default: false
+        type: Boolean
     }
 
 },

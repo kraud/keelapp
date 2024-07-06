@@ -44,7 +44,8 @@ const registerUser = asyncHandler(async(req, res) => {
         name,
         email,
         username,
-        password: hashedPassword
+        password: hashedPassword,
+        verify: false
     })
 
     const token = await new Token({
@@ -52,10 +53,10 @@ const registerUser = asyncHandler(async(req, res) => {
         token: crypto.randomBytes(32).toString("hex"),
 
     }).save();
-    const url = `${process.env.BASE_URL}/users/${user._id}/verify/${token.token}`
+    const url = `${process.env.BASE_URL}/user/${user._id}/verify/${token.token}`
     await sendMail(user.email, "Verify Email", url);
 
-    res.status(201).send({message: "An Email snet to your account please verify"})
+    //res.status(201).send({message: "An Email snet to your account please verify"})
 
     if(user){
         res.status(201).json({
@@ -64,7 +65,8 @@ const registerUser = asyncHandler(async(req, res) => {
             email: user.email,
             username: user.username,
             languages: [], // user will select them once they log in
-            token: generateToken(user._id)
+            token: generateToken(user._id),
+            verify: user.verify
         })
     } else {
         res.status(400)
@@ -87,7 +89,8 @@ const loginUser = asyncHandler(async(req, res) => {
             email: user.email,
             username: user.username,
             languages: user.languages,
-            token: generateToken(user._id)
+            token: generateToken(user._id),
+            verify: user.verify
         })
     } else {
         res.status(400)
@@ -269,7 +272,7 @@ const verifyUser = asyncHandler(async(req, res) => {
         
         await token.remove();
 
-        res.status(200).send({message: "Email verified successfully"})
+        res.status(200).send({user: user, message: "Email verified successfully"})
     } catch (error) {
         console.log(error)
         res.status(500).send({message:"Internal Server Error"});

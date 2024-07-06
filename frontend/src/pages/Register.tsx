@@ -2,7 +2,7 @@ import React from "react";
 import {Button, Grid, Typography} from "@mui/material";
 import {useEffect} from "react";
 import {TextInputFormWithHook} from "../components/TextInputFormHook";
-import {useForm} from "react-hook-form";
+import {useForm, UseFormHandleSubmit} from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import globalTheme from "../theme/theme";
