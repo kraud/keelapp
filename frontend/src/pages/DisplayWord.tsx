@@ -4,13 +4,13 @@ import {motion} from "framer-motion";
 import {routeVariantsAnimation} from "./management/RoutesWithAnimation";
 import globalTheme from "../theme/theme";
 import {WordForm} from "../components/WordForm";
-import {WordData, WordDataBE} from "../ts/interfaces";
+import {WordData} from "../ts/interfaces";
 import {useNavigate, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {getWordById, updateWordById} from "../features/words/wordSlice";
 import {toast} from "react-toastify";
-import {LoadingScreen} from "../components/LoadingScreen";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import {AppDispatch} from "../app/store";
 
 interface RouterWordProps{
     wordId: string
@@ -20,28 +20,25 @@ interface DisplayWordProps {
 }
 
 export function DisplayWord(props: DisplayWordProps){
+    // --------------- THIRD-PARTY HOOKS ---------------
     const navigate = useNavigate()
-    const dispatch = useDispatch()
+    const dispatch = useDispatch<AppDispatch>()
     // @ts-ignore
     const { wordId } = useParams<RouterWordProps>()
+
+    // --------------- REDUX STATE ---------------
     const {word, currentlySelectedPoS, isLoading, isError, message} = useSelector((state: any) => state.words)
     const {user} = useSelector((state: any) => state.auth)
-    const [displayContent, setDisplayContent] = useState(false)
+
+    // --------------- LOCAL STATE ---------------
     const [finishedUpdating, setFinishedUpdating] = useState(true)
 
+    // --------------- USE-EFFECTS ---------------
     useEffect(() => {
         if(wordId!!) {
-            //@ts-ignore
             dispatch(getWordById(wordId))
         }
     },[])
-
-    useEffect(() => {
-        if(isLoading){
-            setDisplayContent(false)
-        }
-    },[isLoading])
-
 
     useEffect(() => {
         if(isError){
@@ -63,7 +60,6 @@ export function DisplayWord(props: DisplayWordProps){
         }
     }, [isLoading, finishedUpdating])
 
-    // TODO: should this be a reusable component to simplify having a loading screen or better to do it on a case by case basis?
     return(
         <Grid
             component={motion.div} // to implement animations with Framer Motion
@@ -81,72 +77,48 @@ export function DisplayWord(props: DisplayWordProps){
                 marginBottom: globalTheme.spacing(4),
             }}
         >
-            {(!displayContent) &&
-                <LoadingScreen
-                    loadingTextList={[
-                        "Loading...",
-                        "Cargando...",
-                        "Laadimine...",
-                        "Laden...",
-                    ]}
-                    callback={() => setDisplayContent(true) }
-                    sxProps={{
-                        // when displaying content we hide this (display 'none'),
-                        // but when not we simply display it as it normally would ('undefined' changes)
-                        display: (!displayContent) ?undefined :"none",
-                    }}
-                    displayTime={2000}
-                />
-            }
-            <div
-                style={{
-                    display: (displayContent) ?undefined :"none",
+            <Grid
+                item={true}
+                xs
+                sx={{
+                    paddingBottom: globalTheme.spacing(4)
                 }}
             >
-                <Grid
-                    item={true}
-                    xs
-                    sx={{
-                        paddingBottom: globalTheme.spacing(4)
+                <Button
+                    variant={"contained"}
+                    color={"secondary"}
+                    onClick={() => {
+                        navigate(-1)
                     }}
+                    fullWidth={true}
+                    startIcon={<ArrowBackIcon />}
                 >
-                    <Button
-                        variant={"contained"}
-                        color={"secondary"}
-                        onClick={() => {
-                            navigate(-1)
-                        }}
-                        fullWidth={true}
-                        startIcon={<ArrowBackIcon />}
-                    >
-                        Return
-                    </Button>
-                    {/*  TODO: add remove word button?  */}
-                </Grid>
-                <WordForm
-                    title={
-                        (currentlySelectedPoS !== undefined)
-                            ? `Detailed view: ${currentlySelectedPoS.toLowerCase() }`
-                            : "Detailed view"
-                }
-                    subTitle={"All the currently stored translations for this word"}
-                    onSave={(wordData: WordData) => {
-                        const updatedWordData = {
-                            id: wordId,
-                            clue: wordData.clue,
-                            tags: wordData.tags,
-                            partOfSpeech: wordData.partOfSpeech,
-                            translations: wordData.translations,
-                        }
-                        //@ts-ignore
-                        dispatch(updateWordById(updatedWordData))
-                        setFinishedUpdating(false)
-                    }}
-                    initialState={word}
-                    defaultDisabled={props.defaultDisabled}
-                    disableEditing={word.user !== user._id}
-                />
-            </div>
+                    Return
+                </Button>
+            </Grid>
+            <WordForm
+                title={
+                    (currentlySelectedPoS !== undefined)
+                        ? `Detailed view: ${currentlySelectedPoS.toLowerCase() }`
+                        : "Detailed view"
+            }
+                subTitle={"All the currently stored translations for this word"}
+                onSave={(wordData: WordData) => {
+                    const updatedWordData = {
+                        id: wordId,
+                        clue: wordData.clue,
+                        tags: wordData.tags,
+                        partOfSpeech: wordData.partOfSpeech,
+                        translations: wordData.translations,
+                    }
+                    //@ts-ignore
+                    dispatch(updateWordById(updatedWordData))
+                    setFinishedUpdating(false)
+                }}
+                initialState={word}
+                defaultDisabled={props.defaultDisabled}
+                disableEditing={word.user !== user._id}
+            />
         </Grid>
     )
 }

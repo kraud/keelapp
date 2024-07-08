@@ -21,8 +21,8 @@ interface TranslationFormProps {
     initialState?: WordData, // change to WordDataBE to include _id?
     title: string,
     subTitle: string,
-    defaultDisabled?: boolean
-    disableEditing?: boolean
+    defaultDisabled?: boolean // determines how fields will be originally displayed (if disabled => text, else as text fields)
+    disableEditing?: boolean // makes it impossible to edit the information on the word being displayed
 }
 
 // stores the complete *Word* Data
@@ -50,10 +50,10 @@ export function WordForm(props: TranslationFormProps) {
             ]
         }
     )
+    const [hideView, setHideView] = useState(false)
     const [disabledForms, setDisabledForms] = useState(false)
     const [recentlyModified, setRecentlyModified] = useState(false)
     const [recentlyDeleted, setRecentlyDeleted] = useState(false)
-    const [hideView, setHideView] = useState(false)
     const [clueRecentlyModified, setClueRecentlyModified] = useState(false)
     const [tagsRecentlyModified, setTagsRecentlyModified] = useState(false)
     const toastId = React.useRef(null)
@@ -63,7 +63,7 @@ export function WordForm(props: TranslationFormProps) {
         if((props.defaultDisabled!) || (props.disableEditing!)){
             setDisabledForms(true)
         }
-    }, [props.defaultDisabled])
+    }, [props.defaultDisabled, props.disableEditing])
 
     // In case we're loading an already existing word into the form, we need to set that data into the local state
     useEffect(() => {
@@ -86,12 +86,14 @@ export function WordForm(props: TranslationFormProps) {
         }
     },[props.initialState])
 
+    // TODO: replace with calculated state instead of useEffect? or maybe useMemo?
     useEffect(() => {
         if(completeWordData.translations !== undefined){
             setAvailableLanguagesList()
         }
     }, [(completeWordData.translations)])
 
+    // updates toast with corresponding info, and redirects user to dashboard after deleting a word
     useEffect(() => {
         if(!isLoading && isSuccess && (word._id === undefined) && recentlyDeleted){
             update()
@@ -100,6 +102,7 @@ export function WordForm(props: TranslationFormProps) {
         }
     }, [recentlyDeleted, isLoading, isSuccess, word._id])
 
+    // triggers toast when editing or deleting
     useEffect(() => {
         if(isLoading){
             if(recentlyModified){ // to avoid triggering modal when loading Form from another screen
@@ -112,6 +115,7 @@ export function WordForm(props: TranslationFormProps) {
         }
     }, [isLoading, recentlyDeleted, recentlyModified])
 
+    // updates toast with corresponding info, and clears WordForm after creating a word
     useEffect(() => {
         if((isSuccess) && (word._id !== undefined) && !(props.initialState !== undefined)){
             update(word._id)
@@ -122,7 +126,6 @@ export function WordForm(props: TranslationFormProps) {
 
     // hack to trigger re-rendering - alternative would've required changes in all language forms
     // and could cause unforeseen side effects
-    // TODO: add timeout and during it, display an animation?
     useEffect(() => {
         setHideView(false)
     }, [hideView])
@@ -147,6 +150,7 @@ export function WordForm(props: TranslationFormProps) {
         return(filteredAndFormattedTranslationsList)
     }
 
+    // when editing a word, we can cancel changes and reverse to previous state with this
     const reverseChangesInLocalWordState = () => {
         if(props.initialState !== undefined){
             // NB! We don't simply spread props.initial state, because there might be other fields not relevant to local state.
@@ -230,11 +234,14 @@ export function WordForm(props: TranslationFormProps) {
         })
     }
 
+    // deletes word and sets flag to trigger toast
     const onClickDeleteWord = () => {
         setRecentlyDeleted(true)
         dispatch(deleteWordById(word._id))
     }
 
+    // checks which languages are currently selected and sets the remaining languages as available,
+    // using current user's available languages as the "complete" list.
     const setAvailableLanguagesList = () => {
         const allLangs: string[] = (user.languages!!) ? user.languages : []
         let filteredLangs: Lang[] = []
@@ -262,6 +269,7 @@ export function WordForm(props: TranslationFormProps) {
         setAvailableLanguages(filteredLangs)
     }
 
+    // restarts WordForm completely
     const resetAll = () => {
         setPartOfSpeech(undefined)
         dispatch(resetSelectedPoS())
@@ -275,7 +283,8 @@ export function WordForm(props: TranslationFormProps) {
         )
     }
 
-    // This will only be accessible if there are at least 2 other forms on screen already
+    // This will only be accessible if there are at least 2 other forms on screen already,
+    // and adds another generic-translation-item to display on the form
     const addEmptyLanguageForm = () => {
         let oldLanguageList: TranslationItem[] = completeWordData.translations
         oldLanguageList.push(Object as unknown as TranslationItem)
@@ -285,6 +294,8 @@ export function WordForm(props: TranslationFormProps) {
         })
     }
 
+    // before saving/updating data, we must remove all local-internal-state info,
+    // used to manage form-state and that is not required to be stored in BE
     const sanitizeDataForStorage = () => {
         const cleanData: TranslationItem[] = completeWordData.translations.map((translation: TranslationItem) => {
             // This removes the InternalStatus properties, used during word-input, but that it should not be saved on BE
@@ -305,7 +316,7 @@ export function WordForm(props: TranslationFormProps) {
         setDisabledForms(true)
     }
 
-
+    // Toasts that need to change according to aplication state.
     // @ts-ignore
     const notify = () => toastId.current = toast.info('Saving...', {
         position: "bottom-right",
@@ -525,7 +536,7 @@ export function WordForm(props: TranslationFormProps) {
                                 (recentlyModified)
                             )
                         )
-                        &&
+                        && // hack to trigger re-rendering
                         (!hideView)
                     ) &&
                         <>

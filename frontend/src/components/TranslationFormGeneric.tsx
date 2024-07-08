@@ -38,6 +38,7 @@ export function TranslationFormGeneric(props: WordFormGenericProps) {
             padding: globalTheme.spacing(2),
             borderStyle: "solid",
             borderWidth: "5px",
+            // logic to display flags in borders
             background: `linear-gradient(#fff, #fff) padding-box, ${
                 (currentLang === Lang.EE)
                     ? 'linear-gradient(180deg, rgb(0, 144, 206),  rgb(0, 144, 206), rgb(0, 0, 0), rgb(210, 210, 210), rgb(210, 210, 210))'
