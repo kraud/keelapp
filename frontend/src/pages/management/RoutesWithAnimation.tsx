@@ -11,6 +11,7 @@ import {NotificationHub} from "../NotificationHub";
 import {DisplayTag} from "../DisplayTag";
 import {checkEnvironmentAndIterationToDisplay} from "../../components/forms/commonFunctions";
 import NotFound from "../NotFound";
+import {VerificationUser} from "../VerificationUser";
 
 export const routeVariantsAnimation = {
     initial: {
@@ -89,6 +90,12 @@ export function RoutesWithAnimation() {
                 path='/user'
                 element={
                     <Account/>
+                }
+            />
+            <Route 
+                path="/user/:userId?/verify/:tokenId?"
+                element={
+                    <VerificationUser/>
                 }
             />
             <Route

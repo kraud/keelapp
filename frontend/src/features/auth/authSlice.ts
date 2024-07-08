@@ -1,6 +1,7 @@
 import {createSlice, createAsyncThunk} from "@reduxjs/toolkit"
 import authService from "./authService";
 import {UserRegisterData} from "../../pages/Register";
+import { toast } from "react-toastify";
 
 // Get user from localStorage
 const user = JSON.parse(localStorage.getItem('user')! )
@@ -26,7 +27,10 @@ const initialState: AuthSliceState = {
 // Register user
 export const register = createAsyncThunk('auth/register', async (user: UserRegisterData, thunkAPI) => {
     try {
-        return await authService.register(user)
+        let userNew = await authService.register(user)
+
+        toast.info("We sent an email to " + userNew.email + ". Please open it, to verify your account.")
+
     } catch (error: any) {
         const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
 
@@ -38,7 +42,13 @@ export const register = createAsyncThunk('auth/register', async (user: UserRegis
 // Login user
 export const login = createAsyncThunk('auth/login', async (user: any, thunkAPI) => {
     try {
-        return await authService.login(user)
+        let userLogin = await authService.login(user)
+        if(userLogin.verified) {
+            return userLogin;
+        } else {
+            // TODO: Agregar boton para reenviar (Ver addWord). 
+            toast.info("You need to verify your account");
+        }
     } catch (error: any) {
         const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
 
@@ -67,6 +77,22 @@ export const updateUser = createAsyncThunk('auth/updateUser', async (user: any, 
 
 export const logout = createAsyncThunk('auth/logout', async () => {
     await authService.logout()
+})
+
+export const verifyUser = createAsyncThunk('auth/verifyUser', async (data: {userId: string, tokenId: string}, thunkAPI) =>{
+    try {
+        return await authService.validateUser(data.userId, data.tokenId)
+        
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
 })
 
 
@@ -130,6 +156,20 @@ export const authSlice = createSlice({
             })
             .addCase(logout.fulfilled, (state) => {
                 state.user = null
+            })
+            .addCase(verifyUser.pending, (state) => {
+                state.isLoadingAuth = true
+            })
+            .addCase(verifyUser.fulfilled, (state, action) => {
+                state.isLoadingAuth = false
+                state.isSuccess = true
+                state.user = action.payload
+            })
+            .addCase(verifyUser.rejected, (state, action) => {
+                state.isLoadingAuth = false
+                state.isSuccess = false
+                state.isError = true
+                state.message = action.payload as string
             })
     }
 })

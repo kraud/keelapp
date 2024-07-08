@@ -3,6 +3,9 @@ const bcrypt = require('bcryptjs')
 const asyncHandler = require('express-async-handler')
 const User = require('../models/userModel')
 const Friendship = require('../models/friendshipModel')
+const Token = require('../models/tokenModel')
+const sendMail = require('../utils/sendEmail')
+const crypto = require('crypto')
 
 function queryParamToBool(value) {
     return ((value+'').toLowerCase() === 'true')
@@ -37,12 +40,23 @@ const registerUser = asyncHandler(async(req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt)
 
     // Create user
-    const user = await User.create({
+    let user = await User.create({
         name,
         email,
         username,
-        password: hashedPassword
+        password: hashedPassword,
+        verified: false
     })
+
+    const token = await new Token({
+        userId: user._id,
+        token: crypto.randomBytes(32).toString("hex"),
+
+    }).save();
+    const url = `${process.env.BASE_URL}/user/${user._id}/verify/${token.token}`
+    await sendMail(user.email, "Verify Email", url);
+
+    //res.status(201).send({message: "An Email snet to your account please verify"})
 
     if(user){
         res.status(201).json({
@@ -51,7 +65,8 @@ const registerUser = asyncHandler(async(req, res) => {
             email: user.email,
             username: user.username,
             languages: [], // user will select them once they log in
-            token: generateToken(user._id)
+            token: generateToken(user._id),
+            verified: user.verified
         })
     } else {
         res.status(400)
@@ -74,7 +89,8 @@ const loginUser = asyncHandler(async(req, res) => {
             email: user.email,
             username: user.username,
             languages: user.languages,
-            token: generateToken(user._id)
+            token: generateToken(user._id),
+            verified: user.verified
         })
     } else {
         res.status(400)
@@ -239,11 +255,35 @@ const getUserById = asyncHandler(async (req, res) => {
     res.status(200).json(user)
 })
 
+const verifyUser = asyncHandler(async(req, res) => {
+    try {
+        const user = await User.findOne({_id: req.params.id});
+        if(!user) return res.status(400).send({message: "Invalid Link"});
+
+        const token = await Token.findOne({
+            userId: user._id,
+            token: req.params.token
+        });
+        if(!token) return res.status(400).send({message:"Invalid Link"});
+
+        await User.findByIdAndUpdate(user.id,{
+            verified: true
+        },{new: false});
+        
+        await token.remove();
+
+        res.status(200).send({user: user, message: "Email verified successfully"})
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({message:"Internal Server Error"});
+    }
+
+});
+
 // Generate JWT
 const generateToken = (id) => {
     return jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: '30d'})
 }
-
 module.exports = {
     registerUser,
     loginUser,
@@ -251,5 +291,7 @@ module.exports = {
     getUsersBy,
     updateUser,
     getUserById,
-    queryParamToBool
+    queryParamToBool,
+    verifyUser
 }
+

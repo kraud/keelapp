@@ -21,7 +21,11 @@ const userSchema = mongoose.Schema({
     },
     languages: [{
         type: String // FE type: Lang
-    }]
+    }],
+    verified: {
+        type: Boolean
+    }
+
 },
     {
         timestamps: true

@@ -15,7 +15,7 @@ export function MainView(){
     }
     const location = useLocation()
     const [displayToolbar, setDisplayToolbar] = useState(false)
-    const urlListNoToolbar = ["/login", "/register"]
+    const urlListNoToolbar = ["/login", "/register", "/user/:userId?/verify/:tokenId?"]
 
     useEffect(() => {
         if((urlListNoToolbar).some((url: string) => (url === location.pathname))){
