@@ -8,12 +8,6 @@ const API_URL = (BE_URL!!) ?BE_URL+'/api/users' :'/api/users' // same as authSli
 const register = async (userData: any) => {
     const response = await axios.post(API_URL, userData)
 
-    if(response.data) {
-        if(response.data.verify === undefined || response.data.verify){
-            localStorage.setItem('user', JSON.stringify(response.data))
-        }
-    }
-
     return response.data
 }
 
@@ -21,10 +15,8 @@ const register = async (userData: any) => {
 const login = async (userData: any) => {
     const response = await axios.post(API_URL+'/login', userData)
 
-    if (response.data) {
-        if(response.data.verify === undefined || response.data.verify){
-            localStorage.setItem('user', JSON.stringify(response.data))
-        }
+    if (response.data && response.data.verified) {
+        localStorage.setItem('user', JSON.stringify(response.data))
     }
 
     return response.data

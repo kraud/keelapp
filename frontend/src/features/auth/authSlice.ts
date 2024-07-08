@@ -28,11 +28,9 @@ const initialState: AuthSliceState = {
 export const register = createAsyncThunk('auth/register', async (user: UserRegisterData, thunkAPI) => {
     try {
         let userNew = await authService.register(user)
-        if (userNew.verify) { return userNew }
 
-        else {
-            toast.info("We send a email to " + userNew.email + " to verify your account");
-        }
+        toast.info("We sent an email to " + userNew.email + ". Please open it, to verify your account.")
+
     } catch (error: any) {
         const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
 
@@ -45,10 +43,10 @@ export const register = createAsyncThunk('auth/register', async (user: UserRegis
 export const login = createAsyncThunk('auth/login', async (user: any, thunkAPI) => {
     try {
         let userLogin = await authService.login(user)
-        if(userLogin.verify === undefined || userLogin.verify){
+        if(userLogin.verified) {
             return userLogin;
-        }
-        else {
+        } else {
+            // TODO: Agregar boton para reenviar (Ver addWord). 
             toast.info("You need to verify your account");
         }
     } catch (error: any) {
@@ -84,6 +82,7 @@ export const logout = createAsyncThunk('auth/logout', async () => {
 export const verifyUser = createAsyncThunk('auth/verifyUser', async (data: {userId: string, tokenId: string}, thunkAPI) =>{
     try {
         return await authService.validateUser(data.userId, data.tokenId)
+        
     } catch(error: any) {
         const message = (
                 error.response &&

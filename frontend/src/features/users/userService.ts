@@ -1,6 +1,5 @@
 import axios from "axios"
 import {SearchUserQuery} from "./userSlice";
-import { toast } from "react-toastify";
 
 const BE_URL = process.env.REACT_APP_VERCEL_BE_URL
 const API_URL = (BE_URL!!) ?BE_URL+'/api/users' :'/api/users' // same as authSlice because they share controller
@@ -32,7 +31,7 @@ const getUserByUserId = async (token: any, userId: string) => {
 
 const userService = {
     getUsersByNameUsername,
-    getUserByUserId,
+    getUserByUserId
 }
 
 export default userService

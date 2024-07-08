@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "../app/store";
 import { useSelector } from "react-redux";
 import { verifyUser } from "../features/auth/authSlice";
+import { toast } from "react-toastify";
 
 interface RouteVerificationUserProps{
     userId: string,
@@ -29,7 +30,8 @@ export const VerificationUser = (props: VerificationUserProps) => {
             navigate("/")
         }
         if(userId === undefined || tokenId === undefined){
-            navigate("/")
+            toast.error("There was an error with this link.")
+            navigate("/Error")
         }
         else{
             dispatch(verifyUser({userId: userId, tokenId: tokenId}))

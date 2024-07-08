@@ -111,7 +111,6 @@ export const userSlice = createSlice({
                 state.message = action.payload as string
                 state.userResult = []
             })
-
     }
 })
 export const {resetUserSliceState, clearUserResultData} = userSlice.actions

@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs')
 const asyncHandler = require('express-async-handler')
 const User = require('../models/userModel')
 const Friendship = require('../models/friendshipModel')
-const Token = require('../models/token')
+const Token = require('../models/tokenModel')
 const sendMail = require('../utils/sendEmail')
 const crypto = require('crypto')
 
@@ -45,7 +45,7 @@ const registerUser = asyncHandler(async(req, res) => {
         email,
         username,
         password: hashedPassword,
-        verify: false
+        verified: false
     })
 
     const token = await new Token({
@@ -66,7 +66,7 @@ const registerUser = asyncHandler(async(req, res) => {
             username: user.username,
             languages: [], // user will select them once they log in
             token: generateToken(user._id),
-            verify: user.verify
+            verified: user.verified
         })
     } else {
         res.status(400)
@@ -90,7 +90,7 @@ const loginUser = asyncHandler(async(req, res) => {
             username: user.username,
             languages: user.languages,
             token: generateToken(user._id),
-            verify: user.verify
+            verified: user.verified
         })
     } else {
         res.status(400)
@@ -267,7 +267,7 @@ const verifyUser = asyncHandler(async(req, res) => {
         if(!token) return res.status(400).send({message:"Invalid Link"});
 
         await User.findByIdAndUpdate(user.id,{
-            verify: true
+            verified: true
         },{new: false});
         
         await token.remove();

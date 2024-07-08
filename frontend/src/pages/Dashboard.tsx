@@ -8,7 +8,6 @@ import {routeVariantsAnimation} from "./management/RoutesWithAnimation";
 import {SpinningText} from "../components/SpinningText";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import {useTheme} from "@mui/material/styles";
-import {toast} from "react-toastify";
 
 export function Dashboard() {
     const theme = useTheme()
