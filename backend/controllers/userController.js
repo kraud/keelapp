@@ -52,9 +52,9 @@ const registerUser = asyncHandler(async(req, res) => {
         userId: user._id,
         token: crypto.randomBytes(32).toString("hex"),
 
-    }).save();
+    }).save()
     const url = `${process.env.BASE_URL}/user/${user._id}/verify/${token.token}`
-    await sendMail(user.email, "Verify Email", url);
+    await sendMail(user.email, "Verify Email", url) // TODO: improve confirmation email design
 
     if(user){
         res.status(201).json({
@@ -63,7 +63,6 @@ const registerUser = asyncHandler(async(req, res) => {
             email: user.email,
             username: user.username,
             languages: [], // user will select them once they log in
-            token: generateToken(user._id),
             verified: user.verified
         })
     } else {
@@ -255,33 +254,46 @@ const getUserById = asyncHandler(async (req, res) => {
 
 const verifyUser = asyncHandler(async(req, res) => {
     try {
-        const user = await User.findOne({_id: req.params.id});
-        if(!user) return res.status(400).send({message: "Invalid Link (no user match)"});
+        const user = await User.findOne({_id: req.params.id}, { password: 0, createdAt: 0, updatedAt: 0, __v: 0 })
+        if(!user){
+            return res.status(400).send({message: "Invalid Link (no user match)"})
+        }
 
         const token = await Token.findOne({
             userId: user._id,
             token: req.params.token
-        });
-        if(!token) return res.status(400).send({message:"Invalid Link (no token match)"});
+        })
 
+        if(!token){
+            return(res.status(400).send({message: "Invalid Link (no token match)"}))
+        }
+
+        // we update the stored user data to reflect the validated state
         await User.findByIdAndUpdate(user.id,{
             verified: true
-        },{new: false});
-        
-        await token.remove();
+        },{new: false})
 
-        res.status(200).send({user: user, message: "Email verified successfully"})
+        // we remove the account-validation token from the DB
+        await token.remove()
+
+        // we append to response user-data the JSW required to have access to user-protected API routes
+        const userWithToken = {
+            ...user.toObject(),
+            token: generateToken(user._id),
+        }
+        res.status(200).send({user: userWithToken, message: "Email verified successfully"})
     } catch (error) {
         console.log(error)
-        res.status(500).send({message:"Internal Server Error"});
+        res.status(500).send({message:"Internal Server Error"})
     }
 
-});
+})
 
 // Generate JWT
 const generateToken = (id) => {
     return jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: '30d'})
 }
+
 module.exports = {
     registerUser,
     loginUser,

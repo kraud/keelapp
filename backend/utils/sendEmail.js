@@ -19,7 +19,6 @@ module.exports = async(email, subject, text) => {
                 console.log(error)
                 reject(error)
             } else {
-                console.log("Server is ready to take our messages")
                 resolve(success)
             }
         })
@@ -39,8 +38,6 @@ module.exports = async(email, subject, text) => {
                 console.error(err)
                 reject(err)
             } else {
-                console.log(info)
-                console.log("Email sent successfully")
                 resolve(info)
             }
         })
