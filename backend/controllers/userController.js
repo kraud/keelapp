@@ -56,8 +56,6 @@ const registerUser = asyncHandler(async(req, res) => {
     const url = `${process.env.BASE_URL}/user/${user._id}/verify/${token.token}`
     await sendMail(user.email, "Verify Email", url);
 
-    //res.status(201).send({message: "An Email snet to your account please verify"})
-
     if(user){
         res.status(201).json({
             _id: user.id,
