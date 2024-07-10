@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import { useNavigate, useParams } from "react-router-dom"
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../app/store";
@@ -10,7 +10,6 @@ import {routeVariantsAnimation} from "./management/RoutesWithAnimation";
 import globalTheme from "../theme/theme";
 import {Divider, Grid} from "@mui/material";
 import Typography from "@mui/material/Typography";
-import useMediaQuery from "@mui/material/useMediaQuery";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PendingIcon from '@mui/icons-material/Pending';
 import HelpIcon from '@mui/icons-material/Help';

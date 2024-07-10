@@ -15,10 +15,17 @@ export function MainView(){
     }
     const location = useLocation()
     const [displayToolbar, setDisplayToolbar] = useState(false)
-    const urlListNoToolbar = ["/login", "/register", "/user/:userId?/verify/:tokenId?"]
+
+    const urlListNoToolbar: RegExp[] = [
+        new RegExp("^/login$"), // matches with "/login"
+        new RegExp("^/register$"), // matches with "/register"
+        new RegExp("^/user/.*/verify/.*$") // matches with "/user/*/verify/*"
+    ]
 
     useEffect(() => {
-        if((urlListNoToolbar).some((url: string) => (url === location.pathname))){
+        if (urlListNoToolbar.some((regex: RegExp) => {
+            return regex.test(location.pathname)
+        })) {
             setDisplayToolbar(false)
         } else {
             setDisplayToolbar(true)
