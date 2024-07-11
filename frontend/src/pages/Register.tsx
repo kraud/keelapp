@@ -14,6 +14,7 @@ import LinearIndeterminate from "../components/Spinner";
 import {motion} from "framer-motion";
 import {childVariantsAnimation, routeVariantsAnimation} from "./management/RoutesWithAnimation";
 import {AppDispatch} from "../app/store";
+import {getAppTitle} from "./Login";
 
 export interface UserRegisterData {
     name: string
@@ -27,7 +28,7 @@ export function Register() {
     // --------------- STYLING ---------------
     const componentStyles = {
         mainContainer: {
-            marginTop: globalTheme.spacing(6),
+            marginTop: globalTheme.spacing(2),
             border: '2px solid #0072CE',
             borderRadius: '25px',
             paddingLeft: globalTheme.spacing(6),
@@ -81,174 +82,185 @@ export function Register() {
     }
 
     return(
-        <Grid
-            component={motion.div} // to implement animations with Framer Motion
-            variants={routeVariantsAnimation}
-            initial="initial"
-            animate="final"
-            container={true}
-            item={true}
-            rowSpacing={4}
-            direction={"column"}
-            alignItems={"center"}
-            sx={componentStyles.mainContainer}
-            xs={'auto'}
-        >
+        <>
+            {getAppTitle()}
             <Grid
-                item={true}
-                component={motion.div}
-                variants={childVariantsAnimation}
+                component={motion.div} // to implement animations with Framer Motion
+                variants={routeVariantsAnimation}
                 initial="initial"
                 animate="final"
-            >
-                <Typography
-                    variant={"h2"}
-                >
-                    Register
-                </Typography>
-                <Typography
-                    variant={"subtitle2"}
-                    align={"center" }
-                >
-                    Please create an account
-                </Typography>
-            </Grid>
-            <Grid
+                container={true}
                 item={true}
-                component={motion.div}
-                variants={childVariantsAnimation}
-                initial="initial"
-                animate="final"
+                rowSpacing={4}
+                direction={"column"}
+                alignItems={"center"}
+                sx={componentStyles.mainContainer}
+                xs={'auto'}
             >
-                <form>
-                    <Grid
-                        item={true}
-                        container={true}
-                        spacing={2}
-                        direction={"column"}
-                        alignItems={"center"}
+                <Grid
+                    item={true}
+                    component={motion.div}
+                    variants={childVariantsAnimation}
+                    initial="initial"
+                    animate="final"
+                >
+                    <Typography
+                        variant={"h2"}
                     >
-                        <Grid
-                            item={true}
-                        >
-                            <TextInputFormWithHook
-                                control={control}
-                                label={"Name"}
-                                name={"name"}
-                                defaultValue={""}
-                                errors={errors.name}
-                                fullWidth={true}
-                            />
-                        </Grid>
-                        <Grid
-                            item={true}
-                        >
-                            <TextInputFormWithHook
-                                control={control}
-                                label={"E-mail"}
-                                name={"email"}
-                                defaultValue={""}
-                                errors={errors.email}
-                                type={"email"}
-                                fullWidth={true}
-                            />
-                        </Grid>
-                        <Grid
-                            item={true}
-                        >
-                            <TextInputFormWithHook
-                                control={control}
-                                label={"Username"}
-                                name={"username"}
-                                defaultValue={""}
-                                errors={errors.username}
-                                fullWidth={true}
-                            />
-                        </Grid>
-                        <Grid
-                            item={true}
-                        >
-                            <TextInputFormWithHook
-                                control={control}
-                                label={"Password"}
-                                name={"password"}
-                                defaultValue={""}
-                                errors={errors.password}
-                                type={"password"}
-                                fullWidth={true}
-                            />
-                        </Grid>
-                        <Grid
-                            item={true}
-                        >
-                            <TextInputFormWithHook
-                                control={control}
-                                label={"Confirm password"}
-                                name={"password2"}
-                                defaultValue={""}
-                                errors={errors.password2}
-                                type={"password"}
-                                fullWidth={true}
-                            />
-                        </Grid>
-                        <Grid
-                            item={true}
-                        >
-                            {(isLoadingAuth) && <LinearIndeterminate/>}
-                        </Grid>
+                        Register
+                    </Typography>
+                    <Typography
+                        variant={"subtitle2"}
+                        align={"center" }
+                    >
+                        Please create an account
+                    </Typography>
+                </Grid>
+                <Grid
+                    item={true}
+                    component={motion.div}
+                    variants={childVariantsAnimation}
+                    initial="initial"
+                    animate="final"
+                >
+                    <form>
                         <Grid
                             item={true}
                             container={true}
                             spacing={2}
-                            justifyContent={"center"}
+                            direction={"column"}
+                            alignItems={"center"}
                         >
                             <Grid
                                 item={true}
                             >
-                                <Button
-                                    onClick={handleSubmit(onSubmit)}
-                                    variant={"outlined"}
+                                <TextInputFormWithHook
+                                    control={control}
+                                    label={"Name"}
+                                    name={"name"}
+                                    defaultValue={""}
+                                    errors={errors.name}
                                     fullWidth={true}
-                                    color={"success"}
-                                >
-                                    Submit
-                                </Button>
+                                />
                             </Grid>
                             <Grid
                                 item={true}
                             >
-                                <Button
-                                    onClick={() => reset()}
-                                    variant={"outlined"}
+                                <TextInputFormWithHook
+                                    control={control}
+                                    label={"E-mail"}
+                                    name={"email"}
+                                    defaultValue={""}
+                                    errors={errors.email}
+                                    type={"email"}
                                     fullWidth={true}
-                                    color={"error"}
+                                />
+                            </Grid>
+                            <Grid
+                                item={true}
+                            >
+                                <TextInputFormWithHook
+                                    control={control}
+                                    label={"Username"}
+                                    name={"username"}
+                                    defaultValue={""}
+                                    errors={errors.username}
+                                    fullWidth={true}
+                                />
+                            </Grid>
+                            <Grid
+                                item={true}
+                            >
+                                <TextInputFormWithHook
+                                    control={control}
+                                    label={"Password"}
+                                    name={"password"}
+                                    defaultValue={""}
+                                    errors={errors.password}
+                                    type={"password"}
+                                    fullWidth={true}
+                                />
+                            </Grid>
+                            <Grid
+                                item={true}
+                            >
+                                <TextInputFormWithHook
+                                    control={control}
+                                    label={"Confirm password"}
+                                    name={"password2"}
+                                    defaultValue={""}
+                                    errors={errors.password2}
+                                    type={"password"}
+                                    fullWidth={true}
+                                    triggerOnEnterKeyPress={() => {
+                                        handleSubmit(onSubmit)()
+                                    }}
+                                    disabled={isLoadingAuth}
+                                />
+                            </Grid>
+                            <Grid
+                                container={true}
+                                item={true}
+                                xs={10}
+                            >
+                                {(isLoadingAuth) && <LinearIndeterminate/>}
+                            </Grid>
+                            <Grid
+                                item={true}
+                                container={true}
+                                spacing={2}
+                                justifyContent={"center"}
+                            >
+                                <Grid
+                                    item={true}
                                 >
-                                    Reset
+                                    <Button
+                                        onClick={handleSubmit(onSubmit)}
+                                        variant={"outlined"}
+                                        fullWidth={true}
+                                        color={"success"}
+                                        disabled={isLoadingAuth}
+                                    >
+                                        Submit
+                                    </Button>
+                                </Grid>
+                                <Grid
+                                    item={true}
+                                >
+                                    <Button
+                                        onClick={() => reset()}
+                                        variant={"outlined"}
+                                        fullWidth={true}
+                                        color={"error"}
+                                        disabled={isLoadingAuth}
+                                    >
+                                        Reset
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                            <Grid
+                                item={true}
+                                xs={12}
+                            >
+                                <Button
+                                    variant={"text"}
+                                    onClick ={() => {
+                                        navigate("/login")
+                                    }}
+                                    fullWidth={true}
+                                    sx={{
+                                        textAlign: 'center',
+                                        textTransform: 'none',
+                                    }}
+                                >
+                                    Already registered?
                                 </Button>
                             </Grid>
                         </Grid>
-                        <Grid
-                            item={true}
-                            xs={12}
-                        >
-                            <Button
-                                variant={"text"}
-                                onClick ={() => {
-                                    navigate("/login")
-                                }}
-                                fullWidth={true}
-                                sx={{
-                                    textAlign: 'center',
-                                    textTransform: 'none',
-                                }}
-                            >
-                                Already registered?
-                            </Button>
-                        </Grid>
-                    </Grid>
-                </form>
+                    </form>
+                </Grid>
             </Grid>
-        </Grid>
+        </>
     )
 }
 

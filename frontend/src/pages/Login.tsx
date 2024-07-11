@@ -14,6 +14,7 @@ import {toast} from "react-toastify";
 import {motion} from "framer-motion";
 import {childVariantsAnimation, routeVariantsAnimation} from "./management/RoutesWithAnimation";
 import {AppDispatch} from "../app/store";
+import {getIconByEnvironment} from "../components/GeneralUseComponents";
 
 interface UserLoginData {
     email: string;
@@ -24,7 +25,7 @@ export function Login() {
     // --------------- STYLING ---------------
     const componentStyles = {
         mainContainer: {
-            marginTop: globalTheme.spacing(6),
+            marginTop: globalTheme.spacing(2),
             border: '2px solid #0072CE',
             borderRadius: '25px',
             paddingBottom: globalTheme.spacing(2),
@@ -70,6 +71,180 @@ export function Login() {
     }
 
     return(
+        <>
+            {getAppTitle()}
+            <Grid
+                component={motion.div} // to implement animations with Framer Motion
+                variants={routeVariantsAnimation}
+                initial="initial"
+                animate="final"
+                container={true}
+                item={true}
+                rowSpacing={4}
+                direction={"column"}
+                alignItems={"center"}
+                sx={componentStyles.mainContainer}
+                xs={'auto'}
+            >
+                <Grid
+                    item={true}
+                    component={motion.div}
+                    variants={childVariantsAnimation}
+                    initial="initial"
+                    animate="final"
+                >
+                    <Typography
+                        variant={"h2"}
+                    >
+                        Login
+                    </Typography>
+                    <Typography
+                        variant={"subtitle2"}
+                        align={"center" }
+                    >
+                        And get started!
+                    </Typography>
+                </Grid>
+                <Grid
+                    item={true}
+                    component={motion.div}
+                    variants={childVariantsAnimation}
+                    initial="initial"
+                    animate="final"
+                >
+                    <form>
+                        <Grid
+                            item={true}
+                            container={true}
+                            spacing={2}
+                            direction={"column"}
+                            alignItems={"center"}
+                        >
+                            <Grid
+                                item={true}
+                            >
+                                {/* TODO: should this also allow login in with username? */}
+                                <TextInputFormWithHook
+                                    control={control}
+                                    label={"E-mail"}
+                                    name={"email"}
+                                    defaultValue={""}
+                                    errors={errors.email}
+                                    type={"email"}
+                                    fullWidth={true}
+                                />
+                            </Grid>
+                            <Grid
+                                item={true}
+                            >
+                                <TextInputFormWithHook
+                                    control={control}
+                                    label={"Password"}
+                                    name={"password"}
+                                    defaultValue={""}
+                                    errors={errors.password}
+                                    type={"password"}
+                                    fullWidth={true}
+                                    triggerOnEnterKeyPress={() => {
+                                        handleSubmit(onSubmit)()
+                                    }}
+                                    disabled={isLoadingAuth}
+                                />
+                            </Grid>
+                            <Grid
+                                container={true}
+                                justifyContent={'center'}
+                                item={true}
+                            >
+                                <Grid
+                                    item={true}
+                                    xs={8}
+                                >
+                                    {(isLoadingAuth) && <LinearIndeterminate/>}
+                                </Grid>
+                            </Grid>
+                            <Grid
+                                item={true}
+                                container={true}
+                                spacing={2}
+                                justifyContent={"center"}
+                            >
+                                <Grid
+                                    item={true}
+                                    xs={4}
+                                >
+                                    <Button
+                                        onClick={() => handleSubmit(onSubmit)()}
+                                        variant={"outlined"}
+                                        fullWidth={true}
+                                        color={"success"}
+                                        disabled={isLoadingAuth}
+                                    >
+                                        Submit
+                                    </Button>
+                                </Grid>
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <Button
+                                        variant={"text"}
+                                        onClick ={() => {
+                                            navigate("/register")
+                                        }}
+                                        fullWidth={true}
+                                        sx={{
+                                            textAlign: 'center',
+                                            textTransform: 'none',
+                                        }}
+                                        disabled={isLoadingAuth}
+                                    >
+                                        You don't have an account?
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </form>
+                </Grid>
+            </Grid>
+        </>
+    )
+}
+
+export const getAppTitle = () => {
+    // --------------- STYLING ---------------
+    const componentStyles = {
+        titleContainer: {
+            // border: '2px solid #0072CE',
+            backgroundColor: '#0072CE',
+            color: 'white',
+            // color: '#0072CE',
+            letterSpacing: '2rem',
+            borderRadius: '25px',
+            paddingY: globalTheme.spacing(2),
+            paddingX: globalTheme.spacing(3),
+            userSelect: 'none',
+        },
+        iconContainer: {
+            marginTop: globalTheme.spacing(3),
+            // border: '2px solid #0072CE',
+            backgroundColor: '#0072CE',
+            color: 'white',
+            // color: '#0072CE',
+            // letterSpacing: '2rem',
+            borderRadius: '25px',
+            paddingX: globalTheme.spacing(3),
+            paddingY: globalTheme.spacing(2),
+            marginBottom: `-${globalTheme.spacing(3)}`,
+            zIndex:'2'
+        },
+        adbIcon: {
+            width: '45px',
+            height: '45px',
+        }
+    }
+
+    return(
         <Grid
             component={motion.div} // to implement animations with Framer Motion
             variants={routeVariantsAnimation}
@@ -77,14 +252,25 @@ export function Login() {
             animate="final"
             container={true}
             item={true}
-            rowSpacing={4}
             direction={"column"}
             alignItems={"center"}
-            sx={componentStyles.mainContainer}
-            xs={'auto'}
+            xs={12}
         >
             <Grid
                 item={true}
+                xs={'auto'}
+                sx={componentStyles.iconContainer}
+                component={motion.div}
+                variants={childVariantsAnimation}
+                initial="initial"
+                animate="final"
+            >
+                {getIconByEnvironment(componentStyles.adbIcon)}
+            </Grid>
+            <Grid
+                item={true}
+                xs={'auto'}
+                sx={componentStyles.titleContainer}
                 component={motion.div}
                 variants={childVariantsAnimation}
                 initial="initial"
@@ -92,106 +278,13 @@ export function Login() {
             >
                 <Typography
                     variant={"h2"}
+                    sx={{
+                        letterSpacing: '.5rem',
+                        marginRight: '-.5rem',
+                    }}
                 >
-                    Login
+                    KEELAPP
                 </Typography>
-                <Typography
-                    variant={"subtitle2"}
-                    align={"center" }
-                >
-                    And get started!
-                </Typography>
-            </Grid>
-            <Grid
-                item={true}
-                component={motion.div}
-                variants={childVariantsAnimation}
-                initial="initial"
-                animate="final"
-            >
-                <form>
-                    <Grid
-                        item={true}
-                        container={true}
-                        spacing={2}
-                        direction={"column"}
-                        alignItems={"center"}
-                    >
-                        <Grid
-                            item={true}
-                        >
-                            {/* TODO: should this also allow login in with username? */}
-                            <TextInputFormWithHook
-                                control={control}
-                                label={"E-mail"}
-                                name={"email"}
-                                defaultValue={""}
-                                errors={errors.email}
-                                type={"email"}
-                                fullWidth={true}
-                            />
-                        </Grid>
-                        <Grid
-                            item={true}
-                        >
-                            <TextInputFormWithHook
-                                control={control}
-                                label={"Password"}
-                                name={"password"}
-                                defaultValue={""}
-                                errors={errors.password}
-                                type={"password"}
-                                fullWidth={true}
-                                triggerOnEnterKeyPress={() => {
-                                    handleSubmit(onSubmit)()
-                                }}
-                            />
-                        </Grid>
-                        <Grid
-                            item={true}
-                        >
-                            {(isLoadingAuth) && <LinearIndeterminate/>}
-                        </Grid>
-                        <Grid
-                            item={true}
-                            container={true}
-                            spacing={2}
-                            justifyContent={"center"}
-                        >
-                            <Grid
-                                item={true}
-                                xs={4}
-                            >
-                                <Button
-                                    onClick={() => handleSubmit(onSubmit)()}
-                                    variant={"outlined"}
-                                    fullWidth={true}
-                                    color={"success"}
-                                >
-                                    Submit
-                                </Button>
-                            </Grid>
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <Button
-                                    variant={"text"}
-                                    onClick ={() => {
-                                        navigate("/register")
-                                    }}
-                                    fullWidth={true}
-                                    sx={{
-                                        textAlign: 'center',
-                                        textTransform: 'none',
-                                    }}
-                                >
-                                    You don't have an account?
-                                </Button>
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </form>
             </Grid>
         </Grid>
     )
