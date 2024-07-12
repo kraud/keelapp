@@ -71,9 +71,6 @@ export function NotFound() {
             <Grid
                 container={true}
                 justifyContent={"center"}
-                sx={{
-                    paddingLeft: globalTheme.spacing(2),
-                }}
             >
                 <Grid
                     item={true}

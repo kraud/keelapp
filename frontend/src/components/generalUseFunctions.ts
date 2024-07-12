@@ -472,3 +472,5 @@ export function getIntersectionBetweenLists (a: any[], b: any[]) {
     const setA = new Set(a);
     return b.filter((value: any) => setA.has(value));
 }
+
+export const waitDelay = (ms: number) => new Promise(res => setTimeout(res, ms))
