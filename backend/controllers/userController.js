@@ -18,12 +18,28 @@ const registerUser = asyncHandler(async(req, res) => {
     const { name, email, username, password } = req.body
 
     if(!name || !email || !username || !password){
-       res.status(400)
-       throw new Error('Please add all fields')
+        res.status(400)
+        throw new Error('Please add all fields')
     }
 
-    const emailExists = await User.findOne({email: email})
-    const usernameExists = await User.findOne({username: username})
+    // const emailExists = await User.findOne({email: email.toLowerCase()})
+    const emailExists = await User.findOne(
+        {
+            email: {
+                "$regex": email,
+                "$options": "i"
+            }
+        }
+    )
+    // const usernameExists = await User.findOne({username: username.toLowerCase()})
+    const usernameExists = await User.findOne(
+        {
+            username: {
+                "$regex": username,
+                "$options": "i"
+            }
+        }
+    )
 
     if(emailExists){
         res.status(400)
@@ -78,7 +94,14 @@ const loginUser = asyncHandler(async(req, res) => {
     const {email, password} = req.body
 
     {/* TODO: should this also allow login in with username? */}
-    const user = await User.findOne({email: email})
+    const user = await User.findOne(
+        {
+            email: {
+                "$regex": email,
+                "$options": "i"
+            }
+        }
+    )
     if(user && (await bcrypt.compare(password, user.password))){
         res.json({
             _id: user.id,
