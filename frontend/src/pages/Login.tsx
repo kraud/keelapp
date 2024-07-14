@@ -202,6 +202,26 @@ export function Login() {
                                         You don't have an account?
                                     </Button>
                                 </Grid>
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <Button
+                                        variant={"text"}
+                                        onClick ={() => {
+                                            navigate("/resetPassword")
+                                        }}
+                                        fullWidth={true}
+                                        sx={{
+                                            textAlign: 'center',
+                                            textTransform: 'none',
+                                        }}
+                                        disabled={isLoadingAuth}
+                                    >
+                                        Forgot you password?
+                                    </Button>
+                                </Grid>
+                                
                             </Grid>
                         </Grid>
                     </form>

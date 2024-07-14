@@ -312,6 +312,78 @@ const verifyUser = asyncHandler(async(req, res) => {
 
 })
 
+// @desc    Request token for password reset
+// @route   POST /api/users
+// @access  Public
+const requestPasswordReset = asyncHandler(async (req, res) => {
+    const email = req.body.email
+    
+    const user = await User.findOne(
+        {   
+            email: {
+                "$regex": email,
+                "$options": "i"
+            }
+        }
+    )
+    
+    if (!user) {
+        res.status(400)
+        throw new Error("There is no user registered with the email given.")    
+    }
+
+    // Generate new password token 
+    const newPasswordToken = crypto.randomBytes(32).toString("hex")
+    user.passwordTokens.push(newPasswordToken)
+
+    // Save token in User
+    const updatedUser = await User.findByIdAndUpdate(user.id,{
+        passwordTokens: user.passwordTokens
+    },{new: true}).select({ password: 0, createdAt: 0 , updatedAt: 0, __v: 0 })
+    
+    // Send email with token 
+    const url = `${process.env.BASE_URL}/resetPassword/${user.id}/${newPasswordToken}`;
+    await sendMail(user.email, "Password reset link", url) // TODO: improve confirmation email design
+
+    res.status(200).json(updatedUser)
+})
+
+
+// @desc    Update password
+// @route   PUT /api/users
+// @access  Public
+const updatePassword = asyncHandler(async (req, res) => {
+    const {userId, password, token} = req.body
+
+    const user = await User.findById(userId)
+    
+    if (!user) {
+        res.status(400)
+        throw new Error("Invalid Link (no user match).")    
+    }
+    
+    // Check token exists
+    if (user.passwordTokens === undefined || !user.passwordTokens.includes(token)) { 
+        res.status(400)
+        throw new Error("Invalid token.")    
+    }
+
+    // remove token. It's been "used"
+    delete user.passwordTokens[token]
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(password, salt)
+    
+    // Save token in User
+    const updatedUser = await User.findByIdAndUpdate(user.id,{
+        password: hashedPassword,
+        passwordTokens: user.passwordTokens
+    },{new: true}).select({ password: 0, createdAt: 0 , updatedAt: 0, __v: 0 })
+
+    res.status(200).json(updatedUser)
+})
+
 // Generate JWT
 const generateToken = (id) => {
     return jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: '30d'})
@@ -325,6 +397,8 @@ module.exports = {
     updateUser,
     getUserById,
     queryParamToBool,
-    verifyUser
+    verifyUser,
+    requestPasswordReset,
+    updatePassword
 }
 
