@@ -1,10 +1,15 @@
 import {useLocation} from "react-router-dom";
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import ResponsiveAppBar from "../../components/Header";
 import {Grid} from "@mui/material";
 import {RoutesWithAnimation} from "./RoutesWithAnimation";
 import {LocationProvider} from "./LocationProvider";
 import globalTheme from "../../theme/theme";
+import {logout} from "../../features/auth/authSlice";
+import {useDispatch} from "react-redux";
+import AuthVerify from "../../common/AuthVerify";
+import {AppDispatch} from "../../app/store";
+import {toast} from "react-toastify";
 
 export function MainView(){
     const componentStyles = {
@@ -13,6 +18,7 @@ export function MainView(){
             marginBottom: globalTheme.spacing(6)
         }
     }
+    const dispatch = useDispatch<AppDispatch>()
     const location = useLocation()
     const [displayToolbar, setDisplayToolbar] = useState(false)
 
@@ -32,6 +38,11 @@ export function MainView(){
         }
     },[location])
 
+    const onLogOut = useCallback(() => {
+        dispatch(logout())
+        toast.error('Your credentials have expired. Please login again.')
+    }, [dispatch])
+
     return(
         <>
             {
@@ -47,6 +58,8 @@ export function MainView(){
             >
                 <LocationProvider> {/* Framer Motion */}
                     <RoutesWithAnimation/>
+                    {/* AuthVerify handles auto-logout when JWT expires */}
+                    <AuthVerify onLogOut={() => onLogOut()}/>
                 </LocationProvider>
             </Grid>
         </>
