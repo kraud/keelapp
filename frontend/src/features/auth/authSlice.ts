@@ -209,7 +209,6 @@ export const authSlice = createSlice({
             .addCase(updatePassword.fulfilled, (state, action) => {
                 state.isLoadingAuth = false
                 state.isSuccess = true
-                state.user = action.payload
             })
             .addCase(updatePassword.rejected, (state, action) => {
                 state.isLoadingAuth = false
@@ -223,7 +222,6 @@ export const authSlice = createSlice({
             .addCase(requestPasswordResetToken.fulfilled, (state, action) => {
                 state.isLoadingAuth = false
                 state.isSuccess = true
-                state.user = action.payload
             })
             .addCase(requestPasswordResetToken.rejected, (state, action) => {
                 state.isLoadingAuth = false

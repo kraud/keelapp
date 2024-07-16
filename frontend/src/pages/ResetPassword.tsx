@@ -21,8 +21,8 @@ export interface UserPasswordData {
     token: string;
 }
 
-//Using 'interfaces' insted of type resulted in the error "RouteResetPasswordProps does not satisfy constrain string | Record<string ..."
-type RouteResetPasswordProps = {
+//Using 'interfaces' instead of type resulted in the error "RouteResetPasswordProps does not satisfy constrain string | Record<string ..."
+type RouteResetPasswordParams = {
     userId: string,
     tokenId: string
 }
@@ -31,7 +31,7 @@ interface ResetPasswordProps {
 
 }
 
-export const ResetPassword =  (props: ResetPasswordProps) => {
+export const ResetPassword = (props: ResetPasswordProps) => {
 
     // --------------- STYLING ---------------
     const componentStyles = {
@@ -40,19 +40,19 @@ export const ResetPassword =  (props: ResetPasswordProps) => {
             border: '2px solid #0072CE',
             borderRadius: '25px',
             paddingBottom: globalTheme.spacing(2),
+            padding: globalTheme.spacing(2)
         }
     }
 
     // --------------- THIRD-PARTY HOOKS ---------------
     const navigate = useNavigate()
     const dispatch = useDispatch<AppDispatch>()
-    const {userId, tokenId } = useParams<RouteResetPasswordProps>()
+    const {userId, tokenId } = useParams<RouteResetPasswordParams>()
 
     const isSettingNewPassword = userId !== undefined && tokenId !== undefined
-    console.log("Setting new pass ? " + isSettingNewPassword)
 
     // --------------- FORM VALIDATION SCHEMA ---------------
-    // Validates password and confimation only when
+    // Validates password and confirmation only when
     const validationSchema = Yup.object().shape({
         email: (isSettingNewPassword ? Yup.string() : Yup.string().email("Valid E-mail required").required("Valid E-mail required")),
         password: (isSettingNewPassword ? Yup.string().required("Password is required") : Yup.string()),
@@ -69,7 +69,7 @@ export const ResetPassword =  (props: ResetPasswordProps) => {
     })
 
     // --------------- REDUX STATE ---------------
-    const {user, isLoadingAuth, isError, isSuccess, message} = useSelector((state: any) => state.auth)
+    const {isLoadingAuth, isError, isSuccess, message} = useSelector((state: any) => state.auth)
 
     // --------------- USE-EFFECTS ---------------
     useEffect(() => {
@@ -77,14 +77,14 @@ export const ResetPassword =  (props: ResetPasswordProps) => {
             toast.error(message)
         }
         if(isSuccess) {
-            const successMessage = isSettingNewPassword ? "Password updated successfully" : "We sent an email to " + user.email; 
+            const successMessage = isSettingNewPassword ? "Password updated successfully!" : "Email sent successfully!";
             toast.success(successMessage)
+            navigate("/")
         }
         dispatch(resetState())
-    }, [user, isError, isSuccess, message, navigate, dispatch])
+    }, [isSettingNewPassword, isError, isSuccess, message, navigate, dispatch])
 
     // --------------- ADDITIONAL FUNCTIONS ---------------
-    // const isResetingPassword = userpara
     
     const onSubmit = (data: any) => {
         //if (userId !== undefined && tokenId !== undefined) {
@@ -117,28 +117,29 @@ export const ResetPassword =  (props: ResetPasswordProps) => {
             sx={componentStyles.mainContainer}
             xs={'auto'}
         >
-    
-        <Grid
-            item={true}
-            component={motion.div}
-            variants={childVariantsAnimation}
-            initial="initial"
-            animate="final"
-        >
-            <Typography
-                variant={"h2"}
+
+            <Grid
+                item={true}
+                component={motion.div}
+                variants={childVariantsAnimation}
+                initial="initial"
+                animate="final"
             >
-                {isSettingNewPassword ? "Password reset" : "Forgot your password?"}
-            </Typography>
-            <Typography
-                variant={"subtitle2"}
-                align={"center" }
-            >
-                {isSettingNewPassword 
-                    ? "Enter a new password below" 
-                    : "Enter the email address associated with your account and we'll send you a link to reset your password"}
-            </Typography>
-        </Grid>
+                <Typography
+                    variant={"h2"}
+                    align={"center"}
+                >
+                    {isSettingNewPassword ? "Password reset" : "Forgot your password?"}
+                </Typography>
+                <Typography
+                    variant={"subtitle2"}
+                    align={"center"}
+                >
+                    {isSettingNewPassword
+                        ? "Enter a new password below"
+                        : "Enter the email address associated with your account and we'll send you a link to reset your password"}
+                </Typography>
+            </Grid>
             <Grid
                 item={true}
                 component={motion.div}
