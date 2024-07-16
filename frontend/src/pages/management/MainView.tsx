@@ -25,7 +25,8 @@ export function MainView(){
     const urlListNoToolbar: RegExp[] = [
         new RegExp("^/login$"), // matches with "/login"
         new RegExp("^/register$"), // matches with "/register"
-        new RegExp("^/user/.*/verify/.*$") // matches with "/user/*/verify/*"
+        new RegExp("^/user/.*/verify/.*$"), // matches with "/user/*/verify/*"
+        new RegExp("^/resetPassword.*$") // matches with "/resetPassword/*"
     ]
 
     useEffect(() => {
