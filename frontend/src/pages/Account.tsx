@@ -276,7 +276,7 @@ export const Account = () => {
                         xs: 0,
                         sm: 1
                     }}
-                    xs={12}
+                    xs
                 >
                     {(!isEditing) &&
                         <>

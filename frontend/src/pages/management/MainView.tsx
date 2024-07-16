@@ -59,7 +59,10 @@ export function MainView(){
                 <LocationProvider> {/* Framer Motion */}
                     <RoutesWithAnimation/>
                     {/* AuthVerify handles auto-logout when JWT expires */}
-                    <AuthVerify onLogOut={() => onLogOut()}/>
+                    <AuthVerify
+                        onLogOut={() => onLogOut()}
+                        key={'verify'}
+                    />
                 </LocationProvider>
             </Grid>
         </>

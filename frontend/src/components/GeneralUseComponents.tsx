@@ -149,7 +149,7 @@ export const ChipList = (props: ChipListProps) => {
                 return (
                     <Grid
                         item={true}
-                        key={index.toString() + '-' + item}
+                        key={index.toString() + '-' + getLabel(item)}
                     >
                         <Chip
                             variant="filled"
