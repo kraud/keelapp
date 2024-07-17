@@ -8,6 +8,7 @@ import {routeVariantsAnimation} from "./management/RoutesWithAnimation";
 import {SpinningText} from "../components/SpinningText";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import {useTheme} from "@mui/material/styles";
+import {Lang} from "../ts/enums";
 
 export function Dashboard() {
     const theme = useTheme()
@@ -67,10 +68,10 @@ export function Dashboard() {
                 >
                     <SpinningText
                         translations={[
-                            "Ready to learn something new today?",
-                            "¿Listo para aprender algo nuevo hoy?",
-                            "Sind Sie bereit, heute etwas Neues zu lernen?",
-                            "Kas sa oled valmis midagi uut täna õppida?"
+                            {language: Lang.EN, label: "Ready to learn something new today?"},
+                            {language: Lang.ES, label: "¿Listo para aprender algo nuevo hoy?"},
+                            {language: Lang.DE, label: "Sind Sie bereit, heute etwas Neues zu lernen?"},
+                            {language: Lang.EE, label: "Kas sa oled valmis midagi uut täna õppida?"},
                         ]}
                         variant={
                             (smallToMid)

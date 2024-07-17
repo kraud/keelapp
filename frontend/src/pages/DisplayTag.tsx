@@ -21,6 +21,7 @@ import BookmarkAddIcon from "@mui/icons-material/BookmarkAdd";
 import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import {useFollowUnfollowTag, useIsUserFollowingTag} from "../hooks/useFollowUnfollowTag";
+import {Lang} from "../ts/enums";
 
 interface RouterTagProps{
     tagId: string
@@ -136,10 +137,10 @@ export function DisplayTag(props: DisplayTagProps){
             {(!displayContent) &&
                 <LoadingScreen
                     loadingTextList={[
-                        "Loading...",
-                        "Cargando...",
-                        "Laadimine...",
-                        "Laden...",
+                        {language: Lang.EN, label: "Loading..."},
+                        {language: Lang.ES, label: "Cargando..."},
+                        {language: Lang.DE, label: "Laadimine..."},
+                        {language: Lang.EE, label: "Laden..."},
                     ]}
                     callback={() => setDisplayContent(true) }
                     sxProps={{
