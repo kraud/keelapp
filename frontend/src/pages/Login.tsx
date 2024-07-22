@@ -29,6 +29,7 @@ export function Login() {
             border: '2px solid #0072CE',
             borderRadius: '25px',
             paddingBottom: globalTheme.spacing(2),
+            paddingX: globalTheme.spacing(6),
         }
     }
 
@@ -166,8 +167,8 @@ export function Login() {
                             <Grid
                                 item={true}
                                 container={true}
-                                spacing={2}
-                                justifyContent={"center"}
+                                direction={"column"}
+                                alignItems={"center"}
                             >
                                 <Grid
                                     item={true}
@@ -194,6 +195,7 @@ export function Login() {
                                         }}
                                         fullWidth={true}
                                         sx={{
+                                            marginTop: globalTheme.spacing(2),
                                             textAlign: 'center',
                                             textTransform: 'none',
                                         }}
@@ -213,6 +215,7 @@ export function Login() {
                                         }}
                                         fullWidth={true}
                                         sx={{
+                                            marginTop: `-${globalTheme.spacing(1)}`,
                                             textAlign: 'center',
                                             textTransform: 'none',
                                         }}
