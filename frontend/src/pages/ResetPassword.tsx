@@ -14,6 +14,7 @@ import {toast} from "react-toastify";
 import {motion} from "framer-motion";
 import {childVariantsAnimation, routeVariantsAnimation} from "./management/RoutesWithAnimation";
 import {AppDispatch} from "../app/store";
+import {getAppTitle} from "./Login";
 
 export interface UserPasswordData {
     userId: string;
@@ -36,7 +37,7 @@ export const ResetPassword = (props: ResetPasswordProps) => {
     // --------------- STYLING ---------------
     const componentStyles = {
         mainContainer: {
-            marginTop: globalTheme.spacing(6),
+            marginTop: globalTheme.spacing(2),
             border: '2px solid #0072CE',
             borderRadius: '25px',
             paddingBottom: globalTheme.spacing(2),
@@ -104,136 +105,169 @@ export const ResetPassword = (props: ResetPasswordProps) => {
     }
 
     return(
-        <Grid
-            component={motion.div} // to implement animations with Framer Motion
-            variants={routeVariantsAnimation}
-            initial="initial"
-            animate="final"
-            container={true}
-            item={true}
-            rowSpacing={4}
-            direction={"column"}
-            alignItems={"center"}
-            sx={componentStyles.mainContainer}
-            xs={'auto'}
-        >
+        <>
+            {getAppTitle()}
+            <Grid
+                component={motion.div} // to implement animations with Framer Motion
+                variants={routeVariantsAnimation}
+                initial="initial"
+                animate="final"
+                container={true}
+                item={true}
+                rowSpacing={4}
+                direction={"column"}
+                alignItems={"center"}
+                sx={componentStyles.mainContainer}
+                xs={'auto'}
+            >
 
-            <Grid
-                item={true}
-                component={motion.div}
-                variants={childVariantsAnimation}
-                initial="initial"
-                animate="final"
-            >
-                <Typography
-                    variant={"h2"}
-                    align={"center"}
+                <Grid
+                    item={true}
+                    component={motion.div}
+                    variants={childVariantsAnimation}
+                    initial="initial"
+                    animate="final"
                 >
-                    {isSettingNewPassword ? "Password reset" : "Forgot your password?"}
-                </Typography>
-                <Typography
-                    variant={"subtitle2"}
-                    align={"center"}
-                >
-                    {isSettingNewPassword
-                        ? "Enter a new password below"
-                        : "Enter the email address associated with your account and we'll send you a link to reset your password"}
-                </Typography>
-            </Grid>
-            <Grid
-                item={true}
-                component={motion.div}
-                variants={childVariantsAnimation}
-                initial="initial"
-                animate="final"
-            >
-                <form>
-                    <Grid
-                        item={true}
-                        container={true}
-                        spacing={2}
-                        direction={"column"}
-                        alignItems={"center"}
+                    <Typography
+                        variant={"h2"}
+                        align={"center"}
                     >
-                        <Grid
-                            item={true}
-                            hidden={isSettingNewPassword}
-                        >
-                            {/* TODO: should this also allow login in with username? */}
-                            <TextInputFormWithHook
-                                control={control}
-                                label={"E-mail"}
-                                name={"email"}
-                                defaultValue={""}
-                                errors={errors.email}
-                                type={"email"}
-                                fullWidth={true}
-                            />
-                        </Grid>
-                        <Grid
-                            item={true}
-                            hidden={!isSettingNewPassword}
-                        >
-                            <TextInputFormWithHook
-                                control={control}
-                                label={"Password"}
-                                name={"password"}
-                                defaultValue={""}
-                                errors={errors.password}
-                                type={"password"}
-                                fullWidth={true}
-                                triggerOnEnterKeyPress={() => {
-                                    handleSubmit(onSubmit)()
-                                }}
-                            />
-                        </Grid>
-                        <Grid
-                            item={true}
-                            hidden={!isSettingNewPassword}
-                        >
-                            <TextInputFormWithHook
-                                control={control}
-                                label={"Confirm password"}
-                                name={"password2"}
-                                defaultValue={""}
-                                errors={errors.password2}
-                                type={"password"}
-                                fullWidth={true}
-                                triggerOnEnterKeyPress={() => {
-                                    handleSubmit(onSubmit)()
-                                }}
-                            />
-                        </Grid>
-                        <Grid
-                            item={true}
-                        >
-                            {(isLoadingAuth) && <LinearIndeterminate/>}
-                        </Grid>
+                        {isSettingNewPassword ? "Password reset" : "Forgot your password?"}
+                    </Typography>
+                    <Typography
+                        variant={"subtitle2"}
+                        align={"center"}
+                    >
+                        {isSettingNewPassword
+                            ? "Enter a new password below"
+                            : "Enter the email address associated with your account and we'll send you a link to reset your password"}
+                    </Typography>
+                </Grid>
+                <Grid
+                    item={true}
+                    component={motion.div}
+                    variants={childVariantsAnimation}
+                    initial="initial"
+                    animate="final"
+                >
+                    <form>
                         <Grid
                             item={true}
                             container={true}
                             spacing={2}
-                            justifyContent={"center"}
+                            direction={"column"}
+                            alignItems={"center"}
                         >
                             <Grid
                                 item={true}
-                                xs={4}
+                                hidden={isSettingNewPassword}
+                            >
+                                {/* TODO: should this also allow login in with username? */}
+                                <TextInputFormWithHook
+                                    control={control}
+                                    label={"E-mail"}
+                                    name={"email"}
+                                    defaultValue={""}
+                                    errors={errors.email}
+                                    type={"email"}
+                                    fullWidth={true}
+                                    triggerOnEnterKeyPress={() => {
+                                        handleSubmit(onSubmit)()
+                                    }}
+                                />
+                            </Grid>
+                            <Grid
+                                item={true}
+                                hidden={!isSettingNewPassword}
+                            >
+                                <TextInputFormWithHook
+                                    control={control}
+                                    label={"Password"}
+                                    name={"password"}
+                                    defaultValue={""}
+                                    errors={errors.password}
+                                    type={"password"}
+                                    fullWidth={true}
+                                    triggerOnEnterKeyPress={() => {
+                                        handleSubmit(onSubmit)()
+                                    }}
+                                />
+                            </Grid>
+                            <Grid
+                                item={true}
+                                hidden={!isSettingNewPassword}
+                            >
+                                <TextInputFormWithHook
+                                    control={control}
+                                    label={"Confirm password"}
+                                    name={"password2"}
+                                    defaultValue={""}
+                                    errors={errors.password2}
+                                    type={"password"}
+                                    fullWidth={true}
+                                    triggerOnEnterKeyPress={() => {
+                                        handleSubmit(onSubmit)()
+                                    }}
+                                />
+                            </Grid>
+                            <Grid
+                                container={true}
+                                justifyContent={'center'}
+                                item={true}
+                            >
+                                <Grid
+                                    item={true}
+                                    xs={8}
+                                >
+                                    {(isLoadingAuth) && <LinearIndeterminate/>}
+                                </Grid>
+                            </Grid>
+                            <Grid
+                                item={true}
+                                container={true}
+                                spacing={2}
+                                justifyContent={"center"}
+                            >
+                                <Grid
+                                    item={true}
+                                    xs={5}
+                                >
+                                    <Button
+                                        onClick={() => handleSubmit(onSubmit)()}
+                                        variant={"outlined"}
+                                        fullWidth={true}
+                                        color={"success"}
+                                        disabled={isLoadingAuth}
+                                    >
+                                        Submit
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                            <Grid
+                                item={true}
+                                xs={12}
                             >
                                 <Button
-                                    onClick={() => handleSubmit(onSubmit)()}
-                                    variant={"outlined"}
+                                    variant={"text"}
+                                    onClick ={() => {
+                                        navigate("/login")
+                                    }}
                                     fullWidth={true}
-                                    color={"success"}
+                                    sx={{
+                                        marginTop: `-${globalTheme.spacing(1)}`,
+                                        textAlign: 'center',
+                                        textTransform: 'none',
+                                    }}
                                     disabled={isLoadingAuth}
                                 >
-                                    Submit
+                                    Already registered?
                                 </Button>
                             </Grid>
                         </Grid>
-                    </Grid>
-                </form>
+                    </form>
+                </Grid>
             </Grid>
-        </Grid>
+        </>
     )
 }
 

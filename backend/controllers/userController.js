@@ -317,32 +317,32 @@ const verifyUser = asyncHandler(async(req, res) => {
 // @route   POST /api/users
 // @access  Public
 const requestPasswordReset = asyncHandler(async (req, res) => {
-    try {
-        const email = req.body.email
+    const email = req.body.email
 
-        const user = await User.findOne(
-            {
-                email: {
-                    "$regex": email,
-                    "$options": "i"
-                }
+    const user = await User.findOne(
+        {
+            email: {
+                "$regex": email,
+                "$options": "i"
             }
-        )
-
-        if (!user) {
-            res.status(400)
-            throw new Error("There is no user registered with the email given.")
         }
+    )
 
-        // Generate new password token
-        const newPasswordToken = crypto.randomBytes(32).toString("hex")
-        user.passwordTokens.push(newPasswordToken)
+    if (!user) {
+        res.status(400)
+        throw new Error("There is no user registered with the email given.")
+    }
 
-        // Save token in User
-        const updatedUser = await User.findByIdAndUpdate(user.id, {
-            passwordTokens: user.passwordTokens
-        }, {new: true}).select({email: 1})
+    // Generate new password token
+    const newPasswordToken = crypto.randomBytes(32).toString("hex")
+    user.passwordTokens.push(newPasswordToken)
 
+    // Save token in User
+    await User.findByIdAndUpdate(user.id, {
+        passwordTokens: user.passwordTokens
+    }, {new: true}).select({email: 1});
+
+    try {
         // Send email with token
         const url = `${process.env.BASE_URL}/resetPassword/${user.id}/${newPasswordToken}`;
         await sendMail(user.email, "Password reset link", url) // TODO: improve confirmation email design
@@ -358,46 +358,41 @@ const requestPasswordReset = asyncHandler(async (req, res) => {
 // @route   PUT /api/users
 // @access  Public
 const updatePassword = asyncHandler(async (req, res) => {
+    const {userId, password, token} = req.body
+
+    let userObjectId;
     try {
-        const {userId, password, token} = req.body
-
-        let userObjectId;
-        try {
-            userObjectId = mongoose.Types.ObjectId(userId)
-        } catch (err) {
-            console.log(err)
-            res.status(400)
-            throw new Error("Invalid format for UserId")
-        }
-
-        const user = await User.findById(userObjectId)
-
-        if (!user) {
-            res.status(400)
-            throw new Error("Invalid Link (no user match).")
-        }
-
-        // Check token exists
-        if (user.passwordTokens === undefined || !user.passwordTokens.includes(token)) {
-            res.status(400)
-            throw new Error("Invalid token.")
-        }
-
-        // Hash password
-        const salt = await bcrypt.genSalt(10)
-        const hashedPassword = await bcrypt.hash(password, salt)
-
-        // Save token in User
-        await User.findByIdAndUpdate(user.id,{
-            password: hashedPassword,
-            passwordTokens: [] //cleans tokens array
-        },{new: true})
-
-        res.status(200).json({})
-    } catch (error) {
-        console.log(error)
-        res.status(500).send({message:"Internal Server Error"})
+        userObjectId = mongoose.Types.ObjectId(userId)
+    } catch (err) {
+        console.log(err)
+        res.status(400)
+        throw new Error("Invalid format for UserId")
     }
+
+    const user = await User.findById(userObjectId)
+
+    if (!user) {
+        res.status(400)
+        throw new Error("Invalid Link (no user match).")
+    }
+
+    // Check token exists
+    if (user.passwordTokens === undefined || !user.passwordTokens.includes(token)) {
+        res.status(400)
+        throw new Error("Invalid token.")
+    }
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(password, salt)
+
+    // Save token in User
+    await User.findByIdAndUpdate(user.id,{
+        password: hashedPassword,
+        passwordTokens: [] //cleans tokens array
+    },{new: true})
+
+    res.status(200).json({})
 })
 
 // Generate JWT
