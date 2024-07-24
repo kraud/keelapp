@@ -55,12 +55,24 @@ const validateUser = async(userId: string, tokenId: string) => {
     return response.data.user
 }
 
+const updatePassword = async(data: any) => {
+    const response = await axios.put(API_URL+"/updatePassword", data)
+    return response.data
+}
+
+const requestPasswordResetToken =  async (userEmail: string) => {
+    const response = await axios.post(API_URL+"/requestPasswordReset", {email: userEmail})
+    return response.data
+}
+
 const authService = {
     register,
     logout,
     login,
     updateUser,
-    validateUser
+    validateUser,
+    updatePassword,
+    requestPasswordResetToken
 }
 
 export default authService

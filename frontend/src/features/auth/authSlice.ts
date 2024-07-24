@@ -1,6 +1,7 @@
 import {createSlice, createAsyncThunk} from "@reduxjs/toolkit"
 import authService from "./authService";
 import {UserRegisterData} from "../../pages/Register";
+import {UserPasswordData} from "../../pages/ResetPassword";
 import { toast } from "react-toastify";
 
 // Get user from localStorage
@@ -95,6 +96,37 @@ export const verifyUser = createAsyncThunk('auth/verifyUser', async (data: {user
     }
 })
 
+export const updatePassword = createAsyncThunk('auth/updatePassword', async (data: UserPasswordData, thunkAPI) =>{
+    try {
+        return await authService.updatePassword(data)
+        
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+export const requestPasswordResetToken = createAsyncThunk('auth/requestPasswordResetToken', async (email: string, thunkAPI) =>{
+    try {
+        return await authService.requestPasswordResetToken(email)
+        
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
 
 export const authSlice = createSlice({
     name: 'auth',
@@ -166,6 +198,32 @@ export const authSlice = createSlice({
                 state.user = action.payload
             })
             .addCase(verifyUser.rejected, (state, action) => {
+                state.isLoadingAuth = false
+                state.isSuccess = false
+                state.isError = true
+                state.message = action.payload as string
+            })
+            .addCase(updatePassword.pending, (state) => {
+                state.isLoadingAuth = true
+            })
+            .addCase(updatePassword.fulfilled, (state, action) => {
+                state.isLoadingAuth = false
+                state.isSuccess = true
+            })
+            .addCase(updatePassword.rejected, (state, action) => {
+                state.isLoadingAuth = false
+                state.isSuccess = false
+                state.isError = true
+                state.message = action.payload as string
+            })
+            .addCase(requestPasswordResetToken.pending, (state) => {
+                state.isLoadingAuth = true
+            })
+            .addCase(requestPasswordResetToken.fulfilled, (state, action) => {
+                state.isLoadingAuth = false
+                state.isSuccess = true
+            })
+            .addCase(requestPasswordResetToken.rejected, (state, action) => {
                 state.isLoadingAuth = false
                 state.isSuccess = false
                 state.isError = true
