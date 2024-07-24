@@ -24,7 +24,10 @@ const userSchema = mongoose.Schema({
     }],
     verified: {
         type: Boolean
-    }
+    }, 
+    passwordTokens: [{
+        type: String
+    }]
 
 },
     {

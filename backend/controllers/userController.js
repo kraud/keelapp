@@ -6,6 +6,7 @@ const Friendship = require('../models/friendshipModel')
 const Token = require('../models/tokenModel')
 const sendMail = require('../utils/sendEmail')
 const crypto = require('crypto')
+const mongoose = require("mongoose");
 
 function queryParamToBool(value) {
     return ((value+'').toLowerCase() === 'true')
@@ -312,6 +313,88 @@ const verifyUser = asyncHandler(async(req, res) => {
 
 })
 
+// @desc    Request token for password reset
+// @route   POST /api/users
+// @access  Public
+const requestPasswordReset = asyncHandler(async (req, res) => {
+    const email = req.body.email
+
+    const user = await User.findOne(
+        {
+            email: {
+                "$regex": email,
+                "$options": "i"
+            }
+        }
+    )
+
+    if (!user) {
+        res.status(400)
+        throw new Error("There is no user registered with the email given.")
+    }
+
+    // Generate new password token
+    const newPasswordToken = crypto.randomBytes(32).toString("hex")
+    user.passwordTokens.push(newPasswordToken)
+
+    // Save token in User
+    await User.findByIdAndUpdate(user.id, {
+        passwordTokens: user.passwordTokens
+    }, {new: true}).select({email: 1});
+
+    try {
+        // Send email with token
+        const url = `${process.env.BASE_URL}/resetPassword/${user.id}/${newPasswordToken}`;
+        await sendMail(user.email, "Password reset link", url) // TODO: improve confirmation email design
+
+        res.status(200).json({})
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({message:"Internal Server Error"})
+    }
+})
+
+// @desc    Update password
+// @route   PUT /api/users
+// @access  Public
+const updatePassword = asyncHandler(async (req, res) => {
+    const {userId, password, token} = req.body
+
+    let userObjectId;
+    try {
+        userObjectId = mongoose.Types.ObjectId(userId)
+    } catch (err) {
+        console.log(err)
+        res.status(400)
+        throw new Error("Invalid format for UserId")
+    }
+
+    const user = await User.findById(userObjectId)
+
+    if (!user) {
+        res.status(400)
+        throw new Error("Invalid Link (no user match).")
+    }
+
+    // Check token exists
+    if (user.passwordTokens === undefined || !user.passwordTokens.includes(token)) {
+        res.status(400)
+        throw new Error("Invalid token.")
+    }
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(password, salt)
+
+    // Save token in User
+    await User.findByIdAndUpdate(user.id,{
+        password: hashedPassword,
+        passwordTokens: [] //cleans tokens array
+    },{new: true})
+
+    res.status(200).json({})
+})
+
 // Generate JWT
 const generateToken = (id) => {
     return jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: '30d'})
@@ -325,6 +408,8 @@ module.exports = {
     updateUser,
     getUserById,
     queryParamToBool,
-    verifyUser
+    verifyUser,
+    requestPasswordReset,
+    updatePassword
 }
 

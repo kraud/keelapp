@@ -12,6 +12,7 @@ import {DisplayTag} from "../DisplayTag";
 import {checkEnvironmentAndIterationToDisplay} from "../../components/forms/commonFunctions";
 import NotFound from "../NotFound";
 import {VerificationUser} from "../VerificationUser";
+import {ResetPassword} from "../ResetPassword";
 
 export const routeVariantsAnimation = {
     initial: {
@@ -75,6 +76,12 @@ export function RoutesWithAnimation() {
                 path='/register'
                 element={
                     <Register/>
+                }
+            />
+            <Route
+                path='/resetPassword/:userId?/:tokenId?'
+                element={
+                    <ResetPassword/>
                 }
             />
             {(checkEnvironmentAndIterationToDisplay(3)) &&

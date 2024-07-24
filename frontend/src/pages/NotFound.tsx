@@ -8,6 +8,7 @@ import {motion} from "framer-motion";
 import globalTheme from "../theme/theme";
 import Typography from "@mui/material/Typography";
 import {getIconByEnvironment} from "../components/GeneralUseComponents";
+import {Lang} from "../ts/enums";
 
 
 export function NotFound() {
@@ -77,10 +78,10 @@ export function NotFound() {
                 >
                     <SpinningText
                         translations={[
-                            "Nothing to see here...",
-                            "Nada que ver por aquí...",
-                            "Es gibt hier nichts zu sehen...",
-                            "Siin pole midagi näha..."
+                            {language: Lang.EN, label: "Nothing to see here..."},
+                            {language: Lang.ES, label: "Nada que ver por aquí..."},
+                            {language: Lang.DE, label: "Es gibt hier nichts zu sehen..."},
+                            {language: Lang.EE, label: "Siin pole midagi näha..."},
                         ]}
                         variant={
                             (smallToMid)

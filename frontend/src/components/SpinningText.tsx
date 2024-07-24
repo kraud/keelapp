@@ -2,9 +2,12 @@ import {Grid, Typography} from "@mui/material";
 import {motion, MotionValue, useSpring, useTransform} from "framer-motion";
 import React, {useEffect, useRef, useState} from "react";
 import Tooltip from "@mui/material/Tooltip";
+import {LanguageAndLabel} from "../ts/interfaces";
+import {useSelector} from "react-redux";
+import {Lang} from "../ts/enums";
 
 interface SpinningTextProps {
-    translations: string[] //  First item will be the translation displayed on the tooltip
+    translations: LanguageAndLabel[] //  First item will be the translation displayed on the tooltip
     variant: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "subtitle1" | "subtitle2" | "body1" | "body2"
     // TODO: until we can find a solution for no-width divs when position is absolute - we use a calculated value or this optional prop
     width?: number, // amount in pixels required to display the longest text inside props.translations - overrides the auto-calculated max
@@ -20,9 +23,21 @@ interface SpinningTextProps {
 // Component width is calculated on an approximation of average letter width, so it can be inaccurate at times.
 // Can be corrected with the optional "width" prop, if needed.
 export function SpinningText(props: SpinningTextProps) {
+    const {user} = useSelector((state: any) => state.auth)
     const [value, setValue] = useState(0)
     const reelSpins = 10
     let animatedValue = useSpring(value, { stiffness: 66, damping: 4 })
+
+    // we only display translations for languages that the user has selected (always at least 2)
+    const matchingLanguagesItems = ((user!!) && (user?.languages!!) && (user.languages.length > 1))
+        ? props.translations.filter((languageItem: LanguageAndLabel) => {
+            return(user.languages.includes(languageItem.language))
+        })
+        // TODO: this should default to UI-selected language (english for now)
+        : props.translations.filter((languageItem: LanguageAndLabel) => {
+            return(Lang.EN === (languageItem.language))
+        })
+
     const spinnerComponentAnimation = {
         initial: {
             opacity: 0,
@@ -71,30 +86,38 @@ export function SpinningText(props: SpinningTextProps) {
     const [shuffledArray, setShuffledArray] = useState<string[]>([])
     useEffect(() => {
         setShuffledArray(
-            props.translations
-            .map((value: string) => ({ value, sort: Math.random() }))
-            .sort((a, b) => a.sort - b.sort)
-            .map(({ value }) => value)
+            matchingLanguagesItems
+            .map((translationItem) => {
+                return ({translationItem: translationItem, sort: Math.random()})
+            })
+            .sort((a, b) => {
+                return (a.sort - b.sort)
+            })
+            .map((sortedItem ) => {
+                return(
+                    sortedItem.translationItem.label
+                )
+            })
         )
     },[])
 
     const calculateMaxWidth = () => {
         let longestString: number = 10
         let fontSize = getVariantData(props.variant, "width") as number
-        (props.translations).forEach((translation: string) => {
-            if(translation.length > longestString){
-                longestString = translation.length
+        (matchingLanguagesItems).forEach((translation: LanguageAndLabel) => {
+            if(translation.label?.length > longestString){
+                longestString = translation.label.length
             }
         })
         // multiply string length by size of font to determine the width
-        return(`${longestString * fontSize}px`)
+        return(`${(longestString * fontSize)+20}px`) // +20 for extra margin
     }
 
 
     return(
         <Tooltip
             // to avoid displaying the tooltip when the displayed translation is the first one on the array - already displayed
-            title={(shuffledArray[reelSpins%props.translations.length] !== props.translations[0]) ? props.translations[0] :""}
+            title={(shuffledArray[reelSpins%matchingLanguagesItems.length] !== matchingLanguagesItems[0].label) ? matchingLanguagesItems[0].label :""}
         >
             <Grid
                 container={true}
@@ -114,11 +137,11 @@ export function SpinningText(props: SpinningTextProps) {
                 {shuffledArray.map((translation, index) => {
                     return(
                         <TextItem
-                            key={index}
+                            key={`${index}-${translation}`}
                             mv={animatedValue}
                             index={index}
                             text={translation}
-                            wrapLength={props.translations.length}
+                            wrapLength={matchingLanguagesItems.length}
                             variant={props.variant}
                             sxProps={props.sxProps}
                             color={props.color}

@@ -173,3 +173,8 @@ type TagLabelNotAvailable = {
 type TagLabelAvailable = {
     isAvailable: true,
 }
+
+export interface LanguageAndLabel {
+    language: Lang,
+    label: string
+}

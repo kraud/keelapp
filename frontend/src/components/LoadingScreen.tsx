@@ -5,9 +5,10 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import globalTheme from "../theme/theme";
 import {Grid} from "@mui/material";
 import {SxProps} from "@mui/system";
+import {LanguageAndLabel} from "../ts/interfaces";
 
 interface LoadingScreenProps{
-    loadingTextList: string[],
+    loadingTextList: LanguageAndLabel[],
     loadingSubtitle?: string,
     callback: () => void,
     displayTime?: number,
