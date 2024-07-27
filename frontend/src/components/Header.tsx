@@ -101,7 +101,7 @@ function ResponsiveAppBar() {
                     break
                 }
                 case "Review": {
-                    if(checkEnvironmentAndIterationToDisplay(2)){
+                    if(checkEnvironmentAndIterationToDisplay(3)){
                         if((user.languages).length > 1){
                             navigate('/review')
                         } else {

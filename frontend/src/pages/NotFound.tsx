@@ -9,15 +9,23 @@ import globalTheme from "../theme/theme";
 import Typography from "@mui/material/Typography";
 import {getIconByEnvironment} from "../components/GeneralUseComponents";
 import {Lang} from "../ts/enums";
+import {useSelector} from "react-redux";
 
+interface NotFoundProps {
+    onHideHeader: (userExist: boolean) => void
+}
 
-export function NotFound() {
+export function NotFound(props: NotFoundProps) {
+    const {user} = useSelector((state: any) => state.auth)
+
     const lessThanSm = useMediaQuery(globalTheme.breakpoints.down("sm"))
     const smallToMid = useMediaQuery(globalTheme.breakpoints.between("sm", "md"))
     const navigate = useNavigate()
 
+    props.onHideHeader((user)!!)
+
     const onClick = () => {
-        navigate('/dashboard')
+        navigate('/')
     }
 
     return(
@@ -53,20 +61,27 @@ export function NotFound() {
                     </Typography>
                 </Grid>
                 <Grid
+                    container={true}
                     item={true}
-                    xs={8}
+                    xs={12}
+                    justifyContent={"center"}
                 >
-                    <Divider
-                        orientation="horizontal"
-                        flexItem={true}
-                        sx={{
-                            "&::before, &::after": {
-                                borderColor: "black",
-                            },
-                        }}
+                    <Grid
+                        item={true}
+                        xs={8}
                     >
-                        {getIconByEnvironment({})}
-                    </Divider>
+                        <Divider
+                            orientation="horizontal"
+                            flexItem={true}
+                            sx={{
+                                "&::before, &::after": {
+                                    borderColor: "black",
+                                },
+                            }}
+                        >
+                            {getIconByEnvironment({})}
+                        </Divider>
+                    </Grid>
                 </Grid>
             </Grid>
             <Grid
@@ -113,7 +128,7 @@ export function NotFound() {
                         }}
                         fontWeight={"bold"}
                     >
-                        (click here and go to Dashboard)
+                        {(user!!) ? "click here and go to Dashboard" : "click here to login"}
                     </Typography>
                 </Grid>
             </Grid>

@@ -466,37 +466,40 @@ export const Account = () => {
                                                 size="small"
                                                 color={"primary"}
                                                 onClick={() => navigate('/review')}
+                                                disabled={!(checkEnvironmentAndIterationToDisplay(3))}
                                             >
                                                 Click here to go review your saved words and add tags!
                                             </Button>
                                         </>
                                     }
                                     {/* FOLLOWED TAGS */}
-                                    <Grid
-                                        container={true}
-                                        justifyContent={'center'}
-                                        sx={{
-                                            marginTop: globalTheme.spacing(2),
-                                            marginBottom: globalTheme.spacing(1)
-                                        }}
-                                    >
+                                    {(checkEnvironmentAndIterationToDisplay(3)) &&
                                         <Grid
-                                            item={true}
-                                            xs={12}
+                                            container={true}
+                                            justifyContent={'center'}
+                                            sx={{
+                                                marginTop: globalTheme.spacing(2),
+                                                marginBottom: globalTheme.spacing(1)
+                                            }}
                                         >
-                                            <Divider
-                                                orientation="horizontal"
-                                                flexItem={true}
-                                                sx={{
-                                                    "&::before, &::after": {
-                                                        borderColor: "black",
-                                                    },
-                                                }}
+                                            <Grid
+                                                item={true}
+                                                xs={12}
                                             >
-                                                Followed tags
-                                            </Divider>
+                                                <Divider
+                                                    orientation="horizontal"
+                                                    flexItem={true}
+                                                    sx={{
+                                                        "&::before, &::after": {
+                                                            borderColor: "black",
+                                                        },
+                                                    }}
+                                                >
+                                                    Followed tags
+                                                </Divider>
+                                            </Grid>
                                         </Grid>
-                                    </Grid>
+                                    }
                                     {(followedTags!!)
                                         ?
                                         <ChipList
