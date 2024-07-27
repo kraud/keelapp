@@ -44,6 +44,10 @@ export function MainView(){
         toast.error('Your credentials have expired. Please login again.')
     }, [dispatch])
 
+    const onRenderNotFoundHideHeader = (userExist: boolean) => {
+        setDisplayToolbar((userExist))
+    }
+
     return(
         <>
             {
@@ -58,7 +62,9 @@ export function MainView(){
                 sx={componentStyles.mainColumn}
             >
                 <LocationProvider> {/* Framer Motion */}
-                    <RoutesWithAnimation/>
+                    <RoutesWithAnimation
+                        onRenderNotFound={(userExist: boolean) => onRenderNotFoundHideHeader(userExist)}
+                    />
                     {/* AuthVerify handles auto-logout when JWT expires */}
                     <AuthVerify
                         onLogOut={() => onLogOut()}

@@ -41,7 +41,12 @@ export const childVariantsAnimation = {
     },
 }
 
-export function RoutesWithAnimation() {
+
+interface RoutesWithAnimationProps {
+    onRenderNotFound: (userExist: boolean) => void
+}
+
+export function RoutesWithAnimation(props: RoutesWithAnimationProps) {
     const location = useLocation()
 
     return (
@@ -122,7 +127,9 @@ export function RoutesWithAnimation() {
             <Route
                 path='*'
                 element={
-                    <NotFound/>
+                    <NotFound
+                        onHideHeader={(userExist: boolean) => props.onRenderNotFound(userExist)}
+                    />
                 }
             />
         </Routes>
