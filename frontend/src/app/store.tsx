@@ -5,6 +5,7 @@ import notificationReducer from '../features/notifications/notificationSlice'
 import friendshipReducer from '../features/friendships/friendshipSlice'
 import userReducer from '../features/users/userSlice'
 import tagReducer from '../features/tags/tagSlice'
+import autocompletedTranslationReducer from '../features/autocompletedTranslation/autocompletedTranslationSlice'
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     notifications: notificationReducer,
     friendships: friendshipReducer,
     tags: tagReducer,
+    autocompletedTranslations: autocompletedTranslationReducer,
   },
 });
 

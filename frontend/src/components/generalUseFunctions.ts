@@ -474,3 +474,13 @@ export function getIntersectionBetweenLists (a: any[], b: any[]) {
 }
 
 export const waitDelay = (ms: number) => new Promise(res => setTimeout(res, ms))
+
+
+let timerID: any
+
+export function setTimerTriggerFunction(functionToRunAfterTimer: () => void, timer?: number) {
+    clearTimeout(timerID)
+    timerID = setTimeout(() => {
+        functionToRunAfterTimer()
+    }, (timer) ? timer :450)
+}
