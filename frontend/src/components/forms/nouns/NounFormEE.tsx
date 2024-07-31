@@ -300,9 +300,6 @@ export function NounFormEE(props: NounFormEEProps) {
                                                 : "Please input 'Ainsus nimetav' first."
                                         }
                                     >
-                                        {/* NB! 'span' is required so Tooltip still works when button is disabled */}
-                                        {/*<span>*/}
-                                        {/*</span>*/}
                                         {getIconButton()}
                                     </Tooltip>
                                 </Grid>

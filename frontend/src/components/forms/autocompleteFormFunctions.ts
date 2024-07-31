@@ -1,5 +1,4 @@
-import {Lang, NounCases, PartOfSpeech} from "../../ts/enums";
-import {toast} from "react-toastify";
+import {Lang, NounCases} from "../../ts/enums";
 import {TranslationItem} from "../../ts/interfaces";
 
 interface PartOfSpeechStructure {
@@ -113,6 +112,66 @@ export const sanitizeDataStructureEENoun = (request: WordSearchResultStructure):
     } else {
         return({
             foundNoun: false,
+        })
+    }
+}
+
+// TODO: could it be simplified to a single sanitized data structure for all?
+export type sanitizeDataStructureESVerbResponse = {
+    foundVerb: boolean,
+} & (sanitizeDataStructureESVerbResponseFound | sanitizeDataStructureESVerbResponseNotFound)
+
+type sanitizeDataStructureESVerbResponseFound = {
+    foundVerb: true,
+    wordData: TranslationItem
+}
+type sanitizeDataStructureESVerbResponseNotFound = {
+    foundVerb: false,
+}
+
+// from the API we receive too much data, so we take only what we're currently expecting to use
+export const sanitizeDataStructureESVerb = (request: any): sanitizeDataStructureESVerbResponse => {
+    if('condition'){ // TODO: depending on response structure add condition here (should it be done on BE?)
+        const formattedESVerb: TranslationItem = {
+            language: Lang.ES,
+            cases: [
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'SgN'),
+                    caseName: NounCases.singularNimetavEE
+                },
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'PlN'),
+                    caseName: NounCases.pluralNimetavEE
+                },
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'SgG'),
+                    caseName: NounCases.singularOmastavEE
+                },
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'PlG'),
+                    caseName: NounCases.pluralOmastavEE
+                },
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'SgP'),
+                    caseName: NounCases.singularOsastavEE
+                },
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'PlP'),
+                    caseName: NounCases.pluralOsastavEE
+                },
+                {
+                    word: getShortFormEENounIfExist(request.searchResult[0].wordForms),
+                    caseName: NounCases.shortFormEE
+                }
+            ]
+        }
+        return({
+            foundVerb: true,
+            wordData: formattedESVerb
+        })
+    } else {
+        return({
+            foundVerb: false,
         })
     }
 }

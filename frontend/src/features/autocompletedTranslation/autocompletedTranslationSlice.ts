@@ -1,10 +1,14 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import autocompletedTranslationService from "./autocompletedTranslationService";
-import {sanitizeDataStructureEENoun} from "../../components/forms/autocompleteFormFunctions";
+import {
+    sanitizeDataStructureEENoun,
+    sanitizeDataStructureESVerb
+} from "../../components/forms/autocompleteFormFunctions";
 
 
 interface autocompletedTranslationSliceState {
     autocompletedTranslationNounEE: any,
+    autocompletedTranslationVerbES: any,
     isErrorAT: boolean,
     isSuccessAT: boolean,
     isLoadingAT: boolean,
@@ -13,6 +17,7 @@ interface autocompletedTranslationSliceState {
 
 const initialState: autocompletedTranslationSliceState = {
     autocompletedTranslationNounEE: undefined,
+    autocompletedTranslationVerbES: undefined,
 
     isErrorAT: false,
     isSuccessAT: false,
@@ -26,6 +31,22 @@ export const getAutocompletedEstonianNounData = createAsyncThunk(`autocompleteTr
         // @ts-ignore
         // const token = thunkAPI.getState().auth.user.token
         return await autocompletedTranslationService.getEstonianNounData(nounEESingularNominative)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+// Get Estonian translation data for a noun using the singular nominative form
+export const getAutocompletedSpanishVerbData = createAsyncThunk(`autocompleteTranslation/getESVerb`, async (verbESInfinitive: string, thunkAPI) => {
+    try {
+        return await autocompletedTranslationService.getSpanishVerbData(verbESInfinitive)
     } catch(error: any) {
         const message = (
                 error.response &&
@@ -66,6 +87,29 @@ export const autocompletedTranslationSlice = createSlice({
                 }
             })
             .addCase(getAutocompletedEstonianNounData.rejected, (state, action) => {
+                state.isLoadingAT = false
+                state.isErrorAT = true
+                state.messageAT = action.payload as string
+            })
+            .addCase(getAutocompletedSpanishVerbData.pending, (state) => {
+                state.isLoadingAT = true
+            })
+            .addCase(getAutocompletedSpanishVerbData.fulfilled, (state, action) => {
+                const verbESDataToStore = sanitizeDataStructureESVerb(action.payload)
+                if(verbESDataToStore.foundVerb){
+                    state.isLoadingAT = false
+                    state.isSuccessAT = true
+                    state.messageAT = initialState.messageAT
+                    state.autocompletedTranslationVerbES = verbESDataToStore.wordData
+                } else {
+                    state.isLoadingAT = false
+                    state.isSuccessAT = false
+                    state.isErrorAT = true
+                    state.messageAT = "There is not information in our system for that word."
+                    state.autocompletedTranslationVerbES = initialState.autocompletedTranslationVerbES
+                }
+            })
+            .addCase(getAutocompletedSpanishVerbData.rejected, (state, action) => {
                 state.isLoadingAT = false
                 state.isErrorAT = true
                 state.messageAT = action.payload as string
