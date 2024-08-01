@@ -219,6 +219,7 @@ export function TranslationFormGeneric(props: WordFormGenericProps) {
                         container={true}
                         spacing={1}
                         justifyContent={"flex-start"}
+                        alignItems={"flex-end"}
                         xs={"auto"} // so it grows to use only the necessary width to render the buttons
                     >
                         <Grid

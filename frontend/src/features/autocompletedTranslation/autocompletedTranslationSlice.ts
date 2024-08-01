@@ -43,10 +43,12 @@ export const getAutocompletedEstonianNounData = createAsyncThunk(`autocompleteTr
     }
 })
 
-// Get Estonian translation data for a noun using the singular nominative form
+// Get Spanish translation data for a verb using the infinitive form
 export const getAutocompletedSpanishVerbData = createAsyncThunk(`autocompleteTranslation/getESVerb`, async (verbESInfinitive: string, thunkAPI) => {
     try {
-        return await autocompletedTranslationService.getSpanishVerbData(verbESInfinitive)
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await autocompletedTranslationService.getSpanishVerbData(token, verbESInfinitive)
     } catch(error: any) {
         const message = (
                 error.response &&
@@ -77,7 +79,7 @@ export const autocompletedTranslationSlice = createSlice({
                     state.isLoadingAT = false
                     state.isSuccessAT = true
                     state.messageAT = initialState.messageAT
-                    state.autocompletedTranslationNounEE = nounEEDataToStore.wordData
+                    state.autocompletedTranslationNounEE = nounEEDataToStore.nounData
                 } else {
                     state.isLoadingAT = false
                     state.isSuccessAT = false
@@ -100,7 +102,7 @@ export const autocompletedTranslationSlice = createSlice({
                     state.isLoadingAT = false
                     state.isSuccessAT = true
                     state.messageAT = initialState.messageAT
-                    state.autocompletedTranslationVerbES = verbESDataToStore.wordData
+                    state.autocompletedTranslationVerbES = verbESDataToStore.verbData
                 } else {
                     state.isLoadingAT = false
                     state.isSuccessAT = false

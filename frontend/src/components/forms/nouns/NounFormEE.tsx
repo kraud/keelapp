@@ -7,8 +7,6 @@ import {TextInputFormWithHook} from "../../TextInputFormHook";
 import {TranslationItem, WordItem} from "../../../ts/interfaces";
 import {Lang, NounCases} from "../../../ts/enums";
 import {getDisabledInputFieldDisplayLogic, getWordByCase} from "../commonFunctions";
-import Button from "@mui/material/Button";
-import Tooltip from "@mui/material/Tooltip";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../../../app/store";
 import {
@@ -16,9 +14,7 @@ import {
 } from "../../../features/autocompletedTranslation/autocompletedTranslationSlice";
 import LinearIndeterminate from "../../Spinner";
 import {setTimerTriggerFunction} from "../../generalUseFunctions";
-import DoneIcon from '@mui/icons-material/Done';
-import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
-import CloseIcon from '@mui/icons-material/Close';
+import {AutocompleteButtonWithStatus} from "../AutocompleteButtonWithStatus";
 
 interface NounFormEEProps {
     currentTranslationData: TranslationItem,
@@ -207,53 +203,6 @@ export function NounFormEE(props: NounFormEEProps) {
         }
     },[singularNimetav])
 
-    const getIconButton = () => {
-        if((singularNimetav !== "") && !isLoadingAT){
-            if(autocompletedTranslationNounEE !== undefined){
-                return(
-                    <Button
-                        variant={'contained'}
-                        color={'success'}
-                        sx={{
-                            paddingX: '6px',
-                            minWidth: 'max-content',
-                        }}
-                    >
-                        <DoneIcon/>
-                    </Button>
-                )
-            } else {
-                return(
-                    <Button
-                        variant={'contained'}
-                        color={'error'}
-                        sx={{
-                            paddingX: '6px',
-                            minWidth: 'max-content',
-                        }}
-                    >
-                        <CloseIcon/>
-                    </Button>
-                )
-            }
-        } else {
-            return(
-                <Button
-                    variant={'contained'}
-                    color={'secondary'}
-                    sx={{
-                        paddingX: '6px',
-                        minWidth: 'max-content',
-                    }}
-                >
-                    <QuestionMarkIcon/>
-                </Button>
-            )
-        }
-
-    }
-
-
     return(
         <Grid
             container={true}
@@ -279,53 +228,17 @@ export function NounFormEE(props: NounFormEEProps) {
                             justifyContent={'center'}
                             alignItems={"flex-end"}
                         >
-                            <Grid
-                                container={true}
-                                item={true}
-                                spacing={1}
-                                xs={12}
-                                lg={6}
-                                xl={3}
-                            >
-                                <Grid
-                                    item={true}
-                                    xs={'auto'}
-                                >
-                                    <Tooltip
-                                        title={
-                                            (singularNimetav!!)
-                                                ? (autocompletedTranslationNounEE)
-                                                    ? "There is information about this word stored in our system."
-                                                    : "Sorry, we don't know this word!"
-                                                : "Please input 'Ainsus nimetav' first."
-                                        }
-                                    >
-                                        {getIconButton()}
-                                    </Tooltip>
-                                </Grid>
-                                <Grid
-                                    item={true}
-                                    xs
-                                >
-                                    <Button
-                                        variant={'contained'}
-                                        color={'primary'}
-                                        onClick={() => onAutocompleteClick()}
-                                        disabled={(
-                                            (!(singularNimetav !== ""))
-                                            ||
-                                            (
-                                                (singularNimetav !== "") && (autocompletedTranslationNounEE === undefined)
-                                            )
-                                            ||
-                                            (isLoadingAT)
-                                        )}
-                                        fullWidth={true}
-                                    >
-                                        Autocomplete
-                                    </Button>
-                                </Grid>
-                            </Grid>
+                            <AutocompleteButtonWithStatus
+                                tooltipLabels={{
+                                    emptyQuery: "Please input 'Ainsus nimetav' first.",
+                                    noMatch: "Sorry, we don't know this word!",
+                                    foundMatch: "There is information about this word stored in our system."
+                                }}
+                                queryValue={singularNimetav}
+                                autocompleteResponse={autocompletedTranslationNounEE}
+                                loadingState={isLoadingAT}
+                                onAutocompleteClick={() => onAutocompleteClick()}
+                            />
                             <Grid
                                 item={true}
                                 xs={9}

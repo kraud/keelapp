@@ -1,5 +1,5 @@
-import {Lang, NounCases} from "../../ts/enums";
-import {TranslationItem} from "../../ts/interfaces";
+import {Lang, NounCases, VerbCases} from "../../ts/enums"
+import {TranslationItem} from "../../ts/interfaces"
 
 interface PartOfSpeechStructure {
     code: string
@@ -47,7 +47,7 @@ export type sanitizeDataStructureEENounResponse = {
 
 type sanitizeDataStructureEENounResponseFound = {
     foundNoun: true,
-    wordData: TranslationItem
+    nounData: TranslationItem
 }
 type sanitizeDataStructureEENounResponseNotFound = {
     foundNoun: false,
@@ -107,7 +107,7 @@ export const sanitizeDataStructureEENoun = (request: WordSearchResultStructure):
         }
         return({
             foundNoun: true,
-            wordData: formattedEENoun
+            nounData: formattedEENoun
         })
     } else {
         return({
@@ -123,51 +123,105 @@ export type sanitizeDataStructureESVerbResponse = {
 
 type sanitizeDataStructureESVerbResponseFound = {
     foundVerb: true,
-    wordData: TranslationItem
+    verbData: TranslationItem
 }
 type sanitizeDataStructureESVerbResponseNotFound = {
     foundVerb: false,
 }
 
+interface VerbConjugation {
+    indicative: {
+        present: TenseConjugation
+        imperfect: TenseConjugation
+        preterite: TenseConjugation
+        future: TenseConjugation
+        perfect: TenseConjugation
+        pluperfect: TenseConjugation
+        futurePerfect: TenseConjugation
+        preteritePerfect: TenseConjugation
+    }
+    subjunctive: {
+        present: TenseConjugation
+        'imperfect -ra': TenseConjugation
+        'imperfect -se': TenseConjugation
+        future: TenseConjugation
+        perfect: TenseConjugation
+        pluperfect: TenseConjugation
+        futurePerfect: TenseConjugation
+    }
+    conditional: {
+        present: TenseConjugation
+        perfect: TenseConjugation
+    }
+    imperative: {
+        affirmative: ImperativeConjugation
+        negative: ImperativeConjugation
+    }
+}
+
+interface TenseConjugation {
+    singular: PersonConjugation
+    plural: PersonConjugation
+}
+
+interface PersonConjugation {
+    first: string
+    second: string
+    third: string
+}
+
+interface ImperativeConjugation {
+    singular: {
+        second: string
+        third: string
+    }
+    plural: {
+        first: string
+        second: string
+        third: string
+    }
+}
+
+interface VerbESResponse {
+    verbFound: boolean,
+    verbData: VerbConjugation
+}
+
 // from the API we receive too much data, so we take only what we're currently expecting to use
-export const sanitizeDataStructureESVerb = (request: any): sanitizeDataStructureESVerbResponse => {
-    if('condition'){ // TODO: depending on response structure add condition here (should it be done on BE?)
+export const sanitizeDataStructureESVerb = (request: VerbESResponse): sanitizeDataStructureESVerbResponse => {
+    if(request.verbFound!!){
         const formattedESVerb: TranslationItem = {
             language: Lang.ES,
             cases: [
                 {
-                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'SgN'),
-                    caseName: NounCases.singularNimetavEE
+                    word: request.verbData.indicative.present.singular.first,
+                    caseName: VerbCases.indicativePresent1sES
                 },
                 {
-                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'PlN'),
-                    caseName: NounCases.pluralNimetavEE
+                    word: request.verbData.indicative.present.singular.second,
+                    caseName: VerbCases.indicativePresent2sES
                 },
                 {
-                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'SgG'),
-                    caseName: NounCases.singularOmastavEE
+                    word: request.verbData.indicative.present.singular.third,
+                    caseName: VerbCases.indicativePresent3sES
                 },
                 {
-                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'PlG'),
-                    caseName: NounCases.pluralOmastavEE
+                    word: request.verbData.indicative.present.plural.first,
+                    caseName: VerbCases.indicativePresent1plES
                 },
                 {
-                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'SgP'),
-                    caseName: NounCases.singularOsastavEE
+                    word: request.verbData.indicative.present.plural.second,
+                    caseName: VerbCases.indicativePresent2plES
                 },
                 {
-                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'PlP'),
-                    caseName: NounCases.pluralOsastavEE
-                },
-                {
-                    word: getShortFormEENounIfExist(request.searchResult[0].wordForms),
-                    caseName: NounCases.shortFormEE
+                    word: request.verbData.indicative.present.plural.third,
+                    caseName: VerbCases.indicativePresent3plES
                 }
             ]
         }
         return({
             foundVerb: true,
-            wordData: formattedESVerb
+            verbData: formattedESVerb
         })
     } else {
         return({

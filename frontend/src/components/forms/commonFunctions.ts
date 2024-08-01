@@ -1,7 +1,7 @@
-import {AdjectiveCases, AdverbCases, NounCases, PartOfSpeech} from "../../ts/enums";
+import {AdjectiveCases, AdverbCases, NounCases, PartOfSpeech, VerbCases} from "../../ts/enums";
 import {WordItem, TranslationItem} from "../../ts/interfaces";
 
-export function getWordByCase(searchCase: NounCases | AdjectiveCases | AdverbCases, currentTranslationData: TranslationItem) {
+export function getWordByCase(searchCase: NounCases | AdjectiveCases | AdverbCases | VerbCases, currentTranslationData: TranslationItem) {
     const returnValue = (currentTranslationData.cases).find((wordCase: WordItem) => {
         return (wordCase.caseName === searchCase)
     })

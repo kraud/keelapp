@@ -7,8 +7,13 @@ const getEstonianNounData = async (nounEESingularNominative: string) => {
     const response = await axios.get(`https://api.sonapi.ee/v2/${nounEESingularNominative}`)
     return(response.data)
 }
-const getSpanishVerbData = async (verbESInfinitive: string) => {
-    const response = await axios.get(`${API_URL}/spanish/verb/${verbESInfinitive}`)
+const getSpanishVerbData = async (token: any, verbESInfinitive: string) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+    const response = await axios.get(`${API_URL}/spanish/verb/${verbESInfinitive}`, config)
     return(response.data)
 }
 

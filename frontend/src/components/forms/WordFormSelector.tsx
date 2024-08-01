@@ -12,6 +12,7 @@ import {AdjectiveFormEE} from "./adjectives/AdjectiveFormEE";
 import {AdverbFormEN} from "./adverbs/AdverbFormEN";
 import {AdverbFormES} from "./adverbs/AdverbFormES";
 import {AdverbFormDE} from "./adverbs/AdverbFormDE";
+import {VerbFormES} from "./verbs/VerbFormES";
 
 interface WordFormSelectorProps {
     currentLang?: Lang,
@@ -35,9 +36,31 @@ export function WordFormSelector(props: WordFormSelectorProps) {
             case (PartOfSpeech.adverb): {
                 return(getAdverbForm())
             }
+            case (PartOfSpeech.verb): {
+                return(getVerbForm())
+            }
             /* TODO: add remaining part of speech, as the forms are made */
             default: {
                 return(<p>That part of speech is not available yet</p>)
+            }
+        }
+    }
+
+    const getVerbForm = () => {
+        switch (props.currentLang) {
+            case (Lang.ES): {
+                return(
+                    <VerbFormES
+                        currentTranslationData={props.currentTranslationData}
+                        updateFormData={(formData: TranslationItem) => {
+                            props.updateFormData(formData)
+                        }}
+                        displayOnly={props.displayFieldsAsText}
+                    />
+                )
+            }
+            default: {
+                return(<p>That language is not available yet</p>)
             }
         }
     }
