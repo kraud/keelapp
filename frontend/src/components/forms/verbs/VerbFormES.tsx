@@ -20,7 +20,7 @@ interface VerbFormESProps {
     updateFormData: (formData: TranslationItem) => void
     displayOnly?: boolean
 }
-// Displays the fields required to add the estonian translation of a verb (and handles the validations)
+// Displays the fields required to add the Spanish translation of a verb (and handles the validations)
 export function VerbFormES(props: VerbFormESProps) {
     const dispatch = useDispatch<AppDispatch>()
     const {autocompletedTranslationVerbES, isErrorAT, isSuccessAT, isLoadingAT, messageAT} = useSelector((state: any) => state.autocompletedTranslations)
@@ -124,7 +124,6 @@ export function VerbFormES(props: VerbFormESProps) {
     ])
 
     const setValuesInForm = (translationDataToInsert: TranslationItem) => {
-        console.log('translationDataToInsert', translationDataToInsert)
         const infinitiveNonFiniteSimpleValue: string = getWordByCase(VerbCases.infinitiveNonFiniteSimpleES, translationDataToInsert)
         const gerundNonFiniteSimpleValue: string = getWordByCase(VerbCases.gerundNonFiniteSimpleES, translationDataToInsert)
         const participleNonFiniteSimpleValue: string = getWordByCase(VerbCases.participleNonFiniteSimpleES, translationDataToInsert)
@@ -172,7 +171,7 @@ export function VerbFormES(props: VerbFormESProps) {
                 shouldTouch: true
             }
         )
-        setParticipleNonFiniteSimple(indicativePresent1sValue)
+        setIndicativePresent1s(indicativePresent1sValue)
         setValue(
             'indicativePresent2s',
             indicativePresent2sValue,
@@ -181,7 +180,7 @@ export function VerbFormES(props: VerbFormESProps) {
                 shouldTouch: true
             }
         )
-        setParticipleNonFiniteSimple(indicativePresent2sValue)
+        setIndicativePresent2s(indicativePresent2sValue)
         setValue(
             'indicativePresent3s',
             indicativePresent3sValue,
@@ -190,7 +189,7 @@ export function VerbFormES(props: VerbFormESProps) {
                 shouldTouch: true
             }
         )
-        setParticipleNonFiniteSimple(indicativePresent3sValue)
+        setIndicativePresent3s(indicativePresent3sValue)
         setValue(
             'indicativePresent1pl',
             indicativePresent1plValue,
@@ -199,7 +198,7 @@ export function VerbFormES(props: VerbFormESProps) {
                 shouldTouch: true
             }
         )
-        setParticipleNonFiniteSimple(indicativePresent1plValue)
+        setIndicativePresent1pl(indicativePresent1plValue)
         setValue(
             'indicativePresent2pl',
             indicativePresent2plValue,
@@ -208,7 +207,7 @@ export function VerbFormES(props: VerbFormESProps) {
                 shouldTouch: true
             }
         )
-        setParticipleNonFiniteSimple(indicativePresent2plValue)
+        setIndicativePresent2pl(indicativePresent2plValue)
         setValue(
             'indicativePresent3pl',
             indicativePresent3plValue,
@@ -217,7 +216,7 @@ export function VerbFormES(props: VerbFormESProps) {
                 shouldTouch: true
             }
         )
-        setParticipleNonFiniteSimple(indicativePresent3plValue)
+        setIndicativePresent3pl(indicativePresent3plValue)
     }
 
     // This will only be run on first render
@@ -464,7 +463,7 @@ export function VerbFormES(props: VerbFormESProps) {
                         >
                             <TextInputFormWithHook
                                 control={control}
-                                label={"'Él/Ella/eso'"}
+                                label={"Él/Ella/eso"}
                                 name={"indicativePresent3s"}
                                 defaultValue={""}
                                 errors={errors.indicativePresent3s}

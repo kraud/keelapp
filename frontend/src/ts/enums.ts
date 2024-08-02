@@ -207,6 +207,37 @@ export enum VerbCases {
     imperative1plES = "imperative1plES",
     imperative2plES = "imperative2plES",
     imperative3plES = "imperative3plES",
+
+
+    // ============== ESTONIAN: ==============
+    // Pronouns:
+    // Mina (ma): 1st person singular (1s)
+    // Sina (Sa): 2nd person singular (2s)
+    // Tema (Ta): 3rd person singular (neutral) (3s)
+    // Meie (me): 1nd person plural (1pl)
+    // Teie  (Te): 2nd person plural (2pl)
+    // Nad (nad): 3rd person plural (3pl)
+
+    // KINDEL: --------------
+    infinitiveMaEE = 'infinitiveMaEE',
+    infinitiveDaEE = 'infinitiveDaEE',
+
+    // present (positive)
+    // TODO: missing present (negative: ei+nud variant - same for all pronouns same except 'other'
+    kindelPresent1sEE = 'kindelPresent1sEE',
+    kindelPresent2sEE = 'kindelPresent2sEE',
+    kindelPresent3sEE = 'kindelPresent3sEE',
+    kindelPresent1plEE = 'kindelPresent1plEE',
+    kindelPresent2plEE = 'kindelPresent2plEE',
+    kindelPresent3plEE = 'kindelPresent3plEE',
+    // simple past (positive)
+    // TODO: missing present (negative: ei+nud variant - same for all pronouns same except 'other'
+    kindelSimplePast1sEE = 'kindelSimplePast1sEE',
+    kindelSimplePast2sEE = 'kindelSimplePast2sEE',
+    kindelSimplePast3sEE = 'kindelSimplePast3sEE',
+    kindelSimplePast1plEE = 'kindelSimplePast1plEE',
+    kindelSimplePast2plEE = 'kindelSimplePast2plEE',
+    kindelSimplePast3plEE = 'kindelSimplePast3plEE',
 }
 
 export enum Lang {

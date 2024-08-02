@@ -195,6 +195,29 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
                     }
                 }
             }
+            case ("Verb"): {
+                switch (translation.language){
+                    case ("English"): {
+                        return({
+                            dataEN: (translation.cases.find(wordCase => (wordCase.caseName === 'simplePresent1sEN'))).word,
+                        })
+                    }
+                    case ("Spanish"): {
+                        return({
+                            dataES: (translation.cases.find(wordCase => (wordCase.caseName === 'infinitiveNonFiniteSimpleES'))).word,
+                        })
+                    }
+                    case ("Estonian"): {
+                        return({
+                            dataEE: (translation.cases.find(wordCase => (wordCase.caseName === 'infinitiveMaEE'))).word,
+                        })
+                    }
+                    default: {
+                        res.status(400)
+                        throw new Error("Language not found for this part of speech (Adjective)")
+                    }
+                }
+            }
             default: {
                 res.status(400)
                 throw new Error("Part of speech not found")

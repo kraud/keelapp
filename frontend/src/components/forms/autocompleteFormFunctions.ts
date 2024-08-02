@@ -41,15 +41,15 @@ interface WordSearchResultStructure {
     translations: TranslationStructure[]
 }
 
-export type sanitizeDataStructureEENounResponse = {
+export type sanitizeDataStructureNounResponse = {
     foundNoun: boolean,
-} & (sanitizeDataStructureEENounResponseFound | sanitizeDataStructureEENounResponseNotFound)
+} & (sanitizeDataStructureNounResponseFound | sanitizeDataStructureNounResponseNotFound)
 
-type sanitizeDataStructureEENounResponseFound = {
+type sanitizeDataStructureNounResponseFound = {
     foundNoun: true,
     nounData: TranslationItem
 }
-type sanitizeDataStructureEENounResponseNotFound = {
+type sanitizeDataStructureNounResponseNotFound = {
     foundNoun: false,
 }
 
@@ -70,7 +70,7 @@ const getShortFormEENounIfExist = (wordFormsList: WordFormStructure[]): string =
 }
 
 // from the API we receive too much data, so we take only what we're currently expecting to use
-export const sanitizeDataStructureEENoun = (request: WordSearchResultStructure): sanitizeDataStructureEENounResponse => {
+export const sanitizeDataStructureEENoun = (request: WordSearchResultStructure): sanitizeDataStructureNounResponse => {
     if((request.searchResult.length > 0) && (request.searchResult[0].wordClasses[0] === 'noomen')){
         const formattedEENoun: TranslationItem = {
             language: Lang.EE,
@@ -115,17 +115,68 @@ export const sanitizeDataStructureEENoun = (request: WordSearchResultStructure):
         })
     }
 }
+// from the API we receive too much data, so we take only what we're currently expecting to use
+export const sanitizeDataStructureEEVerb = (request: WordSearchResultStructure): sanitizeDataStructureVerbResponse => {
+    // TODO: review if we needed to check the array of searchResult in some cases, to find the verb result
+    if((request.searchResult.length > 0) && (request.searchResult[0].wordClasses[0] === 'verb')){
+        const formattedEEVerb: TranslationItem = {
+            language: Lang.EE,
+            cases: [
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,"Sup"),
+                    caseName: VerbCases.infinitiveMaEE
+                },
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,"Inf"),
+                    caseName: VerbCases.infinitiveDaEE
+                },
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'IndPrSg1'),
+                    caseName: VerbCases.kindelPresent1sEE
+                },
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'IndPrSg2'),
+                    caseName: VerbCases.kindelPresent2sEE
+                },
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'IndPrSg3'),
+                    caseName: VerbCases.kindelPresent3sEE
+                },
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'IndPrPl1'),
+                    caseName: VerbCases.kindelPresent1plEE
+                },
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'IndPrPl2'),
+                    caseName: VerbCases.kindelPresent2plEE
+                },
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'IndPrPl3'),
+                    caseName: VerbCases.kindelPresent3plEE
+                },
+            ]
+        }
+        return({
+            foundVerb: true,
+            verbData: formattedEEVerb
+        })
+    } else {
+        return({
+            foundVerb: false,
+        })
+    }
+}
 
 // TODO: could it be simplified to a single sanitized data structure for all?
-export type sanitizeDataStructureESVerbResponse = {
+export type sanitizeDataStructureVerbResponse = {
     foundVerb: boolean,
-} & (sanitizeDataStructureESVerbResponseFound | sanitizeDataStructureESVerbResponseNotFound)
+} & (sanitizeDataStructureVerbResponseFound | sanitizeDataStructureVerbResponseNotFound)
 
-type sanitizeDataStructureESVerbResponseFound = {
+type sanitizeDataStructureVerbResponseFound = {
     foundVerb: true,
     verbData: TranslationItem
 }
-type sanitizeDataStructureESVerbResponseNotFound = {
+type sanitizeDataStructureVerbResponseNotFound = {
     foundVerb: false,
 }
 
@@ -188,7 +239,7 @@ interface VerbESResponse {
 }
 
 // from the API we receive too much data, so we take only what we're currently expecting to use
-export const sanitizeDataStructureESVerb = (request: VerbESResponse): sanitizeDataStructureESVerbResponse => {
+export const sanitizeDataStructureESVerb = (request: VerbESResponse): sanitizeDataStructureVerbResponse => {
     if(request.verbFound!!){
         const formattedESVerb: TranslationItem = {
             language: Lang.ES,
