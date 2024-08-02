@@ -31,7 +31,7 @@ export function VerbFormES(props: VerbFormESProps) {
         infinitiveNonFiniteSimple: Yup.string()
             .required("Infinitive non-finite is required")
             .matches(/^[^0-9]+$/, 'Must not include numbers')
-            .matches(/^(?!.*\d).*(ar|er|ir)$/, "Please input infinitive form (ends in '-ar', '-er' or '-ir'."),
+            .matches(/^(?!.*\d).*(ar|er|ir)$/, "Please input infinitive form (ends in '-ar', '-er' or '-ir')."),
         gerundNonFiniteSimple: Yup.string()
             .required("Gerund non-finite is required")
             .matches(/^[^0-9]+$/, 'Must not include numbers'),
@@ -233,6 +233,7 @@ export function VerbFormES(props: VerbFormESProps) {
     const onAutocompleteClick = async () => {
         const completeFormWithAutocomplete = {
             ...autocompletedTranslationVerbES,
+            // NB! These fields are not included in BE autocomplete response, so we must manually include
             cases: [
                 ...autocompletedTranslationVerbES.cases,
                 {

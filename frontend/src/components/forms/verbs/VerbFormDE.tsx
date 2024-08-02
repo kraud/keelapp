@@ -10,44 +10,41 @@ import {getDisabledInputFieldDisplayLogic, getWordByCase} from "../commonFunctio
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../../../app/store";
 import {
-    getAutocompletedEstonianVerbData,
+    getAutocompletedGermanVerbData,
 } from "../../../features/autocompletedTranslation/autocompletedTranslationSlice";
 import LinearIndeterminate from "../../Spinner";
 import {setTimerTriggerFunction} from "../../generalUseFunctions";
 import {AutocompleteButtonWithStatus} from "../AutocompleteButtonWithStatus";
 import Typography from "@mui/material/Typography";
 
-interface VerbFormEEProps {
+interface VerbFormDEProps {
     currentTranslationData: TranslationItem,
     updateFormData: (formData: TranslationItem) => void
     displayOnly?: boolean
 }
 // Displays the fields required to add the estonian translation of a verb (and handles the validations)
-export function VerbFormEE(props: VerbFormEEProps) {
+export function VerbFormDE(props: VerbFormDEProps) {
     const dispatch = useDispatch<AppDispatch>()
-    const {autocompletedTranslationVerbEE, isErrorAT, isSuccessAT, isLoadingAT, messageAT} = useSelector((state: any) => state.autocompletedTranslations)
+    const {autocompletedTranslationVerbDE, isErrorAT, isSuccessAT, isLoadingAT, messageAT} = useSelector((state: any) => state.autocompletedTranslations)
 
     const { currentTranslationData } = props
 
     const validationSchema = Yup.object().shape({
-        infinitiveMa: Yup.string()
+        infinitive: Yup.string()
             .required("Infinitive non-finite is required")
             .matches(/^[^0-9]+$/, 'Must not include numbers')
-            .matches(/^(?!.*\d).*(ma)$/, "Please input infinitive form (ends in '-ma')."),
-        infinitiveDa: Yup.string()
-            .required("Gerund non-finite is required")
-            .matches(/^[^0-9]+$/, 'Must not include numbers'),
-        kindelPresent1s: Yup.string().nullable()
+            .matches(/^(?!.*\d).*(en|ern|eln)$/, "Please input infinitive form (ends in '-en', '-ern' '-eln')."),
+        indicativePresent1s: Yup.string().nullable()
             .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
-        kindelPresent2s: Yup.string().nullable()
+        indicativePresent2s: Yup.string().nullable()
             .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
-        kindelPresent3s: Yup.string().nullable()
+        indicativePresent3s: Yup.string().nullable()
             .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
-        kindelPresent1pl: Yup.string().nullable()
+        indicativePresent1pl: Yup.string().nullable()
             .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
-        kindelPresent2pl: Yup.string().nullable()
+        indicativePresent2pl: Yup.string().nullable()
             .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
-        kindelPresent3pl: Yup.string().nullable()
+        indicativePresent3pl: Yup.string().nullable()
             .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
     })
 
@@ -59,146 +56,131 @@ export function VerbFormEE(props: VerbFormEEProps) {
     })
 
     // Mandatory fields: can't be autocompleted
-    const [infinitiveMa, setInfinitiveMa] = useState("")
-    const [infinitiveDa, setInfinitiveDa] = useState("")
+    const [infinitive, setInfinitive] = useState("")
     // Optional fields: can be filled with autocomplete
     // Modo indicativo - tiempo simple - presente
-    const [kindelPresent1s, setKindelPresent1s] = useState("")
-    const [kindelPresent2s, setKindelPresent2s] = useState("")
-    const [kindelPresent3s, setKindelPresent3s] = useState("")
-    const [kindelPresent1pl, setKindelPresent1pl] = useState("")
-    const [kindelPresent2pl, setKindelPresent2pl] = useState("")
-    const [kindelPresent3pl, setKindelPresent3pl] = useState("")
+    const [indicativePresent1s, setIndicativePresent1s] = useState("")
+    const [indicativePresent2s, setIndicativePresent2s] = useState("")
+    const [indicativePresent3s, setIndicativePresent3s] = useState("")
+    const [indicativePresent1pl, setIndicativePresent1pl] = useState("")
+    const [indicativePresent2pl, setIndicativePresent2pl] = useState("")
+    const [indicativePresent3pl, setIndicativePresent3pl] = useState("")
 
     useEffect(() => {
         const currentCases: WordItem[] = [
             {
-                caseName: VerbCases.infinitiveMaEE,
-                word: infinitiveMa
+                caseName: VerbCases.infinitiveDE,
+                word: infinitive
             },
             {
-                caseName: VerbCases.infinitiveDaEE,
-                word: infinitiveDa
+                caseName: VerbCases.indicativePresent1sDE,
+                word: indicativePresent1s
             },
             {
-                caseName: VerbCases.kindelPresent1sEE,
-                word: kindelPresent1s
+                caseName: VerbCases.indicativePresent2sDE,
+                word: indicativePresent2s
             },
             {
-                caseName: VerbCases.kindelPresent2sEE,
-                word: kindelPresent2s
+                caseName: VerbCases.indicativePresent3sDE,
+                word: indicativePresent3s
             },
             {
-                caseName: VerbCases.kindelPresent3sEE,
-                word: kindelPresent3s
+                caseName: VerbCases.indicativePresent1plDE,
+                word: indicativePresent1pl
             },
             {
-                caseName: VerbCases.kindelPresent1plEE,
-                word: kindelPresent1pl
+                caseName: VerbCases.indicativePresent2plDE,
+                word: indicativePresent2pl
             },
             {
-                caseName: VerbCases.kindelPresent2plEE,
-                word: kindelPresent2pl
-            },
-            {
-                caseName: VerbCases.kindelPresent3plEE,
-                word: kindelPresent3pl
+                caseName: VerbCases.indicativePresent3plDE,
+                word: indicativePresent3pl
             },
         ]
         props.updateFormData({
-            language: Lang.EE,
+            language: Lang.DE,
             cases: currentCases,
             completionState: isValid,
             isDirty: isDirty
         })
     }, [
-        infinitiveMa, infinitiveDa, kindelPresent1s, kindelPresent2s, kindelPresent3s,
-        kindelPresent1pl, kindelPresent2pl, kindelPresent3pl, isValid
+        infinitive, indicativePresent1s, indicativePresent2s, indicativePresent3s,
+        indicativePresent1pl, indicativePresent2pl, indicativePresent3pl, isValid
     ])
 
     const setValuesInForm = (translationDataToInsert: TranslationItem) => {
-        const infinitiveMaValue: string = getWordByCase(VerbCases.infinitiveMaEE, translationDataToInsert)
-        const infinitiveDaValue: string = getWordByCase(VerbCases.infinitiveDaEE, translationDataToInsert)
+        const infinitiveValue: string = getWordByCase(VerbCases.infinitiveDE, translationDataToInsert)
 
-        const kindelPresent1sValue: string = getWordByCase(VerbCases.kindelPresent1sEE, translationDataToInsert)
-        const kindelPresent2sValue: string = getWordByCase(VerbCases.kindelPresent2sEE, translationDataToInsert)
-        const kindelPresent3sValue: string = getWordByCase(VerbCases.kindelPresent3sEE, translationDataToInsert)
-        const kindelPresent1plValue: string = getWordByCase(VerbCases.kindelPresent1plEE, translationDataToInsert)
-        const kindelPresent2plValue: string = getWordByCase(VerbCases.kindelPresent2plEE, translationDataToInsert)
-        const kindelPresent3plValue: string = getWordByCase(VerbCases.kindelPresent3plEE, translationDataToInsert)
+        const indicativePresent1sValue: string = getWordByCase(VerbCases.indicativePresent1sDE, translationDataToInsert)
+        const indicativePresent2sValue: string = getWordByCase(VerbCases.indicativePresent2sDE, translationDataToInsert)
+        const indicativePresent3sValue: string = getWordByCase(VerbCases.indicativePresent3sDE, translationDataToInsert)
+        const indicativePresent1plValue: string = getWordByCase(VerbCases.indicativePresent1plDE, translationDataToInsert)
+        const indicativePresent2plValue: string = getWordByCase(VerbCases.indicativePresent2plDE, translationDataToInsert)
+        const indicativePresent3plValue: string = getWordByCase(VerbCases.indicativePresent3plDE, translationDataToInsert)
 
         setValue(
-            'infinitiveMa',
-            infinitiveMaValue,
+            'infinitive',
+            infinitiveValue,
             {
                 shouldValidate: true,
                 shouldTouch: true
             }
         )
-        setInfinitiveMa(infinitiveMaValue)
+        setInfinitive(infinitiveValue)
         setValue(
-            'infinitiveDa',
-            infinitiveDaValue,
+            'indicativePresent1s',
+            indicativePresent1sValue,
             {
                 shouldValidate: true,
                 shouldTouch: true
             }
         )
-        setInfinitiveDa(infinitiveDaValue)
+        setIndicativePresent1s(indicativePresent1sValue)
         setValue(
-            'kindelPresent1s',
-            kindelPresent1sValue,
+            'indicativePresent2s',
+            indicativePresent2sValue,
             {
                 shouldValidate: true,
                 shouldTouch: true
             }
         )
-        setKindelPresent1s(kindelPresent1sValue)
+        setIndicativePresent2s(indicativePresent2sValue)
         setValue(
-            'kindelPresent2s',
-            kindelPresent2sValue,
+            'indicativePresent3s',
+            indicativePresent3sValue,
             {
                 shouldValidate: true,
                 shouldTouch: true
             }
         )
-        setKindelPresent2s(kindelPresent2sValue)
+        setIndicativePresent3s(indicativePresent3sValue)
         setValue(
-            'kindelPresent3s',
-            kindelPresent3sValue,
+            'indicativePresent1pl',
+            indicativePresent1plValue,
             {
                 shouldValidate: true,
                 shouldTouch: true
             }
         )
-        setKindelPresent3s(kindelPresent3sValue)
+        setIndicativePresent1pl(indicativePresent1plValue)
         setValue(
-            'kindelPresent1pl',
-            kindelPresent1plValue,
+            'indicativePresent2pl',
+            indicativePresent2plValue,
             {
                 shouldValidate: true,
                 shouldTouch: true
             }
         )
-        setKindelPresent1pl(kindelPresent1plValue)
+        setIndicativePresent2pl(indicativePresent2plValue)
         setValue(
-            'kindelPresent2pl',
-            kindelPresent2plValue,
+            'indicativePresent3pl',
+            indicativePresent3plValue,
             {
                 shouldValidate: true,
                 shouldTouch: true
             }
         )
-        setKindelPresent2pl(kindelPresent2plValue)
-        setValue(
-            'kindelPresent3pl',
-            kindelPresent3plValue,
-            {
-                shouldValidate: true,
-                shouldTouch: true
-            }
-        )
-        setKindelPresent3pl(kindelPresent3plValue)
+        setIndicativePresent3pl(indicativePresent3plValue)
     }
 
     // This will only be run on first render
@@ -213,21 +195,32 @@ export function VerbFormEE(props: VerbFormEEProps) {
     // ------------------ AUTOCOMPLETE LOGIC ------------------
 
     const onAutocompleteClick = async () => {
-        setValuesInForm(autocompletedTranslationVerbEE)
+        const completeFormWithAutocomplete = {
+            ...autocompletedTranslationVerbDE,
+            // NB! These fields are not included in BE autocomplete response, so we must manually include
+            cases: [
+                ...autocompletedTranslationVerbDE.cases,
+                {
+                    caseName: VerbCases.infinitiveDE,
+                    word: infinitive
+                },
+            ]
+        }
+        setValuesInForm(completeFormWithAutocomplete)
     }
 
     // before making the request, we check if the query is correct according to the form's validation
-    const validAutocompleteRequest = errors['infinitiveMa'] === undefined
+    const validAutocompleteRequest = errors['infinitive'] === undefined
     useEffect(() => {
-        if((infinitiveMa !== "") && (validAutocompleteRequest)){
+        if((infinitive !== "") && (validAutocompleteRequest)){
             setTimerTriggerFunction(
                 () => {
-                    dispatch(getAutocompletedEstonianVerbData(infinitiveMa))
+                    dispatch(getAutocompletedGermanVerbData(infinitive))
                 },
                 600
             )
         }
-    },[infinitiveMa, validAutocompleteRequest])
+    },[infinitive, validAutocompleteRequest])
 
     return(
         <Grid
@@ -260,8 +253,8 @@ export function VerbFormEE(props: VerbFormEEProps) {
                                     noMatch: "Sorry, we don't know this word!",
                                     foundMatch: "There is information about this word stored in our system."
                                 }}
-                                queryValue={infinitiveMa}
-                                autocompleteResponse={autocompletedTranslationVerbEE}
+                                queryValue={infinitive}
+                                autocompleteResponse={autocompletedTranslationVerbDE}
                                 loadingState={isLoadingAT}
                                 forceDisabled={!validAutocompleteRequest}
                                 onAutocompleteClick={() => onAutocompleteClick()}
@@ -277,38 +270,19 @@ export function VerbFormEE(props: VerbFormEEProps) {
                             </Grid>
                         </Grid>
                     }
-                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, infinitiveMa)) &&
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, infinitive)) &&
                         <Grid
                             item={true}
                             xs={4}
                         >
                             <TextInputFormWithHook
                                 control={control}
-                                label={"-ma infinitive"}
-                                name={"infinitiveMa"}
+                                label={"Infinitive"}
+                                name={"infinitive"}
                                 defaultValue={""}
-                                errors={errors.infinitiveMa}
+                                errors={errors.infinitive}
                                 onChange={(value: any) => {
-                                    setInfinitiveMa(value)
-                                }}
-                                fullWidth={true}
-                                disabled={props.displayOnly}
-                            />
-                        </Grid>
-                    }
-                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, infinitiveDa)) &&
-                        <Grid
-                            item={true}
-                            xs={4}
-                        >
-                            <TextInputFormWithHook
-                                control={control}
-                                label={"-da infinitive"}
-                                name={"infinitiveDa"}
-                                defaultValue={""}
-                                errors={errors.infinitiveDa}
-                                onChange={(value: any) => {
-                                    setInfinitiveDa(value)
+                                    setInfinitive(value)
                                 }}
                                 fullWidth={true}
                                 disabled={props.displayOnly}
@@ -317,8 +291,8 @@ export function VerbFormEE(props: VerbFormEEProps) {
                     }
                     {
                         (
-                            kindelPresent1s!! || kindelPresent2s!! || kindelPresent3s!! ||
-                            kindelPresent1pl!! || kindelPresent2pl!! || kindelPresent3pl!! ||
+                            indicativePresent1s!! || indicativePresent2s!! || indicativePresent3s!! ||
+                            indicativePresent1pl!! || indicativePresent2pl!! || indicativePresent3pl!! ||
                             !props.displayOnly
                         ) &&
                         <Grid
@@ -337,7 +311,7 @@ export function VerbFormEE(props: VerbFormEEProps) {
                                         textDecoration: 'underline',
                                     }}
                                 >
-                                    Kindel:
+                                    Indicative:
                                 </Typography>
                             </Grid>
                             <Grid
@@ -352,114 +326,114 @@ export function VerbFormEE(props: VerbFormEEProps) {
                             </Grid>
                         </Grid>
                     }
-                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPresent1s)) &&
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePresent1s)) &&
                         <Grid
                             item={true}
                             xs={12}
                         >
                             <TextInputFormWithHook
                                 control={control}
-                                label={'Mina'}
-                                name={"kindelPresent1s"}
+                                label={'Ich'}
+                                name={"indicativePresent1s"}
                                 defaultValue={""}
-                                errors={errors.kindelPresent1s}
+                                errors={errors.indicativePresent1s}
                                 onChange={(value: any) => {
-                                    setKindelPresent1s(value)
+                                    setIndicativePresent1s(value)
                                 }}
                                 fullWidth={true}
                                 disabled={props.displayOnly}
                             />
                         </Grid>
                     }
-                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPresent2s)) &&
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePresent2s)) &&
                         <Grid
                             item={true}
                             xs={12}
                         >
                             <TextInputFormWithHook
                                 control={control}
-                                label={'Sina'}
-                                name={"kindelPresent2s"}
+                                label={'Du'}
+                                name={"indicativePresent2s"}
                                 defaultValue={""}
-                                errors={errors.kindelPresent2s}
+                                errors={errors.indicativePresent2s}
                                 onChange={(value: any) => {
-                                    setKindelPresent2s(value)
+                                    setIndicativePresent2s(value)
                                 }}
                                 fullWidth={true}
                                 disabled={props.displayOnly}
                             />
                         </Grid>
                     }
-                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPresent3s)) &&
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePresent3s)) &&
                         <Grid
                             item={true}
                             xs={12}
                         >
                             <TextInputFormWithHook
                                 control={control}
-                                label={'Tema'}
-                                name={"kindelPresent3s"}
+                                label={'Er/Sie/ist'}
+                                name={"indicativePresent3s"}
                                 defaultValue={""}
-                                errors={errors.kindelPresent3s}
+                                errors={errors.indicativePresent3s}
                                 onChange={(value: any) => {
-                                    setKindelPresent3s(value)
+                                    setIndicativePresent3s(value)
                                 }}
                                 fullWidth={true}
                                 disabled={props.displayOnly}
                             />
                         </Grid>
                     }
-                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPresent1pl)) &&
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePresent1pl)) &&
                         <Grid
                             item={true}
                             xs={12}
                         >
                             <TextInputFormWithHook
                                 control={control}
-                                label={'Meie'}
-                                name={"kindelPresent1pl"}
+                                label={'Wir'}
+                                name={"indicativePresent1pl"}
                                 defaultValue={""}
-                                errors={errors.kindelPresent1pl}
+                                errors={errors.indicativePresent1pl}
                                 onChange={(value: any) => {
-                                    setKindelPresent1pl(value)
+                                    setIndicativePresent1pl(value)
                                 }}
                                 fullWidth={true}
                                 disabled={props.displayOnly}
                             />
                         </Grid>
                     }
-                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPresent2pl)) &&
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePresent2pl)) &&
                         <Grid
                             item={true}
                             xs={12}
                         >
                             <TextInputFormWithHook
                                 control={control}
-                                label={'Teie'}
-                                name={"kindelPresent2pl"}
+                                label={'Ihr'}
+                                name={"indicativePresent2pl"}
                                 defaultValue={""}
-                                errors={errors.kindelPresent2pl}
+                                errors={errors.indicativePresent2pl}
                                 onChange={(value: any) => {
-                                    setKindelPresent2pl(value)
+                                    setIndicativePresent2pl(value)
                                 }}
                                 fullWidth={true}
                                 disabled={props.displayOnly}
                             />
                         </Grid>
                     }
-                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPresent3pl)) &&
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePresent3pl)) &&
                         <Grid
                             item={true}
                             xs={12}
                         >
                             <TextInputFormWithHook
                                 control={control}
-                                label={'Nad'}
-                                name={"kindelPresent3pl"}
+                                label={'Sie'}
+                                name={"indicativePresent3pl"}
                                 defaultValue={""}
-                                errors={errors.kindelPresent3pl}
+                                errors={errors.indicativePresent3pl}
                                 onChange={(value: any) => {
-                                    setKindelPresent3pl(value)
+                                    setIndicativePresent3pl(value)
                                 }}
                                 fullWidth={true}
                                 disabled={props.displayOnly}

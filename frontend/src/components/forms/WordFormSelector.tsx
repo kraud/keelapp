@@ -15,6 +15,7 @@ import {AdverbFormDE} from "./adverbs/AdverbFormDE";
 import {VerbFormES} from "./verbs/VerbFormES";
 import {VerbFormEN} from "./verbs/VerbFormEN";
 import {VerbFormEE} from "./verbs/VerbFormEE";
+import {VerbFormDE} from "./verbs/VerbFormDE";
 
 interface WordFormSelectorProps {
     currentLang?: Lang,
@@ -75,6 +76,17 @@ export function WordFormSelector(props: WordFormSelectorProps) {
             case (Lang.EE): {
                 return(
                     <VerbFormEE
+                        currentTranslationData={props.currentTranslationData}
+                        updateFormData={(formData: TranslationItem) => {
+                            props.updateFormData(formData)
+                        }}
+                        displayOnly={props.displayFieldsAsText}
+                    />
+                )
+            }
+            case (Lang.DE): {
+                return(
+                    <VerbFormDE
                         currentTranslationData={props.currentTranslationData}
                         updateFormData={(formData: TranslationItem) => {
                             props.updateFormData(formData)

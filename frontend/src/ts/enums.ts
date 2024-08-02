@@ -210,13 +210,13 @@ export enum VerbCases {
 
 
     // ============== ESTONIAN: ==============
-    // Pronouns:
-    // Mina (ma): 1st person singular (1s)
-    // Sina (Sa): 2nd person singular (2s)
-    // Tema (Ta): 3rd person singular (neutral) (3s)
-    // Meie (me): 1nd person plural (1pl)
-    // Teie  (Te): 2nd person plural (2pl)
-    // Nad (nad): 3rd person plural (3pl)
+        // Pronouns:
+        // Mina (ma): 1st person singular (1s)
+        // Sina (Sa): 2nd person singular (2s)
+        // Tema (Ta): 3rd person singular (neutral) (3s)
+        // Meie (me): 1nd person plural (1pl)
+        // Teie  (Te): 2nd person plural (2pl)
+        // Nad (nad): 3rd person plural (3pl)
 
     // KINDEL: --------------
     infinitiveMaEE = 'infinitiveMaEE',
@@ -238,6 +238,41 @@ export enum VerbCases {
     kindelSimplePast1plEE = 'kindelSimplePast1plEE',
     kindelSimplePast2plEE = 'kindelSimplePast2plEE',
     kindelSimplePast3plEE = 'kindelSimplePast3plEE',
+
+
+    // ============== GERMAN: ==============
+        // Pronouns:
+        // Ich: 1st person singular (1s)
+        // Du: 2nd person singular (2s)
+        // Er/Sie/ist: 3rd person singular (m/f/n) (3s)
+        // Wir: 1nd person plural (1pl)
+        // Ihr: 2nd person plural (2pl)
+        // Sie: 3rd person plural (3pl)
+
+    infinitiveDE = 'infinitiveDE',
+
+    // INDICATIVE: --------------
+    // Present: different for almost all pronouns
+    indicativePresent1sDE = 'indicativePresent1sDE',
+    indicativePresent2sDE = 'indicativePresent2sDE',
+    indicativePresent3sDE = 'indicativePresent3sDE',
+    indicativePresent1plDE = 'indicativePresent1plDE',
+    indicativePresent2plDE = 'indicativePresent2plDE',
+    indicativePresent3plDE = 'indicativePresent3plDE',
+    // Imperfect: different for almost all pronouns
+    indicativeImperfect1sDE = 'indicativeImperfect1sDE',
+    indicativeImperfect2sDE = 'indicativeImperfect2sDE',
+    indicativeImperfect3sDE = 'indicativeImperfect3sDE',
+    indicativeImperfect1plDE = 'indicativeImperfect1plDE',
+    indicativeImperfect2plDE = 'indicativeImperfect2plDE',
+    indicativeImperfect3plDE = 'indicativeImperfect3plDE',
+    // (present) Perfect: 'habe'-present-conjugated & ge+'stem'+t => same for all pronouns
+    indicativePerfect1sDE = 'indicativePerfect1sDE',
+    indicativePerfect2sDE = 'indicativePerfect2sDE',
+    indicativePerfect3sDE = 'indicativePerfect3sDE',
+    indicativePerfect1plDE = 'indicativePerfect1plDE',
+    indicativePerfect2plDE = 'indicativePerfect2plDE',
+    indicativePerfect3plDE = 'indicativePerfect3plDE',
 }
 
 export enum Lang {

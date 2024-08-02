@@ -234,13 +234,13 @@ interface ImperativeConjugation {
 }
 
 interface VerbESResponse {
-    verbFound: boolean,
+    foundVerb: boolean,
     verbData: VerbConjugation
 }
 
 // from the API we receive too much data, so we take only what we're currently expecting to use
 export const sanitizeDataStructureESVerb = (request: VerbESResponse): sanitizeDataStructureVerbResponse => {
-    if(request.verbFound!!){
+    if(request.foundVerb!!){
         const formattedESVerb: TranslationItem = {
             language: Lang.ES,
             cases: [

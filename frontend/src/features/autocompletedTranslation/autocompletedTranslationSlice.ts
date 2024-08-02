@@ -12,6 +12,7 @@ interface autocompletedTranslationSliceState {
     autocompletedTranslationVerbES: any,
     autocompletedTranslationVerbEN: any,
     autocompletedTranslationVerbEE: any,
+    autocompletedTranslationVerbDE: any,
 
     isErrorAT: boolean,
     isSuccessAT: boolean,
@@ -25,6 +26,7 @@ const initialState: autocompletedTranslationSliceState = {
     autocompletedTranslationVerbES: undefined,
     autocompletedTranslationVerbEN: undefined,
     autocompletedTranslationVerbEE: undefined,
+    autocompletedTranslationVerbDE: undefined,
 
     isErrorAT: false,
     isSuccessAT: false,
@@ -68,7 +70,25 @@ export const getAutocompletedSpanishVerbData = createAsyncThunk(`autocompleteTra
     }
 })
 
-// Get English translation data for a verb using the simple present first-person singular form
+// Get Spanish translation data for a verb using the infinitive form
+export const getAutocompletedGermanVerbData = createAsyncThunk(`autocompleteTranslation/getDEVerb`, async (verbDEInfinitive: string, thunkAPI) => {
+    try {
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await autocompletedTranslationService.getGermanVerbData(token, verbDEInfinitive)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+//TODO: not yet implemented. Get English translation data for a verb using the simple present first-person singular form
 export const getAutocompletedEnglishVerbData = createAsyncThunk(`autocompleteTranslation/getENVerb`, async (verbENInfinitive: string, thunkAPI) => {
     try {
         // @ts-ignore
@@ -176,6 +196,29 @@ export const autocompletedTranslationSlice = createSlice({
                 }
             })
             .addCase(getAutocompletedEstonianVerbData.rejected, (state, action) => {
+                state.isLoadingAT = false
+                state.isErrorAT = true
+                state.messageAT = action.payload as string
+            })
+            .addCase(getAutocompletedGermanVerbData.pending, (state) => {
+                state.isLoadingAT = true
+            })
+            .addCase(getAutocompletedGermanVerbData.fulfilled, (state, action) => {
+                // NB! There is no need for a sanitize function, because we create the response format ourselves in the BEc
+                if(action.payload.foundVerb){
+                    state.isLoadingAT = false
+                    state.isSuccessAT = true
+                    state.messageAT = initialState.messageAT
+                    state.autocompletedTranslationVerbDE = action.payload.verbData
+                } else {
+                    state.isLoadingAT = false
+                    state.isSuccessAT = false
+                    state.isErrorAT = true
+                    state.messageAT = "There is not information in our system for that word."
+                    state.autocompletedTranslationVerbDE = initialState.autocompletedTranslationVerbDE
+                }
+            })
+            .addCase(getAutocompletedGermanVerbData.rejected, (state, action) => {
                 state.isLoadingAT = false
                 state.isErrorAT = true
                 state.messageAT = action.payload as string
