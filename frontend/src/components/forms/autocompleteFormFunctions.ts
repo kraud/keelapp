@@ -1,4 +1,4 @@
-import {Lang, NounCases, VerbCases} from "../../ts/enums"
+import {AdjectiveCases, Lang, NounCases, VerbCases} from "../../ts/enums"
 import {TranslationItem} from "../../ts/interfaces"
 
 interface PartOfSpeechStructure {
@@ -34,7 +34,7 @@ interface TranslationStructure {
     translations: string[]
 }
 
-interface WordSearchResultStructure {
+interface WordSearchResultStructureEE {
     requestedWord: string
     estonianWord: string
     searchResult: SearchResultStructure[]
@@ -51,6 +51,18 @@ type sanitizeDataStructureNounResponseFound = {
 }
 type sanitizeDataStructureNounResponseNotFound = {
     foundNoun: false,
+}
+
+export type sanitizeDataStructureAdjectiveResponse = {
+    foundAdjective: boolean,
+} & (sanitizeDataStructureAdjectiveResponseFound | sanitizeDataStructureAdjectiveResponseNotFound)
+
+type sanitizeDataStructureAdjectiveResponseFound = {
+    foundAdjective: true,
+    adjectiveData: TranslationItem
+}
+type sanitizeDataStructureAdjectiveResponseNotFound = {
+    foundAdjective: false,
 }
 
 const getWordFromWordFormsList = (wordFormList: WordFormStructure[], propertyNameInAPI: string): string => {
@@ -70,7 +82,7 @@ const getShortFormEENounIfExist = (wordFormsList: WordFormStructure[]): string =
 }
 
 // from the API we receive too much data, so we take only what we're currently expecting to use
-export const sanitizeDataStructureEENoun = (request: WordSearchResultStructure): sanitizeDataStructureNounResponse => {
+export const sanitizeDataStructureEENoun = (request: WordSearchResultStructureEE): sanitizeDataStructureNounResponse => {
     if((request.searchResult.length > 0) && (request.searchResult[0].wordClasses[0] === 'noomen')){
         const formattedEENoun: TranslationItem = {
             language: Lang.EE,
@@ -115,8 +127,52 @@ export const sanitizeDataStructureEENoun = (request: WordSearchResultStructure):
         })
     }
 }
+
 // from the API we receive too much data, so we take only what we're currently expecting to use
-export const sanitizeDataStructureEEVerb = (request: WordSearchResultStructure): sanitizeDataStructureVerbResponse => {
+export const sanitizeDataStructureEEAdjective = (request: WordSearchResultStructureEE): sanitizeDataStructureAdjectiveResponse => {
+    if((request.searchResult.length > 0) && (request.searchResult[0].meanings[0].partOfSpeech[0].code === 'adj')){
+        const formattedEEAdjective: TranslationItem = {
+            language: Lang.EE,
+            cases: [
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'SgN'),
+                    caseName: AdjectiveCases.algvorreEE
+                },
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'PlN'),
+                    caseName: AdjectiveCases.pluralNimetavEE
+                },
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'SgG'),
+                    caseName: AdjectiveCases.singularOmastavEE
+                },
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'PlG'),
+                    caseName: AdjectiveCases.pluralOmastavEE
+                },
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'SgP'),
+                    caseName: AdjectiveCases.singularOsastavEE
+                },
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'PlP'),
+                    caseName: AdjectiveCases.pluralOsastavEE
+                },
+            ]
+        }
+        return({
+            foundAdjective: true,
+            adjectiveData: formattedEEAdjective
+        })
+    } else {
+        return({
+            foundAdjective: false,
+        })
+    }
+}
+
+// from the API we receive too much data, so we take only what we're currently expecting to use
+export const sanitizeDataStructureEEVerb = (request: WordSearchResultStructureEE): sanitizeDataStructureVerbResponse => {
     // TODO: review if we needed to check the array of searchResult in some cases, to find the verb result
     if((request.searchResult.length > 0) && (request.searchResult[0].wordClasses[0] === 'verb')){
         const formattedEEVerb: TranslationItem = {

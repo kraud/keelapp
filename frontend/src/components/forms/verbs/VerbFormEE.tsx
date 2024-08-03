@@ -31,11 +31,11 @@ export function VerbFormEE(props: VerbFormEEProps) {
 
     const validationSchema = Yup.object().shape({
         infinitiveMa: Yup.string()
-            .required("Infinitive non-finite is required")
+            .required("-ma infinitive is required")
             .matches(/^[^0-9]+$/, 'Must not include numbers')
             .matches(/^(?!.*\d).*(ma)$/, "Please input infinitive form (ends in '-ma')."),
         infinitiveDa: Yup.string()
-            .required("Gerund non-finite is required")
+            .required("-da infinitive is required")
             .matches(/^[^0-9]+$/, 'Must not include numbers'),
         kindelPresent1s: Yup.string().nullable()
             .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
@@ -216,6 +216,7 @@ export function VerbFormEE(props: VerbFormEEProps) {
         setValuesInForm(autocompletedTranslationVerbEE)
     }
 
+    // TODO: should this logic be replaced with a function that triggers alongside onChange for that field?
     // before making the request, we check if the query is correct according to the form's validation
     const validAutocompleteRequest = errors['infinitiveMa'] === undefined
     useEffect(() => {

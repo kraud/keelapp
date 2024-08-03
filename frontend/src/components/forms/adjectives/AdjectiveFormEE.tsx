@@ -7,6 +7,15 @@ import {TextInputFormWithHook} from "../../TextInputFormHook";
 import {WordItem, TranslationItem} from "../../../ts/interfaces";
 import {AdjectiveCases, Lang} from "../../../ts/enums";
 import {getDisabledInputFieldDisplayLogic, getWordByCase} from "../commonFunctions";
+import {AutocompleteButtonWithStatus} from "../AutocompleteButtonWithStatus";
+import LinearIndeterminate from "../../Spinner";
+import {useDispatch, useSelector} from "react-redux";
+import {setTimerTriggerFunction} from "../../generalUseFunctions";
+import {
+    getAutocompletedEstonianAdjectiveData,
+    getAutocompletedEstonianVerbData
+} from "../../../features/autocompletedTranslation/autocompletedTranslationSlice";
+import {AppDispatch} from "../../../app/store";
 
 interface AdjectiveFormEEProps {
     currentTranslationData: TranslationItem,
@@ -15,7 +24,8 @@ interface AdjectiveFormEEProps {
 }
 // Displays the fields required to add the estonian translation of a noun (and handles the validations)
 export function AdjectiveFormEE(props: AdjectiveFormEEProps) {
-
+    const dispatch = useDispatch<AppDispatch>()
+    const {autocompletedTranslationAdjectiveEE, isErrorAT, isSuccessAT, isLoadingAT, messageAT} = useSelector((state: any) => state.autocompletedTranslations)
     const {currentTranslationData} = props
 
     // Algvõrre (ordinary) grade, as in väike 'small'
@@ -129,95 +139,118 @@ export function AdjectiveFormEE(props: AdjectiveFormEEProps) {
         })
     }, [adjective, isValid])
 
+    const setValuesInForm = (translationDataToInsert: TranslationItem) => {
+        const algvorreValue: string = getWordByCase(AdjectiveCases.algvorreEE, translationDataToInsert)
+        const keskvorreValue: string = getWordByCase(AdjectiveCases.keskvorreEE, translationDataToInsert)
+        const ulivorreValue: string = getWordByCase(AdjectiveCases.ulivorreEE, translationDataToInsert)
+        const pluralNimetavValue: string = getWordByCase(AdjectiveCases.pluralNimetavEE, translationDataToInsert)
+        const singularOmastavValue: string = getWordByCase(AdjectiveCases.singularOmastavEE, translationDataToInsert)
+        const pluralOmastavValue: string = getWordByCase(AdjectiveCases.pluralOmastavEE, translationDataToInsert)
+        const singularOsastavValue: string = getWordByCase(AdjectiveCases.singularOsastavEE, translationDataToInsert)
+        const pluralOsastavValue: string = getWordByCase(AdjectiveCases.pluralOsastavEE, translationDataToInsert)
+
+        setValue(
+            'algvorre',
+            algvorreValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setValue(
+            'keskvorre',
+            keskvorreValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setValue(
+            'ulivorre',
+            ulivorreValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setValue(
+            'pluralNimetav',
+            pluralNimetavValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setValue(
+            'singularOmastav',
+            singularOmastavValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setValue(
+            'pluralOmastav',
+            pluralOmastavValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setValue(
+            'singularOsastav',
+            singularOsastavValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setValue(
+            'pluralOsastav',
+            pluralOsastavValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setAdjective({
+            algvorre: algvorreValue,
+            keskvorre: keskvorreValue,
+            ulivorre: ulivorreValue,
+            pluralNimetav: pluralNimetavValue,
+            singularOmastav: singularOmastavValue,
+            pluralOmastav: pluralOmastavValue,
+            singularOsastav: singularOsastavValue,
+            pluralOsastav: pluralOsastavValue,
+        })
+
+    }
+
     // This will only be run on first render
     // we use it to populate the form fields with the previously added information
     useEffect(() => {
         if (currentTranslationData.cases!) {
-            const algvorreValue: string = getWordByCase(AdjectiveCases.algvorreEE, currentTranslationData)
-            const keskvorreValue: string = getWordByCase(AdjectiveCases.keskvorreEE, currentTranslationData)
-            const ulivorreValue: string = getWordByCase(AdjectiveCases.ulivorreEE, currentTranslationData)
-            const pluralNimetavValue: string = getWordByCase(AdjectiveCases.pluralNimetavEE, currentTranslationData)
-            const singularOmastavValue: string = getWordByCase(AdjectiveCases.singularOmastavEE, currentTranslationData)
-            const pluralOmastavValue: string = getWordByCase(AdjectiveCases.pluralOmastavEE, currentTranslationData)
-            const singularOsastavValue: string = getWordByCase(AdjectiveCases.singularOsastavEE, currentTranslationData)
-            const pluralOsastavValue: string = getWordByCase(AdjectiveCases.pluralOsastavEE, currentTranslationData)
-
-            setValue(
-                'algvorre',
-                algvorreValue,
-                {
-                    shouldValidate: true,
-                    shouldTouch: true
-                }
-            )
-            setValue(
-                'keskvorre',
-                keskvorreValue,
-                {
-                    shouldValidate: true,
-                    shouldTouch: true
-                }
-            )
-            setValue(
-                'ulivorre',
-                ulivorreValue,
-                {
-                    shouldValidate: true,
-                    shouldTouch: true
-                }
-            )
-            setValue(
-                'pluralNimetav',
-                pluralNimetavValue,
-                {
-                    shouldValidate: true,
-                    shouldTouch: true
-                }
-            )
-            setValue(
-                'singularOmastav',
-                singularOmastavValue,
-                {
-                    shouldValidate: true,
-                    shouldTouch: true
-                }
-            )
-            setValue(
-                'pluralOmastav',
-                pluralOmastavValue,
-                {
-                    shouldValidate: true,
-                    shouldTouch: true
-                }
-            )
-            setValue(
-                'singularOsastav',
-                singularOsastavValue,
-                {
-                    shouldValidate: true,
-                    shouldTouch: true
-                }
-            )
-            setValue(
-                'pluralOsastav',
-                pluralOsastavValue,
-                {
-                    shouldValidate: true,
-                    shouldTouch: true
-                }
-            )
-            setAdjective({
-                algvorre: algvorreValue,
-                keskvorre: keskvorreValue,
-                ulivorre: ulivorreValue,
-                pluralNimetav: pluralNimetavValue,
-                singularOmastav: singularOmastavValue,
-                pluralOmastav: pluralOmastavValue,
-                singularOsastav: singularOsastavValue,
-                pluralOsastav: pluralOsastavValue,
-            })
+            setValuesInForm(currentTranslationData)
         }
     }, [])
+
+    const onAutocompleteClick = async () => {
+        setValuesInForm(autocompletedTranslationAdjectiveEE)
+    }
+
+    // TODO: should this logic be replaced with a function that triggers alongside onChange for that field?
+    // before making the request, we check if the query is correct according to the form's validation
+    const validAutocompleteRequest = errors['infinitiveMa'] === undefined
+    useEffect(() => {
+        if((adjective.algvorre !== "") && (validAutocompleteRequest)){
+            setTimerTriggerFunction(
+                () => {
+                    dispatch(getAutocompletedEstonianAdjectiveData(adjective.algvorre))
+                },
+                600
+            )
+        }
+    },[adjective.algvorre, validAutocompleteRequest])
 
     return (
         <Grid
@@ -234,6 +267,39 @@ export function AdjectiveFormEE(props: AdjectiveFormEEProps) {
                     item={true}
                     spacing={2}
                 >
+                    {!(props.displayOnly) &&
+                        <Grid
+                            container={true}
+                            item={true}
+                            xs={12}
+                            rowSpacing={1}
+                            spacing={1}
+                            justifyContent={'center'}
+                            alignItems={"flex-end"}
+                        >
+                            <AutocompleteButtonWithStatus
+                                tooltipLabels={{
+                                    emptyQuery: "Please input 'infinitive non-finite simple' first.",
+                                    noMatch: "Sorry, we don't know this word!",
+                                    foundMatch: "There is information about this word stored in our system."
+                                }}
+                                queryValue={adjective.algvorre}
+                                autocompleteResponse={autocompletedTranslationAdjectiveEE}
+                                loadingState={isLoadingAT}
+                                forceDisabled={!validAutocompleteRequest}
+                                onAutocompleteClick={() => onAutocompleteClick()}
+                            />
+                            <Grid
+                                item={true}
+                                xs={9}
+                                sx={{
+                                    maxHeight: 'max-content'
+                                }}
+                            >
+                                {(isLoadingAT) && <LinearIndeterminate/>}
+                            </Grid>
+                        </Grid>
+                    }
                     {(getDisabledInputFieldDisplayLogic(props.displayOnly!, adjective.algvorre)) &&
                         <Grid
                             item={true}

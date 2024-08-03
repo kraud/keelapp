@@ -8,6 +8,11 @@ const getEstonianNounData = async (nounEESingularNominative: string) => {
     return(response.data)
 }
 
+const getEstonianAdjectiveData = async (adjectiveEESingularNominative: string) => {
+    const response = await axios.get(`https://api.sonapi.ee/v2/${adjectiveEESingularNominative}`)
+    return(response.data)
+}
+
 const getEstonianVerbData = async (verbEEMaInfinitive: string) => {
     const response = await axios.get(`https://api.sonapi.ee/v2/${verbEEMaInfinitive}`)
     return(response.data)
@@ -44,7 +49,8 @@ const getEnglishVerbData = async (token: any, verbENInfinitive: string) => {
 }
 
 const autocompletedTranslationService = {
-    getEstonianNounData, getSpanishVerbData, getEnglishVerbData, getEstonianVerbData, getGermanVerbData
+    getEstonianNounData, getSpanishVerbData, getEnglishVerbData, getEstonianVerbData, getGermanVerbData,
+    getEstonianAdjectiveData
 }
 
 export default autocompletedTranslationService

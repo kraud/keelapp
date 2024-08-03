@@ -1,6 +1,7 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import autocompletedTranslationService from "./autocompletedTranslationService";
 import {
+    sanitizeDataStructureEEAdjective,
     sanitizeDataStructureEENoun, sanitizeDataStructureEEVerb,
     sanitizeDataStructureESVerb
 } from "../../components/forms/autocompleteFormFunctions";
@@ -8,6 +9,8 @@ import {
 
 interface autocompletedTranslationSliceState {
     autocompletedTranslationNounEE: any,
+
+    autocompletedTranslationAdjectiveEE: any,
 
     autocompletedTranslationVerbES: any,
     autocompletedTranslationVerbEN: any,
@@ -22,6 +25,8 @@ interface autocompletedTranslationSliceState {
 
 const initialState: autocompletedTranslationSliceState = {
     autocompletedTranslationNounEE: undefined,
+
+    autocompletedTranslationAdjectiveEE: undefined,
 
     autocompletedTranslationVerbES: undefined,
     autocompletedTranslationVerbEN: undefined,
@@ -40,6 +45,24 @@ export const getAutocompletedEstonianNounData = createAsyncThunk(`autocompleteTr
         // @ts-ignore
         // const token = thunkAPI.getState().auth.user.token
         return await autocompletedTranslationService.getEstonianNounData(nounEESingularNominative)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+// Get Estonian translation data for a noun using the singular nominative form
+export const getAutocompletedEstonianAdjectiveData = createAsyncThunk(`autocompleteTranslation/getEEAdjective`, async (adjectiveEESingularNominative: string, thunkAPI) => {
+    try {
+        // @ts-ignore
+        // const token = thunkAPI.getState().auth.user.token
+        return await autocompletedTranslationService.getEstonianAdjectiveData(adjectiveEESingularNominative)
     } catch(error: any) {
         const message = (
                 error.response &&
@@ -219,6 +242,29 @@ export const autocompletedTranslationSlice = createSlice({
                 }
             })
             .addCase(getAutocompletedGermanVerbData.rejected, (state, action) => {
+                state.isLoadingAT = false
+                state.isErrorAT = true
+                state.messageAT = action.payload as string
+            })
+            .addCase(getAutocompletedEstonianAdjectiveData.pending, (state) => {
+                state.isLoadingAT = true
+            })
+            .addCase(getAutocompletedEstonianAdjectiveData.fulfilled, (state, action) => {
+                const adjectiveEEDataToStore = sanitizeDataStructureEEAdjective(action.payload)
+                if(adjectiveEEDataToStore.foundAdjective){
+                    state.isLoadingAT = false
+                    state.isSuccessAT = true
+                    state.messageAT = initialState.messageAT
+                    state.autocompletedTranslationAdjectiveEE = adjectiveEEDataToStore.adjectiveData
+                } else {
+                    state.isLoadingAT = false
+                    state.isSuccessAT = false
+                    state.isErrorAT = true
+                    state.messageAT = "There is not information in our system for that word."
+                    state.autocompletedTranslationAdjectiveEE = initialState.autocompletedTranslationAdjectiveEE
+                }
+            })
+            .addCase(getAutocompletedEstonianAdjectiveData.rejected, (state, action) => {
                 state.isLoadingAT = false
                 state.isErrorAT = true
                 state.messageAT = action.payload as string
