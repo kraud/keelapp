@@ -47,6 +47,7 @@
     "react-toastify": "10.0.5",
     "redux": "5.0.1",
     "redux-thunk": "3.1.0",
+    "spanish-verbs": "^3.3.0",
     "yup": "1.4.0"
   },
   "devDependencies": {

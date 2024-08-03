@@ -181,12 +181,12 @@ export const autocompletedTranslationSlice = createSlice({
                 state.isLoadingAT = true
             })
             .addCase(getAutocompletedSpanishVerbData.fulfilled, (state, action) => {
-                const verbESDataToStore = sanitizeDataStructureESVerb(action.payload)
-                if(verbESDataToStore.foundVerb){
+                // const verbESDataToStore = sanitizeDataStructureESVerb(action.payload)
+                if(action.payload.foundVerb){
                     state.isLoadingAT = false
                     state.isSuccessAT = true
                     state.messageAT = initialState.messageAT
-                    state.autocompletedTranslationVerbES = verbESDataToStore.verbData
+                    state.autocompletedTranslationVerbES = action.payload.verbData
                 } else {
                     state.isLoadingAT = false
                     state.isSuccessAT = false
