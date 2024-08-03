@@ -1,5 +1,5 @@
 const asyncHandler = require("express-async-handler")
-const conjugateVerb = require("../../node_modules/conjugator/lib/conjugateVerb.js")
+// const conjugateVerb = require("../../node_modules/conjugator/lib/conjugateVerb.js")
 const isWord = require('is-word')
 const GermanVerbsLib = require('german-verbs');
 const GermanVerbsDict = require('german-verbs-dict/dist/verbs.json');
@@ -9,10 +9,10 @@ const GermanVerbsDict = require('german-verbs-dict/dist/verbs.json');
 // @access  Private
 const getVerbES = asyncHandler(async (req, res) => {
     const spanishVerb = isWord('spanish')
-    if(spanishVerb.check(req.params.infinitiveVerb)){
-        var verbResponse = conjugateVerb(req.params.infinitiveVerb, {style: 'rioplatense'})
-        res.status(200).json({foundVerb: true, verbData: verbResponse})
-    }
+    // if(spanishVerb.check(req.params.infinitiveVerb)){
+        // var verbResponse = conjugateVerb(req.params.infinitiveVerb, {style: 'rioplatense'})
+    //     res.status(200).json({foundVerb: true, verbData: verbResponse})
+    // }
     res.status(200).json({foundVerb: false})
 
 })
