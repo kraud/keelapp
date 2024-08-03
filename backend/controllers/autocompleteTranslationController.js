@@ -3,7 +3,9 @@ const asyncHandler = require("express-async-handler")
 const SpanishVerbs = require('spanish-verbs')
 const isWord = require('is-word')
 const GermanVerbsLib = require('german-verbs')
+const GermanWords = require('german-words');
 const GermanVerbsDict = require('german-verbs-dict/dist/verbs.json')
+const GermanWordsList = require('german-words-dict/dist/words.json');
 
 // @desc    Get Spanish verb info by infinitive form
 // @route   GET /api/autocompleteTranslations
@@ -48,7 +50,6 @@ const getVerbES = asyncHandler(async (req, res) => {
     if(spanishVerb.check(req.params.infinitiveVerb)){
         // this uses deprecated libraries, so it won't work when deployed in Vercel?
         // var verbResponse = conjugateVerb(req.params.infinitiveVerb, {style: 'rioplatense'})
-        console.log("should be 'saltado'", SpanishVerbs.getConjugation('saltar', 'INDICATIVE_PRETERITE_PERFECT', 0).split(' ')[1])
         const verbResponse = {
             language: 'Spanish',
             cases: [
@@ -57,12 +58,11 @@ const getVerbES = asyncHandler(async (req, res) => {
                     word: req.params.infinitiveVerb,
                     caseName: "infinitiveNonFiniteSimpleES"
                 },
-                // TODO: the gerund is not found in any other conjugation is not regular, so for now we don't autocomplete it.
+                // TODO: the gerund is not found in any other conjugation, and is not regular, so for now we can't autocomplete it.
                 // Maybe we could implement logic to create it ourselves following a pattern,
                 // and pull the exceptions from storage, since it's a finite list.
                 // (see here for more: https://es.wiktionary.org/wiki/Categor%C3%ADa:ES:Verbos_con_gerundio_irregular)
                 // {
-                //
                 //     word: '',
                 //     caseName: "gerundNonFiniteSimpleES"
                 // },
@@ -148,10 +148,87 @@ const getVerbDE = asyncHandler(async (req, res) => {
     } else {
         res.status(200).json({foundVerb: false})
     }
+})
 
+// @desc    Get German noun info by basic case form
+// @route   GET /api/autocompleteTranslations
+// @access  Private
+const getNounDE = asyncHandler(async (req, res) => {
+    const germanVerb = isWord('ngerman')
+    const getFullArticle = (articleLetter) => {
+        switch (articleLetter){
+            case('F'):{
+                return('die')
+            }
+            case('M'):{
+                return('der')
+            }
+            case('N'):{
+                return('das')
+            }
+            default: {
+                return('-')
+            }
+        }
+    }
+    function capitalizeNoun(nounString) {
+        if((nounString !== undefined) && (nounString.length > 1))
+        return(nounString[0].toUpperCase() + nounString.slice(1))
+    }
+    const nounToAutocomplete = capitalizeNoun(req.params.singularNominativeNoun)
+    if(germanVerb.check(nounToAutocomplete)){
+        const nounResponse = {
+            language: 'German',
+            cases: [
+                // TODO: we could use this getGenderGermanWord error to determine if word is NOT a noun
+                //  => tell user to use other form, or input noun correctly
+                {
+                    caseName: "genderDE",
+                    word: getFullArticle(GermanWords.getGenderGermanWord(null, GermanWordsList, nounToAutocomplete))
+                },
+                {
+                    caseName: "singularNominativDE",
+                    word: GermanWords.getCaseGermanWord(null, GermanWordsList, nounToAutocomplete, 'NOMINATIVE', 'S')
+                },
+                {
+                    caseName: "pluralNominativDE",
+                    word: GermanWords.getCaseGermanWord(null, GermanWordsList, nounToAutocomplete, 'NOMINATIVE', 'P')
+                },
+                {
+                    caseName: "singularAkkusativDE",
+                    word: GermanWords.getCaseGermanWord(null, GermanWordsList, nounToAutocomplete, 'ACCUSATIVE', 'S')
+                },
+                {
+                    caseName: "pluralAkkusativDE",
+                    word: GermanWords.getCaseGermanWord(null, GermanWordsList, nounToAutocomplete, 'ACCUSATIVE', 'P')
+                },
+                {
+                    caseName: "singularGenitivDE",
+                    word: GermanWords.getCaseGermanWord(null, GermanWordsList, nounToAutocomplete, 'GENITIVE', 'S')
+                },
+                {
+                    caseName: "pluralGenitivDE",
+                    word: GermanWords.getCaseGermanWord(null, GermanWordsList, nounToAutocomplete, 'GENITIVE', 'P')
+                },
+                {
+                    caseName: "singularDativDE",
+                    word: GermanWords.getCaseGermanWord(null, GermanWordsList, nounToAutocomplete, 'DATIVE', 'S')
+                },
+                {
+                    caseName: "pluralDativDE",
+                    word: GermanWords.getCaseGermanWord(null, GermanWordsList, nounToAutocomplete, 'DATIVE', 'P')
+                },
+            ]
+        }
+
+        res.status(200).json({foundNoun: true, nounData: nounResponse})
+    } else {
+        res.status(200).json({foundNoun: false})
+    }
 })
 
 module.exports = {
     getVerbES,
     getVerbDE,
+    getNounDE
 }

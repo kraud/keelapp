@@ -8,6 +8,14 @@ import {WordItem, TranslationItem} from "../../../ts/interfaces";
 import {GenderDE, Lang, NounCases} from "../../../ts/enums";
 import {getDisabledInputFieldDisplayLogic, getWordByCase} from "../commonFunctions";
 import {RadioGroupWithHook} from "../../RadioGroupFormHook";
+import {AutocompleteButtonWithStatus} from "../AutocompleteButtonWithStatus";
+import LinearIndeterminate from "../../Spinner";
+import {useDispatch, useSelector} from "react-redux";
+import {setTimerTriggerFunction} from "../../generalUseFunctions";
+import {
+    getAutocompletedGermanNounData
+} from "../../../features/autocompletedTranslation/autocompletedTranslationSlice";
+import {AppDispatch} from "../../../app/store";
 
 interface NounFormDEProps {
     currentTranslationData: TranslationItem,
@@ -16,6 +24,8 @@ interface NounFormDEProps {
 }
 // Displays the fields required to add the german translation of a noun (and handles the validations)
 export function NounFormDE(props: NounFormDEProps) {
+    const dispatch = useDispatch<AppDispatch>()
+    const {autocompletedTranslationNounDE, isErrorAT, isSuccessAT, isLoadingAT, messageAT} = useSelector((state: any) => state.autocompletedTranslations)
 
     const { currentTranslationData } = props
 
@@ -110,102 +120,124 @@ export function NounFormDE(props: NounFormDEProps) {
         pluralGenitiv, singularDativ, pluralDativ, isValid
     ])
 
+    const setValuesInForm = (translationDataToInsert: TranslationItem) => {
+        const genderValue: string = getWordByCase(NounCases.genderDE, translationDataToInsert)
+        const singularNominativValue: string = getWordByCase(NounCases.singularNominativDE, translationDataToInsert)
+        const pluralNominativValue: string = getWordByCase(NounCases.pluralNominativDE, translationDataToInsert)
+        const singularAkkusativValue: string = getWordByCase(NounCases.singularAkkusativDE, translationDataToInsert)
+        const pluralAkkusativValue: string = getWordByCase(NounCases.pluralAkkusativDE, translationDataToInsert)
+        const singularGenitivValue: string = getWordByCase(NounCases.singularGenitivDE, translationDataToInsert)
+        const pluralGenitivValue: string = getWordByCase(NounCases.pluralGenitivDE, translationDataToInsert)
+        const singularDativValue: string = getWordByCase(NounCases.singularDativDE, translationDataToInsert)
+        const pluralDativValue: string = getWordByCase(NounCases.pluralDativDE, translationDataToInsert)
+        setValue(
+            'gender',
+            genderValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setGenderWord(genderValue as "der"|"die"|"das"|"")
+        setValue(
+            'singularNominativ',
+            singularNominativValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setSingularNominativ(singularNominativValue)
+        setValue(
+            'pluralNominativ',
+            pluralNominativValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setPluralNominativ(pluralNominativValue)
+        setValue(
+            'singularAkkusativ',
+            singularAkkusativValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setSingularAkkusativ(singularAkkusativValue)
+        setValue(
+            'pluralAkkusativ',
+            pluralAkkusativValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setPluralAkkusativ(pluralAkkusativValue)
+        setValue(
+            'singularGenitiv',
+            singularGenitivValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setSingularGenitiv(singularGenitivValue)
+        setValue(
+            'pluralGenitiv',
+            pluralGenitivValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setPluralGenitiv(pluralGenitivValue)
+        setValue(
+            'singularDativ',
+            singularDativValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setSingularDativ(singularDativValue)
+        setValue(
+            'pluralDativ',
+            pluralDativValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setPluralDativ(pluralDativValue)
+    }
+
     // This will only be run on first render
     // we use it to populate the form fields with the previously added information
     useEffect(() => {
         if(currentTranslationData.cases!){
-            const genderValue: string = getWordByCase(NounCases.genderDE, currentTranslationData)
-            const singularNominativValue: string = getWordByCase(NounCases.singularNominativDE, currentTranslationData)
-            const pluralNominativValue: string = getWordByCase(NounCases.pluralNominativDE, currentTranslationData)
-            const singularAkkusativValue: string = getWordByCase(NounCases.singularAkkusativDE, currentTranslationData)
-            const pluralAkkusativValue: string = getWordByCase(NounCases.pluralAkkusativDE, currentTranslationData)
-            const singularGenitivValue: string = getWordByCase(NounCases.singularGenitivDE, currentTranslationData)
-            const pluralGenitivValue: string = getWordByCase(NounCases.pluralGenitivDE, currentTranslationData)
-            const singularDativValue: string = getWordByCase(NounCases.singularDativDE, currentTranslationData)
-            const pluralDativValue: string = getWordByCase(NounCases.pluralDativDE, currentTranslationData)
-            setValue(
-                'gender',
-                genderValue,
-                {
-                    shouldValidate: true,
-                    shouldTouch: true
-                }
-            )
-            setGenderWord(genderValue as "der"|"die"|"das"|"")
-            setValue(
-                'singularNominativ',
-                singularNominativValue,
-                {
-                    shouldValidate: true,
-                    shouldTouch: true
-                }
-            )
-            setSingularNominativ(singularNominativValue)
-            setValue(
-                'pluralNominativ',
-                pluralNominativValue,
-                {
-                    shouldValidate: true,
-                    shouldTouch: true
-                }
-            )
-            setPluralNominativ(pluralNominativValue)
-            setValue(
-                'singularAkkusativ',
-                singularAkkusativValue,
-                {
-                    shouldValidate: true,
-                    shouldTouch: true
-                }
-            )
-            setSingularAkkusativ(singularAkkusativValue)
-            setValue(
-                'pluralAkkusativ',
-                pluralAkkusativValue,
-                {
-                    shouldValidate: true,
-                    shouldTouch: true
-                }
-            )
-            setPluralAkkusativ(pluralAkkusativValue)
-            setValue(
-                'singularGenitiv',
-                singularGenitivValue,
-                {
-                    shouldValidate: true,
-                    shouldTouch: true
-                }
-            )
-            setSingularGenitiv(singularGenitivValue)
-            setValue(
-                'pluralGenitiv',
-                pluralGenitivValue,
-                {
-                    shouldValidate: true,
-                    shouldTouch: true
-                }
-            )
-            setPluralGenitiv(pluralGenitivValue)
-            setValue(
-                'singularDativ',
-                singularDativValue,
-                {
-                    shouldValidate: true,
-                    shouldTouch: true
-                }
-            )
-            setSingularDativ(singularDativValue)
-            setValue(
-                'pluralDativ',
-                pluralDativValue,
-                {
-                    shouldValidate: true,
-                    shouldTouch: true
-                }
-            )
-            setPluralDativ(pluralDativValue)
+            setValuesInForm(currentTranslationData)
         }
     },[])
+
+
+    // ------------------ AUTOCOMPLETE LOGIC ------------------
+    const onAutocompleteClick = async () => {
+        setValuesInForm(autocompletedTranslationNounDE)
+    }
+
+    useEffect(() => {
+        if(singularNominativ !== ""){
+            setTimerTriggerFunction(
+                () => {
+                    dispatch(getAutocompletedGermanNounData(singularNominativ))
+                },
+                600
+            )
+        }
+    },[singularNominativ])
+
 
     return(
         <Grid
@@ -222,6 +254,38 @@ export function NounFormDE(props: NounFormDEProps) {
                     container={true}
                     spacing={2}
                 >
+                    {!(props.displayOnly) &&
+                        <Grid
+                            container={true}
+                            item={true}
+                            xs={12}
+                            rowSpacing={1}
+                            spacing={1}
+                            justifyContent={'center'}
+                            alignItems={"flex-end"}
+                        >
+                            <AutocompleteButtonWithStatus
+                                tooltipLabels={{
+                                    emptyQuery: "Please input 'Singular nominativ' first.",
+                                    noMatch: "Sorry, we don't know this word!",
+                                    foundMatch: "There is information about this word stored in our system."
+                                }}
+                                queryValue={singularNominativ}
+                                autocompleteResponse={autocompletedTranslationNounDE}
+                                loadingState={isLoadingAT}
+                                onAutocompleteClick={() => onAutocompleteClick()}
+                            />
+                            <Grid
+                                item={true}
+                                xs={9}
+                                sx={{
+                                    maxHeight: 'max-content'
+                                }}
+                            >
+                                {(isLoadingAT) && <LinearIndeterminate/>}
+                            </Grid>
+                        </Grid>
+                    }
                     <Grid
                         item={true}
                         xs={12}
