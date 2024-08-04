@@ -10,6 +10,7 @@ import {
 interface autocompletedTranslationSliceState {
     autocompletedTranslationNounEE: any,
     autocompletedTranslationNounDE: any,
+    autocompletedTranslationNounES: any,
 
     autocompletedTranslationAdjectiveEE: any,
 
@@ -27,6 +28,7 @@ interface autocompletedTranslationSliceState {
 const initialState: autocompletedTranslationSliceState = {
     autocompletedTranslationNounEE: undefined,
     autocompletedTranslationNounDE: undefined,
+    autocompletedTranslationNounES: undefined,
 
     autocompletedTranslationAdjectiveEE: undefined,
 
@@ -83,6 +85,24 @@ export const getAutocompletedSpanishVerbData = createAsyncThunk(`autocompleteTra
         // @ts-ignore
         const token = thunkAPI.getState().auth.user.token
         return await autocompletedTranslationService.getSpanishVerbData(token, verbESInfinitive)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+// Get Spanish translation data for a verb using the infinitive form
+export const getAutocompletedSpanishNounGender = createAsyncThunk(`autocompleteTranslation/getESNounGender`, async (singularNominativeNoun: string, thunkAPI) => {
+    try {
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await autocompletedTranslationService.getSpanishNounGender(token, singularNominativeNoun)
     } catch(error: any) {
         const message = (
                 error.response &&
@@ -216,6 +236,28 @@ export const autocompletedTranslationSlice = createSlice({
                 }
             })
             .addCase(getAutocompletedSpanishVerbData.rejected, (state, action) => {
+                state.isLoadingAT = false
+                state.isErrorAT = true
+                state.messageAT = action.payload as string
+            })
+            .addCase(getAutocompletedSpanishNounGender.pending, (state) => {
+                state.isLoadingAT = true
+            })
+            .addCase(getAutocompletedSpanishNounGender.fulfilled, (state, action) => {
+                if(action.payload.foundNoun){
+                    state.isLoadingAT = false
+                    state.isSuccessAT = true
+                    state.messageAT = initialState.messageAT
+                    state.autocompletedTranslationNounES = action.payload.nounData
+                } else {
+                    state.isLoadingAT = false
+                    state.isSuccessAT = false
+                    state.isErrorAT = true
+                    state.messageAT = "There is not information in our system for that word."
+                    state.autocompletedTranslationNounES = initialState.autocompletedTranslationNounES
+                }
+            })
+            .addCase(getAutocompletedSpanishNounGender.rejected, (state, action) => {
                 state.isLoadingAT = false
                 state.isErrorAT = true
                 state.messageAT = action.payload as string

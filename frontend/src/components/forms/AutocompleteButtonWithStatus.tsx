@@ -18,6 +18,7 @@ interface AutocompleteButtonWithStatusProps {
     autocompleteResponse: any,
     loadingState: boolean,
     forceDisabled?: boolean,
+    actionButtonLabel?: string,
 
     onAutocompleteClick: () => void
 }
@@ -72,7 +73,10 @@ export const AutocompleteButtonWithStatus = (props: AutocompleteButtonWithStatus
                     )}
                     fullWidth={true}
                 >
-                    Autocomplete
+                    {(props.actionButtonLabel!!)
+                        ? props.actionButtonLabel
+                        : 'Autocomplete'
+                    }
                 </Button>
             </Grid>
         </Grid>

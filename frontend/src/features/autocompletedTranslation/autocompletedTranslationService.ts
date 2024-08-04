@@ -28,6 +28,16 @@ const getSpanishVerbData = async (token: any, verbESInfinitive: string) => {
     return(response.data)
 }
 
+const getSpanishNounGender = async (token: any, singularNominativeNoun: string) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+    const response = await axios.get(`${API_URL}/spanish/noun/${singularNominativeNoun}`, config)
+    return(response.data)
+}
+
 const getGermanVerbData = async (token: any, verbDEInfinitive: string) => {
     const config = {
         headers: {
@@ -60,7 +70,7 @@ const getEnglishVerbData = async (token: any, verbENInfinitive: string) => {
 
 const autocompletedTranslationService = {
     getEstonianNounData, getSpanishVerbData, getEnglishVerbData, getEstonianVerbData, getGermanVerbData,
-    getEstonianAdjectiveData, getGermanNounData
+    getEstonianAdjectiveData, getGermanNounData, getSpanishNounGender
 }
 
 export default autocompletedTranslationService

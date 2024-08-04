@@ -1,11 +1,48 @@
 const asyncHandler = require("express-async-handler")
 // const conjugateVerb = require("../../node_modules/conjugator/lib/conjugateVerb.js")
 const SpanishVerbs = require('spanish-verbs')
+const SpanishGender = require('rosaenlg-gender-es');
 const isWord = require('is-word')
 const GermanVerbsLib = require('german-verbs')
 const GermanWords = require('german-words');
 const GermanVerbsDict = require('german-verbs-dict/dist/verbs.json')
 const GermanWordsList = require('german-words-dict/dist/words.json');
+
+// @desc    Get Spanish verb info by infinitive form
+// @route   GET /api/autocompleteTranslations
+// @access  Private
+const getNounGenderES = asyncHandler(async (req, res) => {
+    const spanishVerb = isWord('spanish')
+    const getFullArticleES = (articleLetter) => {
+        switch (articleLetter){
+            case('f'):{
+                return('la')
+            }
+            case('m'):{
+                return('el')
+            }
+            default: {
+                return('-')
+            }
+        }
+    }
+
+    if(spanishVerb.check(req.params.singularNominativeNoun)){
+        const matchingGenderResponse = {
+            language: 'Spanish',
+            cases: [
+                {
+                    caseName: "genderES",
+                    word: getFullArticleES(SpanishGender(req.params.singularNominativeNoun))
+                }
+            ]
+        }
+        res.status(200).json({foundNoun: true, nounData: matchingGenderResponse})
+    } else {
+        res.status(200).json({foundVerb: false})
+    }
+
+})
 
 // @desc    Get Spanish verb info by infinitive form
 // @route   GET /api/autocompleteTranslations
@@ -155,7 +192,7 @@ const getVerbDE = asyncHandler(async (req, res) => {
 // @access  Private
 const getNounDE = asyncHandler(async (req, res) => {
     const germanVerb = isWord('ngerman')
-    const getFullArticle = (articleLetter) => {
+    const getFullArticleDE = (articleLetter) => {
         switch (articleLetter){
             case('F'):{
                 return('die')
@@ -184,7 +221,7 @@ const getNounDE = asyncHandler(async (req, res) => {
                 //  => tell user to use other form, or input noun correctly
                 {
                     caseName: "genderDE",
-                    word: getFullArticle(GermanWords.getGenderGermanWord(null, GermanWordsList, nounToAutocomplete))
+                    word: getFullArticleDE(GermanWords.getGenderGermanWord(null, GermanWordsList, nounToAutocomplete))
                 },
                 {
                     caseName: "singularNominativDE",
@@ -229,6 +266,7 @@ const getNounDE = asyncHandler(async (req, res) => {
 
 module.exports = {
     getVerbES,
+    getNounGenderES,
     getVerbDE,
-    getNounDE
+    getNounDE,
 }
