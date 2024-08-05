@@ -15,6 +15,6 @@ router.get('/getUser/:id', protect, getUserById)
 router.get('/:id/verify/:token', verifyUser)
 router.post('/requestPasswordReset', requestPasswordReset)
 router.put('/updatePassword', updatePassword)
-router.get('/getUserMetrics/:id', protect, getBasicUserMetrics)
+router.get('/getUserMetrics', protect, getBasicUserMetrics)
 
 module.exports = router

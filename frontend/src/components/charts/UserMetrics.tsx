@@ -2,20 +2,24 @@ import React, {useEffect} from 'react';
 import C3Chart from './C3Chart';
 import {Button, Card, CardActions, CardContent, Grid, Typography} from "@mui/material";
 import globalTheme from "../../theme/theme";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../../app/store";
 import {getUserMetrics} from "../../features/metrics/metricSlice";
 
 
 export function UserMetrics() {
-
     const dispatch = useDispatch<AppDispatch>()
+    const {isError, isSuccess, isLoading, message, data} = useSelector((state: any) => state.metrics)
 
-     // On first render, this makes all the necessary requests to BE (and stores result data in Redux) to display account-screen info
+    // On first render, this makes all the necessary requests to BE (and stores result data in Redux) to display account-screen info
     useEffect(() => {
+        console.log("use effect")
         dispatch(getUserMetrics())
-        // dispatch(clearFullTagData()) // TODO: review this, since it's causing issues when creating a new tag after reviewing another before tha
     },[dispatch])
+
+    useEffect(() => {
+        console.log(`isLoading: ${isLoading} - isError: ${isError} - isSuccess: ${isSuccess} - data: ${data}`) ;
+    },[isError, isSuccess, isLoading, message, data])
 
     // Example data for a pie chart
     const pie_data = {

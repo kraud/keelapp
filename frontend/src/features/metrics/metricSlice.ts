@@ -4,15 +4,17 @@ import metricService from "./metricService";
 interface MetricSliceState {
     isError: boolean,
     isSuccess: boolean,
-    isLoadingUser: boolean,
+    isLoading: boolean,
     message: string,
+    data: any
 }
 
 const initialState: MetricSliceState = {
     isError: false,
     isSuccess: false,
-    isLoadingUser: false,
+    isLoading: false,
     message: "",
+    data: {}
 }
 
 export const getUserMetrics = createAsyncThunk('user/getUserMetrics', async (_, thunkAPI) => {
@@ -37,7 +39,7 @@ export const metricSlice = createSlice({
     initialState,
     reducers: {
         resetMetricSliceState: (state) => {
-            state.isLoadingUser = false
+            state.isLoading = false
             state.isSuccess = false
             state.isError = false
             state.message = ''
@@ -46,15 +48,15 @@ export const metricSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(getUserMetrics.pending, (state) => {
-                state.isLoadingUser = true
+                state.isLoading = true
             })
             .addCase(getUserMetrics.fulfilled, (state, action) => {
-                state.isLoadingUser = false
+                state.isLoading = false
                 state.isSuccess = true
                 // state.userList = action.payload
             })
             .addCase(getUserMetrics.rejected, (state, action) => {
-                state.isLoadingUser = false
+                state.isLoading = false
                 state.isError = true
                 state.message = action.payload as string
                 // state.userList = []
