@@ -5,11 +5,13 @@ import React from "react";
 import DoneIcon from "@mui/icons-material/Done";
 import CloseIcon from "@mui/icons-material/Close";
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
+import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 
 interface tooltipLabelStructure {
     emptyQuery: string,
     noMatch: string,
     foundMatch: string,
+    partialMatch?: string,
 }
 
 interface AutocompleteButtonWithStatusProps {
@@ -42,7 +44,9 @@ export const AutocompleteButtonWithStatus = (props: AutocompleteButtonWithStatus
                     title={
                         (props.queryValue!!)
                             ? (props.autocompleteResponse)
-                                ? props.tooltipLabels.foundMatch
+                                ? (props.tooltipLabels.partialMatch)
+                                    ? props.tooltipLabels.partialMatch
+                                    : props.tooltipLabels.foundMatch
                                 : props.tooltipLabels.noMatch
                             : props.tooltipLabels.emptyQuery
                     }
@@ -87,11 +91,27 @@ interface getIconButtonProps {
     queryValue: string,
     autocompleteResponse: any,
     loadingState: boolean,
+    tooltipLabels: tooltipLabelStructure,
 }
 
 const getIconButton = (props: getIconButtonProps) => {
+
     if((props.queryValue !== "") && !props.loadingState){
-        if(props.autocompleteResponse !== undefined){
+        if(props.tooltipLabels.partialMatch !== undefined){
+            return(
+                <Button
+                    variant={'contained'}
+                    color={'warning'}
+                    sx={{
+                        paddingX: '6px',
+                        minWidth: 'max-content',
+                        cursor: 'help',
+                    }}
+                >
+                    <AutoFixHighIcon/>
+                </Button>
+            )
+        } else if(props.autocompleteResponse !== undefined){
             return(
                 <Button
                     variant={'contained'}
@@ -99,7 +119,9 @@ const getIconButton = (props: getIconButtonProps) => {
                     sx={{
                         paddingX: '6px',
                         minWidth: 'max-content',
+                        cursor: 'help',
                     }}
+                    disableRipple={true}
                 >
                     <DoneIcon/>
                 </Button>
@@ -112,7 +134,9 @@ const getIconButton = (props: getIconButtonProps) => {
                     sx={{
                         paddingX: '6px',
                         minWidth: 'max-content',
+                        cursor: 'help',
                     }}
+                    disableRipple={true}
                 >
                     <CloseIcon/>
                 </Button>
@@ -126,7 +150,9 @@ const getIconButton = (props: getIconButtonProps) => {
                 sx={{
                     paddingX: '6px',
                     minWidth: 'max-content',
+                    cursor: 'help',
                 }}
+                disableRipple={true}
             >
                 <QuestionMarkIcon/>
             </Button>

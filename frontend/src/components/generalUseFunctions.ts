@@ -413,6 +413,33 @@ const getRequiredFieldsData = (translation: TranslationItem, partOfSpeech: PartO
                 }
             }
         }
+        case ("Verb"): {
+            switch (translation.language){
+                case ("English"): {
+                    return(
+                        (translation.cases.find(wordCase => (wordCase.caseName === 'simplePresent1sEN')))!.word
+                    )
+                }
+                case ("Spanish"): {
+                    return(
+                        (translation.cases.find(wordCase => (wordCase.caseName === 'infinitiveNonFiniteSimpleES')))!.word
+                    )
+                }
+                case ("German"): {
+                    return(
+                        (translation.cases.find(wordCase => (wordCase.caseName === 'infinitiveDE')))!.word
+                    )
+                }
+                case ("Estonian"): {
+                    return(
+                        (translation.cases.find(wordCase => (wordCase.caseName === 'infinitiveMaEE')))!.word
+                    )
+                }
+                default: {
+                    return("- missing verb label -")
+                }
+            }
+        }
         default: {
             return("Part of speech not found")
         }

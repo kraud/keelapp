@@ -179,7 +179,8 @@ export function NounFormES(props: NounFormESProps) {
                                 tooltipLabels={{
                                     emptyQuery: "Please input 'Singular palabra' first.",
                                     noMatch: "Sorry, we don't know this word!",
-                                    foundMatch: "There is information about this word stored in our system."
+                                    foundMatch: "There is information about this word stored in our system.",
+                                    partialMatch: (isSuccessAT && messageAT !== "") ?messageAT :undefined
                                 }}
                                 queryValue={singularWord}
                                 autocompleteResponse={autocompletedTranslationNounES}

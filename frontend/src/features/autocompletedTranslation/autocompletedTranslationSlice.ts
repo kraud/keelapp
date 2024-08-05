@@ -221,7 +221,6 @@ export const autocompletedTranslationSlice = createSlice({
                 state.isLoadingAT = true
             })
             .addCase(getAutocompletedSpanishVerbData.fulfilled, (state, action) => {
-                // const verbESDataToStore = sanitizeDataStructureESVerb(action.payload)
                 if(action.payload.foundVerb){
                     state.isLoadingAT = false
                     state.isSuccessAT = true
@@ -244,10 +243,10 @@ export const autocompletedTranslationSlice = createSlice({
                 state.isLoadingAT = true
             })
             .addCase(getAutocompletedSpanishNounGender.fulfilled, (state, action) => {
-                if(action.payload.foundNoun){
+                if(action.payload.foundNoun || action.payload.possibleMatch){
                     state.isLoadingAT = false
                     state.isSuccessAT = true
-                    state.messageAT = initialState.messageAT
+                    state.messageAT = (action.payload.possibleMatch!!) ?"This might not be a word in Spanish. Click on 'Autocomplete' to see our suggestion." :initialState.messageAT
                     state.autocompletedTranslationNounES = action.payload.nounData
                 } else {
                     state.isLoadingAT = false
@@ -304,6 +303,29 @@ export const autocompletedTranslationSlice = createSlice({
                 }
             })
             .addCase(getAutocompletedGermanVerbData.rejected, (state, action) => {
+                state.isLoadingAT = false
+                state.isErrorAT = true
+                state.messageAT = action.payload as string
+            })
+            .addCase(getAutocompletedEnglishVerbData.pending, (state) => {
+                state.isLoadingAT = true
+            })
+            .addCase(getAutocompletedEnglishVerbData.fulfilled, (state, action) => {
+                // NB! There is no need for a sanitize function, because we create the response format ourselves in the BEc
+                if(action.payload.foundVerb){
+                    state.isLoadingAT = false
+                    state.isSuccessAT = true
+                    state.messageAT = initialState.messageAT
+                    state.autocompletedTranslationVerbEN = action.payload.verbData
+                } else {
+                    state.isLoadingAT = false
+                    state.isSuccessAT = false
+                    state.isErrorAT = true
+                    state.messageAT = "There is not information in our system for that word."
+                    state.autocompletedTranslationVerbEN = initialState.autocompletedTranslationVerbDE
+                }
+            })
+            .addCase(getAutocompletedEnglishVerbData.rejected, (state, action) => {
                 state.isLoadingAT = false
                 state.isErrorAT = true
                 state.messageAT = action.payload as string

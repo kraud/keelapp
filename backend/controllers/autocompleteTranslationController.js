@@ -1,18 +1,25 @@
 const asyncHandler = require("express-async-handler")
+const isWord = require('is-word')
+
 // const conjugateVerb = require("../../node_modules/conjugator/lib/conjugateVerb.js")
 const SpanishVerbs = require('spanish-verbs')
-const SpanishGender = require('rosaenlg-gender-es');
-const isWord = require('is-word')
-const GermanVerbsLib = require('german-verbs')
-const GermanWords = require('german-words');
-const GermanVerbsDict = require('german-verbs-dict/dist/verbs.json')
-const GermanWordsList = require('german-words-dict/dist/words.json');
+const SpanishGender = require('rosaenlg-gender-es')
 
-// @desc    Get Spanish verb info by infinitive form
+const GermanVerbsLib = require('german-verbs')
+const GermanWords = require('german-words')
+const GermanVerbsDict = require('german-verbs-dict/dist/verbs.json')
+const GermanWordsList = require('german-words-dict/dist/words.json')
+
+const EnglishVerbs = require('english-verbs-helper');
+const Irregular = require('english-verbs-irregular/dist/verbs.json');
+const Gerunds = require('english-verbs-gerunds/dist/gerunds.json');
+const EnglishVerbsData = EnglishVerbs.mergeVerbsData(Irregular, Gerunds);
+
+// @desc    Get Spanish noun-gender info by singular-nominative form
 // @route   GET /api/autocompleteTranslations
 // @access  Private
 const getNounGenderES = asyncHandler(async (req, res) => {
-    const spanishVerb = isWord('spanish')
+    const spanishNoun = isWord('spanish')
     const getFullArticleES = (articleLetter) => {
         switch (articleLetter){
             case('f'):{
@@ -26,23 +33,170 @@ const getNounGenderES = asyncHandler(async (req, res) => {
             }
         }
     }
-
-    if(spanishVerb.check(req.params.singularNominativeNoun)){
-        const matchingGenderResponse = {
-            language: 'Spanish',
-            cases: [
-                {
-                    caseName: "genderES",
-                    word: getFullArticleES(SpanishGender(req.params.singularNominativeNoun))
-                }
-            ]
-        }
+    // TODO: SpanishGender library can infer gender of words that isWord does not know, through grammatical rules.
+    //  But SpanishGender also will always return either f or m, even if the word does not exist.
+    //  We could include an additional field specifying "certainty" of autocomplete data,
+    //  and inform the user when we are not 100% sure if it correct.
+    const nounExists = spanishNoun.check(req.params.singularNominativeNoun)
+    const matchingGenderResponse = {
+        language: 'Spanish',
+        cases: [
+            {
+                caseName: "genderES",
+                word: getFullArticleES(SpanishGender(req.params.singularNominativeNoun))
+            }
+        ]
+    }
+    if(nounExists){
         res.status(200).json({foundNoun: true, nounData: matchingGenderResponse})
     } else {
-        res.status(200).json({foundVerb: false})
+        res.status(200).json({
+            foundNoun: false,
+            possibleMatch: true,
+            nounData: matchingGenderResponse,
+        })
     }
 
 })
+
+// @desc    Get Spanish verb info by infinitive form
+// @route   GET /api/autocompleteTranslations
+// @access  Private
+const getVerbEN = asyncHandler(async (req, res) => {
+    // TODO: maybe also check 'british-english'? To avoid mistakes from different spelling.
+    const englishVerb = isWord('american-english')
+    const extractVerb = (compoundVerbString) => {
+        // compound verbs include "will" "would" in response => we only need conjugated verb
+        return(
+            compoundVerbString.split(' ')[1]
+        )
+    }
+    // PRONOUNS
+    // 0: I
+    // 1: you (singular)
+    // 2: he/she/it
+    // 3: we
+    // 4: you (plural)
+    // 5: they
+
+    // TENSES
+    // -Simple
+    // SIMPLE_PRESENT (or PRESENT)
+    // SIMPLE_PAST (or PAST)
+    // SIMPLE_FUTURE (or FUTURE)
+    // -Progressive
+    // PROGRESSIVE_PRESENT
+    // PROGRESSIVE_PAST
+    // PROGRESSIVE_FUTURE
+    // -Perfect
+    // PERFECT_PRESENT
+    // PERFECT_PAST
+    // PERFECT_FUTURE
+    // -Perfect progressive
+    // PERFECT_PROGRESSIVE_PAST
+    // PERFECT_PROGRESSIVE_PRESENT
+    // PERFECT_PROGRESSIVE_FUTURE
+
+    if(englishVerb.check(req.params.infinitiveVerb)){
+        // TODO: use this for 'progressive' and 'perfect progressive' tenses (-ing):
+        // EnglishVerbs.getIngPart(EnglishVerbsData, 'swim')
+        const verbResponse = {
+            language: 'English',
+            cases: [
+                // PRESENT
+                {
+                    caseName: 'simplePresent1sEN',
+                    word: EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_PRESENT', 1)
+                },
+                {
+                    caseName: 'simplePresent2sEN',
+                    word: EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_PRESENT', 2)
+                },
+                {
+                    caseName: 'simplePresent3sEN',
+                    word: EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_PRESENT', 3)
+                },
+                {
+                    caseName: 'simplePresent1plEN',
+                    word: EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_PRESENT', 1)
+                },
+                {
+                    caseName: 'simplePresent3plEN',
+                    word: EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_PRESENT', 3)
+                },
+                // PAST
+                {
+                    caseName: 'simplePast1sEN',
+                    word: EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_PAST', 1)
+                },
+                {
+                    caseName: 'simplePast2sEN',
+                    word: EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_PAST', 2)
+                },
+                {
+                    caseName: 'simplePast3sEN',
+                    word: EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_PAST', 3)
+                },
+                {
+                    caseName: 'simplePast1plEN',
+                    word: EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_PAST', 1)
+                },
+                {
+                    caseName: 'simplePast3plEN',
+                    word: EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_PAST', 3)
+                },
+                // FUTURE (auxiliary verb: 'will')
+                {
+                    caseName: 'simpleFuture1sEN',
+                    word: extractVerb(EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_FUTURE', 1))
+                },
+                {
+                    caseName: 'simpleFuture2sEN',
+                    word: extractVerb(EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_FUTURE', 2))
+                },
+                {
+                    caseName: 'simpleFuture3sEN',
+                    word: extractVerb(EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_FUTURE', 3))
+                },
+                {
+                    caseName: 'simpleFuture1plEN',
+                    word: extractVerb(EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_FUTURE', 1))
+                },
+                {
+                    caseName: 'simpleFuture3plEN',
+                    word: extractVerb(EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_FUTURE', 3))
+                },
+                // CONDITIONAL (auxiliary verb: 'would')
+                // NB! Both future and conditional tenses use the base form of the verb, but they use different auxiliary (helping) verbs.
+                {
+                    caseName: 'simpleConditional1sEN',
+                    word: extractVerb(EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_FUTURE', 1))
+                },
+                {
+                    caseName: 'simpleConditional2sEN',
+                    word: extractVerb(EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_FUTURE', 2))
+                },
+                {
+                    caseName: 'simpleConditional3sEN',
+                    word: extractVerb(EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_FUTURE', 3))
+                },
+                {
+                    caseName: 'simpleConditional1plEN',
+                    word: extractVerb(EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_FUTURE', 1))
+                },
+                {
+                    caseName: 'simpleConditional3plEN',
+                    word: extractVerb(EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_FUTURE', 3))
+                },
+            ]
+        }
+
+        res.status(200).json({foundVerb: true, verbData: verbResponse})
+    } else {
+        res.status(200).json({foundVerb: false})
+    }
+})
+
 
 // @desc    Get Spanish verb info by infinitive form
 // @route   GET /api/autocompleteTranslations
@@ -265,6 +419,7 @@ const getNounDE = asyncHandler(async (req, res) => {
 })
 
 module.exports = {
+    getVerbEN,
     getVerbES,
     getNounGenderES,
     getVerbDE,

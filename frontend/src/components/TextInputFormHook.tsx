@@ -1,6 +1,7 @@
 import {Control, Controller} from "react-hook-form";
 import {TextField} from "@mui/material";
 import React from "react";
+import {InputProps as StandardInputProps} from "@mui/material/Input/Input";
 
 interface TextInputFormWithHookProps {
     control: Control<any, any>, // Comes from the useForm() hook in React-Hook-Form
@@ -13,6 +14,7 @@ interface TextInputFormWithHookProps {
     onChange?: (value: any) => void // Needed to inform parent component about the Textfield current value
     disabled?: boolean
     triggerOnEnterKeyPress?: () => void
+    inputProps?: Partial<StandardInputProps>
 }
 
 export const TextInputFormWithHook = (props: TextInputFormWithHookProps) => {
@@ -59,6 +61,9 @@ export const TextInputFormWithHook = (props: TextInputFormWithHookProps) => {
                     fullWidth={props.fullWidth}
                     disabled={props.disabled}
                     sx={(props.disabled!) ?componentStyles.disabledStyles :undefined}
+                    InputProps={{
+                        ...props.inputProps
+                    }}
                 />
             )}
         />

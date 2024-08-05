@@ -1,7 +1,11 @@
 const express = require('express')
 const router = express.Router()
-const { getVerbES, getVerbDE, getNounDE, getNounGenderES } = require('../controllers/autocompleteTranslationController')
+const { getVerbES, getVerbDE, getNounDE,
+    getNounGenderES, getVerbEN
+} = require('../controllers/autocompleteTranslationController')
 const {protect} = require('../middleware/authMiddleware')
+
+router.get('/english/verb/:infinitiveVerb', protect, getVerbEN)
 
 router.get('/spanish/verb/:infinitiveVerb', protect, getVerbES)
 router.get('/spanish/noun/:singularNominativeNoun', protect, getNounGenderES)
