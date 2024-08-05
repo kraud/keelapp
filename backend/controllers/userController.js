@@ -395,6 +395,36 @@ const updatePassword = asyncHandler(async (req, res) => {
     res.status(200).json({})
 })
 
+// @desc    Get basic metrics for dashboard
+// @route   GET /api/users
+// @access  Private
+const getBasicUserMetrics = asyncHandler(async (req, res) => {
+
+    const metrics_data = {
+        total_words: getRandomInt(1500),
+        total_incomplete_words: getRandomInt(11),
+        //words per month
+        data_words_by_type: {
+            "Noun": getRandomInt(400),
+            "Pronoun": getRandomInt(30),
+            "Verb": getRandomInt(300),
+            "Adjective": getRandomInt(600),
+            "Adverb": 0
+        },
+        data_words_by_language: {
+            "Spanish": getRandomInt(420),
+            "English": getRandomInt(420),
+            "German": getRandomInt(420),
+            "Estonian": getRandomInt(420)
+        }
+    }
+
+    res.status(200).json(metrics_data)
+})
+
+function getRandomInt(max) {
+    return Math.floor(Math.random() * max);
+}
 // Generate JWT
 const generateToken = (id) => {
     return jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: '30d'})
@@ -410,6 +440,7 @@ module.exports = {
     queryParamToBool,
     verifyUser,
     requestPasswordReset,
-    updatePassword
+    updatePassword,
+    getBasicUserMetrics
 }
 

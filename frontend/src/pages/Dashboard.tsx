@@ -9,6 +9,7 @@ import {SpinningText} from "../components/SpinningText";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import {useTheme} from "@mui/material/styles";
 import {Lang} from "../ts/enums";
+import UserMetrics from "../components/charts/UserMetrics";
 
 export function Dashboard() {
     const theme = useTheme()
@@ -23,7 +24,7 @@ export function Dashboard() {
         }
     }, [user, navigate])
 
-    return(
+    return (
         <Grid
             component={motion.div} // to implement animations with Framer Motion
             variants={routeVariantsAnimation}
@@ -83,6 +84,15 @@ export function Dashboard() {
                         color={"primary"}
                     />
                 </Grid>
+            </Grid>
+            <Grid
+                container={true}
+                justifyContent={"center"}
+                sx={{
+                    paddingLeft: globalTheme.spacing(2),
+                }}
+            >
+                <UserMetrics />
             </Grid>
         </Grid>
     )
