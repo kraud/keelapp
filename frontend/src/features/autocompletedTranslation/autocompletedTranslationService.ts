@@ -1,10 +1,16 @@
 import axios from "axios"
+import {EstonianAPIRequest} from "../../ts/interfaces";
 
 const BE_URL = process.env.REACT_APP_VERCEL_BE_URL
 const API_URL = (BE_URL!!) ?BE_URL+'/api/autocompleteTranslations' :'/api/autocompleteTranslations'
 
-const getEstonianNounData = async (nounEESingularNominative: string) => {
-    const response = await axios.get(`https://api.sonapi.ee/v2/${nounEESingularNominative}`)
+const getEstonianNounData = async (nounEESingularNominative: EstonianAPIRequest) => {
+    let response
+    if(nounEESingularNominative.searchInEnglish!!){
+        response = await axios.get(`https://api.sonapi.ee/v2/${nounEESingularNominative.query}?lg=en`)
+    } else {
+        response = await axios.get(`https://api.sonapi.ee/v2/${nounEESingularNominative.query}`)
+    }
     return(response.data)
 }
 
@@ -13,8 +19,13 @@ const getEstonianAdjectiveData = async (adjectiveEESingularNominative: string) =
     return(response.data)
 }
 
-const getEstonianVerbData = async (verbEEMaInfinitive: string) => {
-    const response = await axios.get(`https://api.sonapi.ee/v2/${verbEEMaInfinitive}`)
+const getEstonianVerbData = async (verbEEMaInfinitive: EstonianAPIRequest) => {
+    let response
+    if(verbEEMaInfinitive.searchInEnglish!!){
+        response = await axios.get(`https://api.sonapi.ee/v2/${verbEEMaInfinitive.query}?lg=en`)
+    } else {
+        response = await axios.get(`https://api.sonapi.ee/v2/${verbEEMaInfinitive.query}`)
+    }
     return(response.data)
 }
 

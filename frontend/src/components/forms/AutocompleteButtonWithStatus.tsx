@@ -6,6 +6,8 @@ import DoneIcon from "@mui/icons-material/Done";
 import CloseIcon from "@mui/icons-material/Close";
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
+import {SxProps} from "@mui/system";
+import {Theme} from "@mui/material/styles";
 
 interface tooltipLabelStructure {
     emptyQuery: string,
@@ -21,6 +23,7 @@ interface AutocompleteButtonWithStatusProps {
     loadingState: boolean,
     forceDisabled?: boolean,
     actionButtonLabel?: string,
+    sxProps?: SxProps<Theme>
 
     onAutocompleteClick: () => void
 }
@@ -35,6 +38,9 @@ export const AutocompleteButtonWithStatus = (props: AutocompleteButtonWithStatus
             xs={12}
             lg={6}
             xl={3}
+            sx={{
+                ...props.sxProps
+            }}
         >
             <Grid
                 item={true}

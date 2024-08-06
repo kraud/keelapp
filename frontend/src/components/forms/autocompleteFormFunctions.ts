@@ -178,6 +178,7 @@ export const sanitizeDataStructureEEVerb = (request: WordSearchResultStructureEE
         const formattedEEVerb: TranslationItem = {
             language: Lang.EE,
             cases: [
+                // Kindel: Present
                 {
                     word: getWordFromWordFormsList(request.searchResult[0].wordForms,"Sup"),
                     caseName: VerbCases.infinitiveMaEE
@@ -209,6 +210,57 @@ export const sanitizeDataStructureEEVerb = (request: WordSearchResultStructureEE
                 {
                     word: getWordFromWordFormsList(request.searchResult[0].wordForms,'IndPrPl3'),
                     caseName: VerbCases.kindelPresent3plEE
+                },
+                // Kindel: Simple past
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'IndIpfSg1'),
+                    caseName: VerbCases.kindelSimplePast1sEE
+                },
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'IndIpfSg2'),
+                    caseName: VerbCases.kindelSimplePast2sEE
+                },
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'IndIpfSg3'),
+                    caseName: VerbCases.kindelSimplePast3sEE
+                },
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'IndIpfPl1'),
+                    caseName: VerbCases.kindelSimplePast1plEE
+                },
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'IndIpfPl2'),
+                    caseName: VerbCases.kindelSimplePast2plEE
+                },
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'IndIpfPl3'),
+                    caseName: VerbCases.kindelSimplePast3plEE
+                },
+                // Kindel: Past perfect
+                // NB! They are all the same. Auxiliary verb (to-be in present) changes according to the pronoun
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'PtsPtPs'),
+                    caseName: VerbCases.kindelPastPerfect1sEE
+                },
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'PtsPtPs'),
+                    caseName: VerbCases.kindelPastPerfect2sEE
+                },
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'PtsPtPs'),
+                    caseName: VerbCases.kindelPastPerfect3sEE
+                },
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'PtsPtPs'),
+                    caseName: VerbCases.kindelPastPerfect1plEE
+                },
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'PtsPtPs'),
+                    caseName: VerbCases.kindelPastPerfect2plEE
+                },
+                {
+                    word: getWordFromWordFormsList(request.searchResult[0].wordForms,'PtsPtPs'),
+                    caseName: VerbCases.kindelPastPerfect3plEE
                 },
             ]
         }

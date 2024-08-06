@@ -170,12 +170,12 @@ export enum VerbCases {
     indicativePresent2plES = "indicativePresent2plES",
     indicativePresent3plES = "indicativePresent3plES",
 
-    indicativePerfectPast1sES = "indicativePerfectPast1sES",
-    indicativePerfectPast2sES = "indicativePerfectPast2sES",
-    indicativePerfectPast3sES = "indicativePerfectPast3sES",
-    indicativePerfectPast1plES = "indicativePerfectPast1plES",
-    indicativePerfectPast2plES = "indicativePerfectPast2plES",
-    indicativePerfectPast3plES = "indicativePerfectPast3plES",
+    indicativeImperfectPast1sES = "indicativeImperfectPast1sES",
+    indicativeImperfectPast2sES = "indicativeImperfectPast2sES",
+    indicativeImperfectPast3sES = "indicativeImperfectPast3sES",
+    indicativeImperfectPast1plES = "indicativeImperfectPast1plES",
+    indicativeImperfectPast2plES = "indicativeImperfectPast2plES",
+    indicativeImperfectPast3plES = "indicativeImperfectPast3plES",
 
     indicativePerfectSimplePast1sES = "indicativePerfectSimplePast1sES",
     indicativePerfectSimplePast2sES = "indicativePerfectSimplePast2sES",
@@ -231,13 +231,21 @@ export enum VerbCases {
     kindelPresent2plEE = 'kindelPresent2plEE',
     kindelPresent3plEE = 'kindelPresent3plEE',
     // simple past (positive)
-    // TODO: missing present (negative: ei+nud variant - same for all pronouns same except 'other'
+    // TODO: missing simple past (negative: ei+nud variant - same for all pronouns same except 'other'
     kindelSimplePast1sEE = 'kindelSimplePast1sEE',
     kindelSimplePast2sEE = 'kindelSimplePast2sEE',
     kindelSimplePast3sEE = 'kindelSimplePast3sEE',
     kindelSimplePast1plEE = 'kindelSimplePast1plEE',
     kindelSimplePast2plEE = 'kindelSimplePast2plEE',
     kindelSimplePast3plEE = 'kindelSimplePast3plEE',
+    // past perfect (positive)
+    // TODO: missing past perfect (negative: ei+nud variant - same for all pronouns same except 'other'
+    kindelPastPerfect1sEE = 'kindelPastPerfect1sEE',
+    kindelPastPerfect2sEE = 'kindelPastPerfect2sEE',
+    kindelPastPerfect3sEE = 'kindelPastPerfect3sEE',
+    kindelPastPerfect1plEE = 'kindelPastPerfect1plEE',
+    kindelPastPerfect2plEE = 'kindelPastPerfect2plEE',
+    kindelPastPerfect3plEE = 'kindelPastPerfect3plEE',
 
 
     // ============== GERMAN: ==============

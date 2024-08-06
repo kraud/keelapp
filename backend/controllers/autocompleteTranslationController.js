@@ -103,90 +103,91 @@ const getVerbEN = asyncHandler(async (req, res) => {
         const verbResponse = {
             language: 'English',
             cases: [
+                // Tense: SIMPLE
                 // PRESENT
                 {
                     caseName: 'simplePresent1sEN',
-                    word: EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_PRESENT', 1)
+                    word: EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_PRESENT', 0)
                 },
                 {
                     caseName: 'simplePresent2sEN',
-                    word: EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_PRESENT', 2)
-                },
-                {
-                    caseName: 'simplePresent3sEN',
-                    word: EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_PRESENT', 3)
-                },
-                {
-                    caseName: 'simplePresent1plEN',
                     word: EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_PRESENT', 1)
                 },
                 {
-                    caseName: 'simplePresent3plEN',
+                    caseName: 'simplePresent3sEN',
+                    word: EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_PRESENT', 2)
+                },
+                {
+                    caseName: 'simplePresent1plEN',
                     word: EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_PRESENT', 3)
+                },
+                {
+                    caseName: 'simplePresent3plEN',
+                    word: EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_PRESENT', 5)
                 },
                 // PAST
                 {
                     caseName: 'simplePast1sEN',
-                    word: EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_PAST', 1)
+                    word: EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_PAST', 0)
                 },
                 {
                     caseName: 'simplePast2sEN',
-                    word: EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_PAST', 2)
-                },
-                {
-                    caseName: 'simplePast3sEN',
-                    word: EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_PAST', 3)
-                },
-                {
-                    caseName: 'simplePast1plEN',
                     word: EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_PAST', 1)
                 },
                 {
-                    caseName: 'simplePast3plEN',
+                    caseName: 'simplePast3sEN',
+                    word: EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_PAST', 2)
+                },
+                {
+                    caseName: 'simplePast1plEN',
                     word: EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_PAST', 3)
+                },
+                {
+                    caseName: 'simplePast3plEN',
+                    word: EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_PAST', 5)
                 },
                 // FUTURE (auxiliary verb: 'will')
                 {
                     caseName: 'simpleFuture1sEN',
-                    word: extractVerb(EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_FUTURE', 1))
+                    word: extractVerb(EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_FUTURE', 0))
                 },
                 {
                     caseName: 'simpleFuture2sEN',
-                    word: extractVerb(EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_FUTURE', 2))
-                },
-                {
-                    caseName: 'simpleFuture3sEN',
-                    word: extractVerb(EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_FUTURE', 3))
-                },
-                {
-                    caseName: 'simpleFuture1plEN',
                     word: extractVerb(EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_FUTURE', 1))
                 },
                 {
-                    caseName: 'simpleFuture3plEN',
+                    caseName: 'simpleFuture3sEN',
+                    word: extractVerb(EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_FUTURE', 2))
+                },
+                {
+                    caseName: 'simpleFuture1plEN',
                     word: extractVerb(EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_FUTURE', 3))
+                },
+                {
+                    caseName: 'simpleFuture3plEN',
+                    word: extractVerb(EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_FUTURE', 5))
                 },
                 // CONDITIONAL (auxiliary verb: 'would')
                 // NB! Both future and conditional tenses use the base form of the verb, but they use different auxiliary (helping) verbs.
                 {
                     caseName: 'simpleConditional1sEN',
-                    word: extractVerb(EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_FUTURE', 1))
+                    word: extractVerb(EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_FUTURE', 0))
                 },
                 {
                     caseName: 'simpleConditional2sEN',
-                    word: extractVerb(EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_FUTURE', 2))
-                },
-                {
-                    caseName: 'simpleConditional3sEN',
-                    word: extractVerb(EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_FUTURE', 3))
-                },
-                {
-                    caseName: 'simpleConditional1plEN',
                     word: extractVerb(EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_FUTURE', 1))
                 },
                 {
-                    caseName: 'simpleConditional3plEN',
+                    caseName: 'simpleConditional3sEN',
+                    word: extractVerb(EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_FUTURE', 2))
+                },
+                {
+                    caseName: 'simpleConditional1plEN',
                     word: extractVerb(EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_FUTURE', 3))
+                },
+                {
+                    caseName: 'simpleConditional3plEN',
+                    word: extractVerb(EnglishVerbs.getConjugation(EnglishVerbsData, req.params.infinitiveVerb, 'SIMPLE_FUTURE', 5))
                 },
             ]
         }
@@ -208,13 +209,13 @@ const getVerbES = asyncHandler(async (req, res) => {
     // INDICATIVE Col1 pdf
     // 'INDICATIVE_PRESENT',
     // 'INDICATIVE_IMPERFECT',
-    // 'INDICATIVE_PERFECT',
+    // 'INDICATIVE_PRETERITE',
     // 'INDICATIVE_FUTURE',
     // 'CONDITIONAL_PRESENT',
     // INDICATIVE Col2 pdf
     // 'INDICATIVE_PRETERITE_PERFECT',
     // 'INDICATIVE_PLUPERFECT',
-    // 'INDICATIVE_PRETERITE',
+    // 'INDICATIVE_PERFECT',
     // 'INDICATIVE_FUTURE_PERFECT',
     // 'CONDITIONAL_PERFECT',
 
@@ -262,6 +263,7 @@ const getVerbES = asyncHandler(async (req, res) => {
                     word: SpanishVerbs.getConjugation(req.params.infinitiveVerb, 'INDICATIVE_PRETERITE_PERFECT', 0).split(' ')[1],
                     caseName: "participleNonFiniteSimpleES"
                 },
+                // INDICATIVE - SIMPLE TIME - PRESENT
                 {
                     word: SpanishVerbs.getConjugation(req.params.infinitiveVerb, 'INDICATIVE_PRESENT', 0),
                     caseName: "indicativePresent1sES"
@@ -285,6 +287,81 @@ const getVerbES = asyncHandler(async (req, res) => {
                 {
                     word: SpanishVerbs.getConjugation(req.params.infinitiveVerb, 'INDICATIVE_PRESENT', 5),
                     caseName: "indicativePresent3plES"
+                },
+                // INDICATIVE - SIMPLE TIME - PRET. IMPERFECT
+                {
+                    word: SpanishVerbs.getConjugation(req.params.infinitiveVerb, 'INDICATIVE_IMPERFECT', 0),
+                    caseName: "indicativeImperfectPast1sES"
+                },
+                {
+                    word: SpanishVerbs.getConjugation(req.params.infinitiveVerb, 'INDICATIVE_IMPERFECT', 1),
+                    caseName: "indicativeImperfectPast2sES"
+                },
+                {
+                    word: SpanishVerbs.getConjugation(req.params.infinitiveVerb, 'INDICATIVE_IMPERFECT', 2),
+                    caseName: "indicativeImperfectPast3sES"
+                },
+                {
+                    word: SpanishVerbs.getConjugation(req.params.infinitiveVerb, 'INDICATIVE_IMPERFECT', 3),
+                    caseName: "indicativeImperfectPast1plES"
+                },
+                {
+                    word: SpanishVerbs.getConjugation(req.params.infinitiveVerb, 'INDICATIVE_IMPERFECT', 4),
+                    caseName: "indicativeImperfectPast2plES"
+                },
+                {
+                    word: SpanishVerbs.getConjugation(req.params.infinitiveVerb, 'INDICATIVE_IMPERFECT', 5),
+                    caseName: "indicativeImperfectPast3plES"
+                },
+                // INDICATIVE - SIMPLE TIME - PRET. PERFECT
+                {
+                    word: SpanishVerbs.getConjugation(req.params.infinitiveVerb, 'INDICATIVE_PRETERITE', 0),
+                    caseName: "indicativePerfectSimplePast1sES"
+                },
+                {
+                    word: SpanishVerbs.getConjugation(req.params.infinitiveVerb, 'INDICATIVE_PRETERITE', 1),
+                    caseName: "indicativePerfectSimplePast2sES"
+                },
+                {
+                    word: SpanishVerbs.getConjugation(req.params.infinitiveVerb, 'INDICATIVE_PRETERITE', 2),
+                    caseName: "indicativePerfectSimplePast3sES"
+                },
+                {
+                    word: SpanishVerbs.getConjugation(req.params.infinitiveVerb, 'INDICATIVE_PRETERITE', 3),
+                    caseName: "indicativePerfectSimplePast1plES"
+                },
+                {
+                    word: SpanishVerbs.getConjugation(req.params.infinitiveVerb, 'INDICATIVE_PRETERITE', 4),
+                    caseName: "indicativePerfectSimplePast2plES"
+                },
+                {
+                    word: SpanishVerbs.getConjugation(req.params.infinitiveVerb, 'INDICATIVE_PRETERITE', 5),
+                    caseName: "indicativePerfectSimplePast3plES"
+                },
+                // INDICATIVE - SIMPLE TIME - FUTURE
+                {
+                    word: SpanishVerbs.getConjugation(req.params.infinitiveVerb, 'INDICATIVE_FUTURE', 0),
+                    caseName: "indicativeFuture1sES"
+                },
+                {
+                    word: SpanishVerbs.getConjugation(req.params.infinitiveVerb, 'INDICATIVE_FUTURE', 1),
+                    caseName: "indicativeFuture2sES"
+                },
+                {
+                    word: SpanishVerbs.getConjugation(req.params.infinitiveVerb, 'INDICATIVE_FUTURE', 2),
+                    caseName: "indicativeFuture3sES"
+                },
+                {
+                    word: SpanishVerbs.getConjugation(req.params.infinitiveVerb, 'INDICATIVE_FUTURE', 3),
+                    caseName: "indicativeFuture1plES"
+                },
+                {
+                    word: SpanishVerbs.getConjugation(req.params.infinitiveVerb, 'INDICATIVE_FUTURE', 4),
+                    caseName: "indicativeFuture2plES"
+                },
+                {
+                    word: SpanishVerbs.getConjugation(req.params.infinitiveVerb, 'INDICATIVE_FUTURE', 5),
+                    caseName: "indicativeFuture3plES"
                 }
             ]
         }

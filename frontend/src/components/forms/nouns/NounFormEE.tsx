@@ -1,7 +1,7 @@
 import * as Yup from "yup";
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup/dist/yup";
-import {Grid} from "@mui/material";
+import {Checkbox, Grid} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {TextInputFormWithHook} from "../../TextInputFormHook";
 import {TranslationItem, WordItem} from "../../../ts/interfaces";
@@ -15,6 +15,8 @@ import {
 import LinearIndeterminate from "../../Spinner";
 import {setTimerTriggerFunction} from "../../generalUseFunctions";
 import {AutocompleteButtonWithStatus} from "../AutocompleteButtonWithStatus";
+import globalTheme from "../../../theme/theme";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
 interface NounFormEEProps {
     currentTranslationData: TranslationItem,
@@ -25,6 +27,8 @@ interface NounFormEEProps {
 export function NounFormEE(props: NounFormEEProps) {
     const dispatch = useDispatch<AppDispatch>()
     const {autocompletedTranslationNounEE, isErrorAT, isSuccessAT, isLoadingAT, messageAT} = useSelector((state: any) => state.autocompletedTranslations)
+    const [searchInEnglish, setSearchInEnglish] = useState(false)
+
 
     const { currentTranslationData } = props
 
@@ -190,13 +194,17 @@ export function NounFormEE(props: NounFormEEProps) {
 
     const onAutocompleteClick = async () => {
         setValuesInForm(autocompletedTranslationNounEE)
+        setSearchInEnglish(false)
     }
 
     useEffect(() => {
         if(singularNimetav !== ""){
             setTimerTriggerFunction(
                 () => {
-                    dispatch(getAutocompletedEstonianNounData(singularNimetav))
+                    dispatch(getAutocompletedEstonianNounData({
+                        query: singularNimetav,
+                        searchInEnglish: searchInEnglish
+                    }))
                 },
                 600
             )
@@ -238,10 +246,27 @@ export function NounFormEE(props: NounFormEEProps) {
                                 autocompleteResponse={autocompletedTranslationNounEE}
                                 loadingState={isLoadingAT}
                                 onAutocompleteClick={() => onAutocompleteClick()}
+                                sxProps={{
+                                    marginRight: globalTheme.spacing(2)
+                                }}
+                            />
+                            <FormControlLabel
+                                value="end"
+                                control={
+                                    <Checkbox
+                                        checked={searchInEnglish}
+                                        onChange={(event: React.ChangeEvent) => {
+                                            //@ts-ignore
+                                            setSearchInEnglish(event.target.checked)
+                                        }}
+                                    />
+                                }
+                                label="Search in english"
+                                labelPlacement="end"
                             />
                             <Grid
                                 item={true}
-                                xs={9}
+                                xs
                                 sx={{
                                     maxHeight: 'max-content'
                                 }}

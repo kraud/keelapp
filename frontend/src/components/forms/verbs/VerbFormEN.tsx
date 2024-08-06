@@ -430,6 +430,8 @@ export function VerbFormEN(props: VerbFormENProps) {
                     item={true}
                     spacing={2}
                 >
+                    {/* TODO: add matching border-colors to conjugations that are the same => add switch to active them */}
+                    {/* TODO: remove small title from TextFields when there is an adornment inside */}
                     {!(props.displayOnly) &&
                         <Grid
                             container={true}

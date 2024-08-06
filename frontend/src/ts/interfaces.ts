@@ -178,3 +178,8 @@ export interface LanguageAndLabel {
     language: Lang,
     label: string
 }
+
+export interface EstonianAPIRequest {
+    query: string,
+    searchInEnglish?: boolean
+}

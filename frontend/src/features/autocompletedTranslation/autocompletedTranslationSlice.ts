@@ -5,6 +5,7 @@ import {
     sanitizeDataStructureEENoun, sanitizeDataStructureEEVerb,
     sanitizeDataStructureESVerb
 } from "../../components/forms/autocompleteFormFunctions";
+import {EstonianAPIRequest} from "../../ts/interfaces";
 
 
 interface autocompletedTranslationSliceState {
@@ -44,7 +45,7 @@ const initialState: autocompletedTranslationSliceState = {
 }
 
 // Get Estonian translation data for a noun using the singular nominative form
-export const getAutocompletedEstonianNounData = createAsyncThunk(`autocompleteTranslation/getEENoun`, async (nounEESingularNominative: string, thunkAPI) => {
+export const getAutocompletedEstonianNounData = createAsyncThunk(`autocompleteTranslation/getEENoun`, async (nounEESingularNominative: EstonianAPIRequest, thunkAPI) => {
     try {
         // @ts-ignore
         // const token = thunkAPI.getState().auth.user.token
@@ -170,7 +171,7 @@ export const getAutocompletedEnglishVerbData = createAsyncThunk(`autocompleteTra
 })
 
 // Get Estonian translation data for a verb using the -ma infinitive form
-export const getAutocompletedEstonianVerbData = createAsyncThunk(`autocompleteTranslation/getEEVerb`, async (verbEEInfinitive: string, thunkAPI) => {
+export const getAutocompletedEstonianVerbData = createAsyncThunk(`autocompleteTranslation/getEEVerb`, async (verbEEInfinitive: EstonianAPIRequest, thunkAPI) => {
     try {
         return await autocompletedTranslationService.getEstonianVerbData(verbEEInfinitive)
     } catch(error: any) {
@@ -216,6 +217,7 @@ export const autocompletedTranslationSlice = createSlice({
                 state.isLoadingAT = false
                 state.isErrorAT = true
                 state.messageAT = action.payload as string
+                state.autocompletedTranslationNounEE = initialState.autocompletedTranslationNounEE
             })
             .addCase(getAutocompletedSpanishVerbData.pending, (state) => {
                 state.isLoadingAT = true
@@ -283,6 +285,7 @@ export const autocompletedTranslationSlice = createSlice({
                 state.isLoadingAT = false
                 state.isErrorAT = true
                 state.messageAT = action.payload as string
+                state.autocompletedTranslationVerbEE = initialState.autocompletedTranslationVerbEE
             })
             .addCase(getAutocompletedGermanVerbData.pending, (state) => {
                 state.isLoadingAT = true
