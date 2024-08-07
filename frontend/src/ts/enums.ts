@@ -258,6 +258,7 @@ export enum VerbCases {
         // Sie: 3rd person plural (3pl)
 
     infinitiveDE = 'infinitiveDE',
+    auxVerbDE = 'auxVerbDE',
 
     // INDICATIVE: --------------
     // Present: different for almost all pronouns
@@ -267,13 +268,6 @@ export enum VerbCases {
     indicativePresent1plDE = 'indicativePresent1plDE',
     indicativePresent2plDE = 'indicativePresent2plDE',
     indicativePresent3plDE = 'indicativePresent3plDE',
-    // Imperfect: different for almost all pronouns
-    indicativeImperfect1sDE = 'indicativeImperfect1sDE',
-    indicativeImperfect2sDE = 'indicativeImperfect2sDE',
-    indicativeImperfect3sDE = 'indicativeImperfect3sDE',
-    indicativeImperfect1plDE = 'indicativeImperfect1plDE',
-    indicativeImperfect2plDE = 'indicativeImperfect2plDE',
-    indicativeImperfect3plDE = 'indicativeImperfect3plDE',
     // (present) Perfect: 'habe'-present-conjugated & ge+'stem'+t => same for all pronouns
     indicativePerfect1sDE = 'indicativePerfect1sDE',
     indicativePerfect2sDE = 'indicativePerfect2sDE',
@@ -281,6 +275,86 @@ export enum VerbCases {
     indicativePerfect1plDE = 'indicativePerfect1plDE',
     indicativePerfect2plDE = 'indicativePerfect2plDE',
     indicativePerfect3plDE = 'indicativePerfect3plDE',
+    // Simple future (1)
+    indicativeSimpleFuture1sDE = 'indicativeSimpleFuture1sDE',
+    indicativeSimpleFuture2sDE = 'indicativeSimpleFuture2sDE',
+    indicativeSimpleFuture3sDE = 'indicativeSimpleFuture3sDE',
+    indicativeSimpleFuture1plDE = 'indicativeSimpleFuture1plDE',
+    indicativeSimpleFuture2plDE = 'indicativeSimpleFuture2plDE',
+    indicativeSimpleFuture3plDE = 'indicativeSimpleFuture3plDE',
+}
+
+export enum pronounDE {
+    // SIMPLIFIED:
+        // Singular (sg)
+    Sg1 = 'ich',
+    Sg2 = 'du',
+    Sg3 = 'er/sie/es',
+        // Plural (pl)
+    Pl1 = 'wir',
+    Pl2 = 'ihr',
+    Pl3 = 'sie',
+
+    // NOMINATIVE
+        // Singular (sg)
+    NomSg1DE = 'ich',
+    NomSg2DE = 'du',
+    NomSg2FDE = 'Sie', // Formal
+    NomSg3DE = 'er/sie/es',
+    NomSg3MDE = 'er', // Male
+    NomSg3FDE = 'sie', // Female
+    NomSg3NDE = 'es', // Neutral
+        // Plural (pl)
+    NomPl1DE = 'wir',
+    NomPl2DE = 'ihr',
+    NomPl2FDE = 'Sie', // Formal
+    NomPl3DE = 'sie',
+
+    // ACCUSATIVE
+        // Singular (sg)
+    AccSg1DE = 'mich',
+    AccSg2DE = 'dich',
+    AccSg2FDE = 'Sie', // Formal
+    AccSg3DE = 'ihn/sie/es',
+    AccSg3MDE = 'ihn', // Male
+    AccSg3FDE = 'sie', // Female
+    AccSg3NDE = 'es', // Neutral
+        // Plural (pl)
+    AccPl1DE = 'uns',
+    AccPl2DE = 'euch',
+    AccPl2FDE = 'Sie', // Formal
+    AccPl3DE = 'sie',
+
+    // DATIVE
+        // Singular (sg)
+    DatSg1DE = 'mir',
+    DatSg2DE = 'dir',
+    DatSg2FDE = 'Ihnen', // Formal
+    DatSg3DE = 'ihm/ihr/ihm',
+    DatSg3MDE = 'ihm', // Male
+    DatSg3FDE = 'ihr', // Female
+    DatSg3NDE = 'ihm', // Neutral
+        // Plural (pl)
+    DatPl1DE = 'uns',
+    DatPl2DE = 'euch',
+    DatPl2FDE = 'Ihnen', // Formal
+    DatPl3DE = 'ihnen',
+}
+
+
+export enum verbMoodDE {
+    indicativeDE = 'indicativeDE',
+    subjunctiveDE = 'subjunctiveDE',
+    imperativeDE = 'imperativeDE',
+}
+
+export enum verbTensesIndicativeDE {
+    presentDE = 'presentDE', // Präsens
+    simplePastDE = 'simplePastDE', // Präteritum
+    presentPerfectDE = 'presentPerfectDE', // Perfekt
+    pastPerfectDE = 'pastPerfectDE', // Plusquamperfekt
+    simpleFutureDE = 'simpleFutureDE', // Futur I
+    futurePerfectDE = 'futurePerfectDE' // Futur II
 }
 
 export enum Lang {
@@ -294,6 +368,12 @@ export enum GenderDE {
     M = "der", // MALE
     F = "die", // FEMALE
     N = "das" // NEUTRAL
+}
+
+export enum AuxVerbDE {
+    H = "haben", // MALE
+    S = "sein", // FEMALE
+    W = "werden" // NEUTRAL
 }
 
 export enum PartOfSpeech {

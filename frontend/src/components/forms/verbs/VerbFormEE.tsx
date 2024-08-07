@@ -596,420 +596,441 @@ export function VerbFormEE(props: VerbFormEEProps) {
                             </Grid>
                         </Grid>
                     }
-                    <Grid
-                        container={true}
-                        item={true}
-                        justifyContent={"space-evenly"}
-                        xs={6}
-                        md={3}
-                        spacing={2}
-                    >
+                    {
+                        (
+                            kindelPresent1s!! || kindelPresent2s!! || kindelPresent3s!! ||
+                            kindelPresent1pl!! || kindelPresent2pl!! || kindelPresent3pl!! ||
+                            !props.displayOnly
+                        ) &&
                         <Grid
+                            container={true}
                             item={true}
+                            justifyContent={"space-evenly"}
+                            xs={6}
+                            md
+                            spacing={2}
                         >
-                            <Typography
-                                variant={'h6'}
+                            <Grid
+                                item={true}
                             >
-                                Present:
-                            </Typography>
+                                <Typography
+                                    variant={'h6'}
+                                >
+                                    Present:
+                                </Typography>
+                            </Grid>
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPresent1s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={'Mina'}
+                                        name={"kindelPresent1s"}
+                                        defaultValue={""}
+                                        errors={errors.kindelPresent1s}
+                                        onChange={(value: any) => {
+                                            setKindelPresent1s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPresent2s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={'Sina'}
+                                        name={"kindelPresent2s"}
+                                        defaultValue={""}
+                                        errors={errors.kindelPresent2s}
+                                        onChange={(value: any) => {
+                                            setKindelPresent2s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPresent3s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={'Tema'}
+                                        name={"kindelPresent3s"}
+                                        defaultValue={""}
+                                        errors={errors.kindelPresent3s}
+                                        onChange={(value: any) => {
+                                            setKindelPresent3s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPresent1pl)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={'Meie'}
+                                        name={"kindelPresent1pl"}
+                                        defaultValue={""}
+                                        errors={errors.kindelPresent1pl}
+                                        onChange={(value: any) => {
+                                            setKindelPresent1pl(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPresent2pl)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={'Teie'}
+                                        name={"kindelPresent2pl"}
+                                        defaultValue={""}
+                                        errors={errors.kindelPresent2pl}
+                                        onChange={(value: any) => {
+                                            setKindelPresent2pl(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPresent3pl)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={'Nad'}
+                                        name={"kindelPresent3pl"}
+                                        defaultValue={""}
+                                        errors={errors.kindelPresent3pl}
+                                        onChange={(value: any) => {
+                                            setKindelPresent3pl(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
                         </Grid>
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPresent1s)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={'Mina'}
-                                    name={"kindelPresent1s"}
-                                    defaultValue={""}
-                                    errors={errors.kindelPresent1s}
-                                    onChange={(value: any) => {
-                                        setKindelPresent1s(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPresent2s)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={'Sina'}
-                                    name={"kindelPresent2s"}
-                                    defaultValue={""}
-                                    errors={errors.kindelPresent2s}
-                                    onChange={(value: any) => {
-                                        setKindelPresent2s(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPresent3s)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={'Tema'}
-                                    name={"kindelPresent3s"}
-                                    defaultValue={""}
-                                    errors={errors.kindelPresent3s}
-                                    onChange={(value: any) => {
-                                        setKindelPresent3s(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPresent1pl)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={'Meie'}
-                                    name={"kindelPresent1pl"}
-                                    defaultValue={""}
-                                    errors={errors.kindelPresent1pl}
-                                    onChange={(value: any) => {
-                                        setKindelPresent1pl(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPresent2pl)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={'Teie'}
-                                    name={"kindelPresent2pl"}
-                                    defaultValue={""}
-                                    errors={errors.kindelPresent2pl}
-                                    onChange={(value: any) => {
-                                        setKindelPresent2pl(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPresent3pl)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={'Nad'}
-                                    name={"kindelPresent3pl"}
-                                    defaultValue={""}
-                                    errors={errors.kindelPresent3pl}
-                                    onChange={(value: any) => {
-                                        setKindelPresent3pl(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                    </Grid>
-                    <Grid
-                        container={true}
-                        item={true}
-                        justifyContent={"space-evenly"}
-                        xs={6}
-                        md={3}
-                        spacing={2}
-                    >
+                    }
+                    {
+                        (
+                            kindelSimplePast1s!! || kindelSimplePast2s!! || kindelSimplePast3s!! ||
+                            kindelSimplePast1pl!! || kindelSimplePast2pl!! || kindelSimplePast3pl!! ||
+                            !props.displayOnly
+                        ) &&
                         <Grid
+                            container={true}
                             item={true}
+                            justifyContent={"space-evenly"}
+                            xs={6}
+                            md
+                            spacing={2}
                         >
-                            <Typography
-                                variant={'h6'}
+                            <Grid
+                                item={true}
                             >
-                                Simple past:
-                            </Typography>
+                                <Typography
+                                    variant={'h6'}
+                                >
+                                    Simple past:
+                                </Typography>
+                            </Grid>
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelSimplePast1s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={'Mina'}
+                                        name={"kindelSimplePast1s"}
+                                        defaultValue={""}
+                                        errors={errors.kindelPresent1s}
+                                        onChange={(value: any) => {
+                                            setKindelSimplePast1s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelSimplePast2s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={'Sina'}
+                                        name={"kindelSimplePast2s"}
+                                        defaultValue={""}
+                                        errors={errors.kindelPresent2s}
+                                        onChange={(value: any) => {
+                                            setKindelSimplePast2s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelSimplePast3s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={'Tema'}
+                                        name={"kindelSimplePast3s"}
+                                        defaultValue={""}
+                                        errors={errors.kindelPresent3s}
+                                        onChange={(value: any) => {
+                                            setKindelSimplePast3s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelSimplePast1pl)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={'Meie'}
+                                        name={"kindelSimplePast1pl"}
+                                        defaultValue={""}
+                                        errors={errors.kindelPresent1pl}
+                                        onChange={(value: any) => {
+                                            setKindelSimplePast1pl(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelSimplePast2pl)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={'Teie'}
+                                        name={"kindelSimplePast2pl"}
+                                        defaultValue={""}
+                                        errors={errors.kindelPresent2pl}
+                                        onChange={(value: any) => {
+                                            setKindelSimplePast2pl(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelSimplePast3pl)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={'Nad'}
+                                        name={"kindelSimplePast3pl"}
+                                        defaultValue={""}
+                                        errors={errors.kindelPresent3pl}
+                                        onChange={(value: any) => {
+                                            setKindelSimplePast3pl(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
                         </Grid>
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelSimplePast1s)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={'Mina'}
-                                    name={"kindelSimplePast1s"}
-                                    defaultValue={""}
-                                    errors={errors.kindelPresent1s}
-                                    onChange={(value: any) => {
-                                        setKindelSimplePast1s(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelSimplePast2s)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={'Sina'}
-                                    name={"kindelSimplePast2s"}
-                                    defaultValue={""}
-                                    errors={errors.kindelPresent2s}
-                                    onChange={(value: any) => {
-                                        setKindelSimplePast2s(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelSimplePast3s)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={'Tema'}
-                                    name={"kindelSimplePast3s"}
-                                    defaultValue={""}
-                                    errors={errors.kindelPresent3s}
-                                    onChange={(value: any) => {
-                                        setKindelSimplePast3s(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelSimplePast1pl)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={'Meie'}
-                                    name={"kindelSimplePast1pl"}
-                                    defaultValue={""}
-                                    errors={errors.kindelPresent1pl}
-                                    onChange={(value: any) => {
-                                        setKindelSimplePast1pl(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelSimplePast2pl)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={'Teie'}
-                                    name={"kindelSimplePast2pl"}
-                                    defaultValue={""}
-                                    errors={errors.kindelPresent2pl}
-                                    onChange={(value: any) => {
-                                        setKindelSimplePast2pl(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelSimplePast3pl)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={'Nad'}
-                                    name={"kindelSimplePast3pl"}
-                                    defaultValue={""}
-                                    errors={errors.kindelPresent3pl}
-                                    onChange={(value: any) => {
-                                        setKindelSimplePast3pl(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                    </Grid>
-                    <Grid
-                        container={true}
-                        item={true}
-                        justifyContent={"space-evenly"}
-                        xs={6}
-                        md={3}
-                        spacing={2}
-                    >
+                    }
+                    {
+                        (
+                            kindelPastPerfect1s!! || kindelPastPerfect2s!! || kindelPastPerfect3s!! ||
+                            kindelPastPerfect1pl!! || kindelPastPerfect2pl!! || kindelPastPerfect3pl!! ||
+                            !props.displayOnly
+                        ) &&
                         <Grid
+                            container={true}
                             item={true}
+                            justifyContent={"space-evenly"}
+                            xs={6}
+                            md
+                            spacing={2}
                         >
-                            <Typography
-                                variant={'h6'}
+                            <Grid
+                                item={true}
                             >
-                                Past perfect:
-                            </Typography>
+                                <Typography
+                                    variant={'h6'}
+                                >
+                                    Past perfect:
+                                </Typography>
+                            </Grid>
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPastPerfect1s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={'Mina'}
+                                        name={"kindelPastPerfect1s"}
+                                        defaultValue={""}
+                                        errors={errors.kindelPastPerfect1s}
+                                        onChange={(value: any) => {
+                                            setKindelPastPerfect1s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                        inputProps={{
+                                            startAdornment: <InputAdornment position="start">Ma olen</InputAdornment>,
+                                        }}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPastPerfect2s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={'Sina'}
+                                        name={"kindelPastPerfect2s"}
+                                        defaultValue={""}
+                                        errors={errors.kindelPastPerfect2s}
+                                        onChange={(value: any) => {
+                                            setKindelPastPerfect2s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                        inputProps={{
+                                            startAdornment: <InputAdornment position="start">Sa oled</InputAdornment>,
+                                        }}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPastPerfect3s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={'Tema'}
+                                        name={"kindelPastPerfect3s"}
+                                        defaultValue={""}
+                                        errors={errors.kindelPastPerfect3s}
+                                        onChange={(value: any) => {
+                                            setKindelPastPerfect3s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                        inputProps={{
+                                            startAdornment: <InputAdornment position="start">Ta on</InputAdornment>,
+                                        }}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPastPerfect1pl)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={'Meie'}
+                                        name={"kindelPastPerfect1pl"}
+                                        defaultValue={""}
+                                        errors={errors.kindelPastPerfect1pl}
+                                        onChange={(value: any) => {
+                                            setKindelPastPerfect1pl(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                        inputProps={{
+                                            startAdornment: <InputAdornment position="start">Me oleme</InputAdornment>,
+                                        }}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPastPerfect2pl)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={'Teie'}
+                                        name={"kindelPastPerfect2pl"}
+                                        defaultValue={""}
+                                        errors={errors.kindelPastPerfect2pl}
+                                        onChange={(value: any) => {
+                                            setKindelPastPerfect2pl(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                        inputProps={{
+                                            startAdornment: <InputAdornment position="start">Te olete</InputAdornment>,
+                                        }}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPastPerfect3pl)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={'Nad'}
+                                        name={"kindelPastPerfect3pl"}
+                                        defaultValue={""}
+                                        errors={errors.kindelPastPerfect3pl}
+                                        onChange={(value: any) => {
+                                            setKindelPastPerfect3pl(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                        inputProps={{
+                                            startAdornment: <InputAdornment position="start">Nad olevad</InputAdornment>,
+                                        }}
+                                    />
+                                </Grid>
+                            }
                         </Grid>
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPastPerfect1s)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={'Mina'}
-                                    name={"kindelPastPerfect1s"}
-                                    defaultValue={""}
-                                    errors={errors.kindelPastPerfect1s}
-                                    onChange={(value: any) => {
-                                        setKindelPastPerfect1s(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                    inputProps={{
-                                        startAdornment: <InputAdornment position="start">Ma olen</InputAdornment>,
-                                    }}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPastPerfect2s)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={'Sina'}
-                                    name={"kindelPastPerfect2s"}
-                                    defaultValue={""}
-                                    errors={errors.kindelPastPerfect2s}
-                                    onChange={(value: any) => {
-                                        setKindelPastPerfect2s(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                    inputProps={{
-                                        startAdornment: <InputAdornment position="start">Sa oled</InputAdornment>,
-                                    }}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPastPerfect3s)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={'Tema'}
-                                    name={"kindelPastPerfect3s"}
-                                    defaultValue={""}
-                                    errors={errors.kindelPastPerfect3s}
-                                    onChange={(value: any) => {
-                                        setKindelPastPerfect3s(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                    inputProps={{
-                                        startAdornment: <InputAdornment position="start">Ta on</InputAdornment>,
-                                    }}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPastPerfect1pl)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={'Meie'}
-                                    name={"kindelPastPerfect1pl"}
-                                    defaultValue={""}
-                                    errors={errors.kindelPastPerfect1pl}
-                                    onChange={(value: any) => {
-                                        setKindelPastPerfect1pl(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                    inputProps={{
-                                        startAdornment: <InputAdornment position="start">Me oleme</InputAdornment>,
-                                    }}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPastPerfect2pl)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={'Teie'}
-                                    name={"kindelPastPerfect2pl"}
-                                    defaultValue={""}
-                                    errors={errors.kindelPastPerfect2pl}
-                                    onChange={(value: any) => {
-                                        setKindelPastPerfect2pl(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                    inputProps={{
-                                        startAdornment: <InputAdornment position="start">Te olete</InputAdornment>,
-                                    }}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, kindelPastPerfect3pl)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={'Nad'}
-                                    name={"kindelPastPerfect3pl"}
-                                    defaultValue={""}
-                                    errors={errors.kindelPastPerfect3pl}
-                                    onChange={(value: any) => {
-                                        setKindelPastPerfect3pl(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                    inputProps={{
-                                        startAdornment: <InputAdornment position="start">Nad olevad</InputAdornment>,
-                                    }}
-                                />
-                            </Grid>
-                        }
-                    </Grid>
+                    }
                 </Grid>
             </form>
         </Grid>

@@ -731,7 +731,13 @@ export function VerbFormES(props: VerbFormESProps) {
                         (
                             indicativePresent1s!! || indicativePresent2s!! || indicativePresent3s!! ||
                             indicativePresent1pl!! || indicativePresent2pl!! || indicativePresent3pl!! ||
-                                !props.displayOnly
+                            indicativeImperfectPast1s!! || indicativeImperfectPast2s!! || indicativeImperfectPast3s!! ||
+                            indicativeImperfectPast1pl!! || indicativeImperfectPast2pl!! || indicativeImperfectPast3pl!! ||
+                            indicativePerfectSimplePast1s!! || indicativePerfectSimplePast2s!! || indicativePerfectSimplePast3s!! ||
+                            indicativePerfectSimplePast1pl!! || indicativePerfectSimplePast2pl!! || indicativePerfectSimplePast3pl!! ||
+                            indicativeFuture1s!! || indicativeFuture2s!! || indicativeFuture3s!! ||
+                            indicativeFuture1pl!! || indicativeFuture2pl!! || indicativeFuture3pl!! ||
+                            !props.displayOnly
                         ) &&
                         <Grid
                             container={true}
@@ -754,6 +760,22 @@ export function VerbFormES(props: VerbFormESProps) {
                                     Modo indicativo:
                                 </Typography>
                             </Grid>
+                        </Grid>
+                    }
+                    {
+                        (
+                            indicativePresent1s!! || indicativePresent2s!! || indicativePresent3s!! ||
+                            indicativePresent1pl!! || indicativePresent2pl!! || indicativePresent3pl!! ||
+
+                            !props.displayOnly
+                        ) &&
+                        <Grid
+                            container={true}
+                            item={true}
+                            direction={"column"}
+                            alignItems={"center"}
+                            justifyContent={"center"}
+                        >
                             <Grid
                                 item={true}
                                 xs={'auto'}
@@ -766,534 +788,562 @@ export function VerbFormES(props: VerbFormESProps) {
                             </Grid>
                         </Grid>
                     }
-                    <Grid
-                        container={true}
-                        item={true}
-                        justifyContent={"space-evenly"}
-                        xs={6}
-                        md={3}
-                        spacing={2}
-                    >
+                    {
+                        (
+                            indicativePresent1s!! || indicativePresent2s!! || indicativePresent3s!! ||
+                            indicativePresent1pl!! || indicativePresent2pl!! || indicativePresent3pl!! ||
+                            !props.displayOnly
+                        ) &&
                         <Grid
+                            container={true}
                             item={true}
+                            justifyContent={"space-evenly"}
+                            xs={6}
+                            md
+                            spacing={2}
                         >
-                            <Typography
-                                variant={'h6'}
+                            <Grid
+                                item={true}
                             >
-                                Presente:
-                            </Typography>
+                                <Typography
+                                    variant={'h6'}
+                                >
+                                    Presente:
+                                </Typography>
+                            </Grid>
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePresent1s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"Yo"}
+                                        name={"indicativePresent1s"}
+                                        defaultValue={""}
+                                        errors={errors.indicativePresent1s}
+                                        onChange={(value: any) => {
+                                            setIndicativePresent1s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePresent2s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"Vos"} // TODO: should change if user picks other spanish style
+                                        name={"indicativePresent2s"}
+                                        defaultValue={""}
+                                        errors={errors.indicativePresent2s}
+                                        onChange={(value: any) => {
+                                            setIndicativePresent2s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePresent3s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"Él/Ella/eso"}
+                                        name={"indicativePresent3s"}
+                                        defaultValue={""}
+                                        errors={errors.indicativePresent3s}
+                                        onChange={(value: any) => {
+                                            setIndicativePresent3s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePresent1pl)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"Nosotros/as"}
+                                        name={"indicativePresent1pl"}
+                                        defaultValue={""}
+                                        errors={errors.indicativePresent1pl}
+                                        onChange={(value: any) => {
+                                            setIndicativePresent1pl(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePresent2pl)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"Ustedes"} // TODO: should change if user picks other spanish style
+                                        name={"indicativePresent2pl"}
+                                        defaultValue={""}
+                                        errors={errors.indicativePresent2pl}
+                                        onChange={(value: any) => {
+                                            setIndicativePresent2pl(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePresent3pl)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"Ellos/as"}
+                                        name={"indicativePresent3pl"}
+                                        defaultValue={""}
+                                        errors={errors.indicativePresent3pl}
+                                        onChange={(value: any) => {
+                                            setIndicativePresent3pl(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
                         </Grid>
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePresent1s)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"Yo"}
-                                    name={"indicativePresent1s"}
-                                    defaultValue={""}
-                                    errors={errors.indicativePresent1s}
-                                    onChange={(value: any) => {
-                                        setIndicativePresent1s(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePresent2s)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"Vos"} // TODO: should change if user picks other spanish style
-                                    name={"indicativePresent2s"}
-                                    defaultValue={""}
-                                    errors={errors.indicativePresent2s}
-                                    onChange={(value: any) => {
-                                        setIndicativePresent2s(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePresent3s)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"Él/Ella/eso"}
-                                    name={"indicativePresent3s"}
-                                    defaultValue={""}
-                                    errors={errors.indicativePresent3s}
-                                    onChange={(value: any) => {
-                                        setIndicativePresent3s(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePresent1pl)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"Nosotros/as"}
-                                    name={"indicativePresent1pl"}
-                                    defaultValue={""}
-                                    errors={errors.indicativePresent1pl}
-                                    onChange={(value: any) => {
-                                        setIndicativePresent1pl(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePresent2pl)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"Ustedes"} // TODO: should change if user picks other spanish style
-                                    name={"indicativePresent2pl"}
-                                    defaultValue={""}
-                                    errors={errors.indicativePresent2pl}
-                                    onChange={(value: any) => {
-                                        setIndicativePresent2pl(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePresent3pl)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"Ellos/as"}
-                                    name={"indicativePresent3pl"}
-                                    defaultValue={""}
-                                    errors={errors.indicativePresent3pl}
-                                    onChange={(value: any) => {
-                                        setIndicativePresent3pl(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                    </Grid>
-                    <Grid
-                        container={true}
-                        item={true}
-                        justifyContent={"space-evenly"}
-                        xs={6}
-                        md={3}
-                        spacing={2}
-                    >
+                    }
+                    {
+                        (
+                            indicativeImperfectPast1s!! || indicativeImperfectPast2s!! || indicativeImperfectPast3s!! ||
+                            indicativeImperfectPast1pl!! || indicativeImperfectPast2pl!! || indicativeImperfectPast3pl!! ||
+                            !props.displayOnly
+                        ) &&
                         <Grid
+                            container={true}
                             item={true}
+                            justifyContent={"space-evenly"}
+                            xs={6}
+                            md
+                            spacing={2}
                         >
-                            <Typography
-                                variant={'h6'}
+                            <Grid
+                                item={true}
                             >
-                                Pret. imperfecto:
-                            </Typography>
+                                <Typography
+                                    variant={'h6'}
+                                >
+                                    Pret. imperfecto:
+                                </Typography>
+                            </Grid>
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeImperfectPast1s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"Yo"}
+                                        name={"indicativeImperfectPast1s"}
+                                        defaultValue={""}
+                                        errors={errors.indicativeImperfectPast1s}
+                                        onChange={(value: any) => {
+                                            setIndicativeImperfectPast1s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeImperfectPast2s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"Vos"} // TODO: should change if user picks other spanish style
+                                        name={"indicativeImperfectPast2s"}
+                                        defaultValue={""}
+                                        errors={errors.indicativeImperfectPast2s}
+                                        onChange={(value: any) => {
+                                            setIndicativeImperfectPast2s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeImperfectPast3s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"Él/Ella/eso"}
+                                        name={"indicativeImperfectPast3s"}
+                                        defaultValue={""}
+                                        errors={errors.indicativeImperfectPast3s}
+                                        onChange={(value: any) => {
+                                            setIndicativeImperfectPast3s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeImperfectPast1pl)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"Nosotros/as"}
+                                        name={"indicativeImperfectPast1pl"}
+                                        defaultValue={""}
+                                        errors={errors.indicativeImperfectPast1pl}
+                                        onChange={(value: any) => {
+                                            setIndicativeImperfectPast1pl(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeImperfectPast2pl)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"Ustedes"} // TODO: should change if user picks other spanish style
+                                        name={"indicativeImperfectPast2pl"}
+                                        defaultValue={""}
+                                        errors={errors.indicativeImperfectPast2pl}
+                                        onChange={(value: any) => {
+                                            setIndicativeImperfectPast2pl(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeImperfectPast3pl)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"Ellos/as"}
+                                        name={"indicativeImperfectPast3pl"}
+                                        defaultValue={""}
+                                        errors={errors.indicativeImperfectPast3pl}
+                                        onChange={(value: any) => {
+                                            setIndicativeImperfectPast3pl(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
                         </Grid>
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeImperfectPast1s)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"Yo"}
-                                    name={"indicativeImperfectPast1s"}
-                                    defaultValue={""}
-                                    errors={errors.indicativeImperfectPast1s}
-                                    onChange={(value: any) => {
-                                        setIndicativeImperfectPast1s(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeImperfectPast2s)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"Vos"} // TODO: should change if user picks other spanish style
-                                    name={"indicativeImperfectPast2s"}
-                                    defaultValue={""}
-                                    errors={errors.indicativeImperfectPast2s}
-                                    onChange={(value: any) => {
-                                        setIndicativeImperfectPast2s(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeImperfectPast3s)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"Él/Ella/eso"}
-                                    name={"indicativeImperfectPast3s"}
-                                    defaultValue={""}
-                                    errors={errors.indicativeImperfectPast3s}
-                                    onChange={(value: any) => {
-                                        setIndicativeImperfectPast3s(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeImperfectPast1pl)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"Nosotros/as"}
-                                    name={"indicativeImperfectPast1pl"}
-                                    defaultValue={""}
-                                    errors={errors.indicativeImperfectPast1pl}
-                                    onChange={(value: any) => {
-                                        setIndicativeImperfectPast1pl(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeImperfectPast2pl)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"Ustedes"} // TODO: should change if user picks other spanish style
-                                    name={"indicativeImperfectPast2pl"}
-                                    defaultValue={""}
-                                    errors={errors.indicativeImperfectPast2pl}
-                                    onChange={(value: any) => {
-                                        setIndicativeImperfectPast2pl(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeImperfectPast3pl)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"Ellos/as"}
-                                    name={"indicativeImperfectPast3pl"}
-                                    defaultValue={""}
-                                    errors={errors.indicativeImperfectPast3pl}
-                                    onChange={(value: any) => {
-                                        setIndicativeImperfectPast3pl(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                    </Grid>
-                    <Grid
-                        container={true}
-                        item={true}
-                        justifyContent={"space-evenly"}
-                        xs={6}
-                        md={3}
-                        spacing={2}
-                    >
+                    }
+                    {
+                        (
+                            indicativePerfectSimplePast1s!! || indicativePerfectSimplePast2s!! || indicativePerfectSimplePast3s!! ||
+                            indicativePerfectSimplePast1pl!! || indicativePerfectSimplePast2pl!! || indicativePerfectSimplePast3pl!! ||
+                            !props.displayOnly
+                        ) &&
                         <Grid
+                            container={true}
                             item={true}
+                            justifyContent={"space-evenly"}
+                            xs={6}
+                            md
+                            spacing={2}
                         >
-                            <Typography
-                                variant={'h6'}
+                            <Grid
+                                item={true}
                             >
-                                Pret. perfecto:
-                            </Typography>
+                                <Typography
+                                    variant={'h6'}
+                                >
+                                    Pret. perfecto:
+                                </Typography>
+                            </Grid>
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePerfectSimplePast1s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"Yo"}
+                                        name={"indicativePerfectSimplePast1s"}
+                                        defaultValue={""}
+                                        errors={errors.indicativePerfectSimplePast1s}
+                                        onChange={(value: any) => {
+                                            setIndicativePerfectSimplePast1s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePerfectSimplePast2s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"Vos"} // TODO: should change if user picks other spanish style
+                                        name={"indicativePerfectSimplePast2s"}
+                                        defaultValue={""}
+                                        errors={errors.indicativePerfectSimplePast2s}
+                                        onChange={(value: any) => {
+                                            setIndicativePerfectSimplePast2s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePerfectSimplePast3s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"Él/Ella/eso"}
+                                        name={"indicativePerfectSimplePast3s"}
+                                        defaultValue={""}
+                                        errors={errors.indicativePerfectSimplePast3s}
+                                        onChange={(value: any) => {
+                                            setIndicativePerfectSimplePast3s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePerfectSimplePast1pl)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"Nosotros/as"}
+                                        name={"indicativePerfectSimplePast1pl"}
+                                        defaultValue={""}
+                                        errors={errors.indicativePerfectSimplePast1pl}
+                                        onChange={(value: any) => {
+                                            setIndicativePerfectSimplePast1pl(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePerfectSimplePast2pl)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"Ustedes"} // TODO: should change if user picks other spanish style
+                                        name={"indicativePerfectSimplePast2pl"}
+                                        defaultValue={""}
+                                        errors={errors.indicativePerfectSimplePast2pl}
+                                        onChange={(value: any) => {
+                                            setIndicativePerfectSimplePast2pl(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePerfectSimplePast3pl)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"Ellos/as"}
+                                        name={"indicativePerfectSimplePast3pl"}
+                                        defaultValue={""}
+                                        errors={errors.indicativePerfectSimplePast3pl}
+                                        onChange={(value: any) => {
+                                            setIndicativePerfectSimplePast3pl(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
                         </Grid>
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePerfectSimplePast1s)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"Yo"}
-                                    name={"indicativePerfectSimplePast1s"}
-                                    defaultValue={""}
-                                    errors={errors.indicativePerfectSimplePast1s}
-                                    onChange={(value: any) => {
-                                        setIndicativePerfectSimplePast1s(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePerfectSimplePast2s)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"Vos"} // TODO: should change if user picks other spanish style
-                                    name={"indicativePerfectSimplePast2s"}
-                                    defaultValue={""}
-                                    errors={errors.indicativePerfectSimplePast2s}
-                                    onChange={(value: any) => {
-                                        setIndicativePerfectSimplePast2s(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePerfectSimplePast3s)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"Él/Ella/eso"}
-                                    name={"indicativePerfectSimplePast3s"}
-                                    defaultValue={""}
-                                    errors={errors.indicativePerfectSimplePast3s}
-                                    onChange={(value: any) => {
-                                        setIndicativePerfectSimplePast3s(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePerfectSimplePast1pl)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"Nosotros/as"}
-                                    name={"indicativePerfectSimplePast1pl"}
-                                    defaultValue={""}
-                                    errors={errors.indicativePerfectSimplePast1pl}
-                                    onChange={(value: any) => {
-                                        setIndicativePerfectSimplePast1pl(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePerfectSimplePast2pl)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"Ustedes"} // TODO: should change if user picks other spanish style
-                                    name={"indicativePerfectSimplePast2pl"}
-                                    defaultValue={""}
-                                    errors={errors.indicativePerfectSimplePast2pl}
-                                    onChange={(value: any) => {
-                                        setIndicativePerfectSimplePast2pl(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativePerfectSimplePast3pl)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"Ellos/as"}
-                                    name={"indicativePerfectSimplePast3pl"}
-                                    defaultValue={""}
-                                    errors={errors.indicativePerfectSimplePast3pl}
-                                    onChange={(value: any) => {
-                                        setIndicativePerfectSimplePast3pl(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                    </Grid>
-                    <Grid
-                        container={true}
-                        item={true}
-                        justifyContent={"space-evenly"}
-                        xs={6}
-                        md={3}
-                        spacing={2}
-                    >
+                    }
+                    {
+                        (
+                            indicativeFuture1s!! || indicativeFuture2s!! || indicativeFuture3s!! ||
+                            indicativeFuture1pl!! || indicativeFuture2pl!! || indicativeFuture3pl!! ||
+                            !props.displayOnly
+                        ) &&
                         <Grid
+                            container={true}
                             item={true}
+                            justifyContent={"space-evenly"}
+                            xs={6}
+                            md
+                            spacing={2}
                         >
-                            <Typography
-                                variant={'h6'}
+                            <Grid
+                                item={true}
                             >
-                                Future:
-                            </Typography>
+                                <Typography
+                                    variant={'h6'}
+                                >
+                                    Future:
+                                </Typography>
+                            </Grid>
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeFuture1s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"Yo"}
+                                        name={"indicativeFuture1s"}
+                                        defaultValue={""}
+                                        errors={errors.indicativeFuture1s}
+                                        onChange={(value: any) => {
+                                            setIndicativeFuture1s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeFuture2s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"Vos"} // TODO: should change if user picks other spanish style
+                                        name={"indicativeFuture2s"}
+                                        defaultValue={""}
+                                        errors={errors.indicativeFuture2s}
+                                        onChange={(value: any) => {
+                                            setIndicativeFuture2s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeFuture3s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"Él/Ella/eso"}
+                                        name={"indicativeFuture3s"}
+                                        defaultValue={""}
+                                        errors={errors.indicativeFuture3s}
+                                        onChange={(value: any) => {
+                                            setIndicativeFuture3s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeFuture1pl)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"Nosotros/as"}
+                                        name={"indicativeFuture1pl"}
+                                        defaultValue={""}
+                                        errors={errors.indicativeFuture1pl}
+                                        onChange={(value: any) => {
+                                            setIndicativeFuture1pl(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeFuture2pl)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"Ustedes"} // TODO: should change if user picks other spanish style
+                                        name={"indicativeFuture2pl"}
+                                        defaultValue={""}
+                                        errors={errors.indicativeFuture2pl}
+                                        onChange={(value: any) => {
+                                            setIndicativeFuture2pl(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeFuture3pl)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"Ellos/as"}
+                                        name={"indicativeFuture3pl"}
+                                        defaultValue={""}
+                                        errors={errors.indicativeFuture3pl}
+                                        onChange={(value: any) => {
+                                            setIndicativeFuture3pl(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
                         </Grid>
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeFuture1s)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"Yo"}
-                                    name={"indicativeFuture1s"}
-                                    defaultValue={""}
-                                    errors={errors.indicativeFuture1s}
-                                    onChange={(value: any) => {
-                                        setIndicativeFuture1s(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeFuture2s)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"Vos"} // TODO: should change if user picks other spanish style
-                                    name={"indicativeFuture2s"}
-                                    defaultValue={""}
-                                    errors={errors.indicativeFuture2s}
-                                    onChange={(value: any) => {
-                                        setIndicativeFuture2s(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeFuture3s)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"Él/Ella/eso"}
-                                    name={"indicativeFuture3s"}
-                                    defaultValue={""}
-                                    errors={errors.indicativeFuture3s}
-                                    onChange={(value: any) => {
-                                        setIndicativeFuture3s(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeFuture1pl)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"Nosotros/as"}
-                                    name={"indicativeFuture1pl"}
-                                    defaultValue={""}
-                                    errors={errors.indicativeFuture1pl}
-                                    onChange={(value: any) => {
-                                        setIndicativeFuture1pl(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeFuture2pl)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"Ustedes"} // TODO: should change if user picks other spanish style
-                                    name={"indicativeFuture2pl"}
-                                    defaultValue={""}
-                                    errors={errors.indicativeFuture2pl}
-                                    onChange={(value: any) => {
-                                        setIndicativeFuture2pl(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeFuture3pl)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"Ellos/as"}
-                                    name={"indicativeFuture3pl"}
-                                    defaultValue={""}
-                                    errors={errors.indicativeFuture3pl}
-                                    onChange={(value: any) => {
-                                        setIndicativeFuture3pl(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                    </Grid>
+                    }
                 </Grid>
             </form>
         </Grid>

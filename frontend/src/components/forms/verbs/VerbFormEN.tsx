@@ -484,242 +484,268 @@ export function VerbFormEN(props: VerbFormENProps) {
                                 Simple:
                             </Typography>
                         </Grid>
+                    </Grid>
                     {/* PRESENT */}
-                    </Grid>
-                    <Grid
-                        container={true}
-                        item={true}
-                        justifyContent={"space-evenly"}
-                        xs={6}
-                        md={3}
-                        spacing={2}
-                    >
+                    {
+                        (
+                            simplePresent1s!! || simplePresent2s!! || simplePresent3s!! ||
+                            simplePresent1pl!! || simplePresent3pl!! ||
+                            !props.displayOnly
+                        ) &&
                         <Grid
+                            container={true}
                             item={true}
+                            justifyContent={"space-evenly"}
+                            xs={6}
+                            md
+                            spacing={2}
                         >
-                            <Typography
-                                variant={'h5'}
+                            <Grid
+                                item={true}
                             >
-                                Present:
-                            </Typography>
+                                <Typography
+                                    variant={'h5'}
+                                >
+                                    Present:
+                                </Typography>
+                            </Grid>
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, simplePresent1s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"I"}
+                                        name={"simplePresent1s"}
+                                        defaultValue={""}
+                                        errors={errors.simplePresent1s}
+                                        onChange={(value: any) => {
+                                            setSimplePresent1s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                        // TODO: create logic to group cases by border color.
+                                        // sxProps={{
+                                        //     "& .MuiOutlinedInput-notchedOutline": {
+                                        //         borderColor: '#17dd17 !important',
+                                        //     }
+                                        // }}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, simplePresent2s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"You"} // TODO: should change if user picks other spanish style
+                                        name={"simplePresent2s"}
+                                        defaultValue={""}
+                                        errors={errors.simplePresent2s}
+                                        onChange={(value: any) => {
+                                            setSimplePresent2s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, simplePresent3s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"He/She/it"}
+                                        name={"simplePresent3s"}
+                                        defaultValue={""}
+                                        errors={errors.simplePresent3s}
+                                        onChange={(value: any) => {
+                                            setSimplePresent3s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, simplePresent1pl)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"We"}
+                                        name={"simplePresent1pl"}
+                                        defaultValue={""}
+                                        errors={errors.simplePresent1pl}
+                                        onChange={(value: any) => {
+                                            setSimplePresent1pl(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, simplePresent3pl)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"They"} // TODO: should change if user picks other spanish style
+                                        name={"simplePresent3pl"}
+                                        defaultValue={""}
+                                        errors={errors.simplePresent3pl}
+                                        onChange={(value: any) => {
+                                            setSimplePresent3pl(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
                         </Grid>
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, simplePresent1s)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"I"}
-                                    name={"simplePresent1s"}
-                                    defaultValue={""}
-                                    errors={errors.simplePresent1s}
-                                    onChange={(value: any) => {
-                                        setSimplePresent1s(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, simplePresent2s)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"You"} // TODO: should change if user picks other spanish style
-                                    name={"simplePresent2s"}
-                                    defaultValue={""}
-                                    errors={errors.simplePresent2s}
-                                    onChange={(value: any) => {
-                                        setSimplePresent2s(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, simplePresent3s)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"He/She/it"}
-                                    name={"simplePresent3s"}
-                                    defaultValue={""}
-                                    errors={errors.simplePresent3s}
-                                    onChange={(value: any) => {
-                                        setSimplePresent3s(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, simplePresent1pl)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"We"}
-                                    name={"simplePresent1pl"}
-                                    defaultValue={""}
-                                    errors={errors.simplePresent1pl}
-                                    onChange={(value: any) => {
-                                        setSimplePresent1pl(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, simplePresent3pl)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"They"} // TODO: should change if user picks other spanish style
-                                    name={"simplePresent3pl"}
-                                    defaultValue={""}
-                                    errors={errors.simplePresent3pl}
-                                    onChange={(value: any) => {
-                                        setSimplePresent3pl(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                    </Grid>
+                    }
                     {/* PAST */}
-                    <Grid
-                        container={true}
-                        item={true}
-                        justifyContent={"space-evenly"}
-                        xs={6}
-                        md={3}
-                        spacing={2}
-                    >
+                    {
+                        (
+                            simplePast1s!! || simplePast2s!! || simplePast3s!! ||
+                            simplePast1pl!! || simplePast3pl!! ||
+                            !props.displayOnly
+                        ) &&
                         <Grid
+                            container={true}
                             item={true}
+                            justifyContent={"space-evenly"}
+                            xs={6}
+                            md
+                            spacing={2}
                         >
-                            <Typography
-                                variant={'h5'}
+                            <Grid
+                                item={true}
                             >
-                                Past:
-                            </Typography>
+                                <Typography
+                                    variant={'h5'}
+                                >
+                                    Past:
+                                </Typography>
+                            </Grid>
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, simplePast1s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"I"}
+                                        name={"simplePast1s"}
+                                        defaultValue={""}
+                                        errors={errors.simplePast1s}
+                                        onChange={(value: any) => {
+                                            setSimplePast1s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, simplePast2s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"You"} // TODO: should change if user picks other spanish style
+                                        name={"simplePast2s"}
+                                        defaultValue={""}
+                                        errors={errors.simplePast2s}
+                                        onChange={(value: any) => {
+                                            setSimplePast2s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, simplePast3s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"He/She/it"}
+                                        name={"simplePast3s"}
+                                        defaultValue={""}
+                                        errors={errors.simplePast3s}
+                                        onChange={(value: any) => {
+                                            setSimplePast3s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, simplePast1pl)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"We"}
+                                        name={"simplePast1pl"}
+                                        defaultValue={""}
+                                        errors={errors.simplePast1pl}
+                                        onChange={(value: any) => {
+                                            setSimplePast1pl(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, simplePast3pl)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={"They"}
+                                        name={"simplePast3pl"}
+                                        defaultValue={""}
+                                        errors={errors.simplePast3pl}
+                                        onChange={(value: any) => {
+                                            setSimplePast3pl(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
                         </Grid>
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, simplePast1s)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"I"}
-                                    name={"simplePast1s"}
-                                    defaultValue={""}
-                                    errors={errors.simplePast1s}
-                                    onChange={(value: any) => {
-                                        setSimplePast1s(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, simplePast2s)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"You"} // TODO: should change if user picks other spanish style
-                                    name={"simplePast2s"}
-                                    defaultValue={""}
-                                    errors={errors.simplePast2s}
-                                    onChange={(value: any) => {
-                                        setSimplePast2s(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, simplePast3s)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"He/She/it"}
-                                    name={"simplePast3s"}
-                                    defaultValue={""}
-                                    errors={errors.simplePast3s}
-                                    onChange={(value: any) => {
-                                        setSimplePast3s(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, simplePast1pl)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"We"}
-                                    name={"simplePast1pl"}
-                                    defaultValue={""}
-                                    errors={errors.simplePast1pl}
-                                    onChange={(value: any) => {
-                                        setSimplePast1pl(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, simplePast3pl)) &&
-                            <Grid
-                                item={true}
-                                xs={12}
-                            >
-                                <TextInputFormWithHook
-                                    control={control}
-                                    label={"They"}
-                                    name={"simplePast3pl"}
-                                    defaultValue={""}
-                                    errors={errors.simplePast3pl}
-                                    onChange={(value: any) => {
-                                        setSimplePast3pl(value)
-                                    }}
-                                    fullWidth={true}
-                                    disabled={props.displayOnly}
-                                />
-                            </Grid>
-                        }
-                    </Grid>
-                    {/* FUTURE */}
+                    }
+                {/* FUTURE */}
+                {
+                    (
+                        simpleFuture1s!! || simpleFuture2s!! || simpleFuture3s!! ||
+                        simpleFuture1pl!! || simpleFuture3pl!! ||
+                        !props.displayOnly
+                    ) &&
                     <Grid
                         container={true}
                         item={true}
                         justifyContent={"space-evenly"}
                         xs={6}
-                        md={3}
+                        md
                         spacing={2}
                     >
                         <Grid
@@ -842,13 +868,20 @@ export function VerbFormEN(props: VerbFormENProps) {
                             </Grid>
                         }
                     </Grid>
-                    {/* CONDITIONAL */}
+                }
+                {/* CONDITIONAL */}
+                {
+                    (
+                        simpleConditional1s!! || simpleConditional2s!! || simpleConditional3s!! ||
+                        simpleConditional1pl!! || simpleConditional3pl!! ||
+                        !props.displayOnly
+                    ) &&
                     <Grid
                         container={true}
                         item={true}
                         justifyContent={"space-evenly"}
                         xs={6}
-                        md={3}
+                        md
                         spacing={2}
                     >
                         <Grid
@@ -971,6 +1004,7 @@ export function VerbFormEN(props: VerbFormENProps) {
                             </Grid>
                         }
                     </Grid>
+                }
                 </Grid>
             </form>
         </Grid>

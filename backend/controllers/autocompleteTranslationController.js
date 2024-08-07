@@ -376,6 +376,41 @@ const getVerbES = asyncHandler(async (req, res) => {
 // @route   GET /api/autocompleteTranslations
 // @access  Private
 const getVerbDE = asyncHandler(async (req, res) => {
+    // TENSE:
+        // Indicativ:
+        //  - PRASENS
+        //  - PRATERITUM
+        //  - FUTUR1
+        //  - FUTUR2
+        //  - PERFEKT
+        //  - PLUSQUAMPERFEKT
+        // Konjunktiv1:
+        //  - KONJUNKTIV1_PRASENS
+        //  - KONJUNKTIV1_FUTUR1
+        //  - KONJUNKTIV1_PERFEKT
+        // Konjunktiv2:
+        //  - KONJUNKTIV2_PRATERITUM
+        //  - KONJUNKTIV2_FUTUR1
+        //  - KONJUNKTIV2_FUTUR2
+    // person:
+        //  - 1
+        //  - 2
+        //  - 3
+    // number:
+        //  - S
+        //  - P
+    // aux (needed for PERFEKT PLUSQUAMPERFEKT FUTUR2 KONJUNKTIV1_PERFEKT KONJUNKTIV2_FUTUR2):
+        //  - SEIN
+        //  - HABEN
+    // pronominal (boolean):
+    //  - put true if you want the reflexive form Ich wasche mich.
+    //    You can also directly use the pronominal infinitive: sich waschen.
+    // pronominalCase: ACCUSATIVE for Accusative or DATIVE for Dative. Mandatory when pronominal is true and S 1 or S 2.
+    // The size of the result array will always be:
+    // RESPONSE ARRAY SIZE:
+    // 1 for simple tenses
+    // 2 for FUTUR1 PERFEKT PLUSQUAMPERFEKT KONJUNKTIV1_FUTUR1 KONJUNKTIV1_PERFEKT KONJUNKTIV2_FUTUR1: for instance ['wird', 'sein'] for FUTUR1 sein 3S
+    // also 2 for FUTUR2 KONJUNKTIV2_FUTUR2; even if the result if 3 words long, the split is made at the right place to add content: for instance ['werde', 'gegessen haben'] for KONJUNKTIV2_FUTUR2
     const germanVerb = isWord('ngerman')
     if(germanVerb.check(req.params.infinitiveVerb)){
         const verbResponse = {
@@ -385,6 +420,7 @@ const getVerbDE = asyncHandler(async (req, res) => {
                 //  (small list of verbs use 'sein', we could filter/determine them in FE?).
                 //  We need aux verb for Perfekt (present perfect) and other forms.
                 // word: GermanVerbsLib.getConjugation(GermanVerbsDict, req.params.infinitiveVerb, 'PRASENS', 1, 'S', 'HABEN')
+                // INDICATIVE: The indicative mood is how we talk most of the time: about real facts
                 {
                     caseName: "indicativePresent1sDE",
                     word: GermanVerbsLib.getConjugation(GermanVerbsDict, req.params.infinitiveVerb, 'PRASENS', 1, 'S')[0]
@@ -409,6 +445,59 @@ const getVerbDE = asyncHandler(async (req, res) => {
                     caseName: "indicativePresent3plDE",
                     word: GermanVerbsLib.getConjugation(GermanVerbsDict, req.params.infinitiveVerb, 'PRASENS', 3, 'P')[0]
                 },
+                // PERFEKT
+                {
+                    caseName: "indicativePerfect1sDE",
+                    word: GermanVerbsLib.getConjugation(GermanVerbsDict, req.params.infinitiveVerb, 'PERFEKT', 1, 'S', 'HABEN')[1]
+                },
+                {
+                    caseName: "indicativePerfect2sDE",
+                    word: GermanVerbsLib.getConjugation(GermanVerbsDict, req.params.infinitiveVerb, 'PERFEKT', 2, 'S', 'HABEN')[1]
+                },
+                {
+                    caseName: "indicativePerfect3sDE",
+                    word: GermanVerbsLib.getConjugation(GermanVerbsDict, req.params.infinitiveVerb, 'PERFEKT', 3, 'S', 'HABEN')[1]
+                },
+                {
+                    caseName: "indicativePerfect1plDE",
+                    word: GermanVerbsLib.getConjugation(GermanVerbsDict, req.params.infinitiveVerb, 'PERFEKT', 1, 'P', 'HABEN')[1]
+                },
+                {
+                    caseName: "indicativePerfect2plDE",
+                    word: GermanVerbsLib.getConjugation(GermanVerbsDict, req.params.infinitiveVerb, 'PERFEKT', 2, 'P', 'HABEN')[1]
+                },
+                {
+                    caseName: "indicativePerfect3plDE",
+                    word: GermanVerbsLib.getConjugation(GermanVerbsDict, req.params.infinitiveVerb, 'PERFEKT', 3, 'P', 'HABEN')[1]
+                },
+                // Simple Future (Futur I)
+                {
+                    caseName: "indicativeSimpleFuture1sDE",
+                    word: GermanVerbsLib.getConjugation(GermanVerbsDict, req.params.infinitiveVerb, 'FUTUR1', 1, 'S')[1]
+                },
+                {
+                    caseName: "indicativeSimpleFuture2sDE",
+                    word: GermanVerbsLib.getConjugation(GermanVerbsDict, req.params.infinitiveVerb, 'FUTUR1', 2, 'S')[1]
+                },
+                {
+                    caseName: "indicativeSimpleFuture3sDE",
+                    word: GermanVerbsLib.getConjugation(GermanVerbsDict, req.params.infinitiveVerb, 'FUTUR1', 3, 'S')[1]
+                },
+                {
+                    caseName: "indicativeSimpleFuture1plDE",
+                    word: GermanVerbsLib.getConjugation(GermanVerbsDict, req.params.infinitiveVerb, 'FUTUR1', 1, 'P')[1]
+                },
+                {
+                    caseName: "indicativeSimpleFuture2plDE",
+                    word: GermanVerbsLib.getConjugation(GermanVerbsDict, req.params.infinitiveVerb, 'FUTUR1', 2, 'P')[1]
+                },
+                {
+                    caseName: "indicativeSimpleFuture3plDE",
+                    word: GermanVerbsLib.getConjugation(GermanVerbsDict, req.params.infinitiveVerb, 'FUTUR1', 3, 'P')[1]
+                },
+                // Simple Past (PRATERITUM)
+                // Past Perfect (PLUSQUAMPERFEKT)
+                // Future Perfect (Futur II)
             ]
         }
 
