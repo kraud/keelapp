@@ -80,6 +80,19 @@ export function VerbFormDE(props: VerbFormDEProps) {
             .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
         indicativeSimpleFuture3pl: Yup.string().nullable()
             .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+        // SIMPLE PAST (FUTURE 1)
+        indicativeSimplePast1s: Yup.string().nullable()
+            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+        indicativeSimplePast2s: Yup.string().nullable()
+            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+        indicativeSimplePast3s: Yup.string().nullable()
+            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+        indicativeSimplePast1pl: Yup.string().nullable()
+            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+        indicativeSimplePast2pl: Yup.string().nullable()
+            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+        indicativeSimplePast3pl: Yup.string().nullable()
+            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
     })
 
     const {
@@ -93,27 +106,34 @@ export function VerbFormDE(props: VerbFormDEProps) {
     const [infinitive, setInfinitive] = useState("")
     const [auxiliaryVerb, setAuxiliaryVerb] = useState<"haben"|"sein"|"">("")
     // Optional fields: can be filled with autocomplete
-    // Modo indicativo - tiempo simple - presente
+    // Indicative Mode - present
     const [indicativePresent1s, setIndicativePresent1s] = useState("")
     const [indicativePresent2s, setIndicativePresent2s] = useState("")
     const [indicativePresent3s, setIndicativePresent3s] = useState("")
     const [indicativePresent1pl, setIndicativePresent1pl] = useState("")
     const [indicativePresent2pl, setIndicativePresent2pl] = useState("")
     const [indicativePresent3pl, setIndicativePresent3pl] = useState("")
-    // Modo indicativo - tiempo simple - present perfect (Perfekt)
+    // Indicative Mode - present perfect (Perfekt)
     const [indicativePerfect1s, setIndicativePerfect1s] = useState("")
     const [indicativePerfect2s, setIndicativePerfect2s] = useState("")
     const [indicativePerfect3s, setIndicativePerfect3s] = useState("")
     const [indicativePerfect1pl, setIndicativePerfect1pl] = useState("")
     const [indicativePerfect2pl, setIndicativePerfect2pl] = useState("")
     const [indicativePerfect3pl, setIndicativePerfect3pl] = useState("")
-    // Modo indicativo - tiempo simple - simple future (Futur 1)
+    // Indicative Mode - simple future (Futur 1)
     const [indicativeSimpleFuture1s, setIndicativeSimpleFuture1s] = useState("")
     const [indicativeSimpleFuture2s, setIndicativeSimpleFuture2s] = useState("")
     const [indicativeSimpleFuture3s, setIndicativeSimpleFuture3s] = useState("")
     const [indicativeSimpleFuture1pl, setIndicativeSimpleFuture1pl] = useState("")
     const [indicativeSimpleFuture2pl, setIndicativeSimpleFuture2pl] = useState("")
     const [indicativeSimpleFuture3pl, setIndicativeSimpleFuture3pl] = useState("")
+    // Indicative Mode - simple future (Futur 1)
+    const [indicativeSimplePast1s, setIndicativeSimplePast1s] = useState("")
+    const [indicativeSimplePast2s, setIndicativeSimplePast2s] = useState("")
+    const [indicativeSimplePast3s, setIndicativeSimplePast3s] = useState("")
+    const [indicativeSimplePast1pl, setIndicativeSimplePast1pl] = useState("")
+    const [indicativeSimplePast2pl, setIndicativeSimplePast2pl] = useState("")
+    const [indicativeSimplePast3pl, setIndicativeSimplePast3pl] = useState("")
 
     useEffect(() => {
         const currentCases: WordItem[] = [
@@ -200,6 +220,31 @@ export function VerbFormDE(props: VerbFormDEProps) {
                 caseName: VerbCases.indicativeSimpleFuture3plDE,
                 word: indicativeSimpleFuture3pl
             },
+            // Indicative: simple past (präteritum)
+            {
+                caseName: VerbCases.indicativeSimplePast1sDE,
+                word: indicativeSimplePast1s
+            },
+            {
+                caseName: VerbCases.indicativeSimplePast2sDE,
+                word: indicativeSimplePast2s
+            },
+            {
+                caseName: VerbCases.indicativeSimplePast3sDE,
+                word: indicativeSimplePast3s
+            },
+            {
+                caseName: VerbCases.indicativeSimplePast1plDE,
+                word: indicativeSimplePast1pl
+            },
+            {
+                caseName: VerbCases.indicativeSimplePast2plDE,
+                word: indicativeSimplePast2pl
+            },
+            {
+                caseName: VerbCases.indicativeSimplePast3plDE,
+                word: indicativeSimplePast3pl
+            },
         ]
         props.updateFormData({
             language: Lang.DE,
@@ -214,6 +259,8 @@ export function VerbFormDE(props: VerbFormDEProps) {
         indicativePerfect3pl,
         indicativeSimpleFuture1s, indicativeSimpleFuture2s, indicativeSimpleFuture3s, indicativeSimpleFuture1pl,
         indicativeSimpleFuture2pl, indicativeSimpleFuture3pl,
+        indicativeSimplePast1s, indicativeSimplePast2s, indicativeSimplePast3s, indicativeSimplePast1pl,
+        indicativeSimplePast2pl, indicativeSimplePast3pl,
         isValid, auxiliaryVerb
     ])
 
@@ -241,6 +288,13 @@ export function VerbFormDE(props: VerbFormDEProps) {
         const indicativeSimpleFuture1plValue: string = getWordByCase(VerbCases.indicativeSimpleFuture1plDE, translationDataToInsert)
         const indicativeSimpleFuture2plValue: string = getWordByCase(VerbCases.indicativeSimpleFuture2plDE, translationDataToInsert)
         const indicativeSimpleFuture3plValue: string = getWordByCase(VerbCases.indicativeSimpleFuture3plDE, translationDataToInsert)
+        // Indicative: simple past (präteritum)
+        const indicativeSimplePast1sValue: string = getWordByCase(VerbCases.indicativeSimplePast1sDE, translationDataToInsert)
+        const indicativeSimplePast2sValue: string = getWordByCase(VerbCases.indicativeSimplePast2sDE, translationDataToInsert)
+        const indicativeSimplePast3sValue: string = getWordByCase(VerbCases.indicativeSimplePast3sDE, translationDataToInsert)
+        const indicativeSimplePast1plValue: string = getWordByCase(VerbCases.indicativeSimplePast1plDE, translationDataToInsert)
+        const indicativeSimplePast2plValue: string = getWordByCase(VerbCases.indicativeSimplePast2plDE, translationDataToInsert)
+        const indicativeSimplePast3plValue: string = getWordByCase(VerbCases.indicativeSimplePast3plDE, translationDataToInsert)
 
         setValue(
             'infinitive',
@@ -425,6 +479,61 @@ export function VerbFormDE(props: VerbFormDEProps) {
             }
         )
         setIndicativeSimpleFuture3pl(indicativeSimpleFuture3plValue)
+        // Indicative: simple past (präteritum)
+        setValue(
+            'indicativeSimplePast1s',
+            indicativeSimplePast1sValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setIndicativeSimplePast1s(indicativeSimplePast1sValue)
+        setValue(
+            'indicativeSimplePast2s',
+            indicativeSimplePast2sValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setIndicativeSimplePast2s(indicativeSimplePast2sValue)
+        setValue(
+            'indicativeSimplePast3s',
+            indicativeSimplePast3sValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setIndicativeSimplePast3s(indicativeSimplePast3sValue)
+        setValue(
+            'indicativeSimplePast1pl',
+            indicativeSimplePast1plValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setIndicativeSimplePast1pl(indicativeSimplePast1plValue)
+        setValue(
+            'indicativeSimplePast2pl',
+            indicativeSimplePast2plValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setIndicativeSimplePast2pl(indicativeSimplePast2plValue)
+        setValue(
+            'indicativeSimplePast3pl',
+            indicativeSimplePast3plValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setIndicativeSimplePast3pl(indicativeSimplePast3plValue)
     }
 
     // This will only be run on first render
@@ -564,6 +673,11 @@ export function VerbFormDE(props: VerbFormDEProps) {
                         TODO: add multiselect for verb categories based on their grammatical and syntactic behavior?
                          (Transitive, Intransitive, Dative, Reflexive, Impersonal, Modal, Auxiliary, Separable and Inseparable Prefix)?
                     */}
+                    {/*
+                        TODO: add select for separable-verb prefix? Could also autodetect if it matches and suggest it?
+                         [ab, an, auf, aus, bei, da, dar, durch, ein, fern, fest, fort, gegen, her, hin, los, mit, nach,
+                         nieder, um, vor, weg, wieder, zu, zurück, zusammen]
+                     */}
                     {
                         (
                             indicativePresent1s!! || indicativePresent2s!! || indicativePresent3s!! ||
@@ -969,7 +1083,7 @@ export function VerbFormDE(props: VerbFormDEProps) {
                             }
                         </Grid>
                     }
-                    {/* Present Perfect (Perfekt) */}
+                    {/* Simple future (Futur I) */}
                     {
                         (
                             indicativeSimpleFuture1s!! || indicativeSimpleFuture2s!! || indicativeSimpleFuture3s!! ||
@@ -1004,7 +1118,7 @@ export function VerbFormDE(props: VerbFormDEProps) {
                                         label={'Ich'}
                                         name={"indicativeSimpleFuture1s"}
                                         defaultValue={""}
-                                        errors={errors.indicativeSimpleFuture1sDE}
+                                        errors={errors.indicativeSimpleFuture1s}
                                         onChange={(value: any) => {
                                             setIndicativeSimpleFuture1s(value)
                                         }}
@@ -1031,7 +1145,7 @@ export function VerbFormDE(props: VerbFormDEProps) {
                                         label={'Du'}
                                         name={"indicativeSimpleFuture2s"}
                                         defaultValue={""}
-                                        errors={errors.indicativeSimpleFuture2sDE}
+                                        errors={errors.indicativeSimpleFuture2s}
                                         onChange={(value: any) => {
                                             setIndicativeSimpleFuture2s(value)
                                         }}
@@ -1058,7 +1172,7 @@ export function VerbFormDE(props: VerbFormDEProps) {
                                         label={'Er/Sie/es'}
                                         name={"indicativeSimpleFuture3s"}
                                         defaultValue={""}
-                                        errors={errors.indicativeSimpleFuture3sDE}
+                                        errors={errors.indicativeSimpleFuture3s}
                                         onChange={(value: any) => {
                                             setIndicativeSimpleFuture3s(value)
                                         }}
@@ -1085,7 +1199,7 @@ export function VerbFormDE(props: VerbFormDEProps) {
                                         label={'Wir'}
                                         name={"indicativeSimpleFuture1pl"}
                                         defaultValue={""}
-                                        errors={errors.indicativeSimpleFuture1plDE}
+                                        errors={errors.indicativeSimpleFuture1pl}
                                         onChange={(value: any) => {
                                             setIndicativeSimpleFuture1pl(value)
                                         }}
@@ -1112,7 +1226,7 @@ export function VerbFormDE(props: VerbFormDEProps) {
                                         label={'Ihr'}
                                         name={"indicativeSimpleFuture2pl"}
                                         defaultValue={""}
-                                        errors={errors.indicativeSimpleFuture2plDE}
+                                        errors={errors.indicativeSimpleFuture2pl}
                                         onChange={(value: any) => {
                                             setIndicativeSimpleFuture2pl(value)
                                         }}
@@ -1139,7 +1253,7 @@ export function VerbFormDE(props: VerbFormDEProps) {
                                         label={'Sie'}
                                         name={"indicativeSimpleFuture3pl"}
                                         defaultValue={""}
-                                        errors={errors.indicativeSimpleFuture3plDE}
+                                        errors={errors.indicativeSimpleFuture3pl}
                                         onChange={(value: any) => {
                                             setIndicativeSimpleFuture3pl(value)
                                         }}
@@ -1153,6 +1267,147 @@ export function VerbFormDE(props: VerbFormDEProps) {
                                                     {`Sie ${werdenPresentAndPastJSON.present.Pl3}`}
                                                 </InputAdornment>,
                                         }}
+                                    />
+                                </Grid>
+                            }
+                        </Grid>
+                    }
+                    {/* SIMPLE PAST (Präteritum) */}
+                    {
+                        (
+                            indicativeSimplePast1s!! || indicativeSimplePast2s!! || indicativeSimplePast3s!! ||
+                            indicativeSimplePast1pl!! || indicativeSimplePast2pl!! || indicativeSimplePast3pl!! ||
+                            !props.displayOnly
+                        ) &&
+                        <Grid
+                            container={true}
+                            item={true}
+                            justifyContent={"space-evenly"}
+                            xs={6}
+                            md
+                            spacing={2}
+                        >
+                            <Grid
+                                item={true}
+                                xs={12}
+                            >
+                                <Typography
+                                    variant={'h5'}
+                                >
+                                    Simple Past (präteritum):
+                                </Typography>
+                            </Grid>
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeSimplePast1s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={'Ich'}
+                                        name={"indicativeSimplePast1s"}
+                                        defaultValue={""}
+                                        errors={errors.indicativeSimplePast1s}
+                                        onChange={(value: any) => {
+                                            setIndicativeSimplePast1s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeSimplePast2s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={'Du'}
+                                        name={"indicativeSimplePast2s"}
+                                        defaultValue={""}
+                                        errors={errors.indicativeSimplePast2s}
+                                        onChange={(value: any) => {
+                                            setIndicativeSimplePast2s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeSimplePast3s)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={'Er/Sie/es'}
+                                        name={"indicativeSimplePast3s"}
+                                        defaultValue={""}
+                                        errors={errors.indicativeSimplePast3s}
+                                        onChange={(value: any) => {
+                                            setIndicativeSimplePast3s(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeSimplePast1pl)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={'Wir'}
+                                        name={"indicativeSimplePast1pl"}
+                                        defaultValue={""}
+                                        errors={errors.indicativeSimplePast1pl}
+                                        onChange={(value: any) => {
+                                            setIndicativeSimplePast1pl(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeSimplePast2pl)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={'Ihr'}
+                                        name={"indicativeSimplePast2pl"}
+                                        defaultValue={""}
+                                        errors={errors.indicativeSimplePast2pl}
+                                        onChange={(value: any) => {
+                                            setIndicativeSimplePast2pl(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
+                                    />
+                                </Grid>
+                            }
+                            {(getDisabledInputFieldDisplayLogic(props.displayOnly!, indicativeSimplePast3pl)) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
+                                >
+                                    <TextInputFormWithHook
+                                        control={control}
+                                        label={'Sie'}
+                                        name={"indicativeSimplePast3pl"}
+                                        defaultValue={""}
+                                        errors={errors.indicativeSimplePast3pl}
+                                        onChange={(value: any) => {
+                                            setIndicativeSimplePast3pl(value)
+                                        }}
+                                        fullWidth={true}
+                                        disabled={props.displayOnly}
                                     />
                                 </Grid>
                             }

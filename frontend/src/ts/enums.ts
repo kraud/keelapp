@@ -282,6 +282,13 @@ export enum VerbCases {
     indicativeSimpleFuture1plDE = 'indicativeSimpleFuture1plDE',
     indicativeSimpleFuture2plDE = 'indicativeSimpleFuture2plDE',
     indicativeSimpleFuture3plDE = 'indicativeSimpleFuture3plDE',
+    // Simple past (präteritum)
+    indicativeSimplePast1sDE = 'indicativeSimplePast1sDE',
+    indicativeSimplePast2sDE = 'indicativeSimplePast2sDE',
+    indicativeSimplePast3sDE = 'indicativeSimplePast3sDE',
+    indicativeSimplePast1plDE = 'indicativeSimplePast1plDE',
+    indicativeSimplePast2plDE = 'indicativeSimplePast2plDE',
+    indicativeSimplePast3plDE = 'indicativeSimplePast3plDE',
 }
 
 export enum pronounDE {
