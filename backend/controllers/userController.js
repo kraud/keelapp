@@ -7,6 +7,7 @@ const Token = require('../models/tokenModel')
 const sendMail = require('../utils/sendEmail')
 const crypto = require('crypto')
 const mongoose = require("mongoose");
+const {calculateBasicUserMetrics} = require('./metricController')
 
 function queryParamToBool(value) {
     return ((value+'').toLowerCase() === 'true')
@@ -399,27 +400,22 @@ const updatePassword = asyncHandler(async (req, res) => {
 // @route   GET /api/users
 // @access  Private
 const getBasicUserMetrics = asyncHandler(async (req, res) => {
+    let user = req.body.user;
 
-    const metrics_data = {
-        total_words: getRandomInt(1500),
-        total_incomplete_words: getRandomInt(11),
-        //words per month
-        data_words_by_type: {
-            "Noun": getRandomInt(400),
-            "Pronoun": getRandomInt(30),
-            "Verb": getRandomInt(300),
-            "Adjective": getRandomInt(600),
-            "Adverb": 0
-        },
-        data_words_by_language: {
-            "Spanish": getRandomInt(420),
-            "English": getRandomInt(420),
-            "German": getRandomInt(420),
-            "Estonian": getRandomInt(420)
+    try {
+        const metrics = await calculateBasicUserMetrics(user)
+        const metrics_data = {
+            totalWords: metrics.totalWords,
+            translationsPerLanguage: metrics.translationsByLanguage,
+            wordsPerPOS: metrics.words,
+            wordsByMonth: metrics.wordsByMonth
         }
-    }
 
-    res.status(200).json(metrics_data)
+        res.status(200).json(metrics_data)
+    } catch (error) {
+        //
+        res.status(500).json(error)
+    }
 })
 
 function getRandomInt(max) {
