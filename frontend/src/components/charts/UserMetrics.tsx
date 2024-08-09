@@ -13,20 +13,34 @@ export function UserMetrics() {
 
     // On first render, this makes all the necessary requests to BE (and stores result data in Redux) to display account-screen info
     useEffect(() => {
-        console.log("use effect")
         dispatch(getUserMetrics())
     },[dispatch])
 
-    useEffect(() => {
-        console.log(`isLoading: ${isLoading} - isError: ${isError} - isSuccess: ${isSuccess} - data: ${data}`) ;
-    },[isError, isSuccess, isLoading, message, data])
+    const columns_pie: any[][] = [];
+    const columns_month: any[] = [];
+    const columns_count: any[] = ['Languages'];
+    let minus_language: string = "";
+    let minus_language_count: any = 0;
+    if(isSuccess){
+        minus_language_count = data.totalWords;
+        data.translationsPerLanguage.forEach((element: { _id: string; count: number; }) => {
+            const column: any[] = [element._id, element.count];
+            columns_pie.push(column);
+            if(element.count <= minus_language_count){
+                minus_language = element._id;
+            }
+        })
+
+        data.wordsPerMonth.forEach((element: { label: any; count: any; }) => {
+            columns_month.push(element.label);
+            columns_count.push(element.count);
+        })
+
+    }
 
     // Example data for a pie chart
     const pie_data = {
-        columns: [
-            ['data1', 30],
-            ['data2', 50],
-        ],
+        columns: columns_pie,
         type: 'pie', // Specify chart type here
     };
 
@@ -38,18 +52,15 @@ export function UserMetrics() {
 
     //Example data for spline data
     const line_data = {
-        columns: [
-            ['data1', 30, 200, 100, 400, 150, 250],
-            ['data2', 50, 20, 10, 40, 15, 25],
-        ],
-        type: 'line', // Specify chart type here
+        columns: [columns_count],
+        type: 'bar', // Specify chart type here
     };
 
     const line_options = {
         axis: {
             x: {
                 type: 'category',
-                categories: ['A', 'B', 'C', 'D', 'E', 'F'],
+                categories: columns_month,
             },
         },
     };
@@ -77,7 +88,7 @@ export function UserMetrics() {
                             Your worse category is:
                         </Typography>
                         <Button size="small" color="primary">
-                            Italiano
+                            {minus_language}
                         </Button>
                     </CardActions>
                 </Card>
