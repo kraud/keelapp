@@ -73,9 +73,7 @@ const calculateBasicUserMetrics = async (user) => {
         }
     ];
     const metricPipelineResult = await Word.aggregate(metricsPipeline);
-    console.log("All in one grouped: ", metricPipelineResult[0]);
-
-    return metricPipelineResult
+    return metricPipelineResult[0]
 }
 
 
