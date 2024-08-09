@@ -53,7 +53,7 @@ export const metricSlice = createSlice({
             .addCase(getUserMetrics.fulfilled, (state, action) => {
                 state.isLoading = false
                 state.isSuccess = true
-                // state.userList = action.payload
+                state.data = action.payload
             })
             .addCase(getUserMetrics.rejected, (state, action) => {
                 state.isLoading = false

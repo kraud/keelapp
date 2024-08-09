@@ -1,6 +1,6 @@
 const Word = require('../models/wordModel')
 
-const calculateBasicUserMetrics = async (data) => {
+const calculateBasicUserMetrics = async (user) => {
     let userId = user._id;
 
     // Pipeline que usa facet, es decir, consultas paralelas.
@@ -20,7 +20,7 @@ const calculateBasicUserMetrics = async (data) => {
                         }
                     }
                 ],
-                wordsByType: [
+                wordsPerPOS: [
                     {
                         $group: {
                             _id: "$partOfSpeech",
@@ -28,7 +28,7 @@ const calculateBasicUserMetrics = async (data) => {
                         }
                     }
                 ],
-                wordsByMonth: [
+                wordsPerMonth: [
                     {
                         $group: {
                             _id: {
@@ -66,8 +66,8 @@ const calculateBasicUserMetrics = async (data) => {
         {
             $project: {
                 translationsByLanguage: 1,
-                wordsByType: 1,
-                wordsByMonth: 1,
+                wordsPerPOS: 1,
+                wordsPerMonth: 1,
                 totalWords: { $arrayElemAt: ["$totalWords.count", 0] }
             }
         }

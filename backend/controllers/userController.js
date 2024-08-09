@@ -400,21 +400,21 @@ const updatePassword = asyncHandler(async (req, res) => {
 // @route   GET /api/users
 // @access  Private
 const getBasicUserMetrics = asyncHandler(async (req, res) => {
-    let user = req.body.user;
-
+    let user = req.user;
     try {
-        const metrics = await calculateBasicUserMetrics(user)
+        let metrics = await calculateBasicUserMetrics(user)
+
         const metrics_data = {
             totalWords: metrics.totalWords,
             translationsPerLanguage: metrics.translationsByLanguage,
-            wordsPerPOS: metrics.words,
-            wordsByMonth: metrics.wordsByMonth
+            wordsPerPOS: metrics.wordsPerPOS,
+            wordsPerMonth: metrics.wordsPerMonth
         }
 
         res.status(200).json(metrics_data)
     } catch (error) {
-        //
-        res.status(500).json(error)
+        console.log(error)
+        res.status(500).json({error})
     }
 })
 
