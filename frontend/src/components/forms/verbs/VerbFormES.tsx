@@ -5,7 +5,7 @@ import {Grid} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {TextInputFormWithHook} from "../../TextInputFormHook";
 import {TranslationItem, WordItem} from "../../../ts/interfaces";
-import {Lang, VerbCases} from "../../../ts/enums";
+import {Lang, VerbCases, verbRegularity} from "../../../ts/enums";
 import {getDisabledInputFieldDisplayLogic, getWordByCase} from "../commonFunctions";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../../../app/store";
@@ -14,6 +14,7 @@ import LinearIndeterminate from "../../Spinner";
 import {setTimerTriggerFunction} from "../../generalUseFunctions";
 import {AutocompleteButtonWithStatus} from "../AutocompleteButtonWithStatus";
 import Typography from "@mui/material/Typography";
+import {RadioGroupWithHook} from "../../RadioGroupFormHook";
 
 interface VerbFormESProps {
     currentTranslationData: TranslationItem,
@@ -28,6 +29,11 @@ export function VerbFormES(props: VerbFormESProps) {
     const { currentTranslationData } = props
 
     const validationSchema = Yup.object().shape({
+        //  Properties
+        regularity: Yup.string()
+            .matches(/^[^0-9]+$|^$/, 'Must not include numbers')
+            .matches(/^(regular|irregular)?$/, "Error: not an option."),
+        // Infinitives
         infinitiveNonFiniteSimple: Yup.string()
             .required("Infinitive non-finite is required")
             .matches(/^[^0-9]+$/, 'Must not include numbers')
@@ -99,6 +105,7 @@ export function VerbFormES(props: VerbFormESProps) {
         mode: "all", // Triggers validation/errors without having to submit
     })
 
+    const [regularity, setRegularity] = useState<"regular"|"irregular"|"">("")
     // Mandatory fields: can't be autocompleted
     const [infinitiveNonFiniteSimple, setInfinitiveNonFiniteSimple] = useState("")
     const [gerundNonFiniteSimple, setGerundNonFiniteSimple] = useState("")
@@ -135,6 +142,11 @@ export function VerbFormES(props: VerbFormESProps) {
 
     useEffect(() => {
         const currentCases: WordItem[] = [
+            {
+                caseName: VerbCases.regularityES,
+                word: regularity
+            },
+            // infinitives
             {
                 caseName: VerbCases.infinitiveNonFiniteSimpleES,
                 word: infinitiveNonFiniteSimple
@@ -289,10 +301,12 @@ export function VerbFormES(props: VerbFormESProps) {
         indicativePerfectSimplePast1pl, indicativePerfectSimplePast2pl, indicativePerfectSimplePast3pl,
         indicativeFuture1s, indicativeFuture2s, indicativeFuture3s, indicativeFuture1pl, indicativeFuture2pl,
         indicativeFuture3pl,
-        isValid
+        regularity, isValid
     ])
 
     const setValuesInForm = (translationDataToInsert: TranslationItem) => {
+        const regularityValue: string = getWordByCase(VerbCases.regularityES, translationDataToInsert)
+
         const infinitiveNonFiniteSimpleValue: string = getWordByCase(VerbCases.infinitiveNonFiniteSimpleES, translationDataToInsert)
         const gerundNonFiniteSimpleValue: string = getWordByCase(VerbCases.gerundNonFiniteSimpleES, translationDataToInsert)
         const participleNonFiniteSimpleValue: string = getWordByCase(VerbCases.participleNonFiniteSimpleES, translationDataToInsert)
@@ -325,6 +339,15 @@ export function VerbFormES(props: VerbFormESProps) {
         const indicativeFuture2plValue: string = getWordByCase(VerbCases.indicativeFuture2plES, translationDataToInsert)
         const indicativeFuture3plValue: string = getWordByCase(VerbCases.indicativeFuture3plES, translationDataToInsert)
 
+        setValue(
+            'regularity',
+            regularityValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setRegularity(regularityValue as "regular"|"irregular")
         setValue(
             'infinitiveNonFiniteSimple',
             infinitiveNonFiniteSimpleValue,
@@ -724,6 +747,32 @@ export function VerbFormES(props: VerbFormESProps) {
                                 fullWidth={true}
                                 disabled={props.displayOnly}
                             />
+                        </Grid>
+                    }
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, regularity)) &&
+                        <Grid
+                            container={true}
+                            item={true}
+                            xs={'auto'}
+                        >
+                            <Grid
+                                item={true}
+                            >
+                                {/* TODO: auto-detect regularity? (and suggest it with tooltip. */}
+                                <RadioGroupWithHook
+                                    control={control}
+                                    label={"Regularity"}
+                                    name={"regularity"}
+                                    options={[verbRegularity.regular, verbRegularity.irregular]}
+                                    defaultValue={""}
+                                    errors={errors.auxiliaryVerb}
+                                    onChange={(value: any) => {
+                                        setRegularity(value)
+                                    }}
+                                    fullWidth={false}
+                                    disabled={props.displayOnly}
+                                />
+                            </Grid>
                         </Grid>
                     }
                     {/* OPTIONAL FIELDS */}

@@ -1,13 +1,12 @@
 import {
     AdjectiveCases,
     AdverbCases,
-    AuxVerbDE,
     NounCases,
-    PartOfSpeech, pronounDE,
-    VerbCases,
-    verbTensesIndicativeDE
+    PartOfSpeech,
+    VerbCases, VerbCaseTypeDE,
 } from "../../ts/enums";
 import {WordItem, TranslationItem} from "../../ts/interfaces";
+import {CheckboxItemData} from "../CheckboxGroupFormHook";
 
 export function getWordByCase(searchCase: NounCases | AdjectiveCases | AdverbCases | VerbCases, currentTranslationData: TranslationItem) {
     const returnValue = (currentTranslationData.cases).find((wordCase: WordItem) => {
@@ -123,4 +122,65 @@ export const werdenPresentAndPastJSON = {
         Pl2: 'wurden',
         Pl3: 'wurdet',
     },
+}
+
+// we can't store a list of type-cases inside "word" property in a TranslationItem
+// => we make it into an acronym to store and reverse the process when retrieving
+export const getAcronymFromVerbCaseTypes = (selectedCases: any[]) => {
+    let acronym = ''
+    selectedCases.map((selectedCase: string, index: number) => {
+        switch (selectedCase){
+            case(VerbCaseTypeDE.accusativeDE):{
+                acronym +="A"
+                break
+            }
+            case(VerbCaseTypeDE.dativeDE):{
+                acronym +="D"
+                break
+            }
+            case(VerbCaseTypeDE.genitiveDE):{
+                acronym +="G"
+                break
+            }
+            default: acronym +="*"
+        }
+        // if not the last item => we add a separator
+        if(index < (selectedCases.length-1)){
+            acronym +="-"
+        }
+    })
+    console.log('selectedCases', selectedCases)
+    console.log('acronym', acronym)
+    return(acronym)
+}
+
+// we can't store a list of type-cases inside "word" property in a TranslationItem
+// => we make it into an acronym to store and reverse the process when retrieving
+export const getVerbCaseTypesFromAcronym = (acronym: string) => {
+    let casesObjects: CheckboxItemData[] = []
+    if(acronym.length > 0){
+        const extractedCases = acronym.split('-')
+        extractedCases.map((caseLetter: string, index: number) => {
+            console.log('caseLetter', caseLetter)
+            switch (caseLetter){
+                case("A"):{
+                    casesObjects.push({label: 'Accusative', value: VerbCaseTypeDE.accusativeDE})
+                    break
+                }
+                case("D"):{
+                    casesObjects.push({label: 'Dative', value: VerbCaseTypeDE.dativeDE})
+                    break
+                }
+                case("G"):{
+                    casesObjects.push({label: 'Genitive', value: VerbCaseTypeDE.genitiveDE})
+                    break
+                }
+                default:{
+                    casesObjects.push({label: 'error', value: VerbCaseTypeDE.accusativeDE})
+                    break
+                }
+            }
+        })
+    }
+    return(casesObjects)
 }

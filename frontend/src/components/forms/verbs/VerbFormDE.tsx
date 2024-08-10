@@ -5,8 +5,9 @@ import {Grid, InputAdornment} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {TextInputFormWithHook} from "../../TextInputFormHook";
 import {TranslationItem, WordItem} from "../../../ts/interfaces";
-import {AuxVerbDE, Lang, VerbCases} from "../../../ts/enums";
+import {AuxVerbDE, Lang, VerbCases, VerbCaseTypeDE} from "../../../ts/enums";
 import {
+    getAcronymFromVerbCaseTypes, getVerbCaseTypesFromAcronym,
     getDisabledInputFieldDisplayLogic,
     getWordByCase,
     habenPresentAndPastJSON, seinPresentAndPastJSON,
@@ -22,6 +23,7 @@ import {setTimerTriggerFunction} from "../../generalUseFunctions";
 import {AutocompleteButtonWithStatus} from "../AutocompleteButtonWithStatus";
 import Typography from "@mui/material/Typography";
 import {RadioGroupWithHook} from "../../RadioGroupFormHook";
+import {CheckboxGroupWithHook, CheckboxItemData} from "../../CheckboxGroupFormHook";
 
 interface VerbFormDEProps {
     currentTranslationData: TranslationItem,
@@ -41,7 +43,7 @@ export function VerbFormDE(props: VerbFormDEProps) {
             .matches(/^[^0-9]+$/, 'Must not include numbers')
             .matches(/^(?!.*\d).*(en|ern|eln)$/, "Please input infinitive form (ends in '-en', '-ern' '-eln')."),
         auxiliaryVerb: Yup.string(), // TODO: should this be mandatory?
-            // .oneOf([AuxVerbDE.H as string, AuxVerbDE.S as string, AuxVerbDE.W as string], "Required"),
+        verbCases: Yup.array(),
         indicativePresent1s: Yup.string().nullable()
             .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
         indicativePresent2s: Yup.string().nullable()
@@ -96,7 +98,7 @@ export function VerbFormDE(props: VerbFormDEProps) {
     })
 
     const {
-        control, formState: { errors, isValid, isDirty }, setValue
+        control, formState: { errors, isValid, isDirty }, setValue,
     } = useForm({
         resolver: yupResolver(validationSchema),
         mode: "all", // Triggers validation/errors without having to submit
@@ -105,6 +107,8 @@ export function VerbFormDE(props: VerbFormDEProps) {
     // Mandatory fields: can't be autocompleted
     const [infinitive, setInfinitive] = useState("")
     const [auxiliaryVerb, setAuxiliaryVerb] = useState<"haben"|"sein"|"">("")
+    // const [verbCases, setVerbCases] = useState<CheckboxItemData[]>([])
+    const [verbCases, setVerbCases] = useState<any[]>([])
     // Optional fields: can be filled with autocomplete
     // Indicative Mode - present
     const [indicativePresent1s, setIndicativePresent1s] = useState("")
@@ -144,6 +148,10 @@ export function VerbFormDE(props: VerbFormDEProps) {
             {
                 caseName: VerbCases.auxVerbDE,
                 word: auxiliaryVerb
+            },
+            {
+                caseName: VerbCases.caseTypeDE,
+                word: getAcronymFromVerbCaseTypes(verbCases) // string consists of: acc: A, dat: D, gen: G
             },
             // Indicative: present
             {
@@ -253,6 +261,8 @@ export function VerbFormDE(props: VerbFormDEProps) {
             isDirty: isDirty
         })
     }, [
+        isValid, auxiliaryVerb, verbCases,
+
         infinitive, indicativePresent1s, indicativePresent2s, indicativePresent3s,
         indicativePresent1pl, indicativePresent2pl, indicativePresent3pl,
         indicativePerfect1s,  indicativePerfect2s,  indicativePerfect3s,  indicativePerfect1pl,  indicativePerfect2pl,
@@ -261,12 +271,12 @@ export function VerbFormDE(props: VerbFormDEProps) {
         indicativeSimpleFuture2pl, indicativeSimpleFuture3pl,
         indicativeSimplePast1s, indicativeSimplePast2s, indicativeSimplePast3s, indicativeSimplePast1pl,
         indicativeSimplePast2pl, indicativeSimplePast3pl,
-        isValid, auxiliaryVerb
     ])
 
     const setValuesInForm = (translationDataToInsert: TranslationItem) => {
         const infinitiveValue: string = getWordByCase(VerbCases.infinitiveDE, translationDataToInsert)
         const auxiliaryVerbValue: string = getWordByCase(VerbCases.auxVerbDE, translationDataToInsert)
+        const verbCasesValue = getVerbCaseTypesFromAcronym(getWordByCase(VerbCases.caseTypeDE, translationDataToInsert))
         // Indicative: present
         const indicativePresent1sValue: string = getWordByCase(VerbCases.indicativePresent1sDE, translationDataToInsert)
         const indicativePresent2sValue: string = getWordByCase(VerbCases.indicativePresent2sDE, translationDataToInsert)
@@ -314,6 +324,16 @@ export function VerbFormDE(props: VerbFormDEProps) {
             }
         )
         setAuxiliaryVerb(auxiliaryVerbValue as "haben"|"sein"|"")
+        setValue(
+            'verbCases',
+            verbCasesValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setVerbCases(verbCasesValue)
+
         // Indicative: present
         setValue(
             'indicativePresent1s',
@@ -550,7 +570,7 @@ export function VerbFormDE(props: VerbFormDEProps) {
     const onAutocompleteClick = async () => {
         const completeFormWithAutocomplete = {
             ...autocompletedTranslationVerbDE,
-            // NB! These fields are not included in BE autocomplete response, so we must manually include
+            // NB! These fields are not included in BE autocomplete response, so we must manually include them
             cases: [
                 ...autocompletedTranslationVerbDE.cases,
                 {
@@ -560,6 +580,10 @@ export function VerbFormDE(props: VerbFormDEProps) {
                 {
                     caseName: VerbCases.auxVerbDE,
                     word: auxiliaryVerb
+                },
+                {
+                    caseName: VerbCases.caseTypeDE,
+                    word: verbCases
                 },
             ]
         }
@@ -578,6 +602,11 @@ export function VerbFormDE(props: VerbFormDEProps) {
             )
         }
     },[infinitive, validAutocompleteRequest])
+
+    useEffect(() => {
+        console.log('verbCases', verbCases)
+        // console.log('verbCase FORM', getFieldState("verbCase"))
+    },[verbCases])
 
     return(
         <Grid
@@ -646,29 +675,60 @@ export function VerbFormDE(props: VerbFormDEProps) {
                             />
                         </Grid>
                     }
-                    <Grid
-                        container={true}
-                        item={true}
-                        xs={'auto'}
-                    >
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, (auxiliaryVerb))) &&
                         <Grid
+                            container={true}
                             item={true}
+                            xs={'auto'}
                         >
-                            <RadioGroupWithHook
-                                control={control}
-                                label={"Auxiliary verb"}
-                                name={"auxiliaryVerb"}
-                                options={[AuxVerbDE.H, AuxVerbDE.S]}
-                                defaultValue={""}
-                                errors={errors.auxiliaryVerb}
-                                onChange={(value: any) => {
-                                    setAuxiliaryVerb(value)
-                                }}
-                                fullWidth={false}
-                                disabled={props.displayOnly}
-                            />
+                            <Grid
+                                item={true}
+                            >
+                                <RadioGroupWithHook
+                                    control={control}
+                                    label={"Auxiliary verb"}
+                                    name={"auxiliaryVerb"}
+                                    options={[AuxVerbDE.H, AuxVerbDE.S]}
+                                    defaultValue={""}
+                                    errors={errors.auxiliaryVerb}
+                                    onChange={(value: any) => {
+                                        setAuxiliaryVerb(value)
+                                    }}
+                                    fullWidth={false}
+                                    disabled={props.displayOnly}
+                                />
+                            </Grid>
                         </Grid>
-                    </Grid>
+                    }
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, (verbCases.length>0) ?'-':"")) &&
+                        <Grid
+                            container={true}
+                            item={true}
+                            xs={12}
+                        >
+                            <Grid
+                                item={true}
+                            >
+                                <CheckboxGroupWithHook
+                                    control={control}
+                                    groupLabel={"Verb case"}
+                                    name={"verbCases"}
+                                    options={[
+                                        {label: 'Accusative', value: VerbCaseTypeDE.accusativeDE},
+                                        {label: 'Dative', value: VerbCaseTypeDE.dativeDE},
+                                        {label: 'Genitive', value: VerbCaseTypeDE.genitiveDE},
+                                    ]}
+                                    defaultValue={[]}
+                                    errors={errors.auxiliaryVerb}
+                                    onChange={(value: CheckboxItemData[]) => {
+                                        setVerbCases(value)
+                                    }}
+                                    fullWidth={false}
+                                    disabled={props.displayOnly}
+                                />
+                            </Grid>
+                        </Grid>
+                    }
                     {/*
                         TODO: add multiselect for verb categories based on their grammatical and syntactic behavior?
                          (Transitive, Intransitive, Dative, Reflexive, Impersonal, Modal, Auxiliary, Separable and Inseparable Prefix)?

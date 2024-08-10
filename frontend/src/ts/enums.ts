@@ -100,6 +100,7 @@ export enum VerbCases {
         // they: 3rd person plural (3pl)
     // Naming convention: category - tense - pronoun - language
 
+    regularityEN = "regularityEN",
     // SIMPLE: --------------
     // Same for every pronoun except 3s m/f/n
     simplePresent1sEN = "simplePresent1sEN",
@@ -152,6 +153,7 @@ export enum VerbCases {
         // nosotros/as: 1nd person plural (1pl)
         // vosotros/as || ustedes: 2nd person plural (2pl)
         // ellos/as: 3rd person plural (3pl)
+    regularityES = "regularityES",
 
     infinitiveNonFiniteSimpleES = 'infinitiveNonFiniteSimpleES',
     gerundNonFiniteSimpleES = 'gerundNonFiniteSimpleES',
@@ -259,6 +261,7 @@ export enum VerbCases {
 
     infinitiveDE = 'infinitiveDE',
     auxVerbDE = 'auxVerbDE',
+    caseTypeDE = 'caseTypeDE',
 
     // INDICATIVE: --------------
     // Present: different for almost all pronouns
@@ -289,6 +292,12 @@ export enum VerbCases {
     indicativeSimplePast1plDE = 'indicativeSimplePast1plDE',
     indicativeSimplePast2plDE = 'indicativeSimplePast2plDE',
     indicativeSimplePast3plDE = 'indicativeSimplePast3plDE',
+}
+export enum VerbCaseTypeDE {
+    accusativeDE = 'accusativeDE',
+    dativeDE = 'dativeDE', // limited list ~50 verbs
+    // accusativeDativeDE = 'accusativeDativeDE',
+    genitiveDE = 'genitiveDE', // rare - mostly in formal writing?
 }
 
 export enum pronounDE {
@@ -348,6 +357,10 @@ export enum pronounDE {
     DatPl3DE = 'ihnen',
 }
 
+export enum verbRegularity {
+    regular = 'regular',
+    irregular = 'irregular'
+}
 
 export enum verbMoodDE {
     indicativeDE = 'indicativeDE',

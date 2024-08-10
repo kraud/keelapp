@@ -5,7 +5,7 @@ import {Grid, InputAdornment} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {TextInputFormWithHook} from "../../TextInputFormHook";
 import {TranslationItem, WordItem} from "../../../ts/interfaces";
-import {Lang, VerbCases} from "../../../ts/enums";
+import {AuxVerbDE, Lang, VerbCases, verbRegularity} from "../../../ts/enums";
 import {getDisabledInputFieldDisplayLogic, getWordByCase} from "../commonFunctions";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../../../app/store";
@@ -16,6 +16,7 @@ import LinearIndeterminate from "../../Spinner";
 import {setTimerTriggerFunction} from "../../generalUseFunctions";
 import {AutocompleteButtonWithStatus} from "../AutocompleteButtonWithStatus";
 import Typography from "@mui/material/Typography";
+import {RadioGroupWithHook} from "../../RadioGroupFormHook";
 
 interface VerbFormENProps {
     currentTranslationData: TranslationItem,
@@ -30,6 +31,11 @@ export function VerbFormEN(props: VerbFormENProps) {
     const { currentTranslationData } = props
 
     const validationSchema = Yup.object().shape({
+        //  Properties
+        regularity: Yup.string()
+            .matches(/^[^0-9]+$|^$/, 'Must not include numbers')
+            .matches(/^(regular|irregular)?$/, "Error: not an option."),
+        //  Simple time - present
         simplePresent1s: Yup.string()
             .required("This simple present field is required")
             .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
@@ -41,6 +47,39 @@ export function VerbFormEN(props: VerbFormENProps) {
             .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
         simplePresent3pl: Yup.string().nullable()
             .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+        //  Simple time - past
+        simplePast1s: Yup.string()
+            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+        simplePast2s: Yup.string().nullable()
+            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+        simplePast3s: Yup.string().nullable()
+            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+        simplePast1pl: Yup.string().nullable()
+            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+        simplePast3pl: Yup.string().nullable()
+            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+        //  Simple time - future
+        simpleFuture1s: Yup.string()
+            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+        simpleFuture2s: Yup.string().nullable()
+            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+        simpleFuture3s: Yup.string().nullable()
+            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+        simpleFuture1pl: Yup.string().nullable()
+            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+        simpleFuture3pl: Yup.string().nullable()
+            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+        //  Simple time - conditional
+        simpleConditional1s: Yup.string()
+            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+        simpleConditional2s: Yup.string().nullable()
+            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+        simpleConditional3s: Yup.string().nullable()
+            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+        simpleConditional1pl: Yup.string().nullable()
+            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+        simpleConditional3pl: Yup.string().nullable()
+            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
     })
 
     const {
@@ -50,6 +89,7 @@ export function VerbFormEN(props: VerbFormENProps) {
         mode: "all", // Triggers validation/errors without having to submit
     })
 
+    const [regularity, setRegularity] = useState<"regular"|"irregular"|"">("")
     // Optional fields: can be filled with autocomplete
     //  Simple time - present
     const [simplePresent1s, setSimplePresent1s] = useState("")
@@ -78,6 +118,10 @@ export function VerbFormEN(props: VerbFormENProps) {
 
     useEffect(() => {
         const currentCases: WordItem[] = [
+            {
+                caseName: VerbCases.regularityEN,
+                word: regularity
+            },
             // PRESENT
             {
                 caseName: VerbCases.simplePresent1sEN,
@@ -174,10 +218,13 @@ export function VerbFormEN(props: VerbFormENProps) {
         simplePast1s, simplePast2s, simplePast3s, simplePast1pl, simplePast3pl,
         simpleFuture1s, simpleFuture2s, simpleFuture3s, simpleFuture1pl, simpleFuture3pl,
         simpleConditional1s, simpleConditional2s, simpleConditional3s, simpleConditional1pl, simpleConditional3pl,
-        isValid
+
+        regularity, isValid
     ])
 
     const setValuesInForm = (translationDataToInsert: TranslationItem) => {
+        const regularityValue: string = getWordByCase(VerbCases.regularityEN, translationDataToInsert)
+
         const simplePresent1sValue: string = getWordByCase(VerbCases.simplePresent1sEN, translationDataToInsert)
         const simplePresent2sValue: string = getWordByCase(VerbCases.simplePresent2sEN, translationDataToInsert)
         const simplePresent3sValue: string = getWordByCase(VerbCases.simplePresent3sEN, translationDataToInsert)
@@ -201,6 +248,16 @@ export function VerbFormEN(props: VerbFormENProps) {
         const simpleConditional3sValue: string = getWordByCase(VerbCases.simpleConditional3sEN, translationDataToInsert)
         const simpleConditional1plValue: string = getWordByCase(VerbCases.simpleConditional1plEN, translationDataToInsert)
         const simpleConditional3plValue: string = getWordByCase(VerbCases.simpleConditional3plEN, translationDataToInsert)
+
+        setValue(
+            'regularity',
+            regularityValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setRegularity(regularityValue as "regular"|"irregular")
         // PRESENT
         setValue(
             'simplePresent1s',
@@ -399,7 +456,18 @@ export function VerbFormEN(props: VerbFormENProps) {
     // ------------------ AUTOCOMPLETE LOGIC ------------------
 
     const onAutocompleteClick = async () => {
-        setValuesInForm(autocompletedTranslationVerbEN)
+        const completeFormWithAutocomplete = {
+            ...autocompletedTranslationVerbEN,
+            // NB! These fields are not included in BE autocomplete response, so we must manually include them
+            cases: [
+                ...autocompletedTranslationVerbEN.cases,
+                {
+                    caseName: VerbCases.regularityEN,
+                    word: regularity
+                },
+            ]
+        }
+        setValuesInForm(completeFormWithAutocomplete)
     }
 
     // before making the request, we check if the query is correct according to the form's validation
@@ -462,6 +530,32 @@ export function VerbFormEN(props: VerbFormENProps) {
                                 }}
                             >
                                 {(isLoadingAT) && <LinearIndeterminate/>}
+                            </Grid>
+                        </Grid>
+                    }
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, regularity)) &&
+                        <Grid
+                            container={true}
+                            item={true}
+                            xs={'auto'}
+                        >
+                            <Grid
+                                item={true}
+                            >
+                                {/* TODO: auto-detect regularity? (and suggest it with tooltip. */}
+                                <RadioGroupWithHook
+                                    control={control}
+                                    label={"Regularity"}
+                                    name={"regularity"}
+                                    options={[verbRegularity.regular, verbRegularity.irregular]}
+                                    defaultValue={""}
+                                    errors={errors.auxiliaryVerb}
+                                    onChange={(value: any) => {
+                                        setRegularity(value)
+                                    }}
+                                    fullWidth={false}
+                                    disabled={props.displayOnly}
+                                />
                             </Grid>
                         </Grid>
                     }
