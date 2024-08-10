@@ -201,7 +201,7 @@ export function NounFormES(props: NounFormESProps) {
                     }
                     <Grid
                         item={true}
-                        container={true}
+                        xs={12}
                     >
                         <RadioGroupWithHook
                             control={control}

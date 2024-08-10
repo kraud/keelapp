@@ -1,17 +1,17 @@
 import * as Yup from "yup";
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup/dist/yup";
-import {Grid, InputAdornment} from "@mui/material";
+import {Button, Collapse, Grid, InputAdornment} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {TextInputFormWithHook} from "../../TextInputFormHook";
 import {TranslationItem, WordItem} from "../../../ts/interfaces";
-import {AuxVerbDE, Lang, VerbCases, VerbCaseTypeDE} from "../../../ts/enums";
+import {AuxVerbDE, Lang, PrefixesVerbDE, VerbCases, VerbCaseTypeDE} from "../../../ts/enums";
 import {
     getAcronymFromVerbCaseTypes, getVerbCaseTypesFromAcronym,
     getDisabledInputFieldDisplayLogic,
     getWordByCase,
     habenPresentAndPastJSON, seinPresentAndPastJSON,
-    werdenPresentAndPastJSON
+    werdenPresentAndPastJSON, checkForPatternPrefixDE, CheckForPatternResponse
 } from "../commonFunctions";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../../../app/store";
@@ -32,10 +32,9 @@ interface VerbFormDEProps {
 }
 // Displays the fields required to add the estonian translation of a verb (and handles the validations)
 export function VerbFormDE(props: VerbFormDEProps) {
+    const { currentTranslationData } = props
     const dispatch = useDispatch<AppDispatch>()
     const {autocompletedTranslationVerbDE, isErrorAT, isSuccessAT, isLoadingAT, messageAT} = useSelector((state: any) => state.autocompletedTranslations)
-
-    const { currentTranslationData } = props
 
     const validationSchema = Yup.object().shape({
         infinitive: Yup.string()
@@ -44,6 +43,7 @@ export function VerbFormDE(props: VerbFormDEProps) {
             .matches(/^(?!.*\d).*(en|ern|eln)$/, "Please input infinitive form (ends in '-en', '-ern' '-eln')."),
         auxiliaryVerb: Yup.string(), // TODO: should this be mandatory?
         verbCases: Yup.array(),
+        prefix: Yup.string(), // TODO: should this be mandatory?
         indicativePresent1s: Yup.string().nullable()
             .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
         indicativePresent2s: Yup.string().nullable()
@@ -107,8 +107,8 @@ export function VerbFormDE(props: VerbFormDEProps) {
     // Mandatory fields: can't be autocompleted
     const [infinitive, setInfinitive] = useState("")
     const [auxiliaryVerb, setAuxiliaryVerb] = useState<"haben"|"sein"|"">("")
-    // const [verbCases, setVerbCases] = useState<CheckboxItemData[]>([])
-    const [verbCases, setVerbCases] = useState<any[]>([])
+    const [prefix, setPrefix] = useState<PrefixesVerbDE | "">("")
+    const [verbCases, setVerbCases] = useState<CheckboxItemData[]>([])
     // Optional fields: can be filled with autocomplete
     // Indicative Mode - present
     const [indicativePresent1s, setIndicativePresent1s] = useState("")
@@ -139,6 +139,8 @@ export function VerbFormDE(props: VerbFormDEProps) {
     const [indicativeSimplePast2pl, setIndicativeSimplePast2pl] = useState("")
     const [indicativeSimplePast3pl, setIndicativeSimplePast3pl] = useState("")
 
+    const [displayPrefixList, setDisplayPrefixList] = useState(prefix !== "")
+
     useEffect(() => {
         const currentCases: WordItem[] = [
             {
@@ -152,6 +154,10 @@ export function VerbFormDE(props: VerbFormDEProps) {
             {
                 caseName: VerbCases.caseTypeDE,
                 word: getAcronymFromVerbCaseTypes(verbCases) // string consists of: acc: A, dat: D, gen: G
+            },
+            {
+                caseName: VerbCases.prefixDE,
+                word: prefix
             },
             // Indicative: present
             {
@@ -261,7 +267,7 @@ export function VerbFormDE(props: VerbFormDEProps) {
             isDirty: isDirty
         })
     }, [
-        isValid, auxiliaryVerb, verbCases,
+        isValid, auxiliaryVerb, verbCases, prefix,
 
         infinitive, indicativePresent1s, indicativePresent2s, indicativePresent3s,
         indicativePresent1pl, indicativePresent2pl, indicativePresent3pl,
@@ -277,6 +283,7 @@ export function VerbFormDE(props: VerbFormDEProps) {
         const infinitiveValue: string = getWordByCase(VerbCases.infinitiveDE, translationDataToInsert)
         const auxiliaryVerbValue: string = getWordByCase(VerbCases.auxVerbDE, translationDataToInsert)
         const verbCasesValue = getVerbCaseTypesFromAcronym(getWordByCase(VerbCases.caseTypeDE, translationDataToInsert))
+        const prefixValue: string = getWordByCase(VerbCases.prefixDE, translationDataToInsert)
         // Indicative: present
         const indicativePresent1sValue: string = getWordByCase(VerbCases.indicativePresent1sDE, translationDataToInsert)
         const indicativePresent2sValue: string = getWordByCase(VerbCases.indicativePresent2sDE, translationDataToInsert)
@@ -333,6 +340,15 @@ export function VerbFormDE(props: VerbFormDEProps) {
             }
         )
         setVerbCases(verbCasesValue)
+        setValue(
+            'prefix',
+            prefixValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setPrefix(prefixValue as PrefixesVerbDE)
 
         // Indicative: present
         setValue(
@@ -583,7 +599,12 @@ export function VerbFormDE(props: VerbFormDEProps) {
                 },
                 {
                     caseName: VerbCases.caseTypeDE,
-                    word: verbCases
+                    // we need to create the acronym to match data-format from BE
+                    word: getAcronymFromVerbCaseTypes(verbCases)
+                },
+                {
+                    caseName: VerbCases.prefixDE,
+                    word: prefix
                 },
             ]
         }
@@ -593,7 +614,7 @@ export function VerbFormDE(props: VerbFormDEProps) {
     // before making the request, we check if the query is correct according to the form's validation
     const validAutocompleteRequest = errors['infinitive'] === undefined
     useEffect(() => {
-        if((infinitive !== "") && (validAutocompleteRequest)){
+        if((infinitive.length > 2) && (validAutocompleteRequest)){
             setTimerTriggerFunction(
                 () => {
                     dispatch(getAutocompletedGermanVerbData(infinitive))
@@ -603,10 +624,29 @@ export function VerbFormDE(props: VerbFormDEProps) {
         }
     },[infinitive, validAutocompleteRequest])
 
+    const initialAutoDetectPrefixValue = {
+        detected: false,
+        prefixCase: "" as "" // to satisfy TS
+    }
+    const [autoDetectedPrefix, setAutoDetectedPrefix] = useState<CheckForPatternResponse>(initialAutoDetectPrefixValue)
+
     useEffect(() => {
-        console.log('verbCases', verbCases)
-        // console.log('verbCase FORM', getFieldState("verbCase"))
-    },[verbCases])
+        if(infinitive.length > 2){ // shortest verb in German: tun
+            const timeoutId = setTimeout(() => {
+                setAutoDetectedPrefix(checkForPatternPrefixDE(infinitive))
+            }, 2000);
+
+            return () => clearTimeout(timeoutId)
+        } else {
+            setAutoDetectedPrefix(initialAutoDetectPrefixValue)
+        }
+    }, [infinitive])
+
+    useEffect(() => {
+        if(autoDetectedPrefix.detected && !props.displayOnly){
+            setDisplayPrefixList(true)
+        }
+    }, [autoDetectedPrefix])
 
     return(
         <Grid
@@ -698,6 +738,60 @@ export function VerbFormDE(props: VerbFormDEProps) {
                                     disabled={props.displayOnly}
                                 />
                             </Grid>
+                        </Grid>
+                    }
+                    {!(props.displayOnly!) &&
+                        <Grid
+                            item={true}
+                            xs={12}
+                        >
+                            <Button
+                                variant={'text'}
+                                onClick={() => {
+                                    setDisplayPrefixList((prevValue) => !prevValue)
+                                }}
+                            >
+                                {(displayPrefixList) ? "Hide prefixes" : "Display prefixes"}
+                            </Button>
+                        </Grid>
+                    }
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, (prefix))) &&
+                        <Grid
+                            container={true}
+                            item={true}
+                            xs={12}
+                        >
+                            <Collapse
+                                in={
+                                    (displayPrefixList)
+                                    ||
+                                    (props.displayOnly!)
+                                }
+                            >
+                                <Grid
+                                    item={true}
+                                >
+                                    <RadioGroupWithHook
+                                        control={control}
+                                        label={"Prefix"}
+                                        name={"prefix"}
+                                        options={Object.values(PrefixesVerbDE)}
+                                        defaultValue={""}
+                                        errors={errors.prefix}
+                                        onChange={(value: any) => {
+                                            setPrefix(value)
+                                        }}
+                                        fullWidth={false}
+                                        disabled={props.displayOnly}
+                                        displayTooltip={
+                                            (autoDetectedPrefix!! &&autoDetectedPrefix.detected)
+                                                ? autoDetectedPrefix.prefixCase
+                                                : undefined
+                                        }
+                                        suffix={'-'}
+                                    />
+                                </Grid>
+                            </Collapse>
                         </Grid>
                     }
                     {(getDisabledInputFieldDisplayLogic(props.displayOnly!, (verbCases.length>0) ?'-':"")) &&

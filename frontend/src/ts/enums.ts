@@ -262,6 +262,7 @@ export enum VerbCases {
     infinitiveDE = 'infinitiveDE',
     auxVerbDE = 'auxVerbDE',
     caseTypeDE = 'caseTypeDE',
+    prefixDE = 'prefixDE',
 
     // INDICATIVE: --------------
     // Present: different for almost all pronouns
@@ -298,6 +299,35 @@ export enum VerbCaseTypeDE {
     dativeDE = 'dativeDE', // limited list ~50 verbs
     // accusativeDativeDE = 'accusativeDativeDE',
     genitiveDE = 'genitiveDE', // rare - mostly in formal writing?
+}
+
+export enum PrefixesVerbDE {
+    ab = 'ab',
+    an = 'an',
+    auf = 'auf',
+    aus = 'aus',
+    bei = 'bei',
+    da = 'da',
+    dar = 'dar',
+    durch = 'durch',
+    ein = 'ein',
+    fern = 'fern',
+    fest = 'fest',
+    fort = 'fort',
+    gegen = 'gegen',
+    her = 'her',
+    hin = 'hin',
+    los = 'los',
+    mit = 'mit',
+    nach = 'nach',
+    nieder = 'nieder',
+    um = 'um',
+    vor = 'vor',
+    weg = 'weg',
+    wieder = 'wieder',
+    zu = 'zu',
+    zusammen = 'zusammen',
+    zuryck = 'zurück', // NB! Careful with this one. Can cause issues.
 }
 
 export enum pronounDE {

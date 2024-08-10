@@ -3,8 +3,9 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import {Control, Controller} from "react-hook-form";
-import {FormHelperText} from "@mui/material";
+import {FormHelperText, FormLabel} from "@mui/material";
 import globalTheme from "../theme/theme";
+import Tooltip from "@mui/material/Tooltip";
 
 interface RadioGroupHookProps {
     control: Control<any, any>, // Comes from the useForm() hook in React-Hook-Form
@@ -15,8 +16,11 @@ interface RadioGroupHookProps {
     errors?: any,
     type?: "password"|"text"|"email",
     fullWidth?: boolean
-    onChange?: (value: any) => void // Needed to inform parent component about the Radio Group current value
+    onChange: (value: any) => void // Needed to inform parent component about the Radio Group current value
     disabled?: boolean
+    displayTooltip?: string
+    allowUnselect?: boolean
+    suffix?: string
 }
 
 export const RadioGroupWithHook = (props: RadioGroupHookProps) => {
@@ -28,6 +32,7 @@ export const RadioGroupWithHook = (props: RadioGroupHookProps) => {
             borderColor: 'rgb(0, 144, 206)',
             backgroundColor: 'rgb(0, 144, 206)',
             padding: '5px 15px 5px 10px',
+            marginBottom: '10px',
             color: 'white',
             fontWeight: '400',
             "span":{
@@ -67,7 +72,7 @@ export const RadioGroupWithHook = (props: RadioGroupHookProps) => {
                     ...componentStyles.optionPill,
                 }}
                 value={option}
-                label={option}
+                label={option+(props.suffix!! ?props.suffix :'')}
                 control={
                     <Radio
                         //@ts-ignore
@@ -86,8 +91,10 @@ export const RadioGroupWithHook = (props: RadioGroupHookProps) => {
             name={props.name}
             control={props.control}
             defaultValue={props.defaultValue}
+             // field: { onChange, onBlur, value, ref }
             render={({ field, fieldState  }) => (
                 <>
+                    <FormLabel id={props.name}>{props.label}</FormLabel>
                     <RadioGroup
                         sx={componentStyles.optionGroup}
                         {...field}
@@ -114,19 +121,42 @@ export const RadioGroupWithHook = (props: RadioGroupHookProps) => {
                                         }}
                                         key={index}
                                         value={option}
-                                        label={option}
+                                        label={option+(props.suffix!! ?props.suffix :'')}
                                         control={
-                                            <Radio
-                                                //@ts-ignore
-                                                color={'allWhite'}
-                                                sx={componentStyles.optionCircle}
-                                                onChange={() => {
-                                                    if(props.onChange!){
-                                                        props.onChange!(option)
-                                                    }
-                                                }}
-                                                disabled={props.disabled}
-                                            />
+                                            <Tooltip
+                                                arrow
+                                                open={((props.displayTooltip !== undefined))}
+                                                title={
+                                                    (
+                                                        (props.displayTooltip!!) &&
+                                                        (props.displayTooltip === option) && // we only display the tooltip on the relevant item
+                                                        !(field.value!!) // if something is selected the tooltip disappears
+                                                    )
+                                                        ? 'This might be useful'
+                                                        : ""
+                                                }
+                                            >
+                                                <Radio
+                                                    //@ts-ignore
+                                                    color={'allWhite'}
+                                                    sx={componentStyles.optionCircle}
+                                                    onChange={() => {
+                                                        if(option === field.value) {
+                                                            props.onChange!("")
+                                                        } else {
+                                                            props.onChange!(option)
+                                                        }
+
+                                                    }}
+                                                    onClick={() => {
+                                                        if(option === field.value) {
+                                                           props.onChange!("")
+                                                            field.onChange!("")
+                                                        }
+                                                    }}
+                                                    disabled={props.disabled}
+                                                />
+                                            </Tooltip>
                                         }
                                     />
                                 )

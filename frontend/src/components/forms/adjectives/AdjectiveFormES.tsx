@@ -224,7 +224,7 @@ export function AdjectiveFormES(props: AdjectiveFormESProps) {
                 >
                     <Grid
                         item={true}
-                        container={true}
+                        xs={12}
                     >
                         <RadioGroupWithHook
                             control={control}

@@ -2,7 +2,7 @@ import {
     AdjectiveCases,
     AdverbCases,
     NounCases,
-    PartOfSpeech,
+    PartOfSpeech, PrefixesVerbDE,
     VerbCases, VerbCaseTypeDE,
 } from "../../ts/enums";
 import {WordItem, TranslationItem} from "../../ts/interfaces";
@@ -126,10 +126,10 @@ export const werdenPresentAndPastJSON = {
 
 // we can't store a list of type-cases inside "word" property in a TranslationItem
 // => we make it into an acronym to store and reverse the process when retrieving
-export const getAcronymFromVerbCaseTypes = (selectedCases: any[]) => {
+export const getAcronymFromVerbCaseTypes = (selectedCases: CheckboxItemData[]) => {
     let acronym = ''
-    selectedCases.map((selectedCase: string, index: number) => {
-        switch (selectedCase){
+    selectedCases.map((selectedCase: CheckboxItemData, index: number) => {
+        switch (selectedCase.value){
             case(VerbCaseTypeDE.accusativeDE):{
                 acronym +="A"
                 break
@@ -149,8 +149,6 @@ export const getAcronymFromVerbCaseTypes = (selectedCases: any[]) => {
             acronym +="-"
         }
     })
-    console.log('selectedCases', selectedCases)
-    console.log('acronym', acronym)
     return(acronym)
 }
 
@@ -161,7 +159,6 @@ export const getVerbCaseTypesFromAcronym = (acronym: string) => {
     if(acronym.length > 0){
         const extractedCases = acronym.split('-')
         extractedCases.map((caseLetter: string, index: number) => {
-            console.log('caseLetter', caseLetter)
             switch (caseLetter){
                 case("A"):{
                     casesObjects.push({label: 'Accusative', value: VerbCaseTypeDE.accusativeDE})
@@ -183,4 +180,24 @@ export const getVerbCaseTypesFromAcronym = (acronym: string) => {
         })
     }
     return(casesObjects)
+}
+
+export type CheckForPatternResponse = {
+    detected: boolean,
+    prefixCase: PrefixesVerbDE | ""
+}
+export const checkForPatternPrefixDE = (infinitiveVerbDE: string): CheckForPatternResponse => {
+    for (const prefix of Object.values(PrefixesVerbDE)) {
+        if (infinitiveVerbDE.startsWith(prefix)) {
+            return {
+                detected: true,
+                prefixCase: prefix as PrefixesVerbDE
+            }
+        }
+    }
+
+    return {
+        detected: false,
+        prefixCase: ""
+    }
 }

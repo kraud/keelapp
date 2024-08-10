@@ -25,6 +25,7 @@ interface CheckboxGroupWithHookProps {
 export const CheckboxGroupWithHook = (props: CheckboxGroupWithHookProps) => {
     const componentStyles = {
         optionCheckbox: {
+            // TODO: improve UI
         },
     }
 
@@ -34,10 +35,11 @@ export const CheckboxGroupWithHook = (props: CheckboxGroupWithHookProps) => {
         })
         const selectedOptions = props.options.filter((option: CheckboxItemData) =>  listOfSelectedValues.includes(option.value))
         return(
-            (selectedOptions).map((selectedOption) => {
+            (selectedOptions).map((selectedOption, index) => {
                 return(
                     <FormControlLabel
                         sx={{}}
+                        key={index}
                         value={selectedOption.value}
                         label={selectedOption.label}
                         checked={true}
