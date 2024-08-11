@@ -675,7 +675,7 @@ export function VerbFormDE(props: VerbFormDEProps) {
                         >
                             <AutocompleteButtonWithStatus
                                 tooltipLabels={{
-                                    emptyQuery: "Please input 'infinitive non-finite simple' first.",
+                                    emptyQuery: "Please input 'infinitive' first.",
                                     noMatch: "Sorry, we don't know this word!",
                                     foundMatch: "There is information about this word stored in our system."
                                 }}
@@ -736,6 +736,10 @@ export function VerbFormDE(props: VerbFormDEProps) {
                                     }}
                                     fullWidth={false}
                                     disabled={props.displayOnly}
+                                    labelTooltipMessage={
+                                        'A verb that is used alongside a main verb to help form different tenses, moods, or voices. ' +
+                                        'Essential for creating compound verb forms and expressing actions in different times and modes'
+                                }
                                 />
                             </Grid>
                         </Grid>

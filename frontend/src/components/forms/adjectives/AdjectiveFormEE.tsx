@@ -279,7 +279,7 @@ export function AdjectiveFormEE(props: AdjectiveFormEEProps) {
                         >
                             <AutocompleteButtonWithStatus
                                 tooltipLabels={{
-                                    emptyQuery: "Please input 'infinitive non-finite simple' first.",
+                                    emptyQuery: "Please input 'Algvõrre' first.",
                                     noMatch: "Sorry, we don't know this word!",
                                     foundMatch: "There is information about this word stored in our system."
                                 }}

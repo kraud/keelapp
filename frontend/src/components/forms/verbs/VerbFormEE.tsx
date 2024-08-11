@@ -489,7 +489,7 @@ export function VerbFormEE(props: VerbFormEEProps) {
                         >
                             <AutocompleteButtonWithStatus
                                 tooltipLabels={{
-                                    emptyQuery: "Please input 'infinitive non-finite simple' first.",
+                                    emptyQuery: "Please input '-ma infinitive' first.",
                                     noMatch: "Sorry, we don't know this word!",
                                     foundMatch: "There is information about this word stored in our system."
                                 }}

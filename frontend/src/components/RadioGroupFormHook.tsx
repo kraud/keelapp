@@ -3,9 +3,10 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import {Control, Controller} from "react-hook-form";
-import {FormHelperText, FormLabel} from "@mui/material";
+import {FormHelperText, FormLabel, Grid} from "@mui/material";
 import globalTheme from "../theme/theme";
 import Tooltip from "@mui/material/Tooltip";
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 interface RadioGroupHookProps {
     control: Control<any, any>, // Comes from the useForm() hook in React-Hook-Form
@@ -21,10 +22,13 @@ interface RadioGroupHookProps {
     displayTooltip?: string
     allowUnselect?: boolean
     suffix?: string
+    hideLabel?: boolean
+    labelTooltipMessage?: string
 }
 
 export const RadioGroupWithHook = (props: RadioGroupHookProps) => {
     const componentStyles = {
+
         optionPill: {
             borderStyle: "solid",
             borderWidth: "2px",
@@ -94,7 +98,47 @@ export const RadioGroupWithHook = (props: RadioGroupHookProps) => {
              // field: { onChange, onBlur, value, ref }
             render={({ field, fieldState  }) => (
                 <>
-                    <FormLabel id={props.name}>{props.label}</FormLabel>
+                    {(!props.hideLabel!!) &&
+                        <Grid
+                            container={true}
+                            justifyContent={"flex-start"}
+                            alignItems={"center"}
+                            sx={{
+                                paddingBottom: '5px',
+                            }}
+                        >
+                            {(props.labelTooltipMessage!!) &&
+                                <Grid
+                                    item={true}
+                                    sx={{
+                                        paddingRight: '5px',
+                                        height: '25px',
+                                    }}
+                                >
+                                    <Tooltip
+                                        title={props.labelTooltipMessage}
+                                    >
+                                        <InfoOutlinedIcon
+                                            color={"primary"}
+                                            sx={{
+                                                height: '24px',
+                                                width: '24px',
+                                            }}
+                                        />
+                                    </Tooltip>
+                                </Grid>
+                            }
+                            <Grid
+                                item={true}
+                            >
+                                <FormLabel
+                                    id={props.name}
+                                >
+                                    {props.label}
+                                </FormLabel>
+                            </Grid>
+                        </Grid>
+                    }
                     <RadioGroup
                         sx={componentStyles.optionGroup}
                         {...field}

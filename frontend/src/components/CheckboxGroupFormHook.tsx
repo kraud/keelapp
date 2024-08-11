@@ -1,5 +1,4 @@
 import * as React from 'react';
-import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import {Control, Controller} from "react-hook-form";
 import {Checkbox, FormGroup, FormHelperText} from "@mui/material";
