@@ -1,4 +1,5 @@
 const asyncHandler = require("express-async-handler")
+const https = require('https')
 const isWord = require('is-word')
 
 // const conjugateVerb = require("../../node_modules/conjugator/lib/conjugateVerb.js")
@@ -10,10 +11,12 @@ const GermanWords = require('german-words')
 const GermanVerbsDict = require('german-verbs-dict/dist/verbs.json')
 const GermanWordsList = require('german-words-dict/dist/words.json')
 
-const EnglishVerbs = require('english-verbs-helper');
-const Irregular = require('english-verbs-irregular/dist/verbs.json');
-const Gerunds = require('english-verbs-gerunds/dist/gerunds.json');
-const EnglishVerbsData = EnglishVerbs.mergeVerbsData(Irregular, Gerunds);
+const EnglishVerbs = require('english-verbs-helper')
+const Irregular = require('english-verbs-irregular/dist/verbs.json')
+const Gerunds = require('english-verbs-gerunds/dist/gerunds.json')
+const EnglishVerbsData = EnglishVerbs.mergeVerbsData(Irregular, Gerunds)
+
+const EESTI_API_URL = process.env.URL_EESTI_LANG_API
 
 // @desc    Get Spanish noun-gender info by singular-nominative form
 // @route   GET /api/autocompleteTranslations
@@ -609,10 +612,126 @@ const getNounDE = asyncHandler(async (req, res) => {
     }
 })
 
+// NB! I couldn't make this work as an import from another file (issues with require vs import outside modules?).
+// So it stays here, since we'll only use for estonian-api requests.
+function getDataFromAPI(url) {
+    return new Promise((resolve, reject) => {
+        https.get(url, (response) => {
+            let data = '';
+
+            // Accumulate data chunks
+            response.on('data', (chunk) => {
+                data += chunk;
+            });
+
+            // Resolve the promise when all data is received
+            response.on('end', () => {
+                resolve(JSON.parse(data));
+            });
+
+        }).on('error', (error) => {
+            // Reject the promise in case of an error
+            reject(error);
+        });
+    });
+}
+
+// @desc    Get Estonian verb info by infinitive-ma form
+// @route   GET /api/autocompleteTranslations
+// @access  Private
+const getVerbEE = asyncHandler(async (req, res) => {
+
+    if(!(req.params.infinitiveMaVerb)){
+        res.status(400)
+        throw new Error("Missing infinitive-ma query")
+    }
+
+    // Check for user
+    if(!req.user){
+        res.status(401)
+        throw new Error('User not found')
+    }
+
+    const searchInEnglish = req.query.searchInEnglish === 'true' // URL params turn boolean to string
+    let searchURL = `${EESTI_API_URL}/${req.params.infinitiveMaVerb}`
+    if(searchInEnglish){
+        searchURL = searchURL+'?lg=en'
+    }
+
+    getDataFromAPI(searchURL)
+        .then(data => {
+            return(res.status(200).json(data))
+        })
+        .catch(error => console.error('Error in Estonian API request:', error))
+})
+
+// @desc    Get Estonian noun info by singular-nominative form
+// @route   GET /api/autocompleteTranslations
+// @access  Private
+const getNounEE = asyncHandler(async (req, res) => {
+
+    if(!(req.params.singularNominativeNoun)){
+        res.status(400)
+        throw new Error("Missing infinitive-ma query")
+    }
+
+    // Check for user
+    if(!req.user){
+        res.status(401)
+        throw new Error('User not found')
+    }
+
+    const searchInEnglish = req.query.searchInEnglish === 'true' // URL params turn boolean to string
+    let searchURL = `${EESTI_API_URL}/${req.params.singularNominativeNoun}`
+    if(searchInEnglish){
+        searchURL = searchURL+'?lg=en'
+    }
+
+    getDataFromAPI(searchURL)
+        .then(data => {
+            return(res.status(200).json(data))
+        })
+        .catch(error => console.error('Error in Estonian API request:', error))
+})
+
+// @desc    Get Estonian adjective info
+// @route   GET /api/autocompleteTranslations
+// @access  Private
+const getAdjectiveEE = asyncHandler(async (req, res) => {
+
+    if(!(req.params.singularAdjective)){
+        res.status(400)
+        throw new Error("Missing adjective query")
+    }
+
+    // Check for user
+    if(!req.user){
+        res.status(401)
+        throw new Error('User not found')
+    }
+
+    const searchInEnglish = req.query.searchInEnglish === 'true' // URL params turn boolean to string
+    let searchURL = `${EESTI_API_URL}/${req.params.singularAdjective}`
+    if(searchInEnglish){
+        searchURL = searchURL+'?lg=en'
+    }
+
+    getDataFromAPI(searchURL)
+        .then(data => {
+            return(res.status(200).json(data))
+        })
+        .catch(error => console.error('Error in Estonian API request:', error))
+})
+
+
+
 module.exports = {
     getVerbEN,
     getVerbES,
     getNounGenderES,
     getVerbDE,
     getNounDE,
+    getVerbEE,
+    getNounEE,
+    getAdjectiveEE
 }

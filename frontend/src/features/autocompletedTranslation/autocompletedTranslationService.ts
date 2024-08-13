@@ -4,28 +4,39 @@ import {EstonianAPIRequest} from "../../ts/interfaces";
 const BE_URL = process.env.REACT_APP_VERCEL_BE_URL
 const API_URL = (BE_URL!!) ?BE_URL+'/api/autocompleteTranslations' :'/api/autocompleteTranslations'
 
-const getEstonianNounData = async (nounEESingularNominative: EstonianAPIRequest) => {
-    let response
-    if(nounEESingularNominative.searchInEnglish!!){
-        response = await axios.get(`https://api.sonapi.ee/v2/${nounEESingularNominative.query}?lg=en`)
-    } else {
-        response = await axios.get(`https://api.sonapi.ee/v2/${nounEESingularNominative.query}`)
+const getEstonianNounData = async (token: any, nounEESingularNominative: EstonianAPIRequest) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        },
+        params: {
+            searchInEnglish: nounEESingularNominative.searchInEnglish!!,
+        }
     }
+    let response = await axios.get(`${API_URL}/estonian/noun/${nounEESingularNominative.query}`,config)
     return(response.data)
 }
 
-const getEstonianAdjectiveData = async (adjectiveEESingularNominative: string) => {
-    const response = await axios.get(`https://api.sonapi.ee/v2/${adjectiveEESingularNominative}`)
+const getEstonianAdjectiveData = async (token: any, adjectiveEESingularNominative: string) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+    const response = await axios.get(`${API_URL}/estonian/adjective/${adjectiveEESingularNominative}`, config)
     return(response.data)
 }
 
-const getEstonianVerbData = async (verbEEMaInfinitive: EstonianAPIRequest) => {
-    let response
-    if(verbEEMaInfinitive.searchInEnglish!!){
-        response = await axios.get(`https://api.sonapi.ee/v2/${verbEEMaInfinitive.query}?lg=en`)
-    } else {
-        response = await axios.get(`https://api.sonapi.ee/v2/${verbEEMaInfinitive.query}`)
+const getEstonianVerbData = async (token: any, verbEEMaInfinitive: EstonianAPIRequest) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        },
+        params: {
+            searchInEnglish: verbEEMaInfinitive.searchInEnglish!!,
+        }
     }
+    let response = await axios.get(`${API_URL}/estonian/verb/${verbEEMaInfinitive.query}`, config)
     return(response.data)
 }
 

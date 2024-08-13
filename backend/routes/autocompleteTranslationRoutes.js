@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const { getVerbES, getVerbDE, getNounDE,
-    getNounGenderES, getVerbEN
+    getNounGenderES, getVerbEN, getVerbEE, getNounEE, getAdjectiveEE
 } = require('../controllers/autocompleteTranslationController')
 const {protect} = require('../middleware/authMiddleware')
 
@@ -12,5 +12,9 @@ router.get('/spanish/noun/:singularNominativeNoun', protect, getNounGenderES)
 
 router.get('/german/verb/:infinitiveVerb', protect, getVerbDE)
 router.get('/german/noun/:singularNominativeNoun', protect, getNounDE)
+
+router.get('/estonian/verb/:infinitiveMaVerb', protect, getVerbEE)
+router.get('/estonian/noun/:singularNominativeNoun', protect, getNounEE)
+router.get('/estonian/adjective/:singularAdjective', protect, getAdjectiveEE)
 
 module.exports = router

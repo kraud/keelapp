@@ -48,8 +48,8 @@ const initialState: autocompletedTranslationSliceState = {
 export const getAutocompletedEstonianNounData = createAsyncThunk(`autocompleteTranslation/getEENoun`, async (nounEESingularNominative: EstonianAPIRequest, thunkAPI) => {
     try {
         // @ts-ignore
-        // const token = thunkAPI.getState().auth.user.token
-        return await autocompletedTranslationService.getEstonianNounData(nounEESingularNominative)
+        const token = thunkAPI.getState().auth.user.token
+        return await autocompletedTranslationService.getEstonianNounData(token, nounEESingularNominative)
     } catch(error: any) {
         const message = (
                 error.response &&
@@ -66,8 +66,8 @@ export const getAutocompletedEstonianNounData = createAsyncThunk(`autocompleteTr
 export const getAutocompletedEstonianAdjectiveData = createAsyncThunk(`autocompleteTranslation/getEEAdjective`, async (adjectiveEESingularNominative: string, thunkAPI) => {
     try {
         // @ts-ignore
-        // const token = thunkAPI.getState().auth.user.token
-        return await autocompletedTranslationService.getEstonianAdjectiveData(adjectiveEESingularNominative)
+        const token = thunkAPI.getState().auth.user.token
+        return await autocompletedTranslationService.getEstonianAdjectiveData(token, adjectiveEESingularNominative)
     } catch(error: any) {
         const message = (
                 error.response &&
@@ -173,7 +173,9 @@ export const getAutocompletedEnglishVerbData = createAsyncThunk(`autocompleteTra
 // Get Estonian translation data for a verb using the -ma infinitive form
 export const getAutocompletedEstonianVerbData = createAsyncThunk(`autocompleteTranslation/getEEVerb`, async (verbEEInfinitive: EstonianAPIRequest, thunkAPI) => {
     try {
-        return await autocompletedTranslationService.getEstonianVerbData(verbEEInfinitive)
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await autocompletedTranslationService.getEstonianVerbData(token, verbEEInfinitive)
     } catch(error: any) {
         const message = (
                 error.response &&

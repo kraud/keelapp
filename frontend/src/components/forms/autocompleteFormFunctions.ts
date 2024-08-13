@@ -174,7 +174,7 @@ export const sanitizeDataStructureEEAdjective = (request: WordSearchResultStruct
 // from the API we receive too much data, so we take only what we're currently expecting to use
 export const sanitizeDataStructureEEVerb = (request: WordSearchResultStructureEE): sanitizeDataStructureVerbResponse => {
     // TODO: review if we needed to check the array of searchResult in some cases, to find the verb result
-    if((request.searchResult.length > 0) && (request.searchResult[0].wordClasses[0] === 'verb')){
+    if((request.searchResult !== undefined) && (request.searchResult.length > 0) && (request.searchResult[0].wordClasses[0] === 'verb')){
         const formattedEEVerb: TranslationItem = {
             language: Lang.EE,
             cases: [
