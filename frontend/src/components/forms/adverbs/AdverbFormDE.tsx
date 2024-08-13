@@ -158,7 +158,7 @@ export function AdverbFormDE(props: AdverbFormDEProps) {
                     {/* TODO: add checkbox for "gradable", so it hides/shows komparativ and superlativ */}
                     <Grid
                         item={true}
-                        container={true}
+                        xs={12}
                     >
                         <RadioGroupWithHook
                             control={control}

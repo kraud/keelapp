@@ -1,12 +1,22 @@
 import * as Yup from "yup";
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup/dist/yup";
-import {Grid} from "@mui/material";
+import {Checkbox, Grid} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {TextInputFormWithHook} from "../../TextInputFormHook";
-import {WordItem, TranslationItem} from "../../../ts/interfaces";
+import {TranslationItem, WordItem} from "../../../ts/interfaces";
 import {Lang, NounCases} from "../../../ts/enums";
 import {getDisabledInputFieldDisplayLogic, getWordByCase} from "../commonFunctions";
+import {useDispatch, useSelector} from "react-redux";
+import {AppDispatch} from "../../../app/store";
+import {
+    getAutocompletedEstonianNounData
+} from "../../../features/autocompletedTranslation/autocompletedTranslationSlice";
+import LinearIndeterminate from "../../Spinner";
+import {setTimerTriggerFunction} from "../../generalUseFunctions";
+import {AutocompleteButtonWithStatus} from "../AutocompleteButtonWithStatus";
+import globalTheme from "../../../theme/theme";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
 interface NounFormEEProps {
     currentTranslationData: TranslationItem,
@@ -15,6 +25,10 @@ interface NounFormEEProps {
 }
 // Displays the fields required to add the estonian translation of a noun (and handles the validations)
 export function NounFormEE(props: NounFormEEProps) {
+    const dispatch = useDispatch<AppDispatch>()
+    const {autocompletedTranslationNounEE, isErrorAT, isSuccessAT, isLoadingAT, messageAT} = useSelector((state: any) => state.autocompletedTranslations)
+    const [searchInEnglish, setSearchInEnglish] = useState(false)
+
 
     const { currentTranslationData } = props
 
@@ -94,82 +108,108 @@ export function NounFormEE(props: NounFormEEProps) {
         pluralOsastav, shortForm, isValid,
     ])
 
+    const setValuesInForm = (translationDataToInsert: TranslationItem) => {
+        const singularNimetavValue: string = getWordByCase(NounCases.singularNimetavEE, translationDataToInsert)
+        const pluralNimetavValue: string = getWordByCase(NounCases.pluralNimetavEE, translationDataToInsert)
+        const singularOmastavValue: string = getWordByCase(NounCases.singularOmastavEE, translationDataToInsert)
+        const pluralOmastavValue: string = getWordByCase(NounCases.pluralOmastavEE, translationDataToInsert)
+        const singularOsastavValue: string = getWordByCase(NounCases.singularOsastavEE, translationDataToInsert)
+        const pluralOsastavValue: string = getWordByCase(NounCases.pluralOsastavEE, translationDataToInsert)
+        const shortFormValue: string = getWordByCase(NounCases.shortFormEE, translationDataToInsert)
+        setValue(
+            'singularNimetav',
+            singularNimetavValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setSingularNimetav(singularNimetavValue)
+        setValue(
+            'pluralNimetav',
+            pluralNimetavValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setPluralNimetav(pluralNimetavValue)
+        setValue(
+            'singularOmastav',
+            singularOmastavValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setSingularOmastav(singularOmastavValue)
+        setValue(
+            'pluralOmastav',
+            pluralOmastavValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setPluralOmastav(pluralOmastavValue)
+        setValue(
+            'singularOsastav',
+            singularOsastavValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setSingularOsastav(singularOsastavValue)
+        setValue(
+            'pluralOsastav',
+            pluralOsastavValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setPluralOsastav(pluralOsastavValue)
+        setValue(
+            'shortForm',
+            shortFormValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setShortForm(shortFormValue)
+    }
+
     // This will only be run on first render
     // we use it to populate the form fields with the previously added information
     useEffect(() => {
         if(currentTranslationData.cases!){
-            const singularNimetavValue: string = getWordByCase(NounCases.singularNimetavEE, currentTranslationData)
-            const pluralNimetavValue: string = getWordByCase(NounCases.pluralNimetavEE, currentTranslationData)
-            const singularOmastavValue: string = getWordByCase(NounCases.singularOmastavEE, currentTranslationData)
-            const pluralOmastavValue: string = getWordByCase(NounCases.pluralOmastavEE, currentTranslationData)
-            const singularOsastavValue: string = getWordByCase(NounCases.singularOsastavEE, currentTranslationData)
-            const pluralOsastavValue: string = getWordByCase(NounCases.pluralOsastavEE, currentTranslationData)
-            const shortFormValue: string = getWordByCase(NounCases.shortFormEE, currentTranslationData)
-            setValue(
-                'singularNimetav',
-                singularNimetavValue,
-                {
-                    shouldValidate: true,
-                    shouldTouch: true
-                }
-            )
-            setSingularNimetav(singularNimetavValue)
-            setValue(
-                'pluralNimetav',
-                pluralNimetavValue,
-                {
-                    shouldValidate: true,
-                    shouldTouch: true
-                }
-            )
-            setPluralNimetav(pluralNimetavValue)
-            setValue(
-                'singularOmastav',
-                singularOmastavValue,
-                {
-                    shouldValidate: true,
-                    shouldTouch: true
-                }
-            )
-            setSingularOmastav(singularOmastavValue)
-            setValue(
-                'pluralOmastav',
-                pluralOmastavValue,
-                {
-                    shouldValidate: true,
-                    shouldTouch: true
-                }
-            )
-            setPluralOmastav(pluralOmastavValue)
-            setValue(
-                'singularOsastav',
-                singularOsastavValue,
-                {
-                    shouldValidate: true,
-                    shouldTouch: true
-                }
-            )
-            setSingularOsastav(singularOsastavValue)
-            setValue(
-                'pluralOsastav',
-                pluralOsastavValue,
-                {
-                    shouldValidate: true,
-                    shouldTouch: true
-                }
-            )
-            setPluralOsastav(pluralOsastavValue)
-            setValue(
-                'shortForm',
-                shortFormValue,
-                {
-                    shouldValidate: true,
-                    shouldTouch: true
-                }
-            )
-            setShortForm(shortFormValue)
+            setValuesInForm(currentTranslationData)
         }
     },[])
+
+
+    // ------------------ AUTOCOMPLETE LOGIC ------------------
+
+    const onAutocompleteClick = async () => {
+        setValuesInForm(autocompletedTranslationNounEE)
+        setSearchInEnglish(false)
+    }
+
+    useEffect(() => {
+        if(singularNimetav !== ""){
+            setTimerTriggerFunction(
+                () => {
+                    dispatch(getAutocompletedEstonianNounData({
+                        query: singularNimetav,
+                        searchInEnglish: searchInEnglish
+                    }))
+                },
+                600
+            )
+        }
+    },[singularNimetav])
 
     return(
         <Grid
@@ -186,6 +226,55 @@ export function NounFormEE(props: NounFormEEProps) {
                     item={true}
                     spacing={2}
                 >
+                    {!(props.displayOnly) &&
+                        <Grid
+                            container={true}
+                            item={true}
+                            xs={12}
+                            rowSpacing={1}
+                            spacing={1}
+                            justifyContent={'center'}
+                            alignItems={"flex-end"}
+                        >
+                            <AutocompleteButtonWithStatus
+                                tooltipLabels={{
+                                    emptyQuery: "Please input 'Ainsus nimetav' first.",
+                                    noMatch: "Sorry, we don't know this word!",
+                                    foundMatch: "There is information about this word stored in our system."
+                                }}
+                                queryValue={singularNimetav}
+                                autocompleteResponse={autocompletedTranslationNounEE}
+                                loadingState={isLoadingAT}
+                                onAutocompleteClick={() => onAutocompleteClick()}
+                                sxProps={{
+                                    marginRight: globalTheme.spacing(2)
+                                }}
+                            />
+                            <FormControlLabel
+                                value="end"
+                                control={
+                                    <Checkbox
+                                        checked={searchInEnglish}
+                                        onChange={(event: React.ChangeEvent) => {
+                                            //@ts-ignore
+                                            setSearchInEnglish(event.target.checked)
+                                        }}
+                                    />
+                                }
+                                label="Search in english"
+                                labelPlacement="end"
+                            />
+                            <Grid
+                                item={true}
+                                xs
+                                sx={{
+                                    maxHeight: 'max-content'
+                                }}
+                            >
+                                {(isLoadingAT) && <LinearIndeterminate/>}
+                            </Grid>
+                        </Grid>
+                    }
                     {(getDisabledInputFieldDisplayLogic(props.displayOnly!, singularNimetav)) &&
                         <Grid
                             item={true}

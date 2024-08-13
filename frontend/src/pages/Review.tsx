@@ -182,6 +182,12 @@ export function Review(){
             filterValue: 'Adjective',
             partOfSpeech: PartOfSpeech.adjective,
         },
+        {
+            _id: 'PoSVerb',
+            type: 'PoS',
+            filterValue: 'Verb',
+            partOfSpeech: PartOfSpeech.verb,
+        },
     ]
 
     const [currentTagFilters, setCurrentTagFilters] = useState<FilterItem[]>([])
