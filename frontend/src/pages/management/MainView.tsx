@@ -6,12 +6,18 @@ import {RoutesWithAnimation} from "./RoutesWithAnimation";
 import {LocationProvider} from "./LocationProvider";
 import globalTheme from "../../theme/theme";
 import {logout} from "../../features/auth/authSlice";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import AuthVerify from "../../common/AuthVerify";
 import {AppDispatch} from "../../app/store";
 import {toast} from "react-toastify";
+import {io} from "socket.io-client";
+import {NotificationData} from "../../ts/interfaces";
+
+const BE_URL = process.env.REACT_APP_VERCEL_BE_URL
+let socket, selectedChatCompare
 
 export function MainView(){
+    const {user} = useSelector((state: any) => state.auth)
     const componentStyles = {
         mainColumn:{
             margin: 0,
@@ -47,6 +53,25 @@ export function MainView(){
     const onRenderNotFoundHideHeader = (userExist: boolean) => {
         setDisplayToolbar((userExist))
     }
+
+    const [socketState, setSocketState] = useState(false)
+
+    useEffect(() => {
+        if(user!!){
+            socket = io(BE_URL as string)
+            // console.log('Connected on FE')
+            socket.emit('setup', user._id)
+            socket.on('Connection', () => {
+                setSocketState(true)
+            })
+        }
+    }, [])
+
+    useEffect(() => {
+        socket.on('notification received', (newNotificationReceived: NotificationData) => {
+            console.log('newNotificationReceived', newNotificationReceived)
+        })
+    })
 
     return(
         <>

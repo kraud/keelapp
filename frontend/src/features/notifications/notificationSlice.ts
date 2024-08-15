@@ -1,6 +1,10 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import notificationService from "./notificationService";
 import {NotificationData} from "../../ts/interfaces";
+import {io} from "socket.io-client";
+const BE_URL = process.env.REACT_APP_VERCEL_BE_URL
+let socket
+socket = io(BE_URL as string)
 
 interface notificationSliceState {
     notifications: any[],
@@ -155,6 +159,8 @@ export const notificationSlice = createSlice({
                 state.isLoadingNotifications = true
             })
             .addCase(createNotification.fulfilled, (state, action) => {
+                console.log('action.payload create notification', action.payload)
+                socket.emit('new notification', (action.payload))
                 state.isLoadingNotifications = false
                 state.isSuccessNotifications = true
                 state.notificationResponse = [action.payload]

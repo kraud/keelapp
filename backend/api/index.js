@@ -33,6 +33,44 @@ app.use('/api/autocompleteTranslations', require('../routes/autocompleteTranslat
 app.use(errorHandler)
 
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
     console.log(`Server started on port ${port}`)
+})
+
+const io = require('socket.io')(server, {
+    pingTimeout: 60000,
+    cors: {
+        origin: 'http://localhost:3000'
+    },
+})
+
+io.on('connection', (socket) => {
+    console.log('Connected to socket.io')
+
+    socket.on('setup', (userId) => {
+        socket.join(userId)
+        console.log('Connected on FE', userId)
+        socket.emit('Connected')
+    })
+
+    socket.on('new notification', (newNotificationReceived) => {
+        const userList = []
+        newNotificationReceived.forEach((notification) => {
+            userList.push(notification.user)
+        })
+
+        const mergedNotifications = {
+            ...newNotificationReceived[0],
+            user: userList
+        }
+        let usersToBeNotified = mergedNotifications.user // string[] because we might send notification to multiple users simultaneously
+
+        if(!(usersToBeNotified.length > 0)){
+            console.log('Missing user in notification.')
+        }
+
+        usersToBeNotified.forEach((userToNotify) => {
+            socket.in(userToNotify).emit('notification received', {...newNotificationReceived[0], user: userToNotify})
+        })
+    })
 })

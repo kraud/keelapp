@@ -53,6 +53,7 @@
     "redux": "5.0.1",
     "redux-thunk": "3.1.0",
     "rosaenlg-gender-es": "^4.3.0",
+    "socket.io": "^4.7.5",
     "spanish-verbs": "^3.3.0",
     "yup": "1.4.0"
   },
