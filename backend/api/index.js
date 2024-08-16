@@ -40,37 +40,30 @@ const server = app.listen(port, () => {
 const io = require('socket.io')(server, {
     pingTimeout: 60000,
     cors: {
-        origin: 'http://localhost:3000'
+        // origin: 'http://localhost:3000'
+        origin: process.env.BASE_URL
     },
 })
 
 io.on('connection', (socket) => {
-    console.log('Connected to socket.io')
+    // console.log('Connected to socket.io')
 
     socket.on('setup', (userId) => {
         socket.join(userId)
-        console.log('Connected on FE', userId)
-        socket.emit('Connected')
+        // console.log('Connected on FE', userId)
     })
 
     socket.on('new notification', (newNotificationReceived) => {
-        const userList = []
-        newNotificationReceived.forEach((notification) => {
-            userList.push(notification.user)
-        })
-
-        const mergedNotifications = {
-            ...newNotificationReceived[0],
-            user: userList
+        if(
+            newNotificationReceived.every((notificationToBeSent) => {
+                return(notificationToBeSent.user !== undefined)
+            }))
+        {
+            newNotificationReceived.forEach((notificationToBeSent) => {
+                socket.in(notificationToBeSent.user).emit('notification received', notificationToBeSent)
+            })
+        } else {
+            console.log('Missing user in at least 1 notification.')
         }
-        let usersToBeNotified = mergedNotifications.user // string[] because we might send notification to multiple users simultaneously
-
-        if(!(usersToBeNotified.length > 0)){
-            console.log('Missing user in notification.')
-        }
-
-        usersToBeNotified.forEach((userToNotify) => {
-            socket.in(userToNotify).emit('notification received', {...newNotificationReceived[0], user: userToNotify})
-        })
     })
 })

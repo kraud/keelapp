@@ -36,6 +36,7 @@ import {FriendList, ChipList} from "./GeneralUseComponents";
 import {useNavigate} from "react-router-dom";
 import {ConfirmationButton} from "./ConfirmationButton";
 import SendIcon from '@mui/icons-material/Send';
+import {AppDispatch} from "../app/store";
 
 type FriendSearchModalProps = {
     open: boolean
@@ -68,7 +69,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
 
     }
     const navigate = useNavigate()
-    const dispatch = useDispatch()
+    const dispatch = useDispatch<AppDispatch>()
     const {user} = useSelector((state: any) => state.auth)
     const {userList, userResult, isLoadingUser} = useSelector((state: any) => state.user)
     const {requesterNotifications, isLoadingNotifications, isSuccessNotifications} = useSelector((state: any) => state.notifications)

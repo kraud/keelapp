@@ -1,10 +1,12 @@
-import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import notificationService from "./notificationService";
 import {NotificationData} from "../../ts/interfaces";
 import {io} from "socket.io-client";
+import {socketService} from "../websockets/websocketService";
 const BE_URL = process.env.REACT_APP_VERCEL_BE_URL
-let socket
-socket = io(BE_URL as string)
+// let socket
+// socket = io(BE_URL as string)
+// const socket = socketService.getSocket()
 
 interface notificationSliceState {
     notifications: any[],
@@ -126,6 +128,13 @@ export const notificationSlice = createSlice({
                 requesterNotifications:  initialState.requesterNotifications
             })
         },
+        // NB! This is triggered from websocketMiddleware on 'notification received'
+        receive(state, action: PayloadAction<string>) {
+            // currently not in use
+        },
+        send(state, action: PayloadAction<string>) {
+            // Action handled by middleware
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -159,8 +168,11 @@ export const notificationSlice = createSlice({
                 state.isLoadingNotifications = true
             })
             .addCase(createNotification.fulfilled, (state, action) => {
-                console.log('action.payload create notification', action.payload)
-                socket.emit('new notification', (action.payload))
+                // action.payload is an array containing the already created notifications on BE
+                const localSocket = socketService.getSocket()
+                if(localSocket!!){
+                    localSocket.emit('new notification', (action.payload))
+                }
                 state.isLoadingNotifications = false
                 state.isSuccessNotifications = true
                 state.notificationResponse = [action.payload]
@@ -197,5 +209,5 @@ export const notificationSlice = createSlice({
     }
 })
 
-export const {reset, clearRequesterNotifications} = notificationSlice.actions
+export const {reset, clearRequesterNotifications, receive, send} = notificationSlice.actions
 export default notificationSlice.reducer

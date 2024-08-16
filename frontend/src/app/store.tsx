@@ -6,6 +6,7 @@ import friendshipReducer from '../features/friendships/friendshipSlice'
 import userReducer from '../features/users/userSlice'
 import tagReducer from '../features/tags/tagSlice'
 import autocompletedTranslationReducer from '../features/autocompletedTranslation/autocompletedTranslationSlice'
+import socketMiddleware from "../features/middleware/websocketMiddleware"
 
 export const store = configureStore({
   reducer: {
@@ -17,6 +18,8 @@ export const store = configureStore({
     tags: tagReducer,
     autocompletedTranslations: autocompletedTranslationReducer,
   },
-});
+  middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(socketMiddleware()),
+})
 
 export type AppDispatch = typeof store.dispatch

@@ -10,11 +10,7 @@ import {useDispatch, useSelector} from "react-redux";
 import AuthVerify from "../../common/AuthVerify";
 import {AppDispatch} from "../../app/store";
 import {toast} from "react-toastify";
-import {io} from "socket.io-client";
-import {NotificationData} from "../../ts/interfaces";
-
-const BE_URL = process.env.REACT_APP_VERCEL_BE_URL
-let socket, selectedChatCompare
+import {getNotifications} from "../../features/notifications/notificationSlice";
 
 export function MainView(){
     const {user} = useSelector((state: any) => state.auth)
@@ -54,24 +50,11 @@ export function MainView(){
         setDisplayToolbar((userExist))
     }
 
-    const [socketState, setSocketState] = useState(false)
-
     useEffect(() => {
-        if(user!!){
-            socket = io(BE_URL as string)
-            // console.log('Connected on FE')
-            socket.emit('setup', user._id)
-            socket.on('Connection', () => {
-                setSocketState(true)
-            })
+        if(user !== null){
+            dispatch(getNotifications())
         }
-    }, [])
-
-    useEffect(() => {
-        socket.on('notification received', (newNotificationReceived: NotificationData) => {
-            console.log('newNotificationReceived', newNotificationReceived)
-        })
-    })
+    }, [user])
 
     return(
         <>
