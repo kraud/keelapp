@@ -8,7 +8,7 @@ const C3Chart = ({ data, options }) => {
     useEffect(() => {
         const chart = c3.generate({
             bindto: chartRef.current,
-            data,
+            data: data,
             ...options,
         });
 

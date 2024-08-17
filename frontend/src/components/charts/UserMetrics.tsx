@@ -1,10 +1,11 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import C3Chart from './C3Chart';
 import {Button, Card, CardActions, CardContent, Grid, Typography} from "@mui/material";
 import globalTheme from "../../theme/theme";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../../app/store";
 import {getUserMetrics} from "../../features/metrics/metricSlice";
+import PieChart from "./PieChart";
 
 
 export function UserMetrics() {
@@ -16,54 +17,71 @@ export function UserMetrics() {
         dispatch(getUserMetrics())
     },[dispatch])
 
-    const columns_pie: any[][] = [];
-    const columns_month: any[] = [];
-    const columns_count: any[] = ['Languages'];
-    let minus_language: string = "";
-    let minus_language_count: any = 0;
-    if(isSuccess){
-        minus_language_count = data.totalWords;
-        data.translationsPerLanguage.forEach((element: { _id: string; count: number; }) => {
-            const column: any[] = [element._id, element.count];
-            columns_pie.push(column);
-            if(element.count <= minus_language_count){
-                minus_language = element._id;
-            }
-        })
-
-        data.wordsPerMonth.forEach((element: { label: any; count: any; }) => {
-            columns_month.push(element.label);
-            columns_count.push(element.count);
-        })
-
+    interface ColumnC3 {
+        _id: string,
+        count: number
     }
+
+    const [columnsPieValue ,setColumnsPieValue] = useState<ColumnC3[][]>([])
+    const [columnsBarMonth, setColumnsBarMonth] = useState<string[]>([])
+    const [columnsBarCount, setColumnsBarCount] = useState<string[]>(['Languages'])
+    const [worseLanguage, setWorseLanguage] = useState('')
+
+
+    useEffect(() => {
+        if(isSuccess) {
+            const columns_month: any[] = []
+            const columns_count: any[] = ['Languages']
+            let minus_language: string = ""
+            let minus_language_count: any = 0
+            minus_language_count = data.totalWords
+            //To format pie data
+            data.translationsPerLanguage.forEach((element: { _id: string, count: number }) => {
+                // data example: [ ["estonian", 60], ["spanish", 30], ... ]
+
+                const columns_pie = columnsPieValue
+                columns_pie.push([{_id:element._id, count:element.count}])
+                setColumnsPieValue(columns_pie)
+                //to get the worst category
+                if (element.count <= minus_language_count) {
+                    minus_language = element._id
+                    minus_language_count = element.count
+                }
+            })
+            //To format bars data
+            data.wordsPerMonth.forEach((element: { label: any, count: any }) => {
+                columns_month.push(element.label)
+                columns_count.push(element.count)
+            })
+
+            setColumnsBarMonth(columns_month)
+            setColumnsBarCount(columns_count)
+            setWorseLanguage(minus_language)
+        }
+
+    }, [isSuccess, data])
+
 
     // Example data for a pie chart
     const pie_data = {
-        columns: columns_pie,
+        columns: columnsPieValue,
         type: 'pie', // Specify chart type here
-    };
-
-    const pie_options = {
-        legend: {
-            position: 'right'
-        },
-    };
+    }
 
     //Example data for spline data
     const line_data = {
-        columns: [columns_count],
+        columns: [columnsBarCount],
         type: 'bar', // Specify chart type here
-    };
+    }
 
     const line_options = {
         axis: {
             x: {
                 type: 'category',
-                categories: columns_month,
+                categories: columnsBarMonth,
             },
-        },
-    };
+        }
+    }
 
     return (
         <Grid
@@ -79,31 +97,29 @@ export function UserMetrics() {
                     sx={{ paddingX: globalTheme.spacing(1) }}
                 >
                     <CardContent>
-                        <h1>Tortas con C3.js</h1>
-                        <C3Chart data={pie_data} options={pie_options} />
+                        <PieChart data={pie_data} unit={"translations"} />
 
                     </CardContent>
                     <CardActions>
                         <Typography>
-                            Your worse category is:
+                            Your worse category is: <Button> {worseLanguage} </Button>
                         </Typography>
                         <Button size="small" color="primary">
-                            {minus_language}
                         </Button>
                     </CardActions>
                 </Card>
             </Grid>
-            <Grid
-                item={true}
-                xs={8}
-            >
-                <Card>
-                    <CardContent>
-                        <h1>Lineas con C3.js</h1>
-                        <C3Chart data={line_data} options={line_options} />
-                    </CardContent>
-                </Card>
-            </Grid>
+            {/*<Grid*/}
+            {/*    item={true}*/}
+            {/*    xs={8}*/}
+            {/*>*/}
+            {/*    <Card>*/}
+            {/*        <CardContent>*/}
+            {/*            <h1>Lineas con C3.js</h1>*/}
+            {/*            <C3Chart data={line_data} options={line_options} />*/}
+            {/*        </CardContent>*/}
+            {/*    </Card>*/}
+            {/*</Grid>*/}
         </Grid>
     );
 }
