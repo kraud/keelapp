@@ -1,4 +1,4 @@
-import {AdjectiveCases, AdverbCases, Lang, NounCases, PartOfSpeech} from "./enums";
+import {AdjectiveCases, AdverbCases, Lang, NounCases, PartOfSpeech, VerbCases} from "./enums";
 
 export interface WordData {
     translations: TranslationItem[],
@@ -26,7 +26,7 @@ export type InternalStatus = {
 
 export interface WordItem {
     word: string,
-    caseName: NounCases | AdjectiveCases | AdverbCases, // the type on noun stored in "word" property
+    caseName: NounCases | AdjectiveCases | AdverbCases | VerbCases, // the type on noun stored in "word" property
 }
 
 export type SearchResult = {
@@ -177,4 +177,9 @@ type TagLabelAvailable = {
 export interface LanguageAndLabel {
     language: Lang,
     label: string
+}
+
+export interface EstonianAPIRequest {
+    query: string,
+    searchInEnglish?: boolean
 }

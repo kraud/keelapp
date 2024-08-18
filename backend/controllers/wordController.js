@@ -195,6 +195,34 @@ const getWordsSimplified = asyncHandler(async (req, res) => {
                     }
                 }
             }
+            case ("Verb"): {
+                switch (translation.language){
+                    case ("English"): {
+                        return({
+                            dataEN: (translation.cases.find(wordCase => (wordCase.caseName === 'simplePresent1sEN'))).word,
+                        })
+                    }
+                    case ("Spanish"): {
+                        return({
+                            dataES: (translation.cases.find(wordCase => (wordCase.caseName === 'infinitiveNonFiniteSimpleES'))).word,
+                        })
+                    }
+                    case ("Estonian"): {
+                        return({
+                            dataEE: (translation.cases.find(wordCase => (wordCase.caseName === 'infinitiveMaEE'))).word,
+                        })
+                    }
+                    case ("German"): {
+                        return({
+                            dataDE: (translation.cases.find(wordCase => (wordCase.caseName === 'infinitiveDE'))).word,
+                        })
+                    }
+                    default: {
+                        res.status(400)
+                        throw new Error("Language not found for this part of speech (Verb)")
+                    }
+                }
+            }
             default: {
                 res.status(400)
                 throw new Error("Part of speech not found")
@@ -563,11 +591,13 @@ const updateWord = asyncHandler(async (req, res) => {
 
     // iterate over tags and check for new tag-word relationships => create/remove tagWord documents accordingly
     // if in tags there are tags associated with this word, we must check if they are the same as currently stored in TagWord
-    // if tags is empty we must check if there are tags stored related to this tag and delete them
-    const updatedTagsList = (req.body.tags).map((tagFullData) => {
-        return((tagFullData._id).toString()) // TODO: check if toString can be removed
-    }) // all wordsIds. Some might be new, all might already be stored, or it could be missing some previously stored.
-    // we retrieve the currently stored list of words related to this tag
+    // if tags is empty we must check if there are TagWords stored related to this word and delete them.
+    // For this, we first retrieve the currently stored list of tags related to this word
+    const updatedTagsList = (req.body.tags !== undefined)
+        ? (req.body.tags).map((tagFullData) => {
+            return((tagFullData._id).toString()) // TODO: check if toString can be removed
+        }) // all tagsIds. Some might be new, all might already be stored, or it could be missing some previously stored.
+        : []
     const request = {
         query: {
             id: req.params.id // id for the current Word
