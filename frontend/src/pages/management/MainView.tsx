@@ -11,6 +11,7 @@ import AuthVerify from "../../common/AuthVerify";
 import {AppDispatch} from "../../app/store";
 import {toast} from "react-toastify";
 import {getNotifications} from "../../features/notifications/notificationSlice";
+const BE_URL = process.env.REACT_APP_VERCEL_BE_URL
 
 export function MainView(){
     const {user} = useSelector((state: any) => state.auth)
@@ -55,6 +56,32 @@ export function MainView(){
             dispatch(getNotifications())
         }
     }, [user])
+
+    useEffect(() => {
+        if(user!!){
+            // First, we need to create an instance of EventSource and pass the data stream URL as a
+            // parameter in its constructor
+            const es = new EventSource(`${BE_URL}/SSE/${user._id}`)
+            console.log('es', es)
+            // Whenever the connection is established between the server and the client we'll get notified
+            es.onopen = () => console.log(">>> Connection opened");
+            // Made a mistake, or something bad happened on the server? We get notified here
+            es.onerror = (e) => console.log("ERROR!", e);
+            // This is where we get the messages. The event is an object and we're interested in its `data` property
+            // es.onmessage = (e) => {
+            //     console.log("ON MESSAGE");
+            //     console.log(">>>", e.data);
+            // }
+            es.addEventListener("newNotification",  (e) => {
+                console.log("ON MESSAGE!!");
+                console.log(">>>", e.data);
+                // @ts-ignore
+                dispatch(getNotifications())
+            })
+            // Whenever we're done with the data stream we must close the connection
+            return () => es.close();
+        }
+    }, []);
 
     return(
         <>

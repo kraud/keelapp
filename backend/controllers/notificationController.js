@@ -4,6 +4,7 @@ const Notification = require('../models/notificationModel')
 const mongoose = require("mongoose");
 const User = require("../models/userModel");
 const Tag = require("../models/tagModel");
+const Api = require("../api");
 
 // @desc    Get Notifications
 // @route   GET /api/getNotifications
@@ -93,8 +94,16 @@ const createNotification = asyncHandler(async (req, res) => {
         })
     })
 
-    const notificationResponse = await Notification.insertMany(notifications)
-    res.status(200).json(notificationResponse)
+    // const notificationResponse = await Notification.insertMany(notifications)
+    // res.status(200).json(notificationResponse)
+
+    Notification.insertMany(notifications).then((notificationResponse) => {
+        // if notifications created successfully => trigger SSE to alert destination users
+        req.body.user.map(userId => {
+            Api.sendNotification(userId, {info: 'created notification'})
+        })
+        res.status(200).json(notificationResponse)
+    })
 })
 
 // @desc    Delete Notification
