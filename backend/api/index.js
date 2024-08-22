@@ -23,7 +23,6 @@ app.use(cors(corsOptions))
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
 
-
 const sendNotification = (userId, data) => {
     console.log('userId', userId)
     console.log('data', data)
@@ -36,7 +35,7 @@ const sendNotification = (userId, data) => {
         console.log('Sending notification from BE')
         // client.res.write(`data: ${JSON.stringify(data)}\n\n`)
         client.res.write(`event: newNotification\n`)
-        client.res.write(`data: ${JSON.stringify(data)}\n\n`)
+        client.res.write(`retry: 5000\ndata: ${JSON.stringify(data)}\n\n`)
         // client.res.write(`MESSAGE\n\n`)
     }
 }
@@ -58,7 +57,8 @@ app.get("/SSE/:userId", (req, res) => {
     res.setHeader("Content-Type", "text/event-stream")
     res.setHeader("Connection", "keep-alive")
     //For this example, lets allow access to all the origins, since we're not sending any credentials
-    res.setHeader("Access-Control-Allow-Origin", "*")
+    res.setHeader("Access-Control-Allow-Origin", "*") //  should work if '{withCredentials: false}' is set on sourceEvent (client)
+    // res.setHeader("Access-Control-Allow-Origin", process.env.BASE_URL)
     // By default, browsers compress the contents with `gzip` and we either have to gzip our content
     // ourselves or not do any encoding at all. I chose the latter, our payload is light anyway.
     res.setHeader("Content-Encoding", "none")
