@@ -5,12 +5,12 @@ const dotenv = require('dotenv').config()
 const { errorHandler } = require('../middleware/errorMiddleware')
 const connectDB = require('../config/db')
 const port = process.env.PORT || 5000
-const SSE = require('express-sse')
+// const SSE = require('express-sse')
 
 connectDB()
 
 const app = express()
-const sse = new SSE()
+// const sse = new SSE()
 
 const corsOptions = {
     // origin: 'https://keelapp-frontend-git-d-cc4519-proyecto-finals-projects-0e9f4d32.vercel.app', // we should have this follow a .env variable
@@ -95,7 +95,7 @@ const sendNotification = (userId, data) => {
     // if no client found => that user is not online now, so no need to notify them
     if (client !== undefined) {
         // console.log('client.res', client.res)
-        console.log('WRITE')
+        console.log('sending notification from BE')
         // client.res.write(`data: ${JSON.stringify(data)}\n\n`);
         client.res.write(`event: newNotification\n`);
         client.res.write(`data: ${JSON.stringify(data)}\n\n`)
@@ -136,6 +136,8 @@ const sendNotification = (userId, data) => {
 //         }
 //     })
 // })
+
+exports.app = app
 exports.sendNotification = sendNotification
 // module.exports = {
 //     sendNotification
