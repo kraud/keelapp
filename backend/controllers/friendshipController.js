@@ -5,6 +5,7 @@ const User = require("../models/userModel");
 const Notification = require("../models/notificationModel");
 const mongoose = require("mongoose");
 const Api = require("../api");
+const {sendNotification} = require("../api");
 
 // TODO: add parameters to req.query to allow specifying if the friendship is accepter/rejected/etc.
 // @desc    Get all Friendships where the provided userId corresponds with one of the friendship participants' id
@@ -151,7 +152,7 @@ const deleteFriendshipRequest = asyncHandler(async (req, res) => {
         Notification.findOneAndDelete(notificationRequest).then((deleteNotificationResponse) => {
             // if notifications created successfully => trigger SSE to alert destination user
             console.log('otherUserId', otherUserId)
-            Api.sendNotification(otherUserId.toString(), {info: 'deleted friend-request notification'})
+            sendNotification(otherUserId.toString(), {info: 'deleted friend-request notification'})
             res.status(200).json({
                 deletedFriendshipRequest: deleteFriendshipResponse,
                 deletedNotification: deleteNotificationResponse,

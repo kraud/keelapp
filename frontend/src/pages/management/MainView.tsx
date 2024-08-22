@@ -62,7 +62,6 @@ export function MainView(){
             // First, we need to create an instance of EventSource and pass the data stream URL as a
             // parameter in its constructor
             const es = new EventSource(`${BE_URL}/SSE/${user._id}`)
-            console.log('es', es)
             // Whenever the connection is established between the server and the client we'll get notified
             es.onopen = () => console.log(">>> Connection opened");
             // Made a mistake, or something bad happened on the server? We get notified here
@@ -73,7 +72,7 @@ export function MainView(){
             //     console.log(">>>", e.data);
             // }
             es.addEventListener("newNotification",  (e) => {
-                console.log("ON MESSAGE!!");
+                console.log("on newNotification:");
                 console.log(">>>", e.data);
                 // @ts-ignore
                 dispatch(getNotifications())
