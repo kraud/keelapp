@@ -61,7 +61,8 @@ export function MainView(){
         if(user!!){
             // First, we need to create an instance of EventSource and pass the data stream URL as a
             // parameter in its constructor
-            const es = new EventSource(`${BE_URL}/SSE/${user._id}`, {withCredentials: false})
+            // const es = new EventSource(`${BE_URL}/SSE/${user._id}`, {withCredentials: false})
+            const es = new EventSource(`${BE_URL}/SSE/${user._id}`)
             // Whenever the connection is established between the server and the client we'll get notified
             es.onopen = () => console.log(">>> Connection opened");
             // Made a mistake, or something bad happened on the server? We get notified here
