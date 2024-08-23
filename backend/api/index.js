@@ -53,12 +53,13 @@ app.use('/api/autocompleteTranslations', require('../routes/autocompleteTranslat
 app.use(errorHandler)
 app.get("/SSE/:userId", (req, res) => {
     const userId = req.params.userId
-    res.setHeader("Cache-Control", "no-store")
+    res.setHeader("Cache-Control", "no-cache")
     res.setHeader("Content-Type", "text/event-stream")
     res.setHeader("Connection", "keep-alive")
     //For this example, lets allow access to all the origins, since we're not sending any credentials
     // res.setHeader("Access-Control-Allow-Origin", "*") //  should work if '{withCredentials: false}' is set on sourceEvent (client)
     res.setHeader("Access-Control-Allow-Origin", process.env.BASE_URL)
+    res.setHeader('Access-Control-Allow-Credentials', 'true')
     // By default, browsers compress the contents with `gzip` and we either have to gzip our content
     // ourselves or not do any encoding at all. I chose the latter, our payload is light anyway.
     res.setHeader("Content-Encoding", "none")
