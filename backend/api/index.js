@@ -15,7 +15,7 @@ const corsOptions = {
     origin: process.env.BASE_URL, // we should have this follow a .env variable
     // origin: '*', // this allows request from any URL
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Connection', 'Access-Control-Allow-Origin', 'Access-Control-Allow-Credentials', 'Content-Encoding'],
     credentials: true
 }
 
