@@ -208,7 +208,7 @@ function ResponsiveAppBar() {
                         variant="h6"
                         noWrap
                         component="a"
-                        href="/"
+                        onClick={() => navigate('/')}
                         sx={{
                             mr: 2,
                             display: { xs: 'none', md: 'flex' },
@@ -217,6 +217,7 @@ function ResponsiveAppBar() {
                             letterSpacing: '.3rem',
                             color: 'inherit',
                             textDecoration: 'none',
+                            cursor: 'pointer',
                         }}
                     >
                         KEELAPP |
@@ -274,7 +275,6 @@ function ResponsiveAppBar() {
                         variant="h5"
                         noWrap
                         component="a"
-                        href=""
                         onClick={() => navigate('/')}
                         sx={{
                             mr: 2,
@@ -285,6 +285,7 @@ function ResponsiveAppBar() {
                             letterSpacing: '.3rem',
                             color: 'inherit',
                             textDecoration: 'none',
+                            cursor: 'pointer',
 
                             flexGrow: 1,
                         }}

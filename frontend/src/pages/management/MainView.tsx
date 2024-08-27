@@ -10,6 +10,8 @@ import {useDispatch} from "react-redux";
 import AuthVerify from "../../common/AuthVerify";
 import {AppDispatch} from "../../app/store";
 import {toast} from "react-toastify";
+import {useIntervalFunction} from "../../hooks/useInterval";
+import {getNotifications} from "../../features/notifications/notificationSlice";
 
 export function MainView(){
     const componentStyles = {
@@ -47,6 +49,16 @@ export function MainView(){
     const onRenderNotFoundHideHeader = (userExist: boolean) => {
         setDisplayToolbar((userExist))
     }
+
+    useIntervalFunction(
+        () => {
+            if((JSON.parse(localStorage.getItem("user")!))!!){
+                dispatch(getNotifications())
+            }
+        },
+        1000 * 90, // make request every 60 seconds
+        true // make request once before starting countdown
+    )
 
     return(
         <>
