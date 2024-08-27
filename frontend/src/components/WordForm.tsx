@@ -10,7 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import {PartOfSpeechSelector} from "./PartOfSpeechSelector";
 import {AutocompleteMultiple} from "./AutocompleteMultiple";
 import {getAllIndividualTagDataFromFilterItem} from "./generalUseFunctions";
-import {setSelectedPoS, resetSelectedPoS, deleteWordById} from "../features/words/wordSlice";
+import {setSelectedPoS, resetSelectedPoS, deleteWordById, clearWord} from "../features/words/wordSlice";
 import {checkEnvironmentAndIterationToDisplay} from "./forms/commonFunctions";
 import {useNavigate} from "react-router-dom";
 import {ConfirmationButton} from "./ConfirmationButton";
@@ -272,7 +272,9 @@ export function WordForm(props: TranslationFormProps) {
     // restarts WordForm completely
     const resetAll = () => {
         setPartOfSpeech(undefined)
+        setDisabledForms(false)
         dispatch(resetSelectedPoS())
+        dispatch(clearWord())
         setCompleteWordData(
             {
                 translations: [

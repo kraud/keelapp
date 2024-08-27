@@ -3,7 +3,11 @@ import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
 import {createColumnHelper, Row} from "@tanstack/react-table";
 import {IndeterminateCheckbox, TableDataCell, TableHeaderCell} from "../ExtraTableComponents";
-import {getCurrentLangTranslated, stringAvatar} from "../../generalUseFunctions";
+import {
+    getCurrentLangTranslated,
+    getListOfBasicCaseFromExistingTranslations,
+    stringAvatar
+} from "../../generalUseFunctions";
 import React from "react";
 import Avatar from "@mui/material/Avatar";
 import GroupIcon from '@mui/icons-material/Group';
@@ -144,6 +148,8 @@ export const createColumnsReviewTable = (selectedLanguagesList: string[], displa
                         language={currentLanguageData.language}
                         partOfSpeech={info.row.original.partOfSpeech}
                         wordId={info.row.original.id}
+                        wordUser={info.row.original.user}
+                        existingTranslationsLabels={getListOfBasicCaseFromExistingTranslations(info.row.original, user.languages)}
                         content={info.getValue()}
                         wordGender={(currentLanguageData.wordGender !== undefined)
                             //@ts-ignore
@@ -298,6 +304,7 @@ export const createColumnsReviewTable = (selectedLanguagesList: string[], displa
                                 type={"array"}
                                 textAlign={"center"}
                                 onlyForDisplay={false}
+                                existingTranslationsLabels={getListOfBasicCaseFromExistingTranslations(info.row.original, user.languages)}
                                 sxProps={{
                                     minWidth: "50px"
                                 }}

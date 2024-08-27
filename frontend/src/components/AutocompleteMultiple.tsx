@@ -52,7 +52,7 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
         const timeout = setTimeout(() => {
             // dispatch search for inputValue and when results are updated, set them in options
             // @ts-ignore
-            dispatch(searchTagsByLabel({query: inputValue, includeOtherUsersTags: false}))
+            dispatch(searchTagsByLabel({query: inputValue, includeOtherUsersTags: false, includeFollowedTags: true}))
         }, 400)
 
         return () => clearTimeout(timeout)

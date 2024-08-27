@@ -15,8 +15,10 @@ const {queryParamToBool} = require("./userController");
 // @access  Private
 const searchTags = asyncHandler(async (req, res) => {
 
+    // TODO: add another parameter to ask to include FOLLOWED Tags?
     // Hotfix. includeOtherUsersTags it's a string and anything !== "" is truthy => we calculate boolean
     const includeOtherUserTags = queryParamToBool(req.query.includeOtherUsersTags)
+    const includeFollowedTags = queryParamToBool(req.query.includeFollowedTags)
 
     // other-users-tags, that the current user follows.
     const matchingTagsId = await getTagsIdFromFollowedTagsByUserId(req.user.id)
@@ -55,10 +57,19 @@ const searchTags = asyncHandler(async (req, res) => {
                 ])
             })
             return (matchingQuery)
-        } else { // this only includes types: 'private' and made by the current user
+        } else {
             return ([
+                // this only includes Tag-type: 'private' and made by the current user
                 {"label": {$regex: `${req.query.query}`, $options: "i"}},
-                {"author": mongoose.Types.ObjectId(req.user.id)},
+                {
+                    $or: [
+                        {"author": mongoose.Types.ObjectId(req.user.id)},
+                        // + Tags FOLLOWED by the current user
+                        (includeFollowedTags) && {
+                            "_id": {$in: matchingTagsId}
+                        }
+                    ]
+                }
             ])
         }
     }

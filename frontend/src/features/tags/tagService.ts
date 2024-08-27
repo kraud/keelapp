@@ -41,7 +41,7 @@ const getFollowedTagsByUserId = async (token: any, userId: string) => {
     return(response.data)
 }
 
-const searchTags = async (token: any, query: string, includeOtherUsersTags?: boolean) => {
+const searchTags = async (token: any, query: string, includeOtherUsersTags?: boolean, includeFollowedTags?: boolean) => {
     const config = {
         headers: {
             Authorization: `Bearer ${token}`
@@ -49,7 +49,8 @@ const searchTags = async (token: any, query: string, includeOtherUsersTags?: boo
         params: {
             query: query,
             // NB! this will be sent as string, NOT boolean
-            includeOtherUsersTags: includeOtherUsersTags!!,
+            includeOtherUsersTags: includeOtherUsersTags!!, // this also includes followed tags
+            includeFollowedTags: includeFollowedTags!!, // this is only registered if 'includeOtherUsersTags' is falsy
         }
     }
     const response = await axios.get(API_URL+'/searchTags', config)
