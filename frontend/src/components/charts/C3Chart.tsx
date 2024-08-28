@@ -1,21 +1,29 @@
 import React, { useEffect, useRef } from 'react';
-import c3 from 'c3';
+import c3, {Data, LegendOptions, TooltipOptions} from 'c3';
 import 'c3/c3.css';
 
-const C3Chart = ({ data, options }) => {
+interface C3Props {
+    data: Data,
+    options?: {
+        legend?: LegendOptions,
+        tooltip?: TooltipOptions
+        // zoom?: ZoomOptions,
+    }
+}
+const C3Chart = (props: C3Props) => {
     const chartRef = useRef(null);
 
     useEffect(() => {
         const chart = c3.generate({
             bindto: chartRef.current,
-            data: data,
-            ...options,
+            data: props.data,
+            ...props.options
         });
 
         return () => {
-            chart.destroy();
-        };
-    }, [data, options]);
+            chart.destroy()
+        }
+    }, [props]);
 
     return <div ref={chartRef}></div>;
 };

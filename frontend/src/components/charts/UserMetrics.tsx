@@ -17,60 +17,49 @@ export function UserMetrics() {
         dispatch(getUserMetrics())
     },[dispatch])
 
-    interface ColumnC3 {
-        _id: string,
-        count: number
-    }
-
-    const [columnsPieValue ,setColumnsPieValue] = useState<ColumnC3[][]>([])
-    const [columnsBarMonth, setColumnsBarMonth] = useState<string[]>([])
-    const [columnsBarCount, setColumnsBarCount] = useState<string[]>(['Languages'])
-    const [worseLanguage, setWorseLanguage] = useState('')
-
-
+    const [pieData, setPieData] = useState({})
+    const [columnsData, setColumnsData] = useState({})
+    
     useEffect(() => {
         if(isSuccess) {
-            const columns_month: any[] = []
-            const columns_count: any[] = ['Languages']
-            let minus_language: string = ""
-            let minus_language_count: any = 0
-            minus_language_count = data.totalWords
-            //To format pie data
-            data.translationsPerLanguage.forEach((element: { _id: string, count: number }) => {
-                // data example: [ ["estonian", 60], ["spanish", 30], ... ]
-
-                const columns_pie = columnsPieValue
-                columns_pie.push([{_id:element._id, count:element.count}])
-                setColumnsPieValue(columns_pie)
-                //to get the worst category
-                if (element.count <= minus_language_count) {
-                    minus_language = element._id
-                    minus_language_count = element.count
-                }
-            })
+            setPieData(data.wordsPerPOS)
+            setColumnsData(data.wordsPerMonth)
+            // const columns_month: any[] = []
+            // const columns_count: any[] = ['Languages']
+            // let minus_language: string = ""
+            // let minus_language_count: any = 0
+            // minus_language_count = data.totalWords
+            // //To format pie data
+            // data.translationsPerLanguage.forEach((element: { _id: string, count: number }) => {
+            //     // data example: [ ["estonian", 60], ["spanish", 30], ... ]
+            //
+            //     const columns_pie = columnsPieValue
+            //     columns_pie.push([{_id:element._id, count:element.count}])
+            //     setColumnsPieValue(columns_pie)
+            //     //to get the worst category
+            //     if (element.count <= minus_language_count) {
+            //         minus_language = element._id
+            //         minus_language_count = element.count
+            //     }
+            // })
             //To format bars data
-            data.wordsPerMonth.forEach((element: { label: any, count: any }) => {
-                columns_month.push(element.label)
-                columns_count.push(element.count)
-            })
-
-            setColumnsBarMonth(columns_month)
-            setColumnsBarCount(columns_count)
-            setWorseLanguage(minus_language)
+            // data.wordsPerMonth.forEach((element: { label: any, count: any }) => {
+            //     columns_month.push(element.label)
+            //     columns_count.push(element.count)
+            // })
+            //
+            // setColumnsBarMonth(columns_month)
+            // setColumnsBarCount(columns_count)
+            // setWorseLanguage(minus_language)
+            //
+            // setPiedata(data.translationsPerLanguage)
         }
 
     }, [isSuccess, data])
 
-
-    // Example data for a pie chart
-    const pie_data = {
-        columns: columnsPieValue,
-        type: 'pie', // Specify chart type here
-    }
-
     //Example data for spline data
     const line_data = {
-        columns: [columnsBarCount],
+        columns: [],
         type: 'bar', // Specify chart type here
     }
 
@@ -78,7 +67,7 @@ export function UserMetrics() {
         axis: {
             x: {
                 type: 'category',
-                categories: columnsBarMonth,
+                categories: [],
             },
         }
     }
@@ -93,21 +82,28 @@ export function UserMetrics() {
                 item={true}
                 xs={4}
             >
-                <Card
-                    sx={{ paddingX: globalTheme.spacing(1) }}
-                >
-                    <CardContent>
-                        <PieChart data={pie_data} unit={"translations"} />
+                <PieChart
+                    data={pieData}
+                    unit={"translations"}
+                />
 
-                    </CardContent>
-                    <CardActions>
-                        <Typography>
-                            Your worse category is: <Button> {worseLanguage} </Button>
-                        </Typography>
-                        <Button size="small" color="primary">
-                        </Button>
-                    </CardActions>
-                </Card>
+                {/*<Card*/}
+                {/*    sx={{paddingX: globalTheme.spacing(1)}}*/}
+                {/*>*/}
+                {/*    <CardContent>*/}
+                {/*        <PieChart*/}
+                {/*            data={pieData}*/}
+                {/*            unit={"translations"}*/}
+                {/*        />*/}
+                {/*    </CardContent>*/}
+                {/*    <CardActions>*/}
+                {/*        <Typography>*/}
+                {/*            Your worse category is: <Button> {worseLanguage} </Button>*/}
+                {/*        </Typography>*/}
+                {/*        <Button size="small" color="primary">*/}
+                {/*        </Button>*/}
+                {/*    </CardActions>*/}
+                {/*</Card>*/}
             </Grid>
             {/*<Grid*/}
             {/*    item={true}*/}
