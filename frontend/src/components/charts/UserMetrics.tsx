@@ -6,6 +6,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../../app/store";
 import {getUserMetrics} from "../../features/metrics/metricSlice";
 import PieChart from "./PieChart";
+import BarChart from "./BarChart";
 
 
 export function UserMetrics() {
@@ -57,21 +58,6 @@ export function UserMetrics() {
 
     }, [isSuccess, data])
 
-    //Example data for spline data
-    const line_data = {
-        columns: [],
-        type: 'bar', // Specify chart type here
-    }
-
-    const line_options = {
-        axis: {
-            x: {
-                type: 'category',
-                categories: [],
-            },
-        }
-    }
-
     return (
         <Grid
             marginTop={globalTheme.spacing(1)}
@@ -86,7 +72,8 @@ export function UserMetrics() {
                     data={pieData}
                     unit={"translations"}
                 />
-
+                <BarChart data={columnsData} xType={"aaaa"}
+                />
                 {/*<Card*/}
                 {/*    sx={{paddingX: globalTheme.spacing(1)}}*/}
                 {/*>*/}

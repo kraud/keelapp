@@ -21,21 +21,24 @@ const defaultOptions = (untis) => {
 }
 
 // transforma el array devuelto de DATOS con por el BE a una estrucutra
-function transformArray(originalArray, idKey, propertyKey) {
-    return originalArray.map(obj => {
-        const idValue = obj[idKey];
-        const propertyValue = obj[propertyKey];
-        return {[idValue]: propertyValue};
+function transformArray(originalArray: PieCharC3[]) {
+    let response = {}
+    originalArray.forEach(obj => {
+        response[obj._id] = obj.count
     });
+    return response
+}
+
+interface PieCharC3{
+    _id : any,
+    count: number
 }
 
 // Funcion que toma una entrada con la estructura de exampleJsonData y le da el formato esperado de la librería C3
 const parseData = (dataArray: []): Data => {
     let newArray = {}
-    console.log("aca mostrame esto nicolas", dataArray)
     if(dataArray.length > 0) {
-        newArray = transformArray(dataArray, "_id", "count")
-        console.log("aca nicolas",Object.keys(newArray))
+        newArray = transformArray(dataArray)
     }
 
     return ({
@@ -61,12 +64,26 @@ const PieChart = (props: PieChartProps) => {
     let chart_options = options!! ? options : defaultOptions(unit)
 
     const [pieData, setPieData] = useState<Data>(parseData([]))
+    const [worstCategory, setWorstCategory] = useState("")
+
+    function getWorstCategory(parsedData: [PieCharC3]) {
+        if(parsedData.length > 0){
+            let worst = parsedData[0]._id
+            let count = parsedData[0].count
+            parsedData.forEach(pieData =>{
+                if(pieData.count < count){
+                    worst = pieData._id
+                    count = pieData.count
+                }
+            })
+            return worst
+        }
+        return ""
+    }
 
     useEffect(() => {
-        let parsedData = parseData(data)
-        // todo: del parsed data sacar la peor categoria
-        console.log("parsedData:", parsedData)
-        setPieData(parsedData)
+        setPieData(parseData(data))
+        setWorstCategory(getWorstCategory(data))
     }, [data])
 
     return (
@@ -81,7 +98,7 @@ const PieChart = (props: PieChartProps) => {
             </CardContent>
             <CardActions>
                 <Typography>
-                    Your worse category is: <Button> "tu culito" </Button>
+                    Your worse category is: <Button> {worstCategory} </Button>
                 </Typography>
                 <Button size="small" color="primary">
                 </Button>
