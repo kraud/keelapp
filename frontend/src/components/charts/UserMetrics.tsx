@@ -25,35 +25,6 @@ export function UserMetrics() {
         if(isSuccess) {
             setPieData(data.wordsPerPOS)
             setColumnsData(data.wordsPerMonth)
-            // const columns_month: any[] = []
-            // const columns_count: any[] = ['Languages']
-            // let minus_language: string = ""
-            // let minus_language_count: any = 0
-            // minus_language_count = data.totalWords
-            // //To format pie data
-            // data.translationsPerLanguage.forEach((element: { _id: string, count: number }) => {
-            //     // data example: [ ["estonian", 60], ["spanish", 30], ... ]
-            //
-            //     const columns_pie = columnsPieValue
-            //     columns_pie.push([{_id:element._id, count:element.count}])
-            //     setColumnsPieValue(columns_pie)
-            //     //to get the worst category
-            //     if (element.count <= minus_language_count) {
-            //         minus_language = element._id
-            //         minus_language_count = element.count
-            //     }
-            // })
-            //To format bars data
-            // data.wordsPerMonth.forEach((element: { label: any, count: any }) => {
-            //     columns_month.push(element.label)
-            //     columns_count.push(element.count)
-            // })
-            //
-            // setColumnsBarMonth(columns_month)
-            // setColumnsBarCount(columns_count)
-            // setWorseLanguage(minus_language)
-            //
-            // setPiedata(data.translationsPerLanguage)
         }
 
     }, [isSuccess, data])
@@ -71,38 +42,19 @@ export function UserMetrics() {
                 <PieChart
                     data={pieData}
                     unit={"translations"}
+                    title={"Distribution of word types"}
                 />
-                <BarChart data={columnsData} xType={"aaaa"}
-                />
-                {/*<Card*/}
-                {/*    sx={{paddingX: globalTheme.spacing(1)}}*/}
-                {/*>*/}
-                {/*    <CardContent>*/}
-                {/*        <PieChart*/}
-                {/*            data={pieData}*/}
-                {/*            unit={"translations"}*/}
-                {/*        />*/}
-                {/*    </CardContent>*/}
-                {/*    <CardActions>*/}
-                {/*        <Typography>*/}
-                {/*            Your worse category is: <Button> {worseLanguage} </Button>*/}
-                {/*        </Typography>*/}
-                {/*        <Button size="small" color="primary">*/}
-                {/*        </Button>*/}
-                {/*    </CardActions>*/}
-                {/*</Card>*/}
             </Grid>
-            {/*<Grid*/}
-            {/*    item={true}*/}
-            {/*    xs={8}*/}
-            {/*>*/}
-            {/*    <Card>*/}
-            {/*        <CardContent>*/}
-            {/*            <h1>Lineas con C3.js</h1>*/}
-            {/*            <C3Chart data={line_data} options={line_options} />*/}
-            {/*        </CardContent>*/}
-            {/*    </Card>*/}
-            {/*</Grid>*/}
+            <Grid
+                item={true}
+                xs={8}
+            >
+                <BarChart
+                    data={columnsData}
+                    xType={"category"}
+                    title={"Words added per month."}
+                />
+            </Grid>
         </Grid>
     );
 }

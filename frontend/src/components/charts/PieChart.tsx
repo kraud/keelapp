@@ -54,12 +54,13 @@ const parseData = (dataArray: []): Data => {
 interface PieChartProps {
     data: any,
     unit: string,
+    title: string,
     options?: any
 }
 
 const PieChart = (props: PieChartProps) => {
     // check if using custom or default options for pie chart
-    const {data, unit, options} = props
+    const {data, unit, options, title} = props
 
     let chart_options = options!! ? options : defaultOptions(unit)
 
@@ -91,6 +92,7 @@ const PieChart = (props: PieChartProps) => {
             sx={{paddingX: globalTheme.spacing(1)}}
         >
             <CardContent>
+                <h1>{title}</h1>
                 <C3Chart
                     data={pieData}
                     options={chart_options}

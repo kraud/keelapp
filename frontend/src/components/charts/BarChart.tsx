@@ -1,57 +1,67 @@
 import React, {useEffect, useState} from 'react';
 import C3Chart from "./C3Chart";
-import {Button, Card, CardActions, CardContent, Grid, Typography} from "@mui/material";
-import {Data} from "c3";
-import globalTheme from "../../theme/theme";
+import {Card, CardContent, Grid} from "@mui/material";
 
 interface BarChartProps{
     data: any,
     xType: string
+    title: string
     options?: any
 }
 
-function defaultOptions(xType: string) {
+const defaultOptions = (xType: string, dataArray: []): any => {
+    let dataArrayCategories : any[] = []
+    if(dataArray.length > 0){
+        dataArray.forEach((element: { label: any, count: any }) => {
+            dataArrayCategories.push(element.label)
+        })
+    }
+    console.log("categorias", dataArrayCategories)
     return {
         axis: {
             x: {
                 type: xType,
-                categories: [],
+                categories: dataArrayCategories,
             },
         }
     }
 }
 
-const parseData = (dataArray: []): Data => {
-    console.log("Estas viendo esto", dataArray)
+const parseData = (dataArray: []): any => {
+    const dataArrayToColumn: any[] = ['Languages']
+    if(dataArray.length > 0){
+        dataArray.forEach((element: { label: any, count: any }) => {
+            dataArrayToColumn.push(element.count)
+        })
+    }
     return {
-        columns: dataArray,
+        columns: [dataArrayToColumn],
         type: 'bar', // Specify chart type here
     };
 }
 
 const BarChart = (props: BarChartProps) => {
-    const {data, xType, options} = props
+    const {data, xType, title} = props
 
-    let chart_options = options!! ? options : defaultOptions(xType)
-
-    const [barData, setBarData] = useState<Data>(parseData([]))
+    const [barData, setBarData] = useState<any>(parseData([]))
+    const [options, setOptions] = useState<any>(defaultOptions(xType,[]))
 
     useEffect(() => {
         setBarData(parseData(data))
-    }, [data]);
+        setOptions(defaultOptions(xType,data))
+    }, [data, xType]);
 
     return(
-        <Grid
-        item={true}
-        xs={8}
-    >
         <Card>
             <CardContent>
-                <h1>Lineas con C3.js</h1>
-                <C3Chart data={barData} options={chart_options} />
+                <h1>{title}</h1>
+                <C3Chart
+                    data={barData}
+                    options={options}
+                />
             </CardContent>
         </Card>
-    </Grid>)
+    )
 
 };
 
