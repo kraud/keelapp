@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import C3Chart from './C3Chart';
-import {Button, Card, CardActions, CardContent, Grid, Typography} from "@mui/material";
+import {Grid} from "@mui/material";
 import globalTheme from "../../theme/theme";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../../app/store";

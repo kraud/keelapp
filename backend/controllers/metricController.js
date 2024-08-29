@@ -1,5 +1,6 @@
 const Word = require('../models/wordModel')
 
+
 const calculateBasicUserMetrics = async (user) => {
     let userId = user._id;
 
@@ -33,7 +34,8 @@ const calculateBasicUserMetrics = async (user) => {
                         $group: {
                             _id: {
                                 year: {$year: "$createdAt"},
-                                month: { $dateToString: { format: "%m",  date: "$createdAt" } }
+                                month: { $dateToString: { format: "%m",  date: "$createdAt" } },
+                                partOfSpeech: "$partOfSpeech"
                             },
                             count: {
                                 $sum: 1
@@ -49,7 +51,7 @@ const calculateBasicUserMetrics = async (user) => {
                     },
                     {
                         $sort: {
-                            _id: -1
+                            _id: 1 /* ascending order */
                         }
                     }
                 ],

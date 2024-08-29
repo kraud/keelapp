@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import C3Chart from "./C3Chart";
-import {Card, CardContent, Grid} from "@mui/material";
+import {Card, CardContent} from "@mui/material";
 
 interface BarChartProps{
     data: any,
@@ -9,46 +9,64 @@ interface BarChartProps{
     options?: any
 }
 
-const defaultOptions = (xType: string, dataArray: []): any => {
-    let dataArrayCategories : any[] = []
-    if(dataArray.length > 0){
-        dataArray.forEach((element: { label: any, count: any }) => {
-            dataArrayCategories.push(element.label)
-        })
-    }
-    console.log("categorias", dataArrayCategories)
+const defaultOptions = (xType: string): any => {
     return {
         axis: {
             x: {
                 type: xType,
-                categories: dataArrayCategories,
             },
         }
     }
 }
 
-const parseData = (dataArray: []): any => {
-    const dataArrayToColumn: any[] = ['Languages']
-    if(dataArray.length > 0){
-        dataArray.forEach((element: { label: any, count: any }) => {
-            dataArrayToColumn.push(element.count)
+type WordsPerMonth = { _id: IdWordsPerMonth, label: string, count: number}
+type IdWordsPerMonth = {year: number, month: string, partOfSpeech: string}
+
+
+const parseData = (dataArray: WordsPerMonth []): any => {
+    const arrayData : any [] = []
+    const arrayKeys : any [] = []
+    if(dataArray.length > 0) {
+        dataArray.forEach((element: WordsPerMonth) => {
+            const index = arrayData.findIndex((timeSlap) => timeSlap.name.includes(element.label))
+            if (index >0) {
+                arrayData[index] = {
+                    ...arrayData[index],
+                    [element._id.partOfSpeech]: element.count
+                }
+            } else {
+                arrayData.push({
+                    "name": element.label,
+                    [element._id.partOfSpeech]: element.count
+                })
+            }
+
+            const keys = arrayKeys.find((key) => key.includes(element._id.partOfSpeech))
+            if(keys === undefined){
+                arrayKeys.push(element._id.partOfSpeech)
+            }
         })
     }
     return {
-        columns: [dataArrayToColumn],
-        type: 'bar', // Specify chart type here
-    };
+         json: arrayData,
+            keys: {
+                x: 'name',
+                value: arrayKeys,
+            },
+            type: 'bar',
+            groups: [arrayKeys]
+        }
 }
 
 const BarChart = (props: BarChartProps) => {
     const {data, xType, title} = props
 
     const [barData, setBarData] = useState<any>(parseData([]))
-    const [options, setOptions] = useState<any>(defaultOptions(xType,[]))
+    const [options, setOptions] = useState<any>(defaultOptions(xType))
 
     useEffect(() => {
         setBarData(parseData(data))
-        setOptions(defaultOptions(xType,data))
+        setOptions(defaultOptions(xType))
     }, [data, xType]);
 
     return(
@@ -60,6 +78,7 @@ const BarChart = (props: BarChartProps) => {
                     options={options}
                 />
             </CardContent>
+
         </Card>
     )
 
