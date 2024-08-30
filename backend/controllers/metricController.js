@@ -1,8 +1,9 @@
 const Word = require('../models/wordModel')
 
-
 const calculateBasicUserMetrics = async (user) => {
     let userId = user._id;
+    // determines amount of languages of user
+    const userLanguages = user.languages !== undefined ? user.languages.length : 0
 
     // Pipeline que usa facet, es decir, consultas paralelas.
     const metricsPipeline = [
@@ -25,6 +26,12 @@ const calculateBasicUserMetrics = async (user) => {
                     {
                         $group: {
                             _id: "$partOfSpeech",
+                            // if we want amount of incomplete words by POS
+                            /* incompleteWordsCount: {
+                                 $sum: {
+                                     $cond: { if: { $eq: [ { $size: "$translations" }, userLanguages ] }, then: 1, else: 0 }
+                                 }
+                            }, */
                             count: { $sum: 1 }
                         }
                     }
@@ -59,7 +66,12 @@ const calculateBasicUserMetrics = async (user) => {
                     {
                         $group: {
                             _id: null,
-                            count: { $sum: 1 }
+                            count: { $sum: 1 },
+                            incompleteWordsCount: {
+                                $sum: {
+                                    $cond: { if: { $eq: [ { $size: "$translations" }, userLanguages ] }, then: 1, else: 0 }
+                                }
+                            }
                         }
                     }
                 ]
@@ -70,7 +82,8 @@ const calculateBasicUserMetrics = async (user) => {
                 translationsByLanguage: 1,
                 wordsPerPOS: 1,
                 wordsPerMonth: 1,
-                totalWords: { $arrayElemAt: ["$totalWords.count", 0] }
+                totalWords: { $arrayElemAt: ["$totalWords.count", 0] },
+                incompleteWordsCount: { $arrayElemAt: ["$totalWords.incompleteWordsCount", 0] }
             }
         }
     ];
