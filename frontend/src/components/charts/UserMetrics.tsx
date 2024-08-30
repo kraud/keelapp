@@ -36,7 +36,8 @@ export function UserMetrics() {
         >
             <Grid
                 item={true}
-                xs={4}
+                xs={12}
+                md={6}
             >
                 <PieChart
                     data={pieData}
@@ -46,7 +47,8 @@ export function UserMetrics() {
             </Grid>
             <Grid
                 item={true}
-                xs={8}
+                xs={12}
+                md={6}
             >
                 <BarChart
                     data={columnsData}
