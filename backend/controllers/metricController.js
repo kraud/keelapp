@@ -1,9 +1,9 @@
 const Word = require('../models/wordModel')
 
 const calculateBasicUserMetrics = async (user) => {
-    let userId = user._id;
+    let userId = user._id
     // determines amount of languages of user
-    const userLanguages = user.languages !== undefined ? user.languages.length : 0
+    const userLanguages = user.languages !== undefined ? user.languages : []
 
     // Pipeline que usa facet, es decir, consultas paralelas.
     const metricsPipeline = [
@@ -69,7 +69,16 @@ const calculateBasicUserMetrics = async (user) => {
                             count: { $sum: 1 },
                             incompleteWordsCount: {
                                 $sum: {
-                                    $cond: { if: { $eq: [ { $size: "$translations" }, userLanguages ] }, then: 1, else: 0 }
+                                    $cond: {
+                                        if: {
+                                            $eq: [
+                                                { $size: { $setIntersection: [ "$translations.language", userLanguages ] } }
+                                                , userLanguages.length
+                                            ]
+                                        },
+                                        then: 0,
+                                        else: 1
+                                    }
                                 }
                             }
                         }
