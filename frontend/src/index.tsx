@@ -9,6 +9,8 @@ import { BrowserRouter as Router} from 'react-router-dom'
 
 const container: any = document.getElementById('root');
 const root = createRoot(container);
+// import i18n (needs to be bundled)
+import './i18n'
 
 root.render(
     <React.StrictMode>
