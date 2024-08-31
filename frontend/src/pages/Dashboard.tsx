@@ -10,7 +10,8 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import {useTheme} from "@mui/material/styles";
 import {Lang} from "../ts/enums";
 import UserMetrics from "../components/charts/UserMetrics";
-import {UserInfo} from "../components/charts/UserInfo";
+import {UserInfoCard} from "../components/charts/UserInfoCard";
+import UserInfoPanel from "../components/charts/UserInfoPanel";
 
 export function Dashboard() {
     const theme = useTheme()
@@ -42,7 +43,7 @@ export function Dashboard() {
                 md={7}>
                 <Grid
                     container={true}
-                    justifyContent={"left"}
+                    justifyContent={"center"}
                     item={true}
                 >
                     <Grid
@@ -63,14 +64,12 @@ export function Dashboard() {
                 </Grid>
                 <Grid
                     container={true}
-                    justifyContent={"left"}
                     sx={{
                         paddingLeft: globalTheme.spacing(2),
                     }}
                     md={12}
-                    xs={12}
+                    xs={7}
                 >
-
                     <Grid
                         item={true}
                         md={12}
@@ -95,23 +94,13 @@ export function Dashboard() {
                     </Grid>
                 </Grid>
             </Grid>
+            <UserInfoPanel/>
             <Grid
                 container={true}
-                sx={{
-                    border: '2px solid #0072CE',
-                    borderRadius: '25px',
-                    padding: globalTheme.spacing(2),
-                }}
-                xs={12}
-                md={5}
-            >
-                <UserInfo />
-            </Grid>
-            <Grid
-                container={true}
-                justifyContent={"flex-start"}
+                justifyContent={"center"}
                 item={true}
                 xs={12}
+                md={12}
                 sx={{
                     border: '2px solid #0072CE',
                     borderRadius: '25px',
