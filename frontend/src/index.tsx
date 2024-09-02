@@ -6,11 +6,11 @@ import App from "./App"
 import globalTheme from "./theme/theme"
 import { ThemeProvider } from "@mui/material"
 import { BrowserRouter as Router} from 'react-router-dom'
+// import i18n (needs to be bundled)
+import './i18n'
 
 const container: any = document.getElementById('root');
 const root = createRoot(container);
-// import i18n (needs to be bundled)
-import './i18n'
 
 root.render(
     <React.StrictMode>

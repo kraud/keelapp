@@ -13,16 +13,42 @@ i18n
     .init({
         // debug: true,
         fallbackLng: 'en',
+        supportedLngs: ['en', 'es', 'de', 'ee'],
+        nonExplicitSupportedLngs: true,
+        // lng: (UILang!!) ? UILang :undefined, // Language to use (overrides language detection). If set to 'cimode' the output text will be the key
         interpolation: {
             escapeValue: false, // not needed for react as it escapes by default
         },
         resources: {
             en: {
                 translation: {
-                    // here we will place our translations...
+                    dashboard: {
+                        title: 'Welcome, {{name}}',
+                    },
                 }
-            }
+            },
+            de: {
+                translation: {
+                    dashboard: {
+                        title: 'Willkommen, {{name}}',
+                    },
+                }
+            },
+            ee: {
+                translation: {
+                    dashboard: {
+                        title: 'Tere tulemast, {{name}}',
+                    },
+                }
+            },
+            es: {
+                translation: {
+                    dashboard: {
+                        title: 'Bienvenido, {{name}}',
+                    },
+                }
+            },
         }
-    });
+    })
 
 export default i18n;

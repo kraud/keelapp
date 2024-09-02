@@ -25,6 +25,7 @@ import {clearRequesterNotifications, createNotification} from "../features/notif
 import {Lang} from "../ts/enums";
 import {AppDispatch} from "../app/store";
 import {checkEnvironmentAndIterationToDisplay} from "../components/forms/commonFunctions";
+import { useTranslation } from 'react-i18next';
 
 
 export interface UserBadgeData {
@@ -32,7 +33,8 @@ export interface UserBadgeData {
     name: string,
     username: string,
     email: string,
-    languages: Lang[]
+    languages: Lang[],
+    uiLanguage?: Lang
 }
 
 export const Account = () => {
@@ -89,7 +91,8 @@ export const Account = () => {
             // TODO: revert once cleaning old users from DB
             // NB! Originally, users did not have a list of languages.
             // So we first check if there is language data, and if not, we set an empty array.
-            languages: (user.languages!!) ? user.languages : []
+            languages: (user.languages!!) ? user.languages : [],
+            uiLanguage: (user.uiLanguage!!) ? user.uiLanguage : Lang.EN
         })
     },[user])
 
@@ -251,7 +254,8 @@ export const Account = () => {
                         name: "",
                         email: "",
                         username: "",
-                        languages: []
+                        languages: [],
+                        uiLanguage: Lang.EN // TODO: defaults to value from i18n auto detect?
                     }}
                     isEditing={isEditing}
                     returnFieldsData={(updatedData) => {
@@ -260,7 +264,8 @@ export const Account = () => {
                                 ...localUserData,
                                 username: updatedData.username!,
                                 name: updatedData.name,
-                                languages: updatedData.languages
+                                languages: updatedData.languages,
+                                uiLanguage: updatedData.uiLanguage
                             })
                         }
                     }}

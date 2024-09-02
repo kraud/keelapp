@@ -222,6 +222,17 @@ export const UserBadge = (props: UserBadgeProps) => {
                     selectedItemsTitle={""}
                     displayItems={'flag'}
                     noItemsSelectedMessage={'Please select at least 2 languages.'}
+                    displayLeftActionButton={{
+                        selectedItemLabel: (props.userData.uiLanguage!!) ?props.userData.uiLanguage :Lang.EN,
+                        onLeftActionButtonClick: (clickedItemLabel: string) => {
+                            if (props.returnFieldsData !== undefined) {
+                                props.returnFieldsData({
+                                    ...props.userData,
+                                    uiLanguage: clickedItemLabel as Lang,
+                                })
+                            }
+                        }
+                    }}
                 />
             </Grid>
         </Grid>

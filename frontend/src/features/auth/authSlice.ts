@@ -45,7 +45,7 @@ export const login = createAsyncThunk('auth/login', async (user: any, thunkAPI) 
     try {
         let userLogin = await authService.login(user)
         if(userLogin.verified) {
-            return userLogin;
+            return userLogin
         } else {
             // TODO: Agregar boton para reenviar (Ver addWord). 
             toast.info("You need to verify your account");

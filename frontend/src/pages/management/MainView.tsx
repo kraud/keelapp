@@ -6,14 +6,17 @@ import {RoutesWithAnimation} from "./RoutesWithAnimation";
 import {LocationProvider} from "./LocationProvider";
 import globalTheme from "../../theme/theme";
 import {logout} from "../../features/auth/authSlice";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import AuthVerify from "../../common/AuthVerify";
 import {AppDispatch} from "../../app/store";
 import {toast} from "react-toastify";
 import {useIntervalFunction} from "../../hooks/useInterval";
 import {getNotifications} from "../../features/notifications/notificationSlice";
+import {getLangKeyByLabel} from "../../components/generalUseFunctions";
+import i18n from "i18next";
 
 export function MainView(){
+    const {user} = useSelector((state: any) => state.auth)
     const componentStyles = {
         mainColumn:{
             margin: 0,
@@ -30,6 +33,15 @@ export function MainView(){
         new RegExp("^/user/.*/verify/.*$"), // matches with "/user/*/verify/*"
         new RegExp("^/resetPassword.*$") // matches with "/resetPassword/*"
     ]
+
+    // NB! We set this here, because to be listening for UI-languages in any part of the app.
+    // Tried doing this inside authSlice (just the part inside the "if"), but there were problems with the i18n import.
+    useEffect(() => {
+        // NB! This should only run once on setup, and this way we update UI-lang in case it was changed in another computer/session
+        if(user.uiLanguage!! && (getLangKeyByLabel(user.uiLanguage)!!)){
+            i18n.changeLanguage(getLangKeyByLabel(user.uiLanguage).toLowerCase())
+        }
+    },[user.uiLanguage])
 
     useEffect(() => {
         if (urlListNoToolbar.some((regex: RegExp) => {

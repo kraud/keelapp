@@ -25,6 +25,7 @@ interface DnDLanguageOrderSelectorProps{
     singleContainer?: boolean // by default, we have 2 containers ('selected' and 'other'). With this prop we can display only 'selected'
     disabled?: boolean // to avoid allowing the elements to be moved
     noItemsSelectedMessage?: string // when no items are selected, display this text in 'selected' container
+    displayLeftActionButton?: { selectedItemLabel: string, onLeftActionButtonClick: (clickedItemLabel: string) => void}
 }
 
 export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
@@ -241,6 +242,12 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                                                 onActionButtonClick={(languageId: string) => {
                                                     moveLanguageToOtherContainer(languageId, 'other')
                                                 }}
+                                                displayLeftActionButton={item === props.displayLeftActionButton?.selectedItemLabel}
+                                                onActionButtonLeftClick={
+                                                    (props.displayLeftActionButton !== undefined)
+                                                        ? (clickedItemLabel: string) => props.displayLeftActionButton?.onLeftActionButtonClick(clickedItemLabel)
+                                                        : undefined
+                                                }
                                             />
                                         )
                                     })
@@ -307,6 +314,12 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                                                     onActionButtonClick={(languageId: string) => {
                                                         moveLanguageToOtherContainer(languageId, 'selected')
                                                     }}
+                                                    displayLeftActionButton={item === props.displayLeftActionButton?.selectedItemLabel}
+                                                    onActionButtonLeftClick={
+                                                        (props.displayLeftActionButton !== undefined)
+                                                            ? (clickedItemLabel: string) => props.displayLeftActionButton?.onLeftActionButtonClick(clickedItemLabel)
+                                                            : undefined
+                                                    }
                                                 />
                                             )
                                         })

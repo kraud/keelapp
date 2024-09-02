@@ -9,12 +9,18 @@ import {SpinningText} from "../components/SpinningText";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import {useTheme} from "@mui/material/styles";
 import {Lang} from "../ts/enums";
+import {useTranslation} from "react-i18next";
 import UserMetrics from "../components/charts/UserMetrics";
 import UserInfoPanel from "../components/charts/UserInfoPanel";
 import {getUserMetrics} from "../features/metrics/metricSlice";
 import {AppDispatch} from "../app/store";
 
 export function Dashboard() {
+    const { t } = useTranslation()
+    const { t: tDE } = useTranslation('dashboard', {lng: 'de'})
+    const { t: tEE } = useTranslation('dashboard', {lng: 'ee'})
+    const { t: tEN } = useTranslation('dashboard', {lng: 'en'})
+    const { t: tES } = useTranslation('dashboard', {lng: 'es'})
     const theme = useTheme()
     const lessThanSm = useMediaQuery(theme.breakpoints.down("sm"))
     const smallToMid = useMediaQuery(theme.breakpoints.between("sm", "md"))
@@ -68,7 +74,7 @@ export function Dashboard() {
                             }}
                             align={"center"}
                         >
-                            Welcome, {user?.name}
+                            {t('dashboard.title', { name: user.name })}
                         </Typography>
                     </Grid>
                 </Grid>
@@ -94,10 +100,10 @@ export function Dashboard() {
                             >
                                 <SpinningText
                                     translations={[
-                                        {language: Lang.EN, label: "Ready to learn something new today?"},
-                                        {language: Lang.ES, label: "¿Listo para aprender algo nuevo hoy?"},
-                                        {language: Lang.DE, label: "Sind Sie bereit, heute etwas Neues zu lernen?"},
-                                        {language: Lang.EE, label: "Kas sa oled valmis midagi uut täna õppida?"},
+                                        {language: Lang.EN, label: tEN('welcome.spinning', { ns: 'dashboard' })},
+                                        {language: Lang.ES, label: tES('welcome.spinning', { ns: 'dashboard' })},
+                                        {language: Lang.DE, label: tDE('welcome.spinning', { ns: 'dashboard' })},
+                                        {language: Lang.EE, label: tEE('welcome.spinning', { ns: 'dashboard' })},
                                     ]}
                                     variant={
                                         (smallToMid)

@@ -28,16 +28,16 @@ import {useFollowUnfollowTag, useIsUserFollowingTag} from "../hooks/useFollowUnf
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 
-interface FriendSearchModalProps {
+interface TagInfoModalProps {
     open: boolean
     setOpen: (value: boolean) => void
     tagId: string | undefined
     setMadeChangesToTagList: (status: boolean) => void
-    triggerAction?: (tagId: string) => void // we'll use this to open FriendSearchModal and send the tagId to another user
+    triggerAction?: (tagId: string) => void // we'll use this to open TagInfoModal and send the tagId to another user
     title?: string
 }
 
-export const TagInfoModal = (props: FriendSearchModalProps) => {
+export const TagInfoModal = (props: TagInfoModalProps) => {
     const lessThanSmall = useMediaQuery(globalTheme.breakpoints.down("sm"))
     const componentStyles = {
         mainContainer: {

@@ -124,7 +124,7 @@ const loginUser = asyncHandler(async(req, res) => {
 // @route   PUT /api/users/updateUser
 // @access  Public
 const updateUser = asyncHandler(async(req, res) => {
-    const {email, name, username, languages} = req.body
+    const {email, name, username, languages, uiLanguage} = req.body
 
     const usernameExists = await User.findOne({username: username})
     // NB! ._id returns the 'new ObjectId("idString") object. Instead, we use .id to access the "idString" value directly.
@@ -141,6 +141,7 @@ const updateUser = asyncHandler(async(req, res) => {
             username: username,
             // NB! email can't be changed
             languages: languages,
+            uiLanguage: uiLanguage,
             // if more fields are added to user, add them to the update here
         },{new: true}).select({ password: 0, createdAt: 0 , updatedAt: 0, __v: 0 })
         res.status(200).json(updatedUser)

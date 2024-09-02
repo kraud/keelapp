@@ -539,3 +539,8 @@ export function setTimerTriggerFunction(functionToRunAfterTimer: () => void, tim
         functionToRunAfterTimer()
     }, (timer) ? timer :450)
 }
+
+export function getLangKeyByLabel(languageLabel: Lang){
+    const match = Object.keys(Lang)[Object.values(Lang).indexOf(languageLabel)] as string
+    return((match!!) ?match :"")
+}
