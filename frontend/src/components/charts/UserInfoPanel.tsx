@@ -10,7 +10,7 @@ import UserInfoCard from "./UserInfoCard";
 
 export function UserInfoPanel() {
     const dispatch = useDispatch<AppDispatch>()
-    const {isError, isSuccess, isLoading, message, data} = useSelector((state: any) => state.metrics)
+    const {isSuccess, data} = useSelector((state: any) => state.metrics)
 
     // On first render, this makes all the necessary requests to BE (and stores result data in Redux) to display account-screen info
     useEffect(() => {
@@ -32,31 +32,35 @@ export function UserInfoPanel() {
 
     }, [isSuccess, data])
 
-    return(
+    return (
         <Grid
-        container={true}
-        sx={{
-            border: '2px solid #0072CE',
-            borderRadius: '25px',
-            padding: globalTheme.spacing(1),
-            marginBottom: globalTheme.spacing(1),
-            backgroundColor: '#e1e1e1'
-        }}
-        alignItems={'center'}
-        xs={12}
-        md={5}
+            container={true}
+            sx={{
+                border: '2px solid #0072CE',
+                borderRadius: '25px',
+                padding: globalTheme.spacing(1),
+                marginBottom: globalTheme.spacing(1),
+                backgroundColor: '#e1e1e1'
+            }}
+            alignItems={'center'}
+            justifyContent={"space-between"}
+            xs={12}
+            md={5}
         >
             <Grid
+                flexGrow={1}
                 sx={{paddingX: '2px'}}
             >
                 <UserInfoCard title={"Total Words"} data={totalWords}/>
             </Grid>
             <Grid
+                flexGrow={1}
                 sx={{paddingX: '2px'}}
             >
                 <UserInfoCard title={"Incomplete Words"} data={incompleteWords} link={"review"}/>
             </Grid>
             <Grid
+                flexGrow={1}
                 sx={{paddingX: '2px'}}
             >
                 <UserInfoCard title={"Languages"} data={totalLanguages}/>

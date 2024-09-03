@@ -2,27 +2,28 @@ import {Grid, Typography} from "@mui/material";
 import React from "react";
 import globalTheme from "../../theme/theme";
 import IosShareIcon from '@mui/icons-material/IosShare';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 
 
-interface UserInfoCard{
+interface UserInfoCard {
     title: string,
     data: string,
     link?: string
 }
 
 
-export function UserInfoCard(prop : UserInfoCard){
+export function UserInfoCard(prop: UserInfoCard) {
 
     const navigate = useNavigate();
 
-    const handleRedirect = (link : string | undefined) => {
-        if(link !== undefined){
+    const handleRedirect = (link: string | undefined) => {
+        // Redirigir a otra ruta
+        if (link !== undefined) {
             navigate(link);
         }
     };
 
-    return(<Grid>
+    return (
         <Grid
             container={true}
             item={true}
@@ -33,12 +34,12 @@ export function UserInfoCard(prop : UserInfoCard){
                 paddingX: '2px',
                 background: 'white'
             }}
-            >
+        >
             <Grid
                 item={true}
                 container={true}
                 xs={12}
-                >
+            >
                 <Grid
                     item={true}
                     container={true}
@@ -46,30 +47,30 @@ export function UserInfoCard(prop : UserInfoCard){
                     alignItems={"center"}
                     justifyContent={"center"}
                 >
-                <Typography
-                    sx={{
-                        typography: {
-                            xs: 'h4',
-                            sm: 'h3',
-                            md: 'h2',
-                        },
-                        fontWeight: 'bold',
-                        textDecoration: 'underline'
-                    }}
-                    color={'primary'}
+                    <Typography
+                        sx={{
+                            typography: {
+                                xs: 'h4',
+                                sm: 'h3',
+                                md: 'h2',
+                            },
+                            fontWeight: 'bold',
+                            textDecoration: 'underline'
+                        }}
+                        color={'primary'}
                     >
-                    {prop.data}
-                </Typography>
+                        {prop.data}
+                    </Typography>
                 </Grid>
                 {(prop.link !== undefined) &&
                     <Grid
-                    item={true}
-                    justifyContent={"right"}
-                    alignItems={"initial"}
-                    xs={2}
+                        item={true}
+                        justifyContent={"right"}
+                        alignItems={"initial"}
+                        xs={2}
                     >
                         <IosShareIcon
-                            style={{ fontSize: 35 }}
+                            style={{fontSize: 35}}
                             onClick={() => {
                                 handleRedirect(prop.link)
                             }}
@@ -98,7 +99,7 @@ export function UserInfoCard(prop : UserInfoCard){
                 </Typography>
             </Grid>
         </Grid>
-    </Grid>);
+    );
 }
 export default UserInfoCard;
 
