@@ -17,7 +17,6 @@ export function UserInfoCard(prop : UserInfoCard){
     const navigate = useNavigate();
 
     const handleRedirect = (link : string | undefined) => {
-        // Redirigir a otra ruta
         if(link !== undefined){
             navigate(link);
         }
@@ -38,9 +37,14 @@ export function UserInfoCard(prop : UserInfoCard){
             <Grid
                 item={true}
                 container={true}
-                justifyContent={"center"}
-                alignItems={"center"}
                 xs={12}
+                >
+                <Grid
+                    item={true}
+                    container={true}
+                    xs={(prop.link !== undefined) ? 10 : 12}
+                    alignItems={"center"}
+                    justifyContent={"center"}
                 >
                 <Typography
                     sx={{
@@ -56,9 +60,16 @@ export function UserInfoCard(prop : UserInfoCard){
                     >
                     {prop.data}
                 </Typography>
+                </Grid>
                 {(prop.link !== undefined) &&
-                    <Grid>
+                    <Grid
+                    item={true}
+                    justifyContent={"right"}
+                    alignItems={"initial"}
+                    xs={2}
+                    >
                         <IosShareIcon
+                            style={{ fontSize: 35 }}
                             onClick={() => {
                                 handleRedirect(prop.link)
                             }}
