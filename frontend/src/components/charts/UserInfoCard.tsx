@@ -2,6 +2,8 @@ import {Grid, Typography} from "@mui/material";
 import React from "react";
 import globalTheme from "../../theme/theme";
 import IosShareIcon from '@mui/icons-material/IosShare';
+import { useNavigate } from 'react-router-dom';
+
 
 interface UserInfoCard{
     title: string,
@@ -11,6 +13,15 @@ interface UserInfoCard{
 
 
 export function UserInfoCard(prop : UserInfoCard){
+
+    const navigate = useNavigate();
+
+    const handleRedirect = (link : string | undefined) => {
+        // Redirigir a otra ruta
+        if(link !== undefined){
+            navigate(link);
+        }
+    };
 
     return(<Grid>
         <Grid
@@ -47,7 +58,11 @@ export function UserInfoCard(prop : UserInfoCard){
                 </Typography>
                 {(prop.link !== undefined) &&
                     <Grid>
-                        <IosShareIcon/>
+                        <IosShareIcon
+                            onClick={() => {
+                                handleRedirect(prop.link)
+                            }}
+                        />
                     </Grid>
                 }
             </Grid>

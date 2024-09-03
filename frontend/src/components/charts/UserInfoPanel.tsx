@@ -54,12 +54,12 @@ export function UserInfoPanel() {
             <Grid
                 sx={{paddingX: '2px'}}
             >
-                <UserInfoCard title={"Incomplete Words"} data={incompleteWords}/>
+                <UserInfoCard title={"Incomplete Words"} data={incompleteWords} link={"review"}/>
             </Grid>
             <Grid
                 sx={{paddingX: '2px'}}
             >
-                <UserInfoCard title={"Languages"} data={totalLanguages} link={"asoind"}/>
+                <UserInfoCard title={"Languages"} data={totalLanguages}/>
             </Grid>
         </Grid>);
 
