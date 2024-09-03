@@ -1,5 +1,5 @@
 import React, {useEffect} from "react";
-import {Card, CardContent, Grid, Typography} from "@mui/material";
+import {Grid, Typography} from "@mui/material";
 import {useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import globalTheme from "../theme/theme";
@@ -10,7 +10,6 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import {useTheme} from "@mui/material/styles";
 import {Lang} from "../ts/enums";
 import UserMetrics from "../components/charts/UserMetrics";
-import {UserInfoCard} from "../components/charts/UserInfoCard";
 import UserInfoPanel from "../components/charts/UserInfoPanel";
 
 export function Dashboard() {
@@ -75,22 +74,31 @@ export function Dashboard() {
                         md={12}
                         xs={12}
                     >
-                        <SpinningText
-                            translations={[
-                                {language: Lang.EN, label: "Ready to learn something new today?"},
-                                {language: Lang.ES, label: "¿Listo para aprender algo nuevo hoy?"},
-                                {language: Lang.DE, label: "Sind Sie bereit, heute etwas Neues zu lernen?"},
-                                {language: Lang.EE, label: "Kas sa oled valmis midagi uut täna õppida?"},
-                            ]}
-                            variant={
-                                (smallToMid)
-                                    ? 'h6'
-                                    : (lessThanSm)
-                                        ? 'subtitle1'
-                                        :'h4' // lg and up
-                            }
-                            color={"primary"}
-                        />
+                        <Grid
+                            container={true}
+                            justifyContent={"center"}
+                        >
+                            <Grid
+                                item={true}
+                            >
+                                <SpinningText
+                                    translations={[
+                                        {language: Lang.EN, label: "Ready to learn something new today?"},
+                                        {language: Lang.ES, label: "¿Listo para aprender algo nuevo hoy?"},
+                                        {language: Lang.DE, label: "Sind Sie bereit, heute etwas Neues zu lernen?"},
+                                        {language: Lang.EE, label: "Kas sa oled valmis midagi uut täna õppida?"},
+                                    ]}
+                                    variant={
+                                        (smallToMid)
+                                            ? 'h6'
+                                            : (lessThanSm)
+                                                ? 'subtitle1'
+                                                :'h4' // lg and up
+                                    }
+                                    color={"primary"}
+                                />
+                            </Grid>
+                        </Grid>
                     </Grid>
                 </Grid>
             </Grid>
