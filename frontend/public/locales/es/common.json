@@ -1,0 +1,21 @@
+{
+  "header": {
+    "addWord": "agregar palabra",
+    "practice": "practicar",
+    "review": "listado",
+    "search": {
+      "words": "Buscar palabras...",
+      "tags": "Buscar tags...",
+      "placeholder": "Buscar...",
+      "loading": "Cargando...",
+      "noMatches": "Sin resultados"
+    },
+    "settings": {
+      "openSettings": "Abrir ajustes",
+      "notifications": "Notificaciones",
+      "account": "Cuenta",
+      "dashboard": "Panel de inicio",
+      "logout": "Cerrar sesión"
+    }
+  }
+}

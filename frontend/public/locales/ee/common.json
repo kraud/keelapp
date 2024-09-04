@@ -1,0 +1,21 @@
+{
+  "header": {
+    "addWord": "lisa sõna",
+    "practice": "harjuta",
+    "review": "ülevaade",
+    "search": {
+      "words": "Otsige sõnu...",
+      "tags": "Otsige tagid...",
+      "placeholder": "Otsige...",
+      "loading": "Laadimine...",
+      "noMatches": "Tulemusi pole"
+    },
+    "settings": {
+      "openSettings": "Ava seaded",
+      "notifications": "Teavitused",
+      "account": "Konto",
+      "dashboard": "Armatuurlaud",
+      "logout": "Logi välja"
+    }
+  }
+}

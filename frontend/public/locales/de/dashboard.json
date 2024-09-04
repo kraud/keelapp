@@ -1,0 +1,6 @@
+{
+  "welcome": {
+    "title": "Willkommen, {{name}}",
+    "spinning": "Sind Sie bereit, heute etwas Neues zu lernen?"
+  }
+}

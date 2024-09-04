@@ -1,0 +1,21 @@
+{
+  "header": {
+    "addWord": "wort hinzufügen",
+    "practice": "üben",
+    "review": "überprüfen",
+    "search": {
+      "words": "Wörter suchen...",
+      "tags": "Tags suchen...",
+      "placeholder": "Suchen...",
+      "loading": "Laden...",
+      "noMatches": "Keine Ergebnisse"
+     },
+    "settings": {
+      "openSettings": "Einstellungen öffnen",
+      "notifications": "Benachrichtigungen",
+      "account": "Konto",
+      "dashboard": "Dashboard",
+      "logout": "Abmelden"
+     }
+  }
+}

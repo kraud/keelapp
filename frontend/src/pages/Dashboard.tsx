@@ -16,7 +16,8 @@ import {getUserMetrics} from "../features/metrics/metricSlice";
 import {AppDispatch} from "../app/store";
 
 export function Dashboard() {
-    const { t } = useTranslation()
+    const { t } = useTranslation(['dashboard', 'common'])
+    // we create an instance for each language because
     const { t: tDE } = useTranslation('dashboard', {lng: 'de'})
     const { t: tEE } = useTranslation('dashboard', {lng: 'ee'})
     const { t: tEN } = useTranslation('dashboard', {lng: 'en'})
@@ -74,7 +75,7 @@ export function Dashboard() {
                             }}
                             align={"center"}
                         >
-                            {t('dashboard.title', { name: user.name })}
+                            {t('welcome.title', { name: user.name,  ns: 'dashboard' })}
                         </Typography>
                     </Grid>
                 </Grid>

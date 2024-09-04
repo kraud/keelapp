@@ -27,14 +27,27 @@ import {clearSearchResultTags, searchTagsByLabel} from "../features/tags/tagSlic
 import {MaterialUISwitch} from "./StyledSwitch";
 import {checkEnvironmentAndIterationToDisplay} from "./forms/commonFunctions";
 import {getIconByEnvironment, triggerToastMessageWithButton} from "./GeneralUseComponents";
+import {useTranslation} from "react-i18next";
+import {AppDispatch} from "../app/store";
 
-const pages = ['Add word', 'Practice', 'Review'];
-const settings = ['Notifications', 'Account', 'Dashboard', 'Logout'];
 
 function ResponsiveAppBar() {
     const navigate = useNavigate()
-    const dispatch = useDispatch()
+    const dispatch = useDispatch<AppDispatch>()
     const location = useLocation()
+
+    const { t } = useTranslation(['common'])
+    const pages = [
+        t('header.addWord', {ns: 'common'}),
+        t('header.practice', {ns: 'common'}),
+        t('header.review', {ns: 'common'}),
+    ]
+    const settings = [
+        t('header.settings.notifications', {ns: 'common'}),
+        t('header.settings.account', {ns: 'common'}),
+        t('header.settings.dashboard', {ns: 'common'}),
+        t('header.settings.logout', {ns: 'common'}),
+    ]
 
     const {user} = useSelector((state: any) => state.auth)
     const {searchResults, isSearchLoading} = useSelector((state: any) => state.words)
@@ -127,22 +140,21 @@ function ResponsiveAppBar() {
     // type string when clicking on option and object when clicking off the menu
     const handleCloseUserMenu = (option: string | object) => {
         switch (option){
-            case "Logout": {
-                //@ts-ignore
+            case(t('header.settings.logout', {ns: 'common'})): {
                 dispatch(logout())
                 dispatch(resetState())
                 navigate('/login')
                 break
             }
-            case "Dashboard": {
+            case(t('header.settings.dashboard', {ns: 'common'})): {
                 navigate('/')
                 break
             }
-            case "Account": {
+            case(t('header.settings.account', {ns: 'common'})): {
                 navigate('/user')
                 break
             }
-            case "Notifications": {
+            case(t('header.settings.notifications', {ns: 'common'})): {
                 if(checkEnvironmentAndIterationToDisplay(3)){
                     navigate('/user/'+user._id+'/notifications')
                 } else {
@@ -169,10 +181,8 @@ function ResponsiveAppBar() {
 
     const onSearch = (searchValue: string) => {
         if(isWordSearch){
-            // @ts-ignore
             dispatch(searchWordByAnyTranslation(searchValue))
         } else { // then is tag search
-            //@ts-ignore
             dispatch(searchTagsByLabel({
                 query: searchValue,
                 includeOtherUsersTags: true
@@ -346,13 +356,19 @@ function ResponsiveAppBar() {
                                 onSelect={(selection: SearchResult) => onSelect(selection)}
                                 isSearchLoading={isSearchLoading || isLoadingTagSearch}
                                 textColor={'white'}
-                                placeholder={isWordSearch ? "Search words..." : "Search tags..."}
+                                placeholder={
+                                    isWordSearch
+                                        ? t('header.search.words', {ns: 'common'})
+                                        : t('header.search.tags', {ns: 'common'})
+                                }
                             />
                         </Box>
                     }
                     {/* USER ICON */}
                     <Box sx={{ flexGrow: 0 }}>
-                        <Tooltip title="Open settings">
+                        <Tooltip
+                            title={t('header.settings.openSettings', {ns: 'common'})}
+                        >
                             <IconButton
                                 onClick={handleOpenUserMenu}
                                 sx={{ p: 0 }}

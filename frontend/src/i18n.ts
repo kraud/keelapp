@@ -1,8 +1,13 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
+import Backend from 'i18next-http-backend';
 
 i18n
+    // i18next-http-backend
+    // loads translations from your server
+    // https://github.com/i18next/i18next-http-backend
+    .use(Backend) // stored in ../public/locales/[lang]/translation.json
     // detect user language
     // learn more: https://github.com/i18next/i18next-browser-languageDetector
     .use(LanguageDetector)
@@ -13,42 +18,13 @@ i18n
     .init({
         // debug: true,
         fallbackLng: 'en',
+        fallbackNS: 'common',
         supportedLngs: ['en', 'es', 'de', 'ee'],
         nonExplicitSupportedLngs: true,
         // lng: (UILang!!) ? UILang :undefined, // Language to use (overrides language detection). If set to 'cimode' the output text will be the key
         interpolation: {
             escapeValue: false, // not needed for react as it escapes by default
         },
-        resources: {
-            en: {
-                translation: {
-                    dashboard: {
-                        title: 'Welcome, {{name}}',
-                    },
-                }
-            },
-            de: {
-                translation: {
-                    dashboard: {
-                        title: 'Willkommen, {{name}}',
-                    },
-                }
-            },
-            ee: {
-                translation: {
-                    dashboard: {
-                        title: 'Tere tulemast, {{name}}',
-                    },
-                }
-            },
-            es: {
-                translation: {
-                    dashboard: {
-                        title: 'Bienvenido, {{name}}',
-                    },
-                }
-            },
-        }
     })
 
-export default i18n;
+export default i18n

@@ -1,0 +1,21 @@
+{
+  "header": {
+    "addWord": "add word",
+    "practice": "practice",
+    "review": "review",
+    "search": {
+      "words": "Search words...",
+      "tags": "Search tags...",
+      "placeholder": "Search...",
+      "loading": "Loading...",
+      "noMatches": "No matches"
+    },
+    "settings": {
+      "openSettings": "Open settings",
+      "notifications": "Notifications",
+      "account": "Account",
+      "dashboard": "Dashboard",
+      "logout": "Logout"
+    }
+  }
+}
