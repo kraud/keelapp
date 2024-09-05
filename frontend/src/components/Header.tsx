@@ -101,7 +101,7 @@ function ResponsiveAppBar() {
     const handleCloseNavMenu = (option: any) => {
         if(option !== null){
             switch (option){
-                case "Add word": {
+                case(t('header.addWord', {ns: 'common'})): {
                     if((user.languages).length > 1){
                         navigate('/addWord')
                     } else {
@@ -113,7 +113,7 @@ function ResponsiveAppBar() {
                     }
                     break
                 }
-                case "Review": {
+                case(t('header.review', {ns: 'common'})): {
                     if(checkEnvironmentAndIterationToDisplay(3)){
                         if((user.languages).length > 1){
                             navigate('/review')
@@ -125,12 +125,12 @@ function ResponsiveAppBar() {
                             })
                         }
                     } else {
-                        toast.error("This function is not ready yet, we're sorry!")
+                        toast.error(t('header.notImplemented', {ns: 'common'}))
                     }
                     break
                 }
                 default: {
-                    toast.error("This function is not ready yet, we're sorry!")
+                    toast.error(t('header.notImplemented', {ns: 'common'}))
                 }
             }
         }
@@ -158,13 +158,13 @@ function ResponsiveAppBar() {
                 if(checkEnvironmentAndIterationToDisplay(3)){
                     navigate('/user/'+user._id+'/notifications')
                 } else {
-                    toast.error("This function is not ready yet, we're sorry!")
+                    toast.error(toast.error(t('header.notImplemented', {ns: 'common'})))
                 }
                 break
             }
             default: {
                 if(typeof option === 'string'){ // for options no yet implemented
-                    toast.error("Something went wrong, try again.")
+                    toast.error(t('errors.somethingWrong', {ns: 'common'}))
                 }
             }
         }

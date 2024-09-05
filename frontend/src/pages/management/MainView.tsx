@@ -34,14 +34,16 @@ export function MainView(){
         new RegExp("^/resetPassword.*$") // matches with "/resetPassword/*"
     ]
 
+    const currentUILanguage = (user!!) ?user.uiLanguage :undefined
+
     // NB! We set this here, because to be listening for UI-languages in any part of the app.
     // Tried doing this inside authSlice (just the part inside the "if"), but there were problems with the i18n import.
     useEffect(() => {
         // NB! This should only run once on setup, and this way we update UI-lang in case it was changed in another computer/session
-        if(user.uiLanguage!! && (getLangKeyByLabel(user.uiLanguage)!!)){
-            i18n.changeLanguage(getLangKeyByLabel(user.uiLanguage).toLowerCase())
+        if(currentUILanguage!! && (getLangKeyByLabel(currentUILanguage)!!)){
+            i18n.changeLanguage(getLangKeyByLabel(currentUILanguage).toLowerCase())
         }
-    },[user.uiLanguage])
+    },[currentUILanguage])
 
     useEffect(() => {
         if (urlListNoToolbar.some((regex: RegExp) => {

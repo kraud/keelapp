@@ -16,6 +16,10 @@
       "account": "Cuenta",
       "dashboard": "Panel de inicio",
       "logout": "Cerrar sesión"
-    }
+    },
+    "notImplemented": "Esta funcionalidad aún no está implementada. ¡Perdón!"
+  },
+  "errors": {
+    "somethingWrong": "Algo salió mal. Intentalo de nuevo."
   }
 }

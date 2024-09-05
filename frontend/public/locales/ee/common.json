@@ -16,6 +16,10 @@
       "account": "Konto",
       "dashboard": "Armatuurlaud",
       "logout": "Logi välja"
-    }
+    },
+    "notImplemented": "Vabandust, see funktsioon pole veel valmis!"
+  },
+  "errors": {
+    "somethingWrong": "Midagi läks valesti, proovige uuesti."
   }
 }

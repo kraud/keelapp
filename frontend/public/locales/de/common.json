@@ -16,6 +16,10 @@
       "account": "Konto",
       "dashboard": "Dashboard",
       "logout": "Abmelden"
-     }
+     },
+    "notImplemented": "Diese Funktion ist noch nicht bereit, es tut uns leid!"
+  },
+  "errors": {
+    "somethingWrong": "Etwas ist schiefgelaufen. Versuchen Sie es erneut."
   }
 }

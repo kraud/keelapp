@@ -21,6 +21,8 @@ import {toast} from "react-toastify";
 import {acceptFriendRequest, stringAvatar} from "../components/generalUseFunctions";
 import {useNavigate, useParams} from "react-router-dom";
 import {acceptExternalTag, clearClonedTagData} from "../features/tags/tagSlice";
+import {useTranslation} from "react-i18next";
+import {AppDispatch} from "../app/store";
 
 interface RouterNotificationProps{
     userId: string
@@ -32,7 +34,8 @@ interface NotificationHubProps {
 
 export const NotificationHub = (props: NotificationHubProps) => {
     const navigate = useNavigate()
-    const dispatch = useDispatch()
+    const dispatch = useDispatch<AppDispatch>()
+    const { t } = useTranslation(['notifications'])
     const {user} = useSelector((state: any) => state.auth)
     const {clonedTagResponse, isLoadingTags, isSuccessTags} = useSelector((state: any) => state.tags)
     const {isSuccessFriendships, isLoadingFriendships, friendships} = useSelector((state: any) => state.friendships)
@@ -48,16 +51,13 @@ export const NotificationHub = (props: NotificationHubProps) => {
         if(userId !== user._id){
             navigate(`/user/${user._id}/notifications`)
         } else {
-            // @ts-ignore
             dispatch(getNotifications())
-            // @ts-ignore
             dispatch(getFriendshipsByUserId(user._id))
         }
     }, [])
 
     useEffect(() => {
         if(isSuccessNotifications && changedNotificationList && !isLoadingNotifications){
-            // @ts-ignore
             dispatch(getNotifications())
             setChangedNotificationList(false)
         }
@@ -65,10 +65,9 @@ export const NotificationHub = (props: NotificationHubProps) => {
 
     useEffect(() => {
         if(isSuccessFriendships && changedFriendshipList && !isLoadingFriendships){
-            // @ts-ignore
             dispatch(getFriendshipsByUserId(user._id))
             setChangedFriendshipList(false)
-            toast.info("Friend request accepted")
+            toast.info(t('friendRequest.toastSuccess'))
         }
     }, [isLoadingFriendships, changedNotificationList])
 
@@ -81,7 +80,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
             setNotificationInProcess("")
             // we don't need the cloned tag data anymore, so we reset the state
             dispatch(clearClonedTagData())
-            toast.success(`Tag was added successfully to your account!`)
+            toast.success(t('shareTagRequest.toastSuccess'))
         }
     }, [clonedTagResponse, isLoadingTags, isSuccessTags, notificationInProcess])
 
@@ -99,7 +98,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
                             },
                         }}
                     >
-                        {friendUsername} sent a friend request
+                        {t('friendRequest.notificationLabel', {friendUsername: friendUsername})}
                     </Typography>
                 )
             }
@@ -116,7 +115,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
                             },
                         }}
                     >
-                        {otherUserUsername} wants to share the '{tagName}' tag with you.
+                        {t('shareTagRequest.notificationLabel', {otherUserUsername: otherUserUsername, tagName: tagName})}
                     </Typography>
                 )
             }
@@ -132,7 +131,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
                             textTransform: "capitalize"
                         }}
                     >
-                        - there was an unexpected error -
+                        {t('missingNotificationType')}
                     </Typography>
                 )
         }
@@ -303,7 +302,6 @@ export const NotificationHub = (props: NotificationHubProps) => {
 
     const onClickDelete = (notificationId: string) => {
         setChangedNotificationList(true)
-        // @ts-ignore
         dispatch(deleteNotification(notificationId))
     }
 
@@ -314,7 +312,6 @@ export const NotificationHub = (props: NotificationHubProps) => {
                     notification,
                     friendships,
                     (notificationId) => {
-                        // @ts-ignore
                         dispatch(deleteNotification(notificationId))
                     },
                     (notificationData) => {
@@ -330,7 +327,6 @@ export const NotificationHub = (props: NotificationHubProps) => {
             }
             case('shareTagRequest'):{
                 setNotificationInProcess(notification._id)
-                //@ts-ignore
                 dispatch(acceptExternalTag(notification.content.tagId))
                 break
             }
@@ -377,13 +373,13 @@ export const NotificationHub = (props: NotificationHubProps) => {
             case('friendRequest'):{
                 switch(notificationData.action){
                     case('accept'):{
-                        return("Accept friendship request")
+                        return(t('friendRequest.accept'))
                     }
                     case('ignore'):{
-                        return("Set notification as read")
+                        return(t('friendRequest.ignore'))
                     }
                     case('delete'):{
-                        return("Delete notification")
+                        return(t('friendRequest.delete'))
                     }
                     default: return("") // Tooltip will not be displayed if label === ""
                 }
@@ -391,13 +387,13 @@ export const NotificationHub = (props: NotificationHubProps) => {
             case('shareTagRequest'):{
                 switch(notificationData.action){
                     case('accept'):{
-                        return("Accept tag")
+                        return(t('shareTagRequest.accept'))
                     }
                     case('ignore'):{
-                        return("Set notification as read")
+                        return(t('shareTagRequest.ignore'))
                     }
                     case('delete'):{
-                        return("Delete notification")
+                        return(t('shareTagRequest.delete'))
                     }
                     default: return("") // Tooltip will not be displayed if label === ""
                 }
@@ -453,7 +449,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
                             textDecoration: "underline"
                         }}
                     >
-                        Notifications:
+                        {t('title')}
                     </Typography>
                 </Grid>
                 {(isLoadingNotifications || isLoadingTags) && <LinearIndeterminate/>}
@@ -473,7 +469,7 @@ export const NotificationHub = (props: NotificationHubProps) => {
                                     },
                                 }}
                             >
-                                Nothing to see here (yet!)...
+                                {t('noNotifications')}
                             </Typography>
                         </Grid>
                 }

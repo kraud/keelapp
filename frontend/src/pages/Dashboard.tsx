@@ -27,6 +27,7 @@ export function Dashboard() {
     const smallToMid = useMediaQuery(theme.breakpoints.between("sm", "md"))
     const navigate = useNavigate()
     const {user} = useSelector((state: any) => state.auth)
+    const currentUserName = (user!!) ?user.name :""
     const dispatch = useDispatch<AppDispatch>()
 
     useEffect(() => {
@@ -75,7 +76,7 @@ export function Dashboard() {
                             }}
                             align={"center"}
                         >
-                            {t('welcome.title', { name: user.name,  ns: 'dashboard' })}
+                            {t('welcome.title', { name: currentUserName,  ns: 'dashboard' })}
                         </Typography>
                     </Grid>
                 </Grid>
