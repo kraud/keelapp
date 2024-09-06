@@ -16,6 +16,7 @@ import {VerbFormES} from "./verbs/VerbFormES";
 import {VerbFormEN} from "./verbs/VerbFormEN";
 import {VerbFormEE} from "./verbs/VerbFormEE";
 import {VerbFormDE} from "./verbs/VerbFormDE";
+import {useTranslation} from "react-i18next";
 
 interface WordFormSelectorProps {
     currentLang?: Lang,
@@ -27,6 +28,7 @@ interface WordFormSelectorProps {
 
 // returns the required form, depending on the selected language and part of speech
 export function WordFormSelector(props: WordFormSelectorProps) {
+    const { t } = useTranslation(['wordRelated'])
 
     const getPartOfSpeechForm = () => {
         switch (props.partOfSpeech){
@@ -138,7 +140,7 @@ export function WordFormSelector(props: WordFormSelectorProps) {
             }
 
             default: {
-                return(<p>That language is not available yet</p>)
+                return(<p>{t('wordFormSelector.languageNotAvailable', {ns: 'wordRelated'})}</p>)
             }
         }
     }
@@ -242,7 +244,7 @@ export function WordFormSelector(props: WordFormSelectorProps) {
                 )
             }
             default: {
-                return(<p>That language is not available yet</p>)
+                return(<p>{t('wordFormSelector.languageNotAvailable', {ns: 'wordRelated'})}</p>)
             }
         }
     }

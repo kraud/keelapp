@@ -7,6 +7,7 @@ import {TextInputFormWithHook} from "../../TextInputFormHook";
 import {WordItem, TranslationItem} from "../../../ts/interfaces";
 import {Lang, NounCases} from "../../../ts/enums";
 import {getDisabledInputFieldDisplayLogic, getWordByCase} from "../commonFunctions";
+import {useTranslation} from "react-i18next";
 
 interface NounFormENProps {
     currentTranslationData: TranslationItem,
@@ -15,15 +16,15 @@ interface NounFormENProps {
 }
 // Displays the fields required to add the english translation of a noun (and handles the validations)
 export function NounFormEN(props: NounFormENProps) {
-
+    const { t } = useTranslation(['wordRelated'])
     const { currentTranslationData } = props
 
     const validationSchema = Yup.object().shape({
         singular: Yup.string()
-            .required("Singular form is required")
-            .matches(/^[^0-9]+$/, 'Must not include numbers'),
+            .required(t('wordForm.noun.errors.formEN.singularFormRequired', { ns: 'wordRelated' }))
+            .matches(/^[^0-9]+$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         plural: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
     })
 
     const {

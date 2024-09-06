@@ -17,6 +17,7 @@ import {setTimerTriggerFunction} from "../../generalUseFunctions";
 import {AutocompleteButtonWithStatus} from "../AutocompleteButtonWithStatus";
 import globalTheme from "../../../theme/theme";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import {useTranslation} from "react-i18next";
 
 interface NounFormEEProps {
     currentTranslationData: TranslationItem,
@@ -25,6 +26,7 @@ interface NounFormEEProps {
 }
 // Displays the fields required to add the estonian translation of a noun (and handles the validations)
 export function NounFormEE(props: NounFormEEProps) {
+    const { t } = useTranslation(['wordRelated'])
     const dispatch = useDispatch<AppDispatch>()
     const {autocompletedTranslationNounEE, isErrorAT, isSuccessAT, isLoadingAT, messageAT} = useSelector((state: any) => state.autocompletedTranslations)
     const [searchInEnglish, setSearchInEnglish] = useState(false)
@@ -34,20 +36,20 @@ export function NounFormEE(props: NounFormEEProps) {
 
     const validationSchema = Yup.object().shape({
         singularNimetav: Yup.string()
-            .required("Singular nimetav is required")
-            .matches(/^[^0-9]+$/, 'Must not include numbers'),
+            .required(t('wordForm.noun.errors.formEE.singularFormRequired', { ns: 'wordRelated' }))
+            .matches(/^[^0-9]+$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         pluralNimetav: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         singularOmastav: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         pluralOmastav: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         singularOsastav: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         pluralOsastav: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         shortForm: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
     })
 
     const {
@@ -238,10 +240,11 @@ export function NounFormEE(props: NounFormEEProps) {
                         >
                             <AutocompleteButtonWithStatus
                                 tooltipLabels={{
-                                    emptyQuery: "Please input 'Ainsus nimetav' first.",
-                                    noMatch: "Sorry, we don't know this word!",
-                                    foundMatch: "There is information about this word stored in our system."
+                                    emptyQuery: t('wordForm.autocompleteTranslationButton.emptyQuery', { ns: 'wordRelated', requiredField: "Ainsus nimetav" }),
+                                    noMatch: t('wordForm.autocompleteTranslationButton.noMatch', { ns: 'wordRelated' }),
+                                    foundMatch: t('wordForm.autocompleteTranslationButton.foundMatch', { ns: 'wordRelated' }),
                                 }}
+                                actionButtonLabel={t('wordForm.autocompleteTranslationButton.label', { ns: 'wordRelated', wordType: "" })}
                                 queryValue={singularNimetav}
                                 autocompleteResponse={autocompletedTranslationNounEE}
                                 loadingState={isLoadingAT}

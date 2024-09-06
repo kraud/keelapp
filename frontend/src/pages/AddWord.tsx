@@ -8,6 +8,8 @@ import {WordData} from "../ts/interfaces";
 import globalTheme from "../theme/theme";
 import {motion} from "framer-motion";
 import {routeVariantsAnimation} from "./management/RoutesWithAnimation";
+import {AppDispatch} from "../app/store";
+import {useTranslation} from "react-i18next";
 import {PartOfSpeech} from "../ts/enums";
 
 // TODO: remove after merging with UI-Language branch. Copied from generalUseFunctions
@@ -22,9 +24,12 @@ type AddWordParams = {
 
 export function AddWord() {
     const navigate = useNavigate()
-    const dispatch = useDispatch()
+    const dispatch = useDispatch<AppDispatch>()
+    const { t } = useTranslation(['common', 'wordRelated'])
     const {user} = useSelector((state: any) => state.auth)
     const {currentlySelectedPoS} = useSelector((state: any) => state.words)
+    const partOfSpeechKey = getPoSKeyByLabel(currentlySelectedPoS)
+    const translatedPoSLabel = t(`partOfSpeech.${partOfSpeechKey}`, {ns: "common"})
     const {partOfSpeech} = useParams<AddWordParams>()
     const [paramPoS, setParamPoS] = useState<PartOfSpeech | undefined>(undefined)
 
@@ -61,16 +66,15 @@ export function AddWord() {
             <WordForm
                 title={
                     (currentlySelectedPoS !== undefined)
-                        ? `Add a new ${currentlySelectedPoS.toLowerCase() }`
-                        : 'Add a new word'
+                        ? t('addWordPage.title', {ns: 'wordRelated', currentPoS: translatedPoSLabel.toLowerCase()})
+                        : t('addWordPage.titleDefault', {ns: 'wordRelated'})
                 }
                 defaultSettings={(paramPoS!!) // TODO: add other params as we imple
                     ? ({partOfSpeech: paramPoS})
                     : undefined
                 }
-                subTitle={"All the required fields must be completed before saving"}
+                subTitle={t('addWordPage.subtitle', {ns: 'wordRelated'})}
                 onSave={(wordData: WordData) => {
-                    //@ts-ignore
                     dispatch(createWord(wordData))
                 }}
             />

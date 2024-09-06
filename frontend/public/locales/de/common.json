@@ -21,5 +21,37 @@
   },
   "errors": {
     "somethingWrong": "Etwas ist schiefgelaufen. Versuchen Sie es erneut."
+  },
+  "buttons": {
+    "delete": "Löschen",
+    "confirmDelete": "{{elementType}} löschen bestätigen",
+    "clickToSeeDetailsWord": "Klicken Sie hier, um das neue Wort anzuzeigen",
+    "edit": "Bearbeiten",
+    "cancel": "Abbrechen",
+    "reset": "Zurücksetzen",
+    "submit": "Absenden",
+    "addAnotherTranslation": "Weitere Übersetzung hinzufügen"
+  },
+  "partOfSpeech": {
+    "noun": "Substantiv",
+    "pronoun": "Pronomen",
+    "verb": "Verb",
+    "adjective": "Adjektiv",
+    "adverb": "Adverb",
+    "preposition": "Präposition",
+    "conjunction": "Konjunktion",
+    "interjection": "Interjektion",
+    "properNoun": "Eigenname",
+    "numerals": "Zahlwörter"
+  },
+  "linguisticFeature ": {
+    "gender": "Geschlecht"
+  },
+  "status": {
+    "saving": "Speichern...",
+    "word": {
+      "savedSuccess": "Wort erfolgreich gespeichert",
+      "deletedSuccess": "Wort erfolgreich gelöscht"
+    }
   }
 }

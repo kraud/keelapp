@@ -15,6 +15,7 @@ import {checkEnvironmentAndIterationToDisplay} from "./forms/commonFunctions";
 import {useNavigate} from "react-router-dom";
 import {ConfirmationButton} from "./ConfirmationButton";
 import {AppDispatch} from "../app/store";
+import {useTranslation} from "react-i18next";
 
 interface DefaultSettingsInterface {
     partOfSpeech?: PartOfSpeech,
@@ -37,6 +38,7 @@ export function WordForm(props: TranslationFormProps) {
     // --------------- THIRD-PARTY HOOKS ---------------
     const navigate = useNavigate()
     const dispatch = useDispatch<AppDispatch>()
+    const { t } = useTranslation(['common', 'wordRelated'])
 
     // --------------- REDUX STATE ---------------
     const {word, isSuccess, isLoading} = useSelector((state: any) => state.words)
@@ -335,9 +337,9 @@ export function WordForm(props: TranslationFormProps) {
         setDisabledForms(true)
     }
 
-    // Toasts that need to change according to aplication state.
+    // Toasts that need to change according to application state.
     // @ts-ignore
-    const notify = () => toastId.current = toast.info('Saving...', {
+    const notify = () => toastId.current = toast.info(t('status.saving', {ns: 'common'}), {
         position: "bottom-right",
         // if initialState exist => saving toast should close automatically, because we're editing a word and success is triggered from calling screen
         // if no initialState => saving should be displayed but not closed, since it'll be replaced by "update" automatically
@@ -366,8 +368,8 @@ export function WordForm(props: TranslationFormProps) {
                             variant={"subtitle2"}
                         >
                             {(wordId!!)
-                                ? 'Word saved successfully.'
-                                : 'Word deleted successfully.'
+                                ? t('status.word.savedSuccess', {ns: 'common'})
+                                : t('status.word.deletedSuccess', {ns: 'common'})
                             }
                         </Typography>
                         {(wordId!!) &&
@@ -380,7 +382,7 @@ export function WordForm(props: TranslationFormProps) {
                                     navigate(`/word/${wordId}`)
                                 }}
                             >
-                                Click here to see the new word
+                                {t('buttons.clickToSeeDetailsWord', {ns: 'common'})}
                             </Button>
                         }
                     </Grid>
@@ -454,12 +456,12 @@ export function WordForm(props: TranslationFormProps) {
                                         onConfirm={() => {
                                             onClickDeleteWord()
                                         }}
-                                        buttonLabel={'Delete'}
+                                        buttonLabel={t('buttons.delete', {ns: 'common'})}
                                         buttonProps={{
                                             variant: "outlined",
                                             color: "warning",
                                         }}
-                                        confirmationButtonLabel={'Confirm delete word'}
+                                        confirmationButtonLabel={t('buttons.confirmDelete', {ns: 'common', elementType: 'word'})}
                                     />
                                 </Grid>
                             }
@@ -477,7 +479,7 @@ export function WordForm(props: TranslationFormProps) {
                                             if(checkEnvironmentAndIterationToDisplay(2)) {
                                                 setDisabledForms(false)
                                             } else {
-                                                toast.error("This function is not ready yet, we're sorry!")
+                                                toast.error(t('header.notImplemented', {ns: 'common'}))
                                             }
                                         } else if(props.initialState !== undefined) {
                                             reverseChangesInLocalWordState()
@@ -490,10 +492,10 @@ export function WordForm(props: TranslationFormProps) {
                                     disabled={props.disableEditing!!}
                                 >
                                     {(disabledForms)
-                                        ? "Edit"
+                                        ? t('buttons.edit', {ns: 'common'})
                                         : (props.initialState !== undefined)
-                                            ? "Cancel"
-                                            : "Reset"
+                                            ? t('buttons.cancel', {ns: 'common'})
+                                            : t('buttons.reset', {ns: 'common'})
                                     }
                                 </Button>
                             </Grid>
@@ -526,7 +528,7 @@ export function WordForm(props: TranslationFormProps) {
                                             )
                                         }
                                     >
-                                        Submit
+                                        {t('buttons.submit', {ns: 'common'})}
                                     </Button>
                                 </Grid>
                             }
@@ -634,7 +636,7 @@ export function WordForm(props: TranslationFormProps) {
                                                 borderRadius: '25px'
                                             }}
                                         >
-                                            Add another translation
+                                            {t('buttons.addAnotherTranslation', {ns: 'common'})}
                                         </Button>
                                     </Grid>
                                 </Grid>
@@ -652,7 +654,7 @@ export function WordForm(props: TranslationFormProps) {
                                         md={4}
                                     >
                                         <TextField
-                                            label={"Clue"}
+                                            label={t('formComponentLabel.clue', {ns: 'wordRelated'})}
                                             multiline
                                             rows={3}
                                             value={(completeWordData.clue) ? completeWordData.clue : ""}

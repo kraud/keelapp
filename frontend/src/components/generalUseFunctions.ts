@@ -544,3 +544,8 @@ export function getLangKeyByLabel(languageLabel: Lang){
     const match = Object.keys(Lang)[Object.values(Lang).indexOf(languageLabel)] as string
     return((match!!) ?match :"")
 }
+
+export function getPoSKeyByLabel(partOfSpeechLabel: PartOfSpeech){
+    const match = Object.keys(PartOfSpeech)[Object.values(PartOfSpeech).indexOf(partOfSpeechLabel)] as string
+    return((match!!) ?match :"")
+}

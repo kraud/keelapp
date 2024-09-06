@@ -6,12 +6,15 @@ import globalTheme from "../theme/theme";
 import Box from "@mui/material/Box";
 import {motion} from "framer-motion";
 import {childVariantsAnimation} from "../pages/management/RoutesWithAnimation";
+import {getPoSKeyByLabel} from "./generalUseFunctions";
+import {useTranslation} from "react-i18next";
 
 interface partOfSpeechSelectorProps{
     setPartOfSpeech: (pos: PartOfSpeech) => void
 }
 
 export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
+    const { t } = useTranslation(['common', 'wordRelated'])
     const implementedForms = ["Noun", "Adjective", "Adverb", "Verb"]
     const containerRef = React.useRef(null)
 
@@ -52,61 +55,42 @@ export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
         let description: {info: string, examples: string[]} = {info: "none", examples: ["*mic*" , "*check*"]}
         if(option!){
             switch(option){
-                case PartOfSpeech.noun: {
+                case(t("partOfSpeech.noun", {ns: 'common'})): {
                     description = {
-                        info: "Nouns are essential words in language that give names to people, places, things, or ideas. They help us identify and talk about the world around us.",
-                        examples: [
-                                "*Pizza* is a popular Italian dish.",
-                                "A *dog* is a loyal pet.",
-                                "A *city* is a large urban area with buildings, roads, and a bustling population."
-                        ]
+                        info: t("partOfSpeechSelector.description.noun.info", {ns: "wordRelated"}),
+                        examples: t("partOfSpeechSelector.description.noun.examples", {ns: "wordRelated", returnObjects: true})
                     }
                     break
                 }
-                case PartOfSpeech.pronoun: {
+                case(t("partOfSpeech.pronoun", {ns: 'common'})): {
                     description = {
-                        info: "Pronouns are words that replace specific nouns to make our sentences less repetitive. They help us refer to people, places, things, or ideas without constantly repeating the same noun.",
-                        examples: [
-                            "*She* is reading a book.",
-                            "*We* are going to the park.",
-                        ]
+                        info: t("partOfSpeechSelector.description.pronoun.info", {ns: "wordRelated"}),
+                        examples: t("partOfSpeechSelector.description.pronoun.examples", {ns: "wordRelated", returnObjects: true})
                     }
                     break
                 }
-                case PartOfSpeech.verb: {
+                case(t("partOfSpeech.verb", {ns: 'common'})): {
                     description = {
-                        info: "Verbs are action words that describe what someone or something does. They express actions, states, or occurrences. Verbs bring life and movement to our sentences.",
-                        examples: [
-                            "I *eat* pizza on weekends because it's my favorite food.",
-                            "The cat *jumps* onto the table to explore its surroundings."
-                        ]
+                        info: t("partOfSpeechSelector.description.verb.info", {ns: "wordRelated"}),
+                        examples: t("partOfSpeechSelector.description.verb.examples", {ns: "wordRelated", returnObjects: true})
                     }
                     break
                 }
-                case PartOfSpeech.adjective: {
+                case(t("partOfSpeech.adjective", {ns: 'common'})): {
                     description = {
-                        info: "Adjectives are words that describe or modify nouns, giving us more information about them. They help us express characteristics, qualities, or attributes of the things we talk about.",
-                        examples: [
-                            "The weather is *sunny* today, with clear skies and plenty of sunshine.",
-                            "She has a *friendly* personality and always greets everyone with a smile."
-                        ]
+                        info: t("partOfSpeechSelector.description.adjective.info", {ns: "wordRelated"}),
+                        examples: t("partOfSpeechSelector.description.adjective.examples", {ns: "wordRelated", returnObjects: true})
                     }
                     break
                 }
-                case PartOfSpeech.adverb: {
+                case(t("partOfSpeech.adverb", {ns: 'common'})): {
                     description = {
-                        info: " Adverbs are words that are used to provide more information about verbs, adjectives and other adverbs used in a sentence. There are five main types of adverbs namely, adverbs of manner, adverbs of degree, adverbs of frequency, adverbs of time and adverbs of place.",
-                        examples: [
-                            "Did you come *here* to buy an umbrella? (Adverb of place)",
-                            "I did not go to school *yesterday* as I was sick. (Adverb of time)",
-                            "Savio reads the newspaper *everyday*. (Adverb of frequency)",
-                            "Can you please come *quickly*? (Adverb of manner)",
-                            "Tony was so sleepy that he could *hardly* keep his eyes open during the meeting. (Adverb of degree)"
-                        ]
+                        info: t("partOfSpeechSelector.description.adverb.info", {ns: "wordRelated"}),
+                        examples: t("partOfSpeechSelector.description.adverb.examples", {ns: "wordRelated", returnObjects: true})
                     }
                     break
                 }
-                default: return "You'll know it when you see it."
+                default: return "You'll know it when you see it!"
             }
 
             return (
@@ -125,7 +109,7 @@ export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
                                 textDecoration: "underline",
                             }}
                         >
-                            {option}
+                            {t(`partOfSpeech.${getPoSKeyByLabel(option as PartOfSpeech)}`, {ns: "common"})}
                         </Typography>
                     </Grid>
                     {/* DESCRIPTION */}
@@ -176,7 +160,7 @@ export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
 
     const handleOnClick = (part: PartOfSpeech) => {
         if(!(implementedForms).includes(part)){
-            toast.error("This part of speech is not implemented yet, we're sorry!")
+            toast.error(t("partOfSpeechSelector.missingImplementationPoS", {ns: "wordRelated"}))
         } else {
             props.setPartOfSpeech((part as PartOfSpeech))
         }
@@ -202,7 +186,7 @@ export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
                         sx={{ typography: {xs: "h4", sm: "h3"}}}
                         align={"center"}
                     >
-                        What kind of word is it?
+                        {t("partOfSpeechSelector.title", {ns: "wordRelated"})}
                     </Typography>
                 </Grid>
                 <Grid
@@ -217,7 +201,7 @@ export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
                         sx={{ typography: {xs: "caption", sm: "subtitle2"}}}
                         align={"center"}
                     >
-                        Not sure what's what? Hover over the buttons and read the descriptions.
+                        {t("partOfSpeechSelector.subtitle", {ns: "wordRelated"})}
                     </Typography>
                 </Grid>
             </Grid>
@@ -247,7 +231,7 @@ export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
                                 onMouseEnter={(e: any) => handleMouseEnter(e)}
                                 onMouseLeave={(e: any) => handleMouseEnter(null)}
                             >
-                                {part}
+                                {t(`partOfSpeech.${getPoSKeyByLabel(part as PartOfSpeech)}`, {ns: "common"})}
                             </Button>
                         </Grid>
                     )

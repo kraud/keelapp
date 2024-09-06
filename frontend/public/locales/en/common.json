@@ -21,5 +21,37 @@
   },
   "errors": {
     "somethingWrong": "Something went wrong, try again."
+  },
+  "buttons": {
+    "delete": "Delete",
+    "confirmDelete": "Confirm delete {{elementType}}",
+    "clickToSeeDetailsWord": "Click here to see the new word",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "reset": "Reset",
+    "submit": "Submit",
+    "addAnotherTranslation": "Add another translation"
+  },
+  "partOfSpeech": {
+    "noun": "Noun",
+    "pronoun":"Pronoun",
+    "verb": "Verb",
+    "adjective":"Adjective",
+    "adverb": "Adverb",
+    "preposition":"Preposition",
+    "conjunction": "Conjunction",
+    "interjection":"Interjection",
+    "properNoun": "Proper noun",
+    "numerals": "Numerals"
+  },
+  "linguisticFeature ": {
+    "gender": "gender"
+  },
+  "status": {
+    "saving": "Saving...",
+    "word": {
+      "savedSuccess": "Word saved successfully",
+      "deletedSuccess": "Word deleted successfully"
+    }
   }
 }

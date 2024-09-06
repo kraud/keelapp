@@ -21,5 +21,37 @@
   },
   "errors": {
     "somethingWrong": "Midagi läks valesti, proovige uuesti."
+  },
+  "buttons": {
+    "delete": "Kustuta",
+    "confirmDelete": "Kinnita {{elementType}} kustutamine",
+    "clickToSeeDetailsWord": "Uue sõna vaatamiseks klõpsake siin",
+    "edit": "Muuda",
+    "cancel": "Tühista",
+    "reset": "Lähtesta",
+    "submit": "Esita",
+    "addAnotherTranslation": "Lisa veel üks tõlge"
+  },
+  "partOfSpeech": {
+    "noun": "Nimisõna",
+    "pronoun": "Asesõna",
+    "verb": "Tegusõna",
+    "adjective": "Omadussõna",
+    "adverb": "Määrsõna",
+    "preposition": "Eessõna",
+    "conjunction": "Sidesõna",
+    "interjection": "Hüüdsõna",
+    "properNoun": "Pärisnimi",
+    "numerals": "Numbrid"
+  },
+  "linguisticFeature ": {
+    "gender": "sugu"
+  },
+  "status": {
+    "saving": "Salvestamine...",
+    "word": {
+      "savedSuccess": "Sõna edukalt salvestatud",
+      "deletedSuccess": "Sõna edukalt kustutatud"
+    }
   }
 }

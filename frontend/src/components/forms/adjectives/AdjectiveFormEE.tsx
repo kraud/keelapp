@@ -16,6 +16,7 @@ import {
     getAutocompletedEstonianVerbData
 } from "../../../features/autocompletedTranslation/autocompletedTranslationSlice";
 import {AppDispatch} from "../../../app/store";
+import {useTranslation} from "react-i18next";
 
 interface AdjectiveFormEEProps {
     currentTranslationData: TranslationItem,
@@ -24,6 +25,7 @@ interface AdjectiveFormEEProps {
 }
 // Displays the fields required to add the estonian translation of a noun (and handles the validations)
 export function AdjectiveFormEE(props: AdjectiveFormEEProps) {
+    const { t } = useTranslation(['wordRelated'])
     const dispatch = useDispatch<AppDispatch>()
     const {autocompletedTranslationAdjectiveEE, isErrorAT, isSuccessAT, isLoadingAT, messageAT} = useSelector((state: any) => state.autocompletedTranslations)
     const {currentTranslationData} = props
@@ -33,29 +35,29 @@ export function AdjectiveFormEE(props: AdjectiveFormEEProps) {
     // Ülivõrre (highest) grade, as in väikseim 'smallest' =>
     const validationSchema = Yup.object().shape({
         algvorre: Yup.string()
-            .required("Algvõrre form is required")
-            .matches(/^[^0-9]+$/, 'Must not include numbers'),
+            .required(t('wordForm.adjective.errors.formEE.algvorreFormRequired', { ns: 'wordRelated' }))
+            .matches(/^[^0-9]+$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         keskvorre: Yup.string().nullable()
-            .required("Keskvõrre form is required")
-            .matches(/^[^0-9]+$/, 'Must not include numbers'),
+            .required(t('wordForm.adjective.errors.formEE.keskvorreFormRequired', { ns: 'wordRelated' }))
+            .matches(/^[^0-9]+$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         // NB! Usually, same as "kõige"+keskvõrre, but there are irregular adjectives as:
         // ilus (ilusaim), uus (uusim), õnnelik (õnnelikem)
         ulivorre: Yup.string().nullable()
-            .required("Ülivõrre form is required")
-            .matches(/^[^0-9]+$/, 'Must not include numbers'),
+            .required(t('wordForm.adjective.errors.formEE.ulivorreFormRequired', { ns: 'wordRelated' }))
+            .matches(/^[^0-9]+$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         // singularNimetav: Yup .string() // SAME AS ALGVÕRRE
         //     .required("Singular nimetav is required")
-        //     .matches(/^[^0-9]+$/, 'Must not include numbers'),
+        //     .matches(/^[^0-9]+$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         pluralNimetav: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         singularOmastav: Yup.string().nullable() // base for all remaining cases
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         pluralOmastav: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         singularOsastav: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         pluralOsastav: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
     })
 
     interface AdjectiveData {
