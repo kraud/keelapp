@@ -8,6 +8,7 @@
     "title": "Was für ein Wort ist es?",
     "subtitle": "Nicht sicher, was was ist? Bewege den Mauszeiger über die Schaltflächen und lies die Beschreibungen.",
     "description": {
+      "other": "Sie werden es erkennen, wenn Sie es sehen!",
       "noun": {
         "info": "Substantive sind grundlegende Wörter, die Menschen, Orte, Dinge oder Ideen benennen. Sie helfen uns, die Welt um uns herum zu identifizieren und darüber zu sprechen.",
         "examples": [
@@ -74,7 +75,8 @@
     "selectLanguage": "Wähle eine Sprache für das neue Wort"
   },
   "wordFormSelector": {
-    "languageNotAvailable": "Diese Sprache ist noch nicht verfügbar"
+    "languageNotAvailable": "Diese Sprache ist noch nicht verfügbar",
+    "partOfSpeechNotAvailable": "Diese Wortart ist noch nicht verfügbar"
   },
   "formComponentLabel": {
     "clue": "Hinweis"
@@ -98,7 +100,8 @@
         },
         "formEE": {
           "singularFormRequired": "'Singular Nimetav' ist erforderlich",
-          "genderRequired": "Die Auswahl des 'Geschlechts' ist erforderlich"
+          "searchInEnglishLabel": "Suche nach Substantiven auf Englisch",
+          "searchInEnglishWarning": "Vorsicht, das funktioniert nicht für alle Substantive! Versuchen Sie es bei Bedarf auf Estnisch."
         }
       }
     },
@@ -124,11 +127,44 @@
         }
       }
     },
-    "verb": {
-      "info": "Adjektive sind Wörter, die Substantive beschreiben oder modifizieren, indem sie uns mehr Informationen über sie geben. Sie helfen uns, Eigenschaften, Qualitäten oder Attribute der Dinge, über die wir sprechen, auszudrücken."
-    },
     "adverb": {
-      "info": "Adverbien sind Wörter, die verwendet werden, um mehr Informationen über Verben, Adjektive und andere Adverbien in einem Satz bereitzustellen. Es gibt fünf Haupttypen von Adverbien: der Art und Weise, des Grades, der Häufigkeit, der Zeit und des Ortes."
+      "errors": {
+        "formEN": {
+          "adverbRequired": "Das Adverb ist erforderlich"
+        },
+        "formES": {
+          "adverbRequired": "Das Adverb ist erforderlich"
+        },
+        "formDE": {
+          "adverbRequired": "Das Adverb ist erforderlich",
+          "gradableRequired": "Die Auswahl von 'stufenfähig' ist erforderlich"
+        }
+      }
+    },
+    "verb": {
+      "errors": {
+        "formEN": {
+          "simplePresentRequired": "Dieses Feld für das Präsens ist erforderlich",
+          "regularityRequired": "Das ist keine Option"
+        },
+        "formES": {
+          "infinitiveNonFiniteRequired": "Das nicht-finite Infinitiv ist erforderlich",
+          "gerundNonFiniteRequired": "Das nicht-finite Gerundium ist erforderlich",
+          "participleNonFiniteRequired": "Das nicht-finite Partizip ist erforderlich",
+          "regularityRequired": "Das ist keine Option"
+        },
+        "formDE": {
+          "infinitiveNonFiniteRequired": "Das nicht-finite Infinitiv ist erforderlich",
+          "infinitiveNotMatching": "Bitte geben Sie die Infinitivform ein (endet auf '-en', '-ern', '-eln')."
+        },
+        "formEE": {
+          "infinitiveMaRequired": "-ma Infinitiv ist erforderlich",
+          "infinitiveMaNotMatching": "Bitte geben Sie die Infinitivform ein (endet auf '-ma').",
+          "infinitiveDaRequired": "-da Infinitiv ist erforderlich",
+          "searchInEnglishLabel": "Verb auf Englisch suchen",
+          "searchInEnglishWarning": "Vorsicht, das funktioniert nicht bei allen Verben! Falls nötig, versuchen Sie es auf Estnisch."
+        }
+      }
     },
     "autocompleteTranslationButton": {
       "label": "Vervollständigen {{wordType}}",

@@ -31,7 +31,8 @@ export function NounFormES(props: NounFormESProps) {
     const { currentTranslationData } = props
 
     const validationSchema = Yup.object().shape({
-        gender: Yup.string().required("Required")
+        gender: Yup.string()
+            .required(t('wordForm.noun.errors.formES.genderRequired', { ns: 'wordRelated' }))
             .oneOf(["el", "la", "el/la"], t('wordForm.noun.errors.formES.genderRequired', { ns: 'wordRelated' })),
         singular: Yup.string()
             .required(t('wordForm.noun.errors.formES.singularFormRequired', { ns: 'wordRelated' }))

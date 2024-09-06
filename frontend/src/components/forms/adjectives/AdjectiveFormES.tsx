@@ -42,7 +42,7 @@ export function AdjectiveFormES(props: AdjectiveFormESProps) {
     // validation when adjective varies depending on gender
     const validationSchemaNeutral = Yup.object().shape({
         gender: Yup.string().required(t('wordForm.adjective.errors.formES.genderRequired', { ns: 'wordRelated' }))
-            .oneOf(["Neutral", "M/F"], "Required"),
+            .oneOf(["Neutral", "M/F"], t('wordForm.adjective.errors.formES.genderRequired', { ns: 'wordRelated' })),
         neutralSingular: Yup.string()
             .required(t('wordForm.adjective.errors.formES.singularNeutralDegreeRequired', { ns: 'wordRelated' }))
             .matches(/^[^0-9]+$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),

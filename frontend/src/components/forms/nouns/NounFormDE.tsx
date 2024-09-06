@@ -33,7 +33,10 @@ export function NounFormDE(props: NounFormDEProps) {
 
     const validationSchema = Yup.object().shape({
         gender: Yup.string().required(t('wordForm.noun.errors.formDE.genderRequired', { ns: 'wordRelated' }))
-            .oneOf([GenderDE.M as string, GenderDE.F as string, GenderDE.N as string], "Required"),
+            .oneOf(
+                [GenderDE.M as string, GenderDE.F as string, GenderDE.N as string],
+                t('wordForm.noun.errors.formDE.genderRequired', { ns: 'wordRelated' })
+            ),
         singularNominativ: Yup.string()
             .required(t('wordForm.noun.errors.formDE.singularFormRequired', { ns: 'wordRelated' }))
             .matches(/^[^0-9]+$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),

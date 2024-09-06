@@ -8,6 +8,7 @@
     "title": "Mis tüüpi sõna see on?",
     "subtitle": "Pole kindel, mis mis on? Liigu hiirega nuppude kohal ja loe kirjeldusi.",
     "description": {
+      "other": "Saate sellest aru, kui seda näete!",
       "noun": {
         "info": "Nimisõnad on keele olulised sõnad, mis annavad nimed inimestele, kohtadele, asjadele või ideedele. Need aitavad meil maailma enda ümber tuvastada ja sellest rääkida.",
         "examples": [
@@ -74,7 +75,8 @@
     "selectLanguage": "Vali uue sõna keel"
   },
   "wordFormSelector": {
-    "languageNotAvailable": "See keel pole veel saadaval"
+    "languageNotAvailable": "See keel pole veel saadaval",
+    "partOfSpeechNotAvailable": "See osa kõnest pole veel saadaval"
   },
   "formComponentLabel": {
     "clue": "Vihje"
@@ -99,7 +101,8 @@
         },
         "formEE": {
           "singularFormRequired": "'Ainsuse nimetav' on kohustuslik",
-          "genderRequired": "'Soo' valik on kohustuslik"
+          "searchInEnglishLabel": "Otsi nimisõna inglise keeles",
+          "searchInEnglishWarning": "Ettevaatust, see ei tööta kõigi nimisõnade puhul! Vajadusel proovi eesti keeles."
         }
       }
     },
@@ -125,11 +128,44 @@
         }
       }
     },
-    "verb": {
-      "info": "Omadussõnad on sõnad, mis kirjeldavad või muudavad nimisõnu, andes meile neist rohkem teavet. Need aitavad väljendada omadusi, kvaliteete või tunnuseid asjadest, millest räägime."
-    },
     "adverb": {
-      "info": "Määrsõnad on sõnad, mida kasutatakse lausete tegusõnade, omadussõnade ja teiste määrsõnade kohta lisainfo andmiseks. Peamisi määrsõnaliike on viis: viisi, määra, sageduse, aja ja koha määrsõnad."
+      "errors": {
+        "formEN": {
+          "adverbRequired": "Määrsõna on kohustuslik"
+        },
+        "formES": {
+          "adverbRequired": "Määrsõna on kohustuslik"
+        },
+        "formDE": {
+          "adverbRequired": "Määrsõna on kohustuslik",
+          "gradableRequired": "'Määrsõna järkude' valik on kohustuslik"
+        }
+      }
+    },
+    "verb": {
+      "errors": {
+        "formEN": {
+          "simplePresentRequired": "See lihtoleviku väli on kohustuslik",
+          "regularityRequired": "See pole valik"
+        },
+        "formES": {
+          "infinitiveNonFiniteRequired": "Infinitiiv mittefiniitne on kohustuslik",
+          "gerundNonFiniteRequired": "Gerundiiv mittefiniitne on kohustuslik",
+          "participleNonFiniteRequired": "Partitsiip mittefiniitne on kohustuslik",
+          "regularityRequired": "See pole valik"
+        },
+        "formDE": {
+          "infinitiveNonFiniteRequired": "Infinitiiv mittefiniitne on kohustuslik",
+          "infinitiveNotMatching": "Palun sisestage infinitiivi vorm (lõpeb '-en', '-ern', '-eln')."
+        },
+        "formEE": {
+          "infinitiveMaRequired": "-ma infinitiiv on kohustuslik",
+          "infinitiveMaNotMatching": "Palun sisestage infinitiivi vorm (lõpeb '-ma').",
+          "infinitiveDaRequired": "-da infinitiiv on kohustuslik",
+          "searchInEnglishLabel": "Otsi verbi inglise keeles",
+          "searchInEnglishWarning": "Olge ettevaatlik, see ei toimi kõigi verbidega! Vajadusel proovige eesti keeles."
+        }
+      }
     },
     "autocompleteTranslationButton": {
       "label": "Automaatselt täida {{wordType}}",

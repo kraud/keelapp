@@ -8,6 +8,7 @@
     "title": "What kind of word is it?",
     "subtitle": "Not sure what's what? Hover over the buttons and read the descriptions.",
     "description": {
+      "other": "You'll know it when you see it!",
       "noun": {
         "info":  "Nouns are essential words in language that give names to people, places, things, or ideas. They help us identify and talk about the world around us.",
         "examples": [
@@ -19,7 +20,6 @@
       "pronoun": {
         "info":  "Pronouns are words that replace specific nouns to make our sentences less repetitive. They help us refer to people, places, things, or ideas without constantly repeating the same noun.",
         "examples": [
-
           "*She* is reading a book.",
           "*We* are going to the park."
         ]
@@ -75,7 +75,8 @@
     "selectLanguage": "Pick a language for the new word"
   },
   "wordFormSelector": {
-    "languageNotAvailable": "That language is not available yet"
+    "languageNotAvailable": "That language is not available yet",
+    "partOfSpeechNotAvailable": "That part of speech is not available yet"
   },
   "formComponentLabel": {
     "clue": "Clue"
@@ -98,7 +99,9 @@
           "genderRequired": "'Gender' selection is required"
         },
         "formEE": {
-          "singularFormRequired": "'Singular nimetav' is required"
+          "singularFormRequired": "'Singular nimetav' is required",
+          "searchInEnglishLabel": "Search noun in english",
+          "searchInEnglishWarning": "Careful, this won't work for all nouns! If needed, try in Estonian."
         }
       }
     },
@@ -124,11 +127,44 @@
         }
       }
     },
-    "verb": {
-      "info": "Adjectives are words that describe or modify nouns, giving us more information about them. They help us express characteristics, qualities, or attributes of the things we talk about."
-    },
     "adverb": {
-      "info": " Adverbs are words that are used to provide more information about verbs, adjectives and other adverbs used in a sentence. There are five main types of adverbs namely, adverbs of manner, adverbs of degree, adverbs of frequency, adverbs of time and adverbs of place."
+      "errors": {
+        "formEN": {
+          "adverbRequired": "Adverb is required"
+        },
+        "formES": {
+          "adverbRequired": "Adverb is required"
+        },
+        "formDE": {
+          "adverbRequired": "Adverb is required",
+          "gradableRequired": "'Gradable' selection is required"
+        }
+      }
+    },
+    "verb": {
+      "errors": {
+        "formEN": {
+          "simplePresentRequired": "This simple present field is required",
+          "regularityRequired": "That is not an option"
+        },
+        "formES": {
+          "infinitiveNonFiniteRequired": "Infinitive non-finite is required",
+          "gerundNonFiniteRequired": "Gerund non-finite is required",
+          "participleNonFiniteRequired": "Participle non-finite is required",
+          "regularityRequired": "That is not an option"
+        },
+        "formDE": {
+          "infinitiveNonFiniteRequired": "Infinitive non-finite is required",
+          "infinitiveNotMatching": "Please input infinitive form (ends in '-en', '-ern' '-eln')."
+        },
+        "formEE": {
+          "infinitiveMaRequired": "-ma infinitive is required",
+          "infinitiveMaNotMatching": "Please input infinitive form (ends in '-ma').",
+          "infinitiveDaRequired": "-da infinitive is required",
+          "searchInEnglishLabel": "Search verb in english",
+          "searchInEnglishWarning": "Careful, this won't work for all verbs! If needed, try in Estonian."
+        }
+      }
     },
     "autocompleteTranslationButton": {
       "label": "Autocomplete {{wordType}}",

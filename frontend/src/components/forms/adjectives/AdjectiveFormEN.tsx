@@ -21,7 +21,7 @@ export function AdjectiveFormEN(props: AdjectiveFormENProps) {
 
     const validationSchema = Yup.object().shape({
         positive: Yup.string()
-            .required(t('wordForm.adjective.errors.formEN.singularFormRequired', { ns: 'wordRelated' }))
+            .required(t('wordForm.adjective.errors.formEN.positiveDegreeRequired', { ns: 'wordRelated' }))
             .matches(/^[^0-9]+$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         comparative: Yup.string().nullable()
             .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),

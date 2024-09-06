@@ -90,7 +90,7 @@ export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
                     }
                     break
                 }
-                default: return "You'll know it when you see it!"
+                default: return(t("partOfSpeechSelector.description.other", {ns: "wordRelated"}))
             }
 
             return (
@@ -109,7 +109,7 @@ export function PartOfSpeechSelector(props: partOfSpeechSelectorProps) {
                                 textDecoration: "underline",
                             }}
                         >
-                            {t(`partOfSpeech.${getPoSKeyByLabel(option as PartOfSpeech)}`, {ns: "common"})}
+                            {option}
                         </Typography>
                     </Grid>
                     {/* DESCRIPTION */}

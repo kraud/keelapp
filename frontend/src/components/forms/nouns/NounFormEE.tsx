@@ -18,6 +18,7 @@ import {AutocompleteButtonWithStatus} from "../AutocompleteButtonWithStatus";
 import globalTheme from "../../../theme/theme";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import {useTranslation} from "react-i18next";
+import Tooltip from "@mui/material/Tooltip";
 
 interface NounFormEEProps {
     currentTranslationData: TranslationItem,
@@ -256,15 +257,19 @@ export function NounFormEE(props: NounFormEEProps) {
                             <FormControlLabel
                                 value="end"
                                 control={
-                                    <Checkbox
-                                        checked={searchInEnglish}
-                                        onChange={(event: React.ChangeEvent) => {
-                                            //@ts-ignore
-                                            setSearchInEnglish(event.target.checked)
-                                        }}
-                                    />
+                                    <Tooltip
+                                        title={t('wordForm.noun.errors.formEE.searchInEnglishWarning', { ns: 'wordRelated' })}
+                                    >
+                                        <Checkbox
+                                            checked={searchInEnglish}
+                                            onChange={(event: React.ChangeEvent) => {
+                                                //@ts-ignore
+                                                setSearchInEnglish(event.target.checked)
+                                            }}
+                                        />
+                                    </Tooltip>
                                 }
-                                label="Search in english"
+                                label={t('wordForm.noun.errors.formEE.searchInEnglishLabel', { ns: 'wordRelated' })}
                                 labelPlacement="end"
                             />
                             <Grid

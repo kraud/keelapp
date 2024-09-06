@@ -46,7 +46,7 @@ export function WordFormSelector(props: WordFormSelectorProps) {
             }
             /* TODO: add remaining part of speech, as the forms are made */
             default: {
-                return(<p>That part of speech is not available yet</p>)
+                return(<p>{t('wordFormSelector.partOfSpeechNotAvailable', {ns: 'wordRelated'})}</p>)
             }
         }
     }
@@ -98,7 +98,7 @@ export function WordFormSelector(props: WordFormSelectorProps) {
                 )
             }
             default: {
-                return(<p>That language is not available yet</p>)
+                return(<p>{t('wordFormSelector.languageNotAvailable', {ns: 'wordRelated'})}</p>)
             }
         }
     }
