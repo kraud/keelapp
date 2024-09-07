@@ -39,7 +39,7 @@ export function Dashboard() {
         >
             <Grid
                 xs={12}
-                md={7}>
+            >
                 <Grid
                     container={true}
                     justifyContent={"center"}
@@ -66,8 +66,7 @@ export function Dashboard() {
                     sx={{
                         paddingLeft: globalTheme.spacing(2),
                     }}
-                    md={12}
-                    xs={7}
+                    xs={12}
                 >
                     <Grid
                         item={true}
@@ -101,22 +100,44 @@ export function Dashboard() {
                         </Grid>
                     </Grid>
                 </Grid>
-            </Grid>
-            <UserInfoPanel/>
             <Grid
                 container={true}
                 justifyContent={"center"}
-                item={true}
-                xs={12}
-                md={12}
                 sx={{
-                    border: '2px solid #0072CE',
+                    marginTop: globalTheme.spacing(3),
+                    border: '2px solid red',
                     borderRadius: '25px',
-                    padding: globalTheme.spacing(2),
                 }}
             >
-                <UserMetrics />
-            </Grid>
+                <Grid
+                    container={true}
+                    justifyContent={"center"}
+                    item={true}
+                    xl={'auto'}
+                    xs={12}
+                    sx={{
+                        border: '2px solid green',
+                        borderRadius: '25px',
+                    }}
+                >
+                    <UserInfoPanel/>
+                </Grid>
+                <Grid
+                    container={true}
+                    item={true}
+                    justifyContent={"center"}
+                    xs={12}
+                    lg={8}
+                    xl={'auto'}
+                    sx={{
+                        border: '2px solid #0072CE',
+                        borderRadius: '25px',
+                        padding: globalTheme.spacing(2),
+                    }}
+                >
+                    <UserMetrics />
+                </Grid>
+            </Grid></Grid>
         </Grid>
     )
 }

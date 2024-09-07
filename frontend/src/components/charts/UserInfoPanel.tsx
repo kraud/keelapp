@@ -39,34 +39,44 @@ export function UserInfoPanel() {
                 border: '2px solid #0072CE',
                 borderRadius: '25px',
                 padding: globalTheme.spacing(1),
-                marginBottom: globalTheme.spacing(1),
+                // marginBottom: globalTheme.spacing(1),
                 backgroundColor: '#e1e1e1'
             }}
             alignItems={'center'}
             justifyContent={"space-between"}
-            xs={12}
-            md={5}
+            xs={'auto'}
+            direction={{
+                xs: 'row',
+                lg: 'column'
+            }}
         >
             <Grid
-                flexGrow={1}
+                item={true}
+                xs={true}
                 sx={{paddingX: '2px'}}
             >
                 <UserInfoCard title={"Total Words"} data={totalWords}/>
             </Grid>
             <Grid
-                flexGrow={1}
+                item={true}
+                xs={true}
                 sx={{paddingX: '2px'}}
             >
-                <UserInfoCard title={"Incomplete Words"} data={incompleteWords} link={"review"}/>
+                <UserInfoCard
+                    title={"Incomplete Words"}
+                    data={incompleteWords}
+                    link={"review"}
+                />
             </Grid>
             <Grid
-                flexGrow={1}
+                item={true}
+                xs={true}
                 sx={{paddingX: '2px'}}
             >
                 <UserInfoCard title={"Languages"} data={totalLanguages}/>
             </Grid>
-        </Grid>);
-
+        </Grid>
+    )
 }
 
 export default UserInfoPanel;

@@ -43,9 +43,15 @@ export function UserInfoCard(prop: UserInfoCard) {
                 <Grid
                     item={true}
                     container={true}
-                    xs={(prop.link !== undefined) ? 10 : 12}
+                    xs={12}
                     alignItems={"center"}
                     justifyContent={"center"}
+                    onClick={() => {
+                        handleRedirect(prop.link)
+                    }}
+                    sx={{
+                        cursor: prop.link ? "pointer" : "initial"
+                    }}
                 >
                     <Typography
                         sx={{
@@ -62,21 +68,6 @@ export function UserInfoCard(prop: UserInfoCard) {
                         {prop.data}
                     </Typography>
                 </Grid>
-                {(prop.link !== undefined) &&
-                    <Grid
-                        item={true}
-                        justifyContent={"right"}
-                        alignItems={"initial"}
-                        xs={2}
-                    >
-                        <IosShareIcon
-                            style={{fontSize: 35}}
-                            onClick={() => {
-                                handleRedirect(prop.link)
-                            }}
-                        />
-                    </Grid>
-                }
             </Grid>
             <Grid
                 item={true}

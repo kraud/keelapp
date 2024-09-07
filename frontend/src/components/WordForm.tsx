@@ -16,11 +16,18 @@ import {useNavigate} from "react-router-dom";
 import {ConfirmationButton} from "./ConfirmationButton";
 import {AppDispatch} from "../app/store";
 
+interface DefaultSettingsInterface {
+    partOfSpeech?: PartOfSpeech,
+    language?: Lang,
+}
+
+
 interface TranslationFormProps {
     onSave: (wordData: WordData) => void,
     initialState?: WordData, // change to WordDataBE to include _id?
     title: string,
     subTitle: string,
+    defaultSettings?: DefaultSettingsInterface
     defaultDisabled?: boolean // determines how fields will be originally displayed (if disabled => text, else as text fields)
     disableEditing?: boolean // makes it impossible to edit the information on the word being displayed
 }
@@ -85,6 +92,15 @@ export function WordForm(props: TranslationFormProps) {
             }
         }
     },[props.initialState])
+
+    useEffect(() => {
+        if((props.defaultSettings!!) && (props.defaultSettings.partOfSpeech !== undefined)){
+            const partOfSpeechFormatted = PartOfSpeech[props.defaultSettings.partOfSpeech]
+            setPartOfSpeech(partOfSpeechFormatted)
+            //@ts-ignore
+            dispatch(setSelectedPoS(partOfSpeechFormatted))
+        }
+    }, [props.defaultSettings?.partOfSpeech])
 
     // TODO: replace with calculated state instead of useEffect? or maybe useMemo?
     useEffect(() => {
@@ -283,6 +299,7 @@ export function WordForm(props: TranslationFormProps) {
                 ]
             }
         )
+        navigate("/addWord")
     }
 
     // This will only be accessible if there are at least 2 other forms on screen already,

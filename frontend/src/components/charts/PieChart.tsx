@@ -3,6 +3,8 @@ import C3Chart from "./C3Chart";
 import {Button, Card, CardActions, CardContent, Grid, Typography} from "@mui/material";
 import {Data} from "c3";
 import globalTheme from "../../theme/theme";
+import {useNavigate} from "react-router-dom";
+import {Spring} from "framer-motion";
 
 const defaultOptions = (untis) => {
     return {
@@ -61,11 +63,19 @@ interface PieChartProps {
 const PieChart = (props: PieChartProps) => {
     // check if using custom or default options for pie chart
     const {data, unit, options, title} = props
+    const navigate = useNavigate();
+
+    const handleRedirect = (link: string | undefined, word: string | undefined) => {
+        // Redirigir a otra ruta
+        if (link !== undefined) {
+            navigate(link + word?.toString());
+        }
+    };
 
     let chart_options = options!! ? options : defaultOptions(unit)
 
     const [pieData, setPieData] = useState<Data>(parseData([]))
-    const [worstCategory, setWorstCategory] = useState("")
+    const [worstCategory, setWorstCategory] = useState<string>("")
 
     function getWorstCategory(parsedData: [PieCharC3]) {
         if(parsedData.length > 0){
@@ -100,7 +110,9 @@ const PieChart = (props: PieChartProps) => {
             </CardContent>
             <CardActions>
                 <Typography>
-                    Your worse category is: <Button> {worstCategory} </Button>
+                    Your worse category is: <Button onClick={() => {
+                    handleRedirect("addWord/", worstCategory)
+                }}> {worstCategory} </Button>
                 </Typography>
                 <Button size="small" color="primary">
                 </Button>

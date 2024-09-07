@@ -48,7 +48,7 @@ export const ResetPassword = (props: ResetPasswordProps) => {
     // --------------- THIRD-PARTY HOOKS ---------------
     const navigate = useNavigate()
     const dispatch = useDispatch<AppDispatch>()
-    const {userId, tokenId } = useParams<RouteResetPasswordParams>()
+    const {userId, tokenId} = useParams<RouteResetPasswordParams>()
 
     const isSettingNewPassword = userId !== undefined && tokenId !== undefined
 
