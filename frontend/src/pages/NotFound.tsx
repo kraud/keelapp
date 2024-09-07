@@ -10,6 +10,7 @@ import Typography from "@mui/material/Typography";
 import {getIconByEnvironment} from "../components/GeneralUseComponents";
 import {Lang} from "../ts/enums";
 import {useSelector} from "react-redux";
+import {useTranslation} from "react-i18next";
 
 interface NotFoundProps {
     onHideHeader: (userExist: boolean) => void
@@ -17,6 +18,7 @@ interface NotFoundProps {
 
 export function NotFound(props: NotFoundProps) {
     const {user} = useSelector((state: any) => state.auth)
+    const { t } = useTranslation(['common'])
 
     const lessThanSm = useMediaQuery(globalTheme.breakpoints.down("sm"))
     const smallToMid = useMediaQuery(globalTheme.breakpoints.between("sm", "md"))
@@ -128,7 +130,10 @@ export function NotFound(props: NotFoundProps) {
                         }}
                         fontWeight={"bold"}
                     >
-                        {(user!!) ? "click here and go to Dashboard" : "click here to login"}
+                        {(user!!)
+                            ? t('buttons.gotToDashboard', { ns: 'common' })
+                            : t('buttons.goToLogin', { ns: 'common' })
+                        }
                     </Typography>
                 </Grid>
             </Grid>

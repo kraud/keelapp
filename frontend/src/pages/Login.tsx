@@ -15,6 +15,7 @@ import {motion} from "framer-motion";
 import {childVariantsAnimation, routeVariantsAnimation} from "./management/RoutesWithAnimation";
 import {AppDispatch} from "../app/store";
 import {getIconByEnvironment} from "../components/GeneralUseComponents";
+import {useTranslation} from "react-i18next";
 
 interface UserLoginData {
     email: string;
@@ -22,6 +23,7 @@ interface UserLoginData {
 }
 
 export function Login() {
+    const { t } = useTranslation(['common', 'loginRegister'])
     // --------------- STYLING ---------------
     const componentStyles = {
         mainContainer: {
@@ -35,8 +37,11 @@ export function Login() {
 
     // --------------- FORM VALIDATION SCHEMA ---------------
     const validationSchema = Yup.object().shape({
-        email: Yup.string().required("Valid e-mail is required").email("Valid e-mail is required"),
-        password: Yup.string().required("Password is required"),
+        email: Yup.string()
+            .required(t('errors.invalidEmail', { ns: 'loginRegister' }))
+            .email(t('errors.invalidEmail', { ns: 'loginRegister' })),
+        password: Yup.string()
+            .required(t('errors.passwordRequired', { ns: 'loginRegister' })),
     })
 
     // --------------- THIRD-PARTY HOOKS ---------------
@@ -97,13 +102,13 @@ export function Login() {
                     <Typography
                         variant={"h2"}
                     >
-                        Login
+                        {t('login.title', { ns: 'loginRegister' })}
                     </Typography>
                     <Typography
                         variant={"subtitle2"}
                         align={"center" }
                     >
-                        And get started!
+                        {t('login.subtitle', { ns: 'loginRegister' })}
                     </Typography>
                 </Grid>
                 <Grid
@@ -127,7 +132,7 @@ export function Login() {
                                 {/* TODO: should this also allow login in with username? */}
                                 <TextInputFormWithHook
                                     control={control}
-                                    label={"E-mail"}
+                                    label={t('formLabels.name', { ns: 'loginRegister' })}
                                     name={"email"}
                                     defaultValue={""}
                                     errors={errors.email}
@@ -140,7 +145,7 @@ export function Login() {
                             >
                                 <TextInputFormWithHook
                                     control={control}
-                                    label={"Password"}
+                                    label={t('formLabels.password', { ns: 'loginRegister' })}
                                     name={"password"}
                                     defaultValue={""}
                                     errors={errors.password}
@@ -181,7 +186,7 @@ export function Login() {
                                         color={"success"}
                                         disabled={isLoadingAuth}
                                     >
-                                        Submit
+                                        {t('buttons.submit', { ns: 'common' })}
                                     </Button>
                                 </Grid>
                                 <Grid
@@ -201,7 +206,7 @@ export function Login() {
                                         }}
                                         disabled={isLoadingAuth}
                                     >
-                                        You don't have an account?
+                                        {t('switchSectionButtons.notRegistered', { ns: 'loginRegister' })}
                                     </Button>
                                 </Grid>
                                 <Grid
@@ -221,10 +226,9 @@ export function Login() {
                                         }}
                                         disabled={isLoadingAuth}
                                     >
-                                        Forgot you password?
+                                        {t('switchSectionButtons.forgotPassword', { ns: 'loginRegister' })}
                                     </Button>
                                 </Grid>
-                                
                             </Grid>
                         </Grid>
                     </form>

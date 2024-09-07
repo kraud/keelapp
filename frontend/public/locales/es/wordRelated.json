@@ -4,6 +4,13 @@
     "titleDefault": "Añadir una nueva palabra",
     "subtitle": "Todos los campos obligatorios deben completarse antes de guardar"
   },
+  "displayWord": {
+    "titlePos": "Vista detallada: {{currentPoS}}",
+    "titleSimple": "Vista detallada",
+    "subtitle": "Todas las traducciones almacenadas actualmente para esta palabra",
+    "toastUpdateSuccess": "La palabra se actualizó correctamente",
+    "toastError": "Algo salió mal: {{error}}"
+  },
   "partOfSpeechSelector": {
     "title": "¿Qué tipo de palabra es?",
     "subtitle": "¿No estás seguro de qué es qué? Pasa el ratón sobre los botones y lee las descripciones.",

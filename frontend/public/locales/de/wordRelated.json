@@ -4,6 +4,13 @@
     "titleDefault": "Füge ein neues Wort hinzu",
     "subtitle": "Alle Pflichtfelder müssen ausgefüllt werden, bevor gespeichert werden kann"
   },
+  "displayWord": {
+    "titlePos": "Detailansicht: {{currentPoS}}",
+    "titleSimple": "Detailansicht",
+    "subtitle": "Alle derzeit gespeicherten Übersetzungen für dieses Wort",
+    "toastUpdateSuccess": "Das Wort wurde erfolgreich aktualisiert",
+    "toastError": "Etwas ist schief gelaufen: {{error}}"
+  },
   "partOfSpeechSelector": {
     "title": "Was für ein Wort ist es?",
     "subtitle": "Nicht sicher, was was ist? Bewege den Mauszeiger über die Schaltflächen und lies die Beschreibungen.",

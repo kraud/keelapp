@@ -22,6 +22,8 @@ import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import {useFollowUnfollowTag, useIsUserFollowingTag} from "../hooks/useFollowUnfollowTag";
 import {Lang} from "../ts/enums";
+import {useTranslation} from "react-i18next";
+import {AppDispatch} from "../app/store";
 
 interface RouterTagProps{
     tagId: string
@@ -32,7 +34,8 @@ interface DisplayTagProps {
 
 export function DisplayTag(props: DisplayTagProps){
     const navigate = useNavigate()
-    const dispatch = useDispatch()
+    const dispatch = useDispatch<AppDispatch>()
+    const { t } = useTranslation(['common', 'tags'])
     // @ts-ignore
     const { tagId } = useParams<RouterTagProps>()
     const {followedTagsByUser, followedTagResponse, clonedTagResponse, fullTagData, isLoadingTags, isSuccessTags, isError, message} = useSelector((state: any) => state.tags)
@@ -80,7 +83,7 @@ export function DisplayTag(props: DisplayTagProps){
 
     useEffect(() => {
         if(isError){
-            toast.error(`Something went wrong: ${message}`, {
+            toast.error(t('displayTag.toastError', { error: message, ns: 'tags' }), {
                 toastId: "click-on-modal"
             })
         }
@@ -89,7 +92,7 @@ export function DisplayTag(props: DisplayTagProps){
     useEffect(() => {
         if(!isLoadingTags && isSuccessTags && (fullTagData !== undefined)){
             if(!isEditing && isDeleting){ // if not editing and fullTagData updated => just deleted that tag now stored in fullTagData
-                toast.info(`${fullTagData.label} tag was deleted!`)
+                toast.info(t('displayTag.toastTagDeletedSuccess', { tagLabel: fullTagData.label, ns: 'tags' }))
                 // TODO: close modal? Add timer to close?
                 setIsDeleting(false)
                 setIsCurrentTagHasBeenDeleted(true)
@@ -113,7 +116,7 @@ export function DisplayTag(props: DisplayTagProps){
         if((clonedTagResponse !== undefined) && (!isLoadingTags) && (isSuccessTags)){
             // we don't need the cloned tag data anymore, so we reset the state
             dispatch(clearClonedTagData())
-            toast.success(`Tag and words were successfully added to your account!`)
+            toast.success(t('displayTag.toastTagCloneSuccess', { tagLabel: fullTagData.label, ns: 'tags' }))
         }
     }, [isLoadingTags, isSuccessTags, clonedTagResponse])
 
@@ -179,7 +182,7 @@ export function DisplayTag(props: DisplayTagProps){
                             fullWidth={true}
                             startIcon={<ArrowBackIcon />}
                         >
-                            Return
+                            {t('buttons.return', { ns: 'common' })}
                         </Button>
                     </Grid>
                     {(
@@ -207,7 +210,7 @@ export function DisplayTag(props: DisplayTagProps){
                                     fullWidth={true}
                                     startIcon={<ContentCopyIcon/>}
                                 >
-                                    Clone tag and words
+                                    {t('buttons.cloneTagAndWords', { ns: 'common' })}
                                 </Button>
                             </Grid>
                             <Grid
@@ -222,7 +225,10 @@ export function DisplayTag(props: DisplayTagProps){
                                     fullWidth={true}
                                     startIcon={(userFollowsTag) ? <BookmarkRemoveIcon/> :<BookmarkAddIcon/>}
                                 >
-                                    {(userFollowsTag) ?'Unfollow tag' :'Follow tag'}
+                                    {(userFollowsTag)
+                                        ? t('buttons.unfollowTag', { ns: 'common' })
+                                        : t('buttons.followTag', { ns: 'common' })
+                                    }
                                 </Button>
                             </Grid>
                         </Grid>

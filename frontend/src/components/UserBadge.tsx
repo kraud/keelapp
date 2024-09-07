@@ -7,6 +7,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import {useTheme} from "@mui/material/styles";
 import {DnDLanguageOrderSelector} from "./DnDLanguageOrderSelector";
 import {Lang} from "../ts/enums";
+import {useTranslation} from "react-i18next";
 
 type EditingProps = {
     isEditing?: boolean // when true => user and username become TextFields
@@ -19,6 +20,7 @@ type UserBadgeProps = {
 } & EditingProps
 
 export const UserBadge = (props: UserBadgeProps) => {
+    const { t } = useTranslation(['common'])
     const theme = useTheme()
     const lessThanMd = useMediaQuery(theme.breakpoints.down("md"))
 
@@ -58,7 +60,7 @@ export const UserBadge = (props: UserBadgeProps) => {
                     {(props.isEditing!!)
                         ?
                         <TextField
-                            label={"Name"}
+                            label={t('userData.name', { ns: 'common' })}
                             type={"text"}
                             fullWidth={true}
                             value={props.userData.name}
@@ -92,7 +94,7 @@ export const UserBadge = (props: UserBadgeProps) => {
                     {(props.isEditing!!)
                         ?
                         <TextField
-                            label={"Username"}
+                            label={t('userData.username', { ns: 'common' })}
                             type={"text"}
                             fullWidth={true}
                             value={props.userData.username}
@@ -221,7 +223,7 @@ export const UserBadge = (props: UserBadgeProps) => {
                     disabled={!props.isEditing!!}
                     selectedItemsTitle={""}
                     displayItems={'flag'}
-                    noItemsSelectedMessage={'Please select at least 2 languages.'}
+                    noItemsSelectedMessage={t('userData.errors.notEnoughLanguages', { ns: 'common' })}
                     displayLeftActionButton={{
                         selectedItemLabel: (props.userData.uiLanguage!!) ?props.userData.uiLanguage :Lang.EN,
                         onLeftActionButtonClick: (clickedItemLabel: string) => {

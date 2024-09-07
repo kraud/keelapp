@@ -19,18 +19,45 @@
     },
     "notImplemented": "This function is not ready yet, we're sorry!"
   },
+  "sections": {
+    "dashboard": "Dashboard",
+    "tags": "Tags",
+    "friends": "Friends"
+  },
   "errors": {
     "somethingWrong": "Something went wrong, try again."
   },
   "buttons": {
     "delete": "Delete",
     "confirmDelete": "Confirm delete {{elementType}}",
+    "confirm": "Confirm",
     "clickToSeeDetailsWord": "Click here to see the new word",
     "edit": "Edit",
     "cancel": "Cancel",
+    "return": "Return",
+    "close": "Close",
     "reset": "Reset",
     "submit": "Submit",
-    "addAnotherTranslation": "Add another translation"
+    "addAnotherTranslation": "Add another translation",
+    "addFriends": "Add Friends",
+    "createTag": "Create Tag",
+    "editProfile": "Edit profile",
+    "saveChanges": "Save",
+    "sendTag": "Send Tag",
+    "followTag": "Follow Tag",
+    "unfollowTag": "Unfollow Tag",
+    "sendToFriend": "Send to friend",
+    "addFriend": "Add friend",
+    "acceptRequest": "Accept request",
+    "cancelRequest": "Cancel request",
+    "deleteFriendship": "Delete Friendship",
+    "deleteTag": "Delete Tag",
+    "confirmCancelRequest": "Confirm cancel request",
+    "confirmDeleteFriendship": "Confirm delete friend",
+    "cloneTagAndWords": "Clone Tag and words",
+    "goToDashboard": "Click here and go to Dashboard",
+    "goToLogin": "Click here to login",
+    "deleteAllWords": "Delete all words"
   },
   "partOfSpeech": {
     "noun": "Noun",
@@ -52,6 +79,18 @@
     "word": {
       "savedSuccess": "Word saved successfully",
       "deletedSuccess": "Word deleted successfully"
+    }
+  },
+  "userData": {
+    "name": "name",
+    "username": "username",
+    "password": "password",
+    "email": "email",
+    "toastMessages": {
+      "updateSuccess": "User data updated successfully!"
+    },
+    "errors": {
+      "notEnoughLanguages": "Please select at least 2 languages."
     }
   }
 }

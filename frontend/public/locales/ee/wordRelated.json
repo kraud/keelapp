@@ -4,6 +4,13 @@
     "titleDefault": "Lisa uus sõna",
     "subtitle": "Kõik kohustuslikud väljad tuleb enne salvestamist täita"
   },
+  "displayWord": {
+    "titlePos": "Üksikasjalik vaatamine: {{currentPoS}}",
+    "titleSimple": "Üksikasjalik vaatamine",
+    "subtitle": "Kõik praegu salvestatud tõlked sellele sõnale",
+    "toastUpdateSuccess": "Sõna on edukalt uuendatud",
+    "toastError": "Midagi läks valesti: {{error}}"
+  },
   "partOfSpeechSelector": {
     "title": "Mis tüüpi sõna see on?",
     "subtitle": "Pole kindel, mis mis on? Liigu hiirega nuppude kohal ja loe kirjeldusi.",
@@ -81,7 +88,6 @@
   "formComponentLabel": {
     "clue": "Vihje"
   },
-
   "wordForm": {
     "errors": {
       "noNumbers": "Ei tohi sisaldada numbreid"

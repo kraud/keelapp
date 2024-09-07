@@ -15,6 +15,7 @@ import {motion} from "framer-motion";
 import {childVariantsAnimation, routeVariantsAnimation} from "./management/RoutesWithAnimation";
 import {AppDispatch} from "../app/store";
 import {getAppTitle} from "./Login";
+import {useTranslation} from "react-i18next";
 
 export interface UserRegisterData {
     name: string
@@ -25,6 +26,7 @@ export interface UserRegisterData {
 }
 
 export function Register() {
+    const { t } = useTranslation(['common', 'loginRegister'])
     // --------------- STYLING ---------------
     const componentStyles = {
         mainContainer: {
@@ -39,12 +41,14 @@ export function Register() {
 
     // --------------- FORM VALIDATION SCHEMA ---------------
     const validationSchema = Yup.object().shape({
-        name: Yup.string().required("Name is required"),
-        email: Yup.string().required("E-mail is required").email("Valid e-mail is required"),
-        username: Yup.string().required("Username is required"), // TODO: later check if username is not already registered
-        password: Yup.string().required("Password is required"),
-        password2: Yup.string().required("Password2 is required")
-            .oneOf([Yup.ref('password')], "Passwords don't match"),
+        name: Yup.string().required(t('errors.nameRequired', { ns: 'loginRegister' })),
+        email: Yup.string()
+            .required(t('errors.emailRequired', { ns: 'loginRegister' }))
+            .email(t('errors.invalidEmail', { ns: 'loginRegister' })),
+        username: Yup.string().required(t('errors.usernameRequired', { ns: 'loginRegister' })), // TODO: later check if username is not already registered
+        password: Yup.string().required(t('errors.passwordRequired', { ns: 'loginRegister' })),
+        password2: Yup.string().required(t('errors.passwordRepeatRequired', { ns: 'loginRegister' }))
+            .oneOf([Yup.ref('password')], t('errors.passwordRepeatMustMatch', { ns: 'loginRegister' })),
     })
 
     // --------------- THIRD-PARTY HOOKS ---------------
@@ -107,13 +111,13 @@ export function Register() {
                     <Typography
                         variant={"h2"}
                     >
-                        Register
+                        {t('register.title', { ns: 'loginRegister' })}
                     </Typography>
                     <Typography
                         variant={"subtitle2"}
                         align={"center" }
                     >
-                        Please create an account
+                        {t('register.subtitle', { ns: 'loginRegister' })}
                     </Typography>
                 </Grid>
                 <Grid
@@ -136,7 +140,7 @@ export function Register() {
                             >
                                 <TextInputFormWithHook
                                     control={control}
-                                    label={"Name"}
+                                    label={t('formLabels.name', { ns: 'loginRegister' })}
                                     name={"name"}
                                     defaultValue={""}
                                     errors={errors.name}
@@ -148,7 +152,7 @@ export function Register() {
                             >
                                 <TextInputFormWithHook
                                     control={control}
-                                    label={"E-mail"}
+                                    label={t('formLabels.email', { ns: 'loginRegister' })}
                                     name={"email"}
                                     defaultValue={""}
                                     errors={errors.email}
@@ -161,7 +165,7 @@ export function Register() {
                             >
                                 <TextInputFormWithHook
                                     control={control}
-                                    label={"Username"}
+                                    label={t('formLabels.username', { ns: 'loginRegister' })}
                                     name={"username"}
                                     defaultValue={""}
                                     errors={errors.username}
@@ -173,7 +177,7 @@ export function Register() {
                             >
                                 <TextInputFormWithHook
                                     control={control}
-                                    label={"Password"}
+                                    label={t('formLabels.password', { ns: 'loginRegister' })}
                                     name={"password"}
                                     defaultValue={""}
                                     errors={errors.password}
@@ -186,7 +190,7 @@ export function Register() {
                             >
                                 <TextInputFormWithHook
                                     control={control}
-                                    label={"Confirm password"}
+                                    label={t('formLabels.confirmPassword', { ns: 'loginRegister' })}
                                     name={"password2"}
                                     defaultValue={""}
                                     errors={errors.password2}
@@ -221,7 +225,7 @@ export function Register() {
                                         color={"success"}
                                         disabled={isLoadingAuth}
                                     >
-                                        Submit
+                                        {t('buttons.submit', { ns: 'common' })}
                                     </Button>
                                 </Grid>
                                 <Grid
@@ -234,7 +238,7 @@ export function Register() {
                                         color={"error"}
                                         disabled={isLoadingAuth}
                                     >
-                                        Reset
+                                        {t('buttons.reset', { ns: 'common' })}
                                     </Button>
                                 </Grid>
                             </Grid>
@@ -253,7 +257,7 @@ export function Register() {
                                         textTransform: 'none',
                                     }}
                                 >
-                                    Already registered?
+                                    {t('switchSectionButtons.alreadyRegistered', {ns: 'loginRegister'})}
                                 </Button>
                             </Grid>
                         </Grid>

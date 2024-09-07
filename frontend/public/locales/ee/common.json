@@ -19,18 +19,45 @@
     },
     "notImplemented": "Vabandust, see funktsioon pole veel valmis!"
   },
+  "sections": {
+    "dashboard": "Dashboard",
+    "tags": "Tags",
+    "friends": "Sõbrad"
+  },
   "errors": {
     "somethingWrong": "Midagi läks valesti, proovige uuesti."
   },
   "buttons": {
     "delete": "Kustuta",
     "confirmDelete": "Kinnita {{elementType}} kustutamine",
+    "confirm": "Kinnita",
     "clickToSeeDetailsWord": "Uue sõna vaatamiseks klõpsake siin",
     "edit": "Muuda",
     "cancel": "Tühista",
+    "return": "Tagasi",
+    "close": "Sulgeda",
     "reset": "Lähtesta",
     "submit": "Esita",
-    "addAnotherTranslation": "Lisa veel üks tõlge"
+    "addAnotherTranslation": "Lisa veel üks tõlge",
+    "addFriends": "Lisa sõpru",
+    "createTag": "Loo Tag",
+    "editProfile": "Muuda profiili",
+    "saveChanges": "Salvesta",
+    "sendTag": "Saada Tag",
+    "followTag": "Jälgi Tagi",
+    "unfollowTag": "Lõpeta Tagi jälgmine",
+    "sendToFriend": "Saada sõbrale",
+    "addFriend": "Lisa sõber",
+    "acceptRequest": "Nõustuge taotlusega",
+    "cancelRequest": "Tühista taotlus",
+    "deleteFriendship": "Kustuta sõprus",
+    "deleteTag": "Kustuta Tag",
+    "confirmCancelRequest": "Kinnitage tühistamistaotlus",
+    "confirmDeleteFriendship": "Kinnitage sõbra kustutamine",
+    "cloneTagAndWords": "Klooni Tag ja sõnad",
+    "goToDashboard": "Klõpsake siin ja minge juhtpaneelile",
+    "goToLogin": "Sisselogimiseks klõpsake siin",
+    "deleteAllWords": "Kustuta kõik sõnad"
   },
   "partOfSpeech": {
     "noun": "Nimisõna",
@@ -52,6 +79,18 @@
     "word": {
       "savedSuccess": "Sõna edukalt salvestatud",
       "deletedSuccess": "Sõna edukalt kustutatud"
+    }
+  },
+  "userData": {
+    "name": "Nimi",
+    "username": "Kasutajanimi",
+    "password": "Parool",
+    "email": "E-post",
+    "toastMessages": {
+      "updateSuccess": "Kasutajaandmete värskendamine õnnestus!"
+    },
+    "errors": {
+      "notEnoughLanguages": "Valige vähemalt 2 keelt."
     }
   }
 }

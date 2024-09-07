@@ -4,6 +4,13 @@
     "titleDefault": "Add a new word",
     "subtitle": "All the required fields must be completed before saving"
   },
+  "displayWord": {
+    "titlePos": "Detailed view: {{currentPoS}}",
+    "titleSimple": "Detailed view",
+    "subtitle": "All the currently stored translations for this word",
+    "toastUpdateSuccess": "Word was updated successfully",
+    "toastError": "Something went wrong: {{error}}"
+  },
   "partOfSpeechSelector": {
     "title": "What kind of word is it?",
     "subtitle": "Not sure what's what? Hover over the buttons and read the descriptions.",

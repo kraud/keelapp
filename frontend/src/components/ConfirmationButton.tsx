@@ -3,6 +3,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import ClearIcon from "@mui/icons-material/Clear";
 import React, {useState} from "react";
 import globalTheme from "../theme/theme";
+import {useTranslation} from "react-i18next";
 
 interface ConfirmationButtonProps{
     // children: any
@@ -19,6 +20,7 @@ interface ConfirmationButtonProps{
 // This component displays a button, which when clicked it switches to a confirmation-cancellation button
 // If confirmed the function passed inside the props will be triggered
 export const ConfirmationButton = (props: ConfirmationButtonProps) => {
+    const { t } = useTranslation(['common'])
     const [buttonWasClicked, setButtonWasClicked] = useState(false)
     return(
         <Grid
@@ -56,7 +58,10 @@ export const ConfirmationButton = (props: ConfirmationButtonProps) => {
                             fullWidth={true}
                             endIcon={<CheckIcon />}
                         >
-                            {(props.confirmationButtonLabel !== undefined) ?props.confirmationButtonLabel :'Confirm'}
+                            {(props.confirmationButtonLabel !== undefined)
+                                ? props.confirmationButtonLabel
+                                : t('buttons.confirm', { ns: 'common' })
+                            }
                         </Button>
                     </Grid>
                     <Grid
@@ -75,7 +80,10 @@ export const ConfirmationButton = (props: ConfirmationButtonProps) => {
                             fullWidth={true}
                             endIcon={<ClearIcon/>}
                         >
-                            {(props.cancellationButtonLabel !== undefined) ?props.cancellationButtonLabel :'Cancel'}
+                            {(props.cancellationButtonLabel !== undefined)
+                                ? props.cancellationButtonLabel
+                                : t('buttons.cancel', { ns: 'common' })
+                            }
                         </Button>
                     </Grid>
                 </Grid>
