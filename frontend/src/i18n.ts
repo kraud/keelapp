@@ -7,7 +7,7 @@ i18n
     // i18next-http-backend
     // loads translations from your server
     // https://github.com/i18next/i18next-http-backend
-    .use(Backend) // stored in ../public/locales/[lang]/translation.json
+    .use(Backend) // stored in ../public/locales/[lang]/[namespace].json
     // detect user language
     // learn more: https://github.com/i18next/i18next-browser-languageDetector
     .use(LanguageDetector)
@@ -24,7 +24,7 @@ i18n
         // lng: (UILang!!) ? UILang :undefined, // Language to use (overrides language detection). If set to 'cimode' the output text will be the key
         interpolation: {
             escapeValue: false, // not needed for react as it escapes by default
-        },
+        }
     })
 
 export default i18n

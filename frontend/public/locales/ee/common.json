@@ -57,7 +57,13 @@
     "cloneTagAndWords": "Klooni Tag ja sõnad",
     "goToDashboard": "Klõpsake siin ja minge juhtpaneelile",
     "goToLogin": "Sisselogimiseks klõpsake siin",
-    "deleteAllWords": "Kustuta kõik sõnad"
+    "deleteAllWords": "Kustuta kõik sõnad",
+    "hideFilters": "Peida filtrid",
+    "showFilters": "Kuva filtrid",
+    "createExercises": "Loo harjutusi",
+    "detailedView": "Detailne vaade",
+    "assignTag": "Määra silt",
+    "deleteSelected": "Kustuta valitud"
   },
   "partOfSpeech": {
     "noun": "Nimisõna",

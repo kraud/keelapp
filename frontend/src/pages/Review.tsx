@@ -18,12 +18,13 @@ import {createColumnsReviewTable} from "../components/table/columns/ReviewTableC
 import {FilterItem, TagData} from "../ts/interfaces";
 import {
     extractTagsArrayFromUnknownFormat,
-    getAllIndividualTagDataFromFilterItem, getIntersectionBetweenLists
+    getAllIndividualTagDataFromFilterItem, getIntersectionBetweenLists, getPoSKeyByLabel
 } from "../components/generalUseFunctions";
 import {applyNewTagToSelectedWordsById, getTagById} from "../features/tags/tagSlice";
 import Box from "@mui/material/Box";
 import LinearIndeterminate from "../components/Spinner";
 import {AppDispatch} from "../app/store";
+import {useTranslation} from "react-i18next";
 
 export function Review(){
     const componentStyles = {
@@ -45,6 +46,7 @@ export function Review(){
     }
     const navigate = useNavigate()
     const dispatch = useDispatch<AppDispatch>()
+    const { t } = useTranslation(['review', 'common'])
     const {user} = useSelector((state: any) => state.auth)
     // Languages currently displayed as columns on the table
     const [allSelectedLanguages, setAllSelectedLanguages] = useState<string[]>(user.languages)
@@ -65,7 +67,7 @@ export function Review(){
 
     useEffect(() => {
         if(isError){
-            toast.error(`*Something went wrong: ${message}`)
+            toast.error(t('errors.somethingWrong', { error: message,  ns: 'common' }))
         }
         if(!user){
             navigate('/login')
@@ -86,7 +88,7 @@ export function Review(){
                     filterValue: 'Placeholder-value. Check restrictiveArray.',
                     restrictiveArray: searchParams.getAll("tags").map((param) => {
                         return({
-                            _id: param // this is the only data we currently have for this tag, we'll trigger simpleSearch with this, while also
+                            _id: param // this is the only data we currently have for this tag, we'll trigger simpleSearch with this
                         })
                     }),
                 } as FilterItem])
@@ -260,7 +262,7 @@ export function Review(){
         // finishedDeleting will only be false while waiting for a response from backend
         if(!finishedDeleting && !isLoading){
             // closeModal
-            toast.success(`Word was deleted successfully`, {
+            toast.success(t('toastMessages.wordDeleted', { error: message,  ns: 'review' }), {
                 toastId: "click-on-modal"
             })
             // we reverse to the original state, before sending data to update
@@ -273,7 +275,7 @@ export function Review(){
     useEffect(() => {
         if(isAddingTags && !isLoadingTags && isSuccessTags){
             // closeModal
-            toast.success(`Tags were added successfully`)
+            toast.success(t('toastMessages.tagAddedToWords', { error: message,  ns: 'review' }))
             handleOnModalClose()
             //@ts-ignore
             dispatch(getWordsSimplified()) // to update the list of words displayed on the table
@@ -382,7 +384,10 @@ export function Review(){
                             variant={"subtitle1"}
                             color={"secondary"}
                         >
-                            {(displayFilers) ?'Hide filters' :'Show filters'}
+                            {(displayFilers)
+                                ? t('buttons.hideFilters', { ns: 'common' })
+                                : t('buttons.showFilters', { ns: 'common' })
+                            }
                         </Typography>
                     </Grid>
                 </Grid>
@@ -410,8 +415,8 @@ export function Review(){
                                 otherItems={otherLanguages}
                                 setOtherItems={(languages: string[]) => setOtherLanguages(languages)}
                                 direction={"horizontal"}
-                                selectedItemsTitle={"Active"}
-                                otherItemsTitle={"Hidden"}
+                                selectedItemsTitle={t('fieldLabels.activeLanguages', { ns: 'review' })}
+                                otherItemsTitle={t('fieldLabels.hiddenLanguages', { ns: 'review' })}
                             />
                         </Grid>
                         <Grid
@@ -486,7 +491,16 @@ export function Review(){
                     sortedAndSelectedLanguages={allSelectedLanguages}
                     rowData={filterWordsWithNoMatchesWithLanguageList(wordsSimple.words)}
                     calculateColumns={(displayGender: boolean) => {
-                        return(createColumnsReviewTable(allSelectedLanguages, displayGender, user))
+                        return(createColumnsReviewTable(
+                            allSelectedLanguages,
+                            displayGender,
+                            user,
+                            (partOfSpeech: string) => {
+                                return(
+                                    t(`partOfSpeech.${getPoSKeyByLabel(partOfSpeech as PartOfSpeech)}`, { ns: 'common' })
+                                )
+                            }
+                        ))
                     }}
                     partsOfSpeech={wordsSimple.partsOfSpeechIncluded}
                     setOrderColumns={(languages: string[]) => changeLanguageOrderFromTable(languages)}
@@ -496,7 +510,7 @@ export function Review(){
                             variant: "outlined",
                             color: "secondary",
                             disabled: true, // TODO: to be implemented eventually, will redirect to a version of the Practice screen
-                            label: "Create exercises",
+                            label: t('buttons.createExercises', { ns: 'common' }),
                             onClick: () => null,
                             displayBySelectionAmount: (amountSelected: number) => {
                                 return (amountSelected > 1)
@@ -507,7 +521,7 @@ export function Review(){
                             variant: "outlined",
                             color: "secondary",
                             disabled: false,
-                            label: "Detailed View",
+                            label: t('buttons.detailedView', { ns: 'common' }),
                             onClick: (rowSelection: any) => goToDetailedView(rowSelection),
                             displayBySelectionAmount: (amountSelected: number) => {
                                 return (amountSelected === 1)
@@ -518,7 +532,7 @@ export function Review(){
                             variant: "outlined",
                             color: "secondary",
                             disabled: false,
-                            label: "Assign-tag", //
+                            label: t('buttons.assignTag', { ns: 'common' }), //
                             onClick: (rowSelection: any) => {
                                 setOpenAssignTagModal(true)
                                 setSelectedRowsForBulkTagAssign(getWordsIdFromRowSelection(rowSelection))
@@ -532,7 +546,7 @@ export function Review(){
                             variant: "outlined",
                             color: "error",
                             disabled: false,
-                            label: "Delete selected",
+                            label: t('buttons.deleteSelected', { ns: 'common' }),
                             setSelectionOnClick: true, //
                             onClick: (rowSelection: any) => {
                                 deleteSelectedRows(rowSelection)
@@ -543,7 +557,7 @@ export function Review(){
                                 return (amountSelected > 0)
                             },
                             requiresConfirmation: true,
-                            confirmationButtonLabel: 'Confirm delete',
+                            confirmationButtonLabel: t('buttons.confirm', { ns: 'common' }),
                         }
                     ]}
                 />
@@ -587,7 +601,7 @@ export function Review(){
                                     <Typography
                                         variant={"h4"}
                                     >
-                                        Assign tag
+                                        {t('buttons.assignTag', { ns: 'common' })}
                                     </Typography>
 
                                     {(isLoadingTags) && <LinearIndeterminate/>}
@@ -600,7 +614,7 @@ export function Review(){
                                         color={"error"}
                                         onClick={() => handleOnModalClose()}
                                     >
-                                        cancel
+                                        {t('buttons.cancel', { ns: 'common' })}
                                     </Button>
                                 </Grid>
                                 <Grid
@@ -614,7 +628,7 @@ export function Review(){
                                             onRowSelectionApplyNewTags(selectedRowsForBulkTagAssign)
                                         }}
                                     >
-                                        apply
+                                        {t('buttons.apply', { ns: 'common' })}
                                     </Button>
                                 </Grid>
                             </Grid>

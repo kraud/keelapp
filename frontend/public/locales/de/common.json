@@ -57,7 +57,13 @@
     "cloneTagAndWords": "Tag und Wörter klonen",
     "goToDashboard": "Klicken Sie hier und gehen Sie zum Dashboard",
     "goToLogin": "Klicken Sie hier, um sich anzumelden",
-    "deleteAllWords": "Alle Wörter löschen"
+    "deleteAllWords": "Alle Wörter löschen",
+    "hideFilters": "Filter ausblenden",
+    "showFilters": "Filter anzeigen",
+    "createExercises": "Erstellen Sie Übungen",
+    "detailedView": "Detailansicht",
+    "assignTag": "Tag zuweisen",
+    "deleteSelected": "Ausgewählte löschen"
   },
   "partOfSpeech": {
     "noun": "Substantiv",

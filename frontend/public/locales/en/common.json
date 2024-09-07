@@ -57,7 +57,13 @@
     "cloneTagAndWords": "Clone Tag and words",
     "goToDashboard": "Click here and go to Dashboard",
     "goToLogin": "Click here to login",
-    "deleteAllWords": "Delete all words"
+    "deleteAllWords": "Delete all words",
+    "hideFilters": "Hide filters",
+    "showFilters": "Show filters",
+    "createExercises": "Create exercises",
+    "detailedView": "Detailed View",
+    "assignTag": "Assign Tag",
+    "deleteSelected": "Delete selected"
   },
   "partOfSpeech": {
     "noun": "Noun",
