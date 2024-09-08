@@ -1,49 +1,77 @@
 import React, {useEffect, useState} from 'react';
-import {Grid} from "@mui/material";
+import {Grid, ToggleButtonGroup, ToggleButton} from "@mui/material";
 import {useSelector} from "react-redux";
 import PieChart from "./PieChart";
 import BarChart from "./BarChart";
+
+enum MetricsType {
+    WORDS, TRANSLATIONS
+}
 
 
 export function UserMetrics() {
     const {isSuccess, data} = useSelector((state: any) => state.metrics)
 
     const [pieData, setPieData] = useState({})
-    const [columnsData, setColumnsData] = useState({})
+    const [barCharData, setBarCharData] = useState({})
+    const [currentMetricsType, setCurrentMetricsType] = useState<MetricsType>(MetricsType.WORDS)
 
     useEffect(() => {
         if(isSuccess) {
-            setPieData(data.wordsPerPOS)
-            setColumnsData(data.wordsPerMonth)
+            if (currentMetricsType === MetricsType.WORDS) {
+                setPieData(data.wordsPerPOS)
+                setBarCharData(data.wordsPerMonth)
+            } else {
+                setPieData(data.translationsPerLanguage)
+                setBarCharData(data.translationsPerLanguageAndPOS)
+            }
         }
-    }, [isSuccess, data.wordsPerPOS, data.wordsPerMonth])
+    }, [isSuccess, data.wordsPerPOS, data.wordsPerMonth, currentMetricsType])
 
     return (
-        <Grid
-            container={true}
-            spacing={2}
-        >
-            <Grid
-                item={true}
-                xs={12}
-                lg={4}
+        <Grid>
+            <ToggleButtonGroup
+                color="primary"
+                exclusive
+                value={currentMetricsType}
+                onChange={(event, value) => {
+                    setCurrentMetricsType(value)
+                }}
+                aria-label="Platform"
             >
-                <PieChart
-                    data={pieData}
-                    unit={"translations"}
-                    title={"Distribution of word types"}
-                />
-            </Grid>
+                <ToggleButton value={MetricsType.WORDS}>Words</ToggleButton>
+                <ToggleButton value={MetricsType.TRANSLATIONS}>Translations</ToggleButton>
+            </ToggleButtonGroup>
             <Grid
-                item={true}
-                xs={12}
-                lg={8}
+                container={true}
+                spacing={2}
             >
-                <BarChart
-                    data={columnsData}
-                    xType={"category"}
-                    title={"Words added per month."}
-                />
+                <Grid
+                    item={true}
+                    xs={12}
+                    lg={4}
+                >
+                    <PieChart
+                        data={pieData}
+                        unit={(currentMetricsType === MetricsType.WORDS) ? "words" : "translations"}
+                        title={(currentMetricsType === MetricsType.WORDS) ? "Distribution of word types" : "Distribution of languages"}
+                    />
+                </Grid>
+                <Grid
+                    item={true}
+                    xs={12}
+                    lg={8}
+                >
+                    <BarChart
+                        data={barCharData}
+                        xType={"category"}
+                        title={
+                            (currentMetricsType === MetricsType.WORDS)
+                                ? 'Words added per month.'
+                                : 'Translations added per type.'
+                        }
+                    />
+                </Grid>
             </Grid>
         </Grid>
     )

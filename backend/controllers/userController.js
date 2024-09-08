@@ -408,6 +408,7 @@ const getBasicUserMetrics = asyncHandler(async (req, res) => {
             totalWords: metrics.totalWords,
             incompleteWordsCount: metrics.incompleteWordsCount,
             translationsPerLanguage: metrics.translationsByLanguage,
+            translationsPerLanguageAndPOS: metrics.translationsByLanguageAndPOS,
             wordsPerPOS: metrics.wordsPerPOS,
             wordsPerMonth: metrics.wordsPerMonth
         }

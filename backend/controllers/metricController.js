@@ -22,6 +22,24 @@ const calculateBasicUserMetrics = async (user) => {
                         }
                     }
                 ],
+                translationsByLanguageAndPOS: [
+                    { $unwind: "$translations" },
+                    {
+                        $group: {
+                            _id: {
+                                language:"$translations.language",
+                                partOfSpeech:"$partOfSpeech"
+                            },
+                            count: { $sum: 1 }
+                        }
+                    },
+                    {
+                        $addFields: {
+                            label:"$_id.language",
+                            partOfSpeech: "$_id.partOfSpeech"
+                        }
+                    }
+                ],
                 wordsPerPOS: [
                     {
                         $group: {
@@ -53,7 +71,8 @@ const calculateBasicUserMetrics = async (user) => {
                         $addFields: {
                             label:{
                                 $concat: [{$toString : "$_id.year"},"-", {$toString : "$_id.month"}]
-                            }
+                            },
+                            partOfSpeech: "$_id.partOfSpeech"
                         }
                     },
                     {
@@ -89,6 +108,7 @@ const calculateBasicUserMetrics = async (user) => {
         {
             $project: {
                 translationsByLanguage: 1,
+                translationsByLanguageAndPOS: 1,
                 wordsPerPOS: 1,
                 wordsPerMonth: 1,
                 totalWords: { $arrayElemAt: ["$totalWords.count", 0] },
