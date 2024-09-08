@@ -11,7 +11,6 @@ const getUserMetrics = async (token: any) => {
         },
     }
     const response = await axios.get(`${API_URL}/getUserMetrics`, config)
-    console.log(response)
     return(response.data)
 }
 

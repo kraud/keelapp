@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import C3Chart from "./C3Chart";
-import {Button, Card, CardActions, CardContent, Grid, Typography} from "@mui/material";
+import {Button, Grid, Typography} from "@mui/material";
 import {Data} from "c3";
 import globalTheme from "../../theme/theme";
 import {useNavigate} from "react-router-dom";
-import {Spring} from "framer-motion";
+import {partOfSpeechChartColors} from "../../theme/chartsColors";
+import Tooltip from "@mui/material/Tooltip";
 
 const defaultOptions = (untis) => {
     return {
@@ -49,7 +50,8 @@ const parseData = (dataArray: []): Data => {
             // ["Spanish", "Estonian", ... ]
             value: Object.keys(newArray),
         },
-        type: 'pie'
+        type: 'pie',
+        colors: partOfSpeechChartColors
     })
 }
 
@@ -63,12 +65,11 @@ interface PieChartProps {
 const PieChart = (props: PieChartProps) => {
     // check if using custom or default options for pie chart
     const {data, unit, options, title} = props
-    const navigate = useNavigate();
+    const navigate = useNavigate()
 
     const handleRedirect = (link: string | undefined, word: string | undefined) => {
-        // Redirigir a otra ruta
         if (link !== undefined) {
-            navigate(link + word?.toString());
+            navigate(link + word?.toString())
         }
     };
 
@@ -98,28 +99,75 @@ const PieChart = (props: PieChartProps) => {
     }, [data])
 
     return (
-        <Card
-            sx={{paddingX: globalTheme.spacing(1)}}
+        <Grid
+            container={true}
+            justifyContent={"center"}
+            item={true}
+            sx={{
+                border: '4px solid #0072CE',
+                borderRadius: '25px',
+                padding: globalTheme.spacing(3)
+            }}
         >
-            <CardContent>
-                <h1>{title}</h1>
-                <C3Chart
-                    data={pieData}
-                    options={chart_options}
-                />
-            </CardContent>
-            <CardActions>
-                <Typography>
-                    Your worse category is: <Button onClick={() => {
-                    handleRedirect("addWord/", worstCategory)
-                }}> {worstCategory} </Button>
+            <Grid
+                container={true}
+                justifyContent={"center"}
+                item={true}
+            >
+                <Grid
+                    item={true}
+                    xs={'auto'}
+                >
+                    <Typography
+                        align={"center"}
+                        sx={{
+                            typography: {
+                                xs: 'h4',
+                                sm: 'h3',
+                                lg: 'h4'
+                            }
+                        }}
+                    >
+                        {title}
+                    </Typography>
+                </Grid>
+                <Grid
+                    item={true}
+                    xs={12}
+                >
+                    <C3Chart
+                        data={pieData}
+                        options={chart_options}
+                    />
+                </Grid>
+            </Grid>
+            <Grid
+                item={true}
+                xs={'auto'}
+            >
+                <Typography
+                    variant={'h6'}
+                    align={"center"}
+                >
+                    Your worst category is:
+
+                    <Tooltip
+                        title={'Click here to add a new '+(worstCategory).toLowerCase()}
+                    >
+                        <Button
+                            onClick={() => {
+                                handleRedirect("addWord/", worstCategory)
+                            }}
+                            variant={"text"}
+                        >
+                            {worstCategory}
+                        </Button>
+                    </Tooltip>
                 </Typography>
-                <Button size="small" color="primary">
-                </Button>
-            </CardActions>
-        </Card>
+            </Grid>
+        </Grid>
     )
 };
 
 
-export default PieChart;
+export default PieChart

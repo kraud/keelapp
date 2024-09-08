@@ -1,8 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import C3Chart from "./C3Chart";
-import {Card, CardContent} from "@mui/material";
+import {Grid, Typography} from "@mui/material";
+import {partOfSpeechChartColors} from "../../theme/chartsColors";
+import globalTheme from "../../theme/theme";
 
-interface BarChartProps{
+interface BarChartProps {
     data: any,
     xType: string
     title: string
@@ -51,7 +53,7 @@ const parseData = (dataArray: WordsPerMonth []): any => {
             }
         })
     }
-    return {
+    return ({
         /*
         example
         json: [
@@ -61,15 +63,16 @@ const parseData = (dataArray: WordsPerMonth []): any => {
                 {name: '2023-05', verbs: 400, nouns: 100},
             ]
 
-         */
-         json: arrayData,
-            keys: {
-                x: 'name',
-                value: arrayKeys,
-            },
-            type: 'bar',
-            groups: [arrayKeys]
-        }
+        */
+        json: arrayData,
+        keys: {
+            x: 'name',
+            value: arrayKeys,
+        },
+        type: 'bar',
+        groups: [arrayKeys],
+        colors: partOfSpeechChartColors
+    })
 }
 
 const BarChart = (props: BarChartProps) => {
@@ -81,21 +84,49 @@ const BarChart = (props: BarChartProps) => {
     useEffect(() => {
         setBarData(parseData(data))
         setOptions(defaultOptions(xType))
-    }, [data, xType]);
+    }, [data, xType])
 
     return(
-        <Card>
-            <CardContent>
-                <h1>{title}</h1>
+        <Grid
+            container={true}
+            justifyContent={"center"}
+            item={true}
+            sx={{
+                border: '4px solid #0072CE',
+                borderRadius: '25px',
+                height: '100%',
+                padding: globalTheme.spacing(3)
+            }}
+        >
+            <Grid
+                item={true}
+                xs={12}
+            >
+                <Typography
+                    variant={'h2'}
+                    align={"center"}
+                    sx={{
+                        typography: {
+                            xs: 'h3',
+                            sm: 'h2',
+                        }
+                    }}
+                >
+                    {title}
+                </Typography>
+            </Grid>
+            <Grid
+                item={true}
+                xs={12}
+            >
                 <C3Chart
                     data={barData}
                     options={options}
                 />
-            </CardContent>
-
-        </Card>
+            </Grid>
+        </Grid>
     )
 
-};
+}
 
-export default BarChart;
+export default BarChart

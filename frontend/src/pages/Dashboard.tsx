@@ -1,6 +1,6 @@
 import React, {useEffect} from "react";
 import {Grid, Typography} from "@mui/material";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import globalTheme from "../theme/theme";
 import {motion} from "framer-motion";
@@ -11,6 +11,8 @@ import {useTheme} from "@mui/material/styles";
 import {Lang} from "../ts/enums";
 import UserMetrics from "../components/charts/UserMetrics";
 import UserInfoPanel from "../components/charts/UserInfoPanel";
+import {getUserMetrics} from "../features/metrics/metricSlice";
+import {AppDispatch} from "../app/store";
 
 export function Dashboard() {
     const theme = useTheme()
@@ -18,12 +20,18 @@ export function Dashboard() {
     const smallToMid = useMediaQuery(theme.breakpoints.between("sm", "md"))
     const navigate = useNavigate()
     const {user} = useSelector((state: any) => state.auth)
+    const dispatch = useDispatch<AppDispatch>()
 
     useEffect(() => {
         if(!user){
             navigate('/login')
         }
     }, [user, navigate])
+
+    // On first render, this makes all the necessary requests to BE (and stores result data in Redux) to display account-screen info
+    useEffect(() => {
+        dispatch(getUserMetrics())
+    },[dispatch])
 
     return (
         <Grid
@@ -38,6 +46,8 @@ export function Dashboard() {
             }}
         >
             <Grid
+                container={true}
+                item={true}
                 xs={12}
             >
                 <Grid
@@ -63,6 +73,7 @@ export function Dashboard() {
                 </Grid>
                 <Grid
                     container={true}
+                    item={true}
                     sx={{
                         paddingLeft: globalTheme.spacing(2),
                     }}
@@ -100,44 +111,34 @@ export function Dashboard() {
                         </Grid>
                     </Grid>
                 </Grid>
-            <Grid
-                container={true}
-                justifyContent={"center"}
-                sx={{
-                    marginTop: globalTheme.spacing(3),
-                    border: '2px solid red',
-                    borderRadius: '25px',
-                }}
-            >
-                <Grid
-                    container={true}
-                    justifyContent={"center"}
-                    item={true}
-                    xl={'auto'}
-                    xs={12}
-                    sx={{
-                        border: '2px solid green',
-                        borderRadius: '25px',
-                    }}
-                >
-                    <UserInfoPanel/>
-                </Grid>
                 <Grid
                     container={true}
                     item={true}
+                    spacing={2}
                     justifyContent={"center"}
-                    xs={12}
-                    lg={8}
-                    xl={'auto'}
                     sx={{
-                        border: '2px solid #0072CE',
-                        borderRadius: '25px',
-                        padding: globalTheme.spacing(2),
+                        marginTop: globalTheme.spacing(3),
                     }}
                 >
-                    <UserMetrics />
+                    <Grid
+                        container={true}
+                        item={true}
+                        xs={12}
+                        xl={'auto'} // when direction: column => only take minimum space
+                    >
+                        <UserInfoPanel/>
+                    </Grid>
+                    <Grid
+                        container={true}
+                        item={true}
+                        justifyContent={"center"}
+                        xs={12}
+                        xl={true}
+                    >
+                        <UserMetrics />
+                    </Grid>
                 </Grid>
-            </Grid></Grid>
+            </Grid>
         </Grid>
     )
 }

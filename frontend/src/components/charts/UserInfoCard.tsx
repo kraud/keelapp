@@ -17,18 +17,17 @@ export function UserInfoCard(prop: UserInfoCard) {
     const navigate = useNavigate();
 
     const handleRedirect = (link: string | undefined) => {
-        // Redirigir a otra ruta
         if (link !== undefined) {
-            navigate(link);
+            navigate(link)
         }
-    };
+    }
 
     return (
         <Grid
             container={true}
             item={true}
             sx={{
-                border: '2px solid #0072CE',
+                border: '4px solid #0072CE',
                 borderRadius: '25px',
                 padding: globalTheme.spacing(1),
                 paddingX: '2px',
@@ -79,18 +78,17 @@ export function UserInfoCard(prop: UserInfoCard) {
                 <Typography
                     sx={{
                         typography: {
-                            xs: 'h9',
-                            sm: 'h8',
-                            md: 'h7',
-                        },
+                            xs: 'body2',
+                            sm: 'subtitle1',
+                            md: 'h6',
+                        }
                     }}
-                    color={'secondary'}
                 >
                     {prop.title}
                 </Typography>
             </Grid>
         </Grid>
-    );
+    )
 }
-export default UserInfoCard;
+export default UserInfoCard
 
