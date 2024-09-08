@@ -66,6 +66,7 @@ export function Dashboard() {
                                     md: 'h1',
                                 },
                             }}
+                            align={"center"}
                         >
                             Welcome, {user?.name}
                         </Typography>
