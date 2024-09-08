@@ -1,7 +1,6 @@
 import {Grid, Typography} from "@mui/material";
 import React from "react";
 import globalTheme from "../../theme/theme";
-import IosShareIcon from '@mui/icons-material/IosShare';
 import {useNavigate} from 'react-router-dom';
 
 
@@ -10,8 +9,6 @@ interface UserInfoCard {
     data: string,
     link?: string
 }
-
-
 export function UserInfoCard(prop: UserInfoCard) {
 
     const navigate = useNavigate();
@@ -25,6 +22,9 @@ export function UserInfoCard(prop: UserInfoCard) {
     return (
         <Grid
             container={true}
+            alignItems={'center'}
+            justifyContent={'center'}
+            direction={"column"}
             item={true}
             sx={{
                 border: '4px solid #0072CE',
@@ -36,44 +36,30 @@ export function UserInfoCard(prop: UserInfoCard) {
         >
             <Grid
                 item={true}
-                container={true}
-                xs={12}
+                onClick={() => {
+                    handleRedirect(prop.link)
+                }}
+                sx={{
+                    cursor: prop.link ? "pointer" : "initial"
+                }}
             >
-                <Grid
-                    item={true}
-                    container={true}
-                    xs={12}
-                    alignItems={"center"}
-                    justifyContent={"center"}
-                    onClick={() => {
-                        handleRedirect(prop.link)
-                    }}
+                <Typography
+                    color={'primary'}
                     sx={{
-                        cursor: prop.link ? "pointer" : "initial"
+                        typography: {
+                            xs: 'h4',
+                            sm: 'h3',
+                            md: 'h2',
+                        },
+                        fontWeight: 'bold',
+                        textDecoration: 'underline'
                     }}
                 >
-                    <Typography
-                        sx={{
-                            typography: {
-                                xs: 'h4',
-                                sm: 'h3',
-                                md: 'h2',
-                            },
-                            fontWeight: 'bold',
-                            textDecoration: 'underline'
-                        }}
-                        color={'primary'}
-                    >
-                        {prop.data}
-                    </Typography>
-                </Grid>
+                    {prop.data}
+                </Typography>
             </Grid>
             <Grid
                 item={true}
-                container={true}
-                justifyContent={"center"}
-                alignItems={"center"}
-                xs={12}
             >
                 <Typography
                     sx={{

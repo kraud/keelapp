@@ -438,3 +438,8 @@ export enum PartOfSpeech {
     properNoun = "Proper noun",
     numerals = "Numerals",
 }
+
+export enum MetricsType {
+    WORDS,
+    TRANSLATIONS
+}

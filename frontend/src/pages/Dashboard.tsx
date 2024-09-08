@@ -61,8 +61,8 @@ export function Dashboard() {
                         <Typography
                             sx={{
                                 typography: {
-                                    xs: 'h5',
-                                    sm: 'h4',
+                                    xs: 'h4',
+                                    sm: 'h3',
                                     md: 'h1',
                                 },
                             }}
@@ -101,9 +101,9 @@ export function Dashboard() {
                                     ]}
                                     variant={
                                         (smallToMid)
-                                            ? 'h6'
+                                            ? 'h5'
                                             : (lessThanSm)
-                                                ? 'subtitle1'
+                                                ? 'h6'
                                                 :'h4' // lg and up
                                     }
                                     color={"primary"}

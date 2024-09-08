@@ -6,6 +6,7 @@ import globalTheme from "../../theme/theme";
 import {useNavigate} from "react-router-dom";
 import {partOfSpeechChartColors} from "../../theme/chartsColors";
 import Tooltip from "@mui/material/Tooltip";
+import {MetricsType} from "../../ts/enums";
 
 const defaultOptions = (untis) => {
     return {
@@ -59,7 +60,9 @@ interface PieChartProps {
     data: any,
     unit: string,
     title: string,
-    options?: any
+    options?: any,
+    currentType: MetricsType
+    onTypeChange: (type: MetricsType) => void
 }
 
 const PieChart = (props: PieChartProps) => {
@@ -101,44 +104,114 @@ const PieChart = (props: PieChartProps) => {
     return (
         <Grid
             container={true}
-            justifyContent={"center"}
+            direction={'column'}
+            justifyContent={"space-between"}
+            alignContent={"center"}
             item={true}
             sx={{
                 border: '4px solid #0072CE',
                 borderRadius: '25px',
-                padding: globalTheme.spacing(3)
+                padding: globalTheme.spacing(3),
+                height: '100%',
             }}
         >
             <Grid
                 container={true}
                 justifyContent={"center"}
                 item={true}
+                rowSpacing={3}
             >
                 <Grid
                     item={true}
+                    container={true}
                     xs={'auto'}
+                    rowSpacing={1}
+                    direction={"column"}
                 >
-                    <Typography
-                        align={"center"}
-                        sx={{
-                            typography: {
-                                xs: 'h4',
-                                sm: 'h3',
-                                lg: 'h4'
-                            }
-                        }}
+                    <Grid
+                        container={true}
+                        justifyContent={"center"}
+                        item={true}
+                        xs={'auto'}
                     >
-                        {title}
-                    </Typography>
+                        <Grid
+                            item={true}
+                            xs={'auto'}
+                        >
+                            <Typography
+                                align={"center"}
+                                sx={{
+                                    typography: {
+                                        xs: 'h4',
+                                        sm: 'h3',
+                                        lg: 'h4'
+                                    }
+                                }}
+                            >
+                                {title}
+                            </Typography>
+                        </Grid>
+                    </Grid>
+                    <Grid
+                        item={true}
+                        container={true}
+                        spacing={1}
+                        justifyContent={"center"}
+                        xs={true}
+                    >
+                        <Grid
+                            item={true}
+                            xs={true}
+                        >
+                            <Button
+                                variant={(props.currentType === MetricsType.WORDS)
+                                    ? 'contained'
+                                    : 'outlined'
+                                }
+                                color={'primary'}
+                                fullWidth={true}
+                                size={"small"}
+                                onClick={() => {
+                                    props.onTypeChange(MetricsType.WORDS)
+                                }}
+                            >
+                                Word type
+                            </Button>
+                        </Grid>
+                        <Grid
+                            item={true}
+                            xs={true}
+                        >
+                            <Button
+                                variant={(props.currentType === MetricsType.TRANSLATIONS)
+                                    ? 'contained'
+                                    : 'outlined'
+                                }
+                                color={'primary'}
+                                fullWidth={true}
+                                size={"small"}
+                                onClick={() => {
+                                    props.onTypeChange(MetricsType.TRANSLATIONS)
+                                }}
+                            >
+                                Language
+                            </Button>
+                        </Grid>
+                    </Grid>
                 </Grid>
                 <Grid
+                    container={true}
                     item={true}
-                    xs={12}
                 >
-                    <C3Chart
-                        data={pieData}
-                        options={chart_options}
-                    />
+                    <Grid
+                        item={true}
+                        xs={12}
+                    >
+                        <C3Chart
+                            data={pieData}
+                            options={chart_options}
+                        />
+                    </Grid>
                 </Grid>
             </Grid>
             <Grid
@@ -152,7 +225,10 @@ const PieChart = (props: PieChartProps) => {
                     Your worst category is:
 
                     <Tooltip
-                        title={'Click here to add a new '+(worstCategory).toLowerCase()}
+                        title={(props.currentType === MetricsType.WORDS)
+                            ? 'Click here to add a new '+(worstCategory).toLowerCase()
+                            : 'Click here to add a new word in '+(worstCategory)
+                        }
                     >
                         <Button
                             onClick={() => {

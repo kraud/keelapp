@@ -1,16 +1,18 @@
 import React, {useEffect, useState} from 'react';
 import C3Chart from "./C3Chart";
-import {Grid, Typography} from "@mui/material";
+import {Button, Grid, Typography} from "@mui/material";
 import {partOfSpeechChartColors} from "../../theme/chartsColors";
 import globalTheme from "../../theme/theme";
-import Switch from "@mui/material/Switch";
 import {Data} from "c3";
+import {MetricsType} from "../../ts/enums";
 
 interface BarChartProps {
     data: any,
     xType: string
     title: string
     options?: any
+    currentType: MetricsType
+    onTypeChange: (type: MetricsType) => void
 }
 
 const defaultOptions = (xType: string): any => {
@@ -37,22 +39,22 @@ const BarChart = (props: BarChartProps) => {
                 //We get the index where the label being processed is.
                 const index = arrayData.findIndex((timeSlap) => timeSlap.name.includes(element.label))
                 if (index >0) {
-                    //If the array have the label being processed, it will only add the new partOfSpech data.
+                    // If the array has the label being processed, it will only add the new partOfSpeech data.
                     arrayData[index] = {
                         ...arrayData[index],
                         [element.partOfSpeech]: element.count
                     }
                 } else {
-                    //If the array doesnt have the label being processed, it will add it.
+                    // If the array doesn't have the label being processed, it will add it.
                     arrayData.push({
                         "name": element.label,
                         [element.partOfSpeech]: element.count
                     })
                 }
-                //We verify if the label had been processed.
+                // We verify if the label had been processed.
                 const keys = arrayKeys.find((key) => key.includes(element.partOfSpeech))
                 if(keys === undefined){
-                    //if the label doesnt exist in array, we will add the label to the array.
+                    // If the label doesn't exist in array, we will add the label to the array.
                     arrayKeys.push(element.partOfSpeech)
                 }
             })
@@ -90,7 +92,9 @@ const BarChart = (props: BarChartProps) => {
     return(
         <Grid
             container={true}
-            justifyContent={"center"}
+            direction={'column'}
+            justifyContent={"space-between"}
+            alignContent={"center"}
             item={true}
             sx={{
                 border: '4px solid #0072CE',
@@ -99,37 +103,154 @@ const BarChart = (props: BarChartProps) => {
                 padding: globalTheme.spacing(3)
             }}
         >
-            <Switch
-                defaultChecked
-                onChange={(event, checked: boolean) => {
-                    setGroupsChecked(event.target.checked)
-                }}
-            />
             <Grid
+                container={true}
+                justifyContent={"center"}
                 item={true}
-                xs={12}
+                rowSpacing={3}
             >
-                <Typography
-                    variant={'h2'}
-                    align={"center"}
-                    sx={{
-                        typography: {
-                            xs: 'h3',
-                            sm: 'h2',
-                        }
-                    }}
+                <Grid
+                    item={true}
+                    container={true}
+                    xs={'auto'}
+                    rowSpacing={1}
+                    direction={"column"}
                 >
-                    {title}
-                </Typography>
-            </Grid>
-            <Grid
-                item={true}
-                xs={12}
-            >
-                <C3Chart
-                    data={barData}
-                    options={options}
-                />
+                    <Grid
+                        container={true}
+                        justifyContent={"center"}
+                        item={true}
+                        xs={'auto'}
+                    >
+                        <Grid
+                            item={true}
+                            xs={'auto'}
+                        >
+                            <Typography
+                                align={"center"}
+                                sx={{
+                                    typography: {
+                                        xs: 'h4',
+                                        sm: 'h3',
+                                        lg: 'h4'
+                                    }
+                                }}
+                            >
+                                {title}
+                            </Typography>
+                        </Grid>
+                    </Grid>
+                    <Grid
+                        item={true}
+                        container={true}
+                        spacing={1}
+                        justifyContent={"center"}
+                        xs={true}
+                    >
+                        <Grid
+                            item={true}
+                            xs={true}
+                        >
+                            <Button
+                                variant={(props.currentType === MetricsType.WORDS)
+                                    ? 'contained'
+                                    : 'outlined'
+                                }
+                                color={'primary'}
+                                fullWidth={true}
+                                size={"small"}
+                                onClick={() => {
+                                    props.onTypeChange(MetricsType.WORDS)
+                                }}
+                            >
+                                Month
+                            </Button>
+                        </Grid>
+                        <Grid
+                            item={true}
+                            xs={true}
+                        >
+                            <Button
+                                variant={(props.currentType === MetricsType.TRANSLATIONS)
+                                    ? 'contained'
+                                    : 'outlined'
+                                }
+                                color={'primary'}
+                                fullWidth={true}
+                                size={"small"}
+                                onClick={() => {
+                                    props.onTypeChange(MetricsType.TRANSLATIONS)
+                                }}
+                            >
+                                Language
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <Grid
+                    container={true}
+                    item={true}
+                >
+                    <Grid
+                        item={true}
+                        xs={12}
+                    >
+                        <C3Chart
+                            data={barData}
+                            options={options}
+                        />
+                    </Grid>
+                </Grid>
+                <Grid
+                    item={true}
+                    container={true}
+                    spacing={1}
+                    justifyContent={"center"}
+                    xs={6}
+                >
+                    <Grid
+                        item={true}
+                        xs={true}
+                    >
+                        <Button
+                            variant={'text'}
+                            color={'primary'}
+                            fullWidth={true}
+                            size={"small"}
+                            onClick={() => {
+                                setGroupsChecked(true)
+                            }}
+                            sx={{
+                                color: (groupsChecked)
+                                    ? undefined
+                                    : 'black'
+                            }}
+                        >
+                            Group by type
+                        </Button>
+                    </Grid>
+                    <Grid
+                        item={true}
+                        xs={true}
+                    >
+                        <Button
+                            variant={'text'}
+                            color={'primary'}
+                            fullWidth={true}
+                            size={"small"}
+                            onClick={() => {
+                                setGroupsChecked(false)
+                            }}
+                            sx={{
+                                color: (groupsChecked)
+                                    ? 'black'
+                                    : undefined
+                            }}
+                        >
+                            Separate by type
+                        </Button>
+                    </Grid>
+                </Grid>
             </Grid>
         </Grid>
     )

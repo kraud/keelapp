@@ -1,12 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import {Grid, ToggleButtonGroup, ToggleButton} from "@mui/material";
+import {Grid} from "@mui/material";
 import {useSelector} from "react-redux";
 import PieChart from "./PieChart";
 import BarChart from "./BarChart";
+import {MetricsType} from "../../ts/enums";
 
-enum MetricsType {
-    WORDS, TRANSLATIONS
-}
 
 
 export function UserMetrics() {
@@ -14,34 +12,26 @@ export function UserMetrics() {
 
     const [pieData, setPieData] = useState({})
     const [barCharData, setBarCharData] = useState({})
-    const [currentMetricsType, setCurrentMetricsType] = useState<MetricsType>(MetricsType.WORDS)
+    const [currentMetricsPieType, setCurrentMetricPieType] = useState<MetricsType>(MetricsType.TRANSLATIONS)
+    const [currentMetricsBarType, setCurrentMetricsBarType] = useState<MetricsType>(MetricsType.WORDS)
 
     useEffect(() => {
         if(isSuccess) {
-            if (currentMetricsType === MetricsType.WORDS) {
+            if (currentMetricsPieType === MetricsType.WORDS) {
                 setPieData(data.wordsPerPOS)
-                setBarCharData(data.wordsPerMonth)
             } else {
                 setPieData(data.translationsPerLanguage)
+            }
+            if (currentMetricsBarType === MetricsType.WORDS) {
+                setBarCharData(data.wordsPerMonth)
+            } else {
                 setBarCharData(data.translationsPerLanguageAndPOS)
             }
         }
-    }, [isSuccess, data.wordsPerPOS, data.wordsPerMonth, currentMetricsType])
+    }, [isSuccess, data.wordsPerPOS, data.wordsPerMonth, currentMetricsPieType, currentMetricsBarType])
 
     return (
         <Grid>
-            <ToggleButtonGroup
-                color="primary"
-                exclusive
-                value={currentMetricsType}
-                onChange={(event, value) => {
-                    setCurrentMetricsType(value)
-                }}
-                aria-label="Platform"
-            >
-                <ToggleButton value={MetricsType.WORDS}>Words</ToggleButton>
-                <ToggleButton value={MetricsType.TRANSLATIONS}>Translations</ToggleButton>
-            </ToggleButtonGroup>
             <Grid
                 container={true}
                 spacing={2}
@@ -53,8 +43,18 @@ export function UserMetrics() {
                 >
                     <PieChart
                         data={pieData}
-                        unit={(currentMetricsType === MetricsType.WORDS) ? "words" : "translations"}
-                        title={(currentMetricsType === MetricsType.WORDS) ? "Distribution of word types" : "Distribution of languages"}
+                        unit={(currentMetricsPieType === MetricsType.WORDS)
+                            ? "words"
+                            : "translations"
+                        }
+                        title={(currentMetricsPieType === MetricsType.WORDS)
+                            ? "Distribution of word types"
+                            : "Distribution of languages"
+                        }
+                        currentType={currentMetricsPieType}
+                        onTypeChange={(type: MetricsType) => {
+                            setCurrentMetricPieType(type)
+                        }}
                     />
                 </Grid>
                 <Grid
@@ -66,10 +66,14 @@ export function UserMetrics() {
                         data={barCharData}
                         xType={"category"}
                         title={
-                            (currentMetricsType === MetricsType.WORDS)
-                                ? 'Words added per month.'
-                                : 'Translations added per type.'
+                            (currentMetricsBarType === MetricsType.WORDS)
+                                ? 'Words per month'
+                                : 'Words per language'
                         }
+                        currentType={currentMetricsBarType}
+                        onTypeChange={(type: MetricsType) => {
+                            setCurrentMetricsBarType(type)
+                        }}
                     />
                 </Grid>
             </Grid>
