@@ -1,6 +1,9 @@
 const express = require('express')
 const router = express.Router()
-const { registerUser, loginUser, getMe, getUsersBy, updateUser, getUsernamesBy, getUserById, verifyUser, requestPasswordReset, updatePassword} = require('../controllers/userController')
+const {
+    registerUser, loginUser, getMe, getUsersBy, updateUser, getUsernamesBy, getUserById,
+    verifyUser, requestPasswordReset, updatePassword, getBasicUserMetrics
+} = require('../controllers/userController')
 const {protect} = require('../middleware/authMiddleware')
 
 router.post('/', registerUser)
@@ -12,5 +15,6 @@ router.get('/getUser/:id', protect, getUserById)
 router.get('/:id/verify/:token', verifyUser)
 router.post('/requestPasswordReset', requestPasswordReset)
 router.put('/updatePassword', updatePassword)
+router.get('/getUserMetrics', protect, getBasicUserMetrics)
 
 module.exports = router

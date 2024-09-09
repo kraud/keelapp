@@ -58,7 +58,7 @@ export function RoutesWithAnimation(props: RoutesWithAnimationProps) {
                 }
             />
             <Route
-                path='/addWord'
+                path='/addWord/:partOfSpeech?'
                 element={
                     <AddWord/>
                 }

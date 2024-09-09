@@ -7,6 +7,7 @@ const Token = require('../models/tokenModel')
 const sendMail = require('../utils/sendEmail')
 const crypto = require('crypto')
 const mongoose = require("mongoose");
+const {calculateBasicUserMetrics} = require('./metricController')
 
 function queryParamToBool(value) {
     return ((value+'').toLowerCase() === 'true')
@@ -395,6 +396,30 @@ const updatePassword = asyncHandler(async (req, res) => {
     res.status(200).json({})
 })
 
+// @desc    Get basic metrics for dashboard
+// @route   GET /api/users
+// @access  Private
+const getBasicUserMetrics = asyncHandler(async (req, res) => {
+    let user = req.user;
+    try {
+        let metrics = await calculateBasicUserMetrics(user)
+
+        const metrics_data = {
+            totalWords: metrics.totalWords,
+            incompleteWordsCount: metrics.incompleteWordsCount,
+            translationsPerLanguage: metrics.translationsByLanguage,
+            translationsPerLanguageAndPOS: metrics.translationsByLanguageAndPOS,
+            wordsPerPOS: metrics.wordsPerPOS,
+            wordsPerMonth: metrics.wordsPerMonth
+        }
+
+        res.status(200).json(metrics_data)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({error})
+    }
+})
+
 // Generate JWT
 const generateToken = (id) => {
     return jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: '30d'})
@@ -410,6 +435,7 @@ module.exports = {
     queryParamToBool,
     verifyUser,
     requestPasswordReset,
-    updatePassword
+    updatePassword,
+    getBasicUserMetrics
 }
 
