@@ -420,9 +420,6 @@ const getBasicUserMetrics = asyncHandler(async (req, res) => {
     }
 })
 
-function getRandomInt(max) {
-    return Math.floor(Math.random() * max);
-}
 // Generate JWT
 const generateToken = (id) => {
     return jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: '30d'})
