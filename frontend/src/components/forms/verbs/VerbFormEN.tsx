@@ -17,6 +17,7 @@ import {setTimerTriggerFunction} from "../../generalUseFunctions";
 import {AutocompleteButtonWithStatus} from "../AutocompleteButtonWithStatus";
 import Typography from "@mui/material/Typography";
 import {RadioGroupWithHook} from "../../RadioGroupFormHook";
+import {useTranslation} from "react-i18next";
 
 interface VerbFormENProps {
     currentTranslationData: TranslationItem,
@@ -25,6 +26,7 @@ interface VerbFormENProps {
 }
 // Displays the fields required to add the english translation of a verb (and handles the validations)
 export function VerbFormEN(props: VerbFormENProps) {
+    const { t } = useTranslation(['wordRelated'])
     const dispatch = useDispatch<AppDispatch>()
     const {autocompletedTranslationVerbEN, isErrorAT, isSuccessAT, isLoadingAT, messageAT} = useSelector((state: any) => state.autocompletedTranslations)
 
@@ -33,53 +35,53 @@ export function VerbFormEN(props: VerbFormENProps) {
     const validationSchema = Yup.object().shape({
         //  Properties
         regularity: Yup.string()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers')
-            .matches(/^(regular|irregular)?$/, "Error: not an option."),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' }))
+            .matches(/^(regular|irregular)?$/, t('wordForm.verb.errors.formEN.regularityRequired', { ns: 'wordRelated' })),
         //  Simple time - present
         simplePresent1s: Yup.string()
-            .required("This simple present field is required")
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .required(t('wordForm.verb.errors.formEN.simplePresentRequired', { ns: 'wordRelated' }))
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         simplePresent2s: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         simplePresent3s: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         simplePresent1pl: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         simplePresent3pl: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         //  Simple time - past
         simplePast1s: Yup.string()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         simplePast2s: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         simplePast3s: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         simplePast1pl: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         simplePast3pl: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         //  Simple time - future
         simpleFuture1s: Yup.string()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         simpleFuture2s: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         simpleFuture3s: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         simpleFuture1pl: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         simpleFuture3pl: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         //  Simple time - conditional
         simpleConditional1s: Yup.string()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         simpleConditional2s: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         simpleConditional3s: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         simpleConditional1pl: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         simpleConditional3pl: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
     })
 
     const {
@@ -512,15 +514,16 @@ export function VerbFormEN(props: VerbFormENProps) {
                         >
                             <AutocompleteButtonWithStatus
                                 tooltipLabels={{
-                                    emptyQuery: "Please input 'simple present first person singular' first.",
-                                    noMatch: "Sorry, we don't know this word!",
-                                    foundMatch: "There is information about this word stored in our system."
+                                    emptyQuery: t('wordForm.autocompleteTranslationButton.emptyQuery', { ns: 'wordRelated', requiredField: "simple present first person singular" }),
+                                    noMatch: t('wordForm.autocompleteTranslationButton.noMatch', { ns: 'wordRelated' }),
+                                    foundMatch: t('wordForm.autocompleteTranslationButton.foundMatch', { ns: 'wordRelated' }),
                                 }}
                                 queryValue={simplePresent1s}
                                 autocompleteResponse={autocompletedTranslationVerbEN}
                                 loadingState={isLoadingAT}
                                 forceDisabled={!validAutocompleteRequest}
                                 onAutocompleteClick={() => onAutocompleteClick()}
+                                actionButtonLabel={t('wordForm.autocompleteTranslationButton.label', { ns: 'wordRelated', wordType: "" })}
                             />
                             <Grid
                                 item={true}

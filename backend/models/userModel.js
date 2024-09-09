@@ -22,13 +22,15 @@ const userSchema = mongoose.Schema({
     languages: [{
         type: String // FE type: Lang
     }],
+    uiLanguage: {
+        type: String, // FE type: Lang
+    },
     verified: {
         type: Boolean
     }, 
     passwordTokens: [{
         type: String
     }]
-
 },
     {
         timestamps: true

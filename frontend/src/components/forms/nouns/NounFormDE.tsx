@@ -16,6 +16,7 @@ import {
     getAutocompletedGermanNounData
 } from "../../../features/autocompletedTranslation/autocompletedTranslationSlice";
 import {AppDispatch} from "../../../app/store";
+import {useTranslation} from "react-i18next";
 
 interface NounFormDEProps {
     currentTranslationData: TranslationItem,
@@ -24,31 +25,35 @@ interface NounFormDEProps {
 }
 // Displays the fields required to add the german translation of a noun (and handles the validations)
 export function NounFormDE(props: NounFormDEProps) {
+    const { t } = useTranslation(['wordRelated'])
     const dispatch = useDispatch<AppDispatch>()
     const {autocompletedTranslationNounDE, isErrorAT, isSuccessAT, isLoadingAT, messageAT} = useSelector((state: any) => state.autocompletedTranslations)
 
     const { currentTranslationData } = props
 
     const validationSchema = Yup.object().shape({
-        gender: Yup.string().required("Required")
-            .oneOf([GenderDE.M as string, GenderDE.F as string, GenderDE.N as string], "Required"),
+        gender: Yup.string().required(t('wordForm.noun.errors.formDE.genderRequired', { ns: 'wordRelated' }))
+            .oneOf(
+                [GenderDE.M as string, GenderDE.F as string, GenderDE.N as string],
+                t('wordForm.noun.errors.formDE.genderRequired', { ns: 'wordRelated' })
+            ),
         singularNominativ: Yup.string()
-            .required("Singular nominativ is required")
-            .matches(/^[^0-9]+$/, 'Must not include numbers'),
+            .required(t('wordForm.noun.errors.formDE.singularFormRequired', { ns: 'wordRelated' }))
+            .matches(/^[^0-9]+$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         pluralNominativ: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         singularAkkusativ: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         pluralAkkusativ: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         singularGenitiv: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         pluralGenitiv: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         singularDativ: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         pluralDativ: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
     })
 
     const {
@@ -266,14 +271,15 @@ export function NounFormDE(props: NounFormDEProps) {
                         >
                             <AutocompleteButtonWithStatus
                                 tooltipLabels={{
-                                    emptyQuery: "Please input 'Singular nominativ' first.",
-                                    noMatch: "Sorry, we don't know this word!",
-                                    foundMatch: "There is information about this word stored in our system."
+                                    emptyQuery: t('wordForm.autocompleteTranslationButton.emptyQuery', { ns: 'wordRelated', requiredField: "Singular nominativ" }),
+                                    noMatch: t('wordForm.autocompleteTranslationButton.noMatch', { ns: 'wordRelated' }),
+                                    foundMatch: t('wordForm.autocompleteTranslationButton.foundMatch', { ns: 'wordRelated' }),
                                 }}
                                 queryValue={singularNominativ}
                                 autocompleteResponse={autocompletedTranslationNounDE}
                                 loadingState={isLoadingAT}
                                 onAutocompleteClick={() => onAutocompleteClick()}
+                                actionButtonLabel={t('wordForm.autocompleteTranslationButton.label', { ns: 'wordRelated', wordType: "" })}
                             />
                             <Grid
                                 item={true}

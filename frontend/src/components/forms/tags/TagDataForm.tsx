@@ -19,6 +19,7 @@ import {CountryFlag} from "../../GeneralUseComponents";
 import {getPartOfSpeechAbbreviated} from "../commonFunctions";
 import tagService from "../../../features/tags/tagService";
 import {toast} from "react-toastify";
+import {useTranslation} from "react-i18next";
 
 interface TagDataFormProps {
     currentTagData: TagData,
@@ -31,6 +32,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
 
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const { t } = useTranslation(['common', 'tags'])
     const {isLoadingTags, tagLabelIsAlreadyInUse} = useSelector((state: any) => state.tags)
     const {user} = useSelector((state: any) => state.auth)
     const {userResult, isLoadingUser} = useSelector((state: any) => state.user)
@@ -48,7 +50,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
             try{
                 return(await tagService.checkIfTagLabelAvailable({tagLabel: label, userId: user._id}, user.token))
             } catch(error){
-                toast.error('There was an error while processing that label.')
+                toast.error(t('tagDataForm.errors.errorProcessing', { ns: 'tags' }))
             }
         } else { return true }
     }
@@ -60,16 +62,16 @@ export const TagDataForm = (props: TagDataFormProps) => {
     let resolveRef: any = null
 
     const validationSchema = Yup.object().shape({
-        public: Yup.string().required("Required")
-            .oneOf(['Public', 'Private', 'Friends-Only'], "Required"),
+        public: Yup.string().required(t('tagDataForm.errors.publicRequired', { ns: 'tags' }))
+            .oneOf(['Public', 'Private', 'Friends-Only'], t('tagDataForm.errors.publicNotMatch', { ns: 'tags' })),
         label: Yup.string()
-            .required("A tag label is required")
-            .matches(/^\S+$/, "Label does not allow spaces. Try CamelCasing or snake_casing instead.")
-            .min(3, 'Label must be longer than 2 characters')
-            .max(30, 'Label is too long')
+            .required(t('tagDataForm.errors.labelRequired', { ns: 'tags' }))
+            .matches(/^\S+$/, t('tagDataForm.errors.labelNotMatchingSpaces', { ns: 'tags' }))
+            .min(3, t('tagDataForm.errors.labelTooShort', { ns: 'tags' }))
+            .max(30, t('tagDataForm.errors.labelTooLong', { ns: 'tags' }))
             .test({
                 name: 'checkIfLabelIsUniqueForThisUser',
-                message: 'That label is already in use',
+                message: t('tagDataForm.errors.labelAlreadyExists', { ns: 'tags' }),
                 test: async (labelCandidate: string) => {
                     const tagLabelStatus = await checkLabelAvailability(labelCandidate)
                     // logic can be simplified, but this is easier to read.
@@ -108,8 +110,8 @@ export const TagDataForm = (props: TagDataFormProps) => {
             //     }
             // ),
         description: Yup.string().nullable()
-            .min(5, 'Description must be longer than 5 characters')
-            .max(250, 'Description is too long'),
+            .min(5, t('tagDataForm.errors.descriptionTooShort', { ns: 'tags' }))
+            .max(250, t('tagDataForm.errors.descriptionTooLong', { ns: 'tags' })),
     })
 
     const {
@@ -234,7 +236,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
                     :
                     <TextInputFormWithHook
                         control={control}
-                        label={"Label"}
+                        label={t('tagDataForm.fieldLabels.label', { ns: 'tags' })}
                         name={"label"}
                         defaultValue={""}
                         errors={errors.label}
@@ -273,9 +275,9 @@ export const TagDataForm = (props: TagDataFormProps) => {
                             (props.currentTagData.words.length > 0)
                         )
                             ? (props.currentTagData.words.length > 1)
-                                ? `${props.currentTagData.words.length} words`
-                                : `${props.currentTagData.words.length} word`
-                            :"- no words assigned yet -"
+                                ? t('amountWord', { ns: 'tags', count: props.currentTagData.words.length })
+                                : t('amountWord', { ns: 'tags', count: props.currentTagData.words.length })
+                            : t('noWordsAssigned', { ns: 'tags' })
                         }
                     </Typography>
                 }
@@ -304,8 +306,8 @@ export const TagDataForm = (props: TagDataFormProps) => {
                                 >
                                     {
                                         (props.currentTagData.author === user._id)
-                                            ? 'Created by you'
-                                            : `Created by: ${userResult.username}`
+                                            ? t('createdByYou', { ns: 'tags' })
+                                            : t('createdByUser', { ns: 'tags', username: userResult.username })
                                     }
                                 </Typography>
                                 // TODO: add data about amount of people that follow this tag
@@ -320,7 +322,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
             >
                 <RadioGroupWithHook
                     control={control}
-                    label={"Public"}
+                    label={t('tagDataForm.fieldLabels.public', { ns: 'tags' })}
                     name={"public"}
                     options={['Public', 'Private', 'Friends-Only']}
                     defaultValue={""}
@@ -349,7 +351,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
                     :
                     <TextInputFormWithHook
                         control={control}
-                        label={"Description"}
+                        label={t('tagDataForm.fieldLabels.description', { ns: 'tags' })}
                         name={"description"}
                         defaultValue={""}
                         errors={errors.description}

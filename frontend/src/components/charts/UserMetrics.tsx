@@ -4,10 +4,12 @@ import {useSelector} from "react-redux";
 import PieChart from "./PieChart";
 import BarChart from "./BarChart";
 import {MetricsType} from "../../ts/enums";
+import {useTranslation} from "react-i18next";
 
 
 
 export function UserMetrics() {
+    const { t } = useTranslation(['dashboard'])
     const {isSuccess, data} = useSelector((state: any) => state.metrics)
 
     const [pieData, setPieData] = useState({})
@@ -44,12 +46,12 @@ export function UserMetrics() {
                     <PieChart
                         data={pieData}
                         unit={(currentMetricsPieType === MetricsType.WORDS)
-                            ? "words"
-                            : "translations"
+                            ? t('charts.pie.unit.words', {ns: 'dashboard'})
+                            : t('charts.pie.unit.translations', {ns: 'dashboard'})
                         }
                         title={(currentMetricsPieType === MetricsType.WORDS)
-                            ? "Distribution of word types"
-                            : "Distribution of languages"
+                            ? t('charts.pie.title.wordMetric', {ns: 'dashboard'})
+                            : t('charts.pie.title.translationMetric', {ns: 'dashboard'})
                         }
                         currentType={currentMetricsPieType}
                         onTypeChange={(type: MetricsType) => {
@@ -67,8 +69,8 @@ export function UserMetrics() {
                         xType={"category"}
                         title={
                             (currentMetricsBarType === MetricsType.WORDS)
-                                ? 'Words per month'
-                                : 'Words per language'
+                                ? t('charts.bar.title.wordMetric', {ns: 'dashboard'})
+                                : t('charts.bar.title.translationMetric', {ns: 'dashboard'})
                         }
                         currentType={currentMetricsBarType}
                         onTypeChange={(type: MetricsType) => {

@@ -25,6 +25,7 @@ import {clearRequesterNotifications, createNotification} from "../features/notif
 import {Lang} from "../ts/enums";
 import {AppDispatch} from "../app/store";
 import {checkEnvironmentAndIterationToDisplay} from "../components/forms/commonFunctions";
+import { useTranslation } from 'react-i18next';
 
 
 export interface UserBadgeData {
@@ -32,13 +33,15 @@ export interface UserBadgeData {
     name: string,
     username: string,
     email: string,
-    languages: Lang[]
+    languages: Lang[],
+    uiLanguage?: Lang
 }
 
 export const Account = () => {
     // --------------- THIRD-PARTY HOOKS ---------------
     const navigate = useNavigate()
     const dispatch = useDispatch<AppDispatch>()
+    const { t } = useTranslation(['common', 'friendship', 'tags'])
 
     // --------------- REDUX STATE ---------------
     const {user, isLoadingAuth, isSuccess, isError, message} = useSelector((state: any) => state.auth)
@@ -89,7 +92,8 @@ export const Account = () => {
             // TODO: revert once cleaning old users from DB
             // NB! Originally, users did not have a list of languages.
             // So we first check if there is language data, and if not, we set an empty array.
-            languages: (user.languages!!) ? user.languages : []
+            languages: (user.languages!!) ? user.languages : [],
+            uiLanguage: (user.uiLanguage!!) ? user.uiLanguage : Lang.EN
         })
     },[user])
 
@@ -103,7 +107,7 @@ export const Account = () => {
                 }
             }
             if(!isLoadingAuth && isSuccess && !openFriendsModal){
-                toast.success("User data updated successfully!")
+                toast.success(t('userData.toastMessages.updateSuccess', { ns: 'common' }))
                 setIsUpdatingUserData(false)
             }
         }
@@ -174,7 +178,7 @@ export const Account = () => {
             dispatch(clearRequesterNotifications())
             setTagIdToShare("")
             setOpenFriendsModal(false)
-            toast.success(`Request to share tag was sent successfully!`)
+            toast.success(t('toastMessages.tagShared', { ns: 'tags' }))
         }
     }, [notificationResponse, isLoadingNotifications, isSuccessNotifications, sendingNotification])
 
@@ -251,7 +255,8 @@ export const Account = () => {
                         name: "",
                         email: "",
                         username: "",
-                        languages: []
+                        languages: [],
+                        uiLanguage: Lang.EN // TODO: defaults to value from i18n auto detect?
                     }}
                     isEditing={isEditing}
                     returnFieldsData={(updatedData) => {
@@ -260,7 +265,8 @@ export const Account = () => {
                                 ...localUserData,
                                 username: updatedData.username!,
                                 name: updatedData.name,
-                                languages: updatedData.languages
+                                languages: updatedData.languages,
+                                uiLanguage: updatedData.uiLanguage
                             })
                         }
                     }}
@@ -296,7 +302,7 @@ export const Account = () => {
                                         fullWidth={true}
                                         startIcon={<PersonAddIcon />}
                                     >
-                                        Add friends
+                                        {t('buttons.addFriends', { ns: 'common' })}
                                     </Button>
                                 </Grid>
                             }
@@ -319,7 +325,7 @@ export const Account = () => {
                                             fullWidth={true}
                                             startIcon={<LocalOfferIcon />}
                                         >
-                                            Create tag
+                                            {t('buttons.createTag', { ns: 'common' })}
                                         </Button>
                                     </Grid>
                                 </Grid>
@@ -375,7 +381,10 @@ export const Account = () => {
                                     )
                                 }
                             >
-                                {(isEditing) ?"Save" :"Edit profile"}
+                                {(isEditing)
+                                    ? t('buttons.saveChanges', { ns: 'common' })
+                                    : t('buttons.editProfile', { ns: 'common' })
+                                }
                             </Button>
                         </Grid>
                         {(isEditing) &&
@@ -392,7 +401,7 @@ export const Account = () => {
                                     fullWidth={true}
                                     endIcon={<ClearIcon/>}
                                 >
-                                    Cancel
+                                    {t('buttons.cancel', { ns: 'common' })}
                                 </Button>
                             </Grid>
                         }
@@ -420,7 +429,7 @@ export const Account = () => {
                                     textDecoration: "underline",
                                 }}
                             >
-                                Tags:
+                                {t('sections.tags', { ns: 'common' })}:
                             </Typography>
                         </Grid>
                         <Grid
@@ -459,7 +468,7 @@ export const Account = () => {
                                                     },
                                                 }}
                                             >
-                                                You haven't added tags to any words yet.
+                                                {t('noTagsCreated', { ns: 'tags' })}
                                             </Typography>
                                             <Button
                                                 variant="text"
@@ -468,7 +477,7 @@ export const Account = () => {
                                                 onClick={() => navigate('/review')}
                                                 disabled={!(checkEnvironmentAndIterationToDisplay(3))}
                                             >
-                                                Click here to go review your saved words and add tags!
+                                                {t('goToAddTags', { ns: 'tags' })}
                                             </Button>
                                         </>
                                     }
@@ -495,12 +504,12 @@ export const Account = () => {
                                                         },
                                                     }}
                                                 >
-                                                    Followed tags
+                                                    {t('followedTags', { ns: 'tags' })}
                                                 </Divider>
                                             </Grid>
                                         </Grid>
                                     }
-                                    {(followedTags!!)
+                                    {((followedTags!!) && (followedTags.length > 0))
                                         ?
                                         <ChipList
                                             itemList={followedTags}
@@ -519,7 +528,7 @@ export const Account = () => {
                                                     },
                                                 }}
                                             >
-                                                You haven't followed any tags yet.
+                                                {t('noTagsFollowed', { ns: 'tags' })}
                                             </Typography>
                                         </>
                                     }
@@ -570,7 +579,7 @@ export const Account = () => {
                                     textDecoration: "underline"
                                 }}
                             >
-                                Friends:
+                                {t('sections.friends', { ns: 'common' })}:
                             </Typography>
                         </Grid>
                         <Grid
@@ -587,15 +596,23 @@ export const Account = () => {
                                     container={true}
                                     item={true}
                                     justifyContent={"center"}
+                                    direction={'column'}
                                 >
                                     <Grid
                                         item={true}
+                                        xs={'auto'}
                                     >
                                         <Typography
                                             variant={"h6"}
+                                            align={"center"}
                                         >
-                                            You don't have any friends yet.
+                                            {t('noFriends', { ns: 'friendship' })}
                                         </Typography>
+                                    </Grid>
+                                    <Grid
+                                        item={true}
+                                        xs={'auto'}
+                                    >
                                         <Typography
                                             variant={"body2"}
                                             onClick={() => {
@@ -608,7 +625,7 @@ export const Account = () => {
                                             }}
                                             fontWeight={"bold"}
                                         >
-                                            Click here to search and add new friends!
+                                            {t('searchAndAddFriends', { ns: 'friendship' })}
                                         </Typography>
                                     </Grid>
                                 </Grid>
@@ -637,7 +654,10 @@ export const Account = () => {
                     }}
                     defaultUserId={defaultModalUserId}
                     reloadFriendList={() => setTriggerGetFriendships(true)}
-                    title={(tagIdToShare !== "") ?'Select a friend:' :'Search friends:'}
+                    title={(tagIdToShare !== "")
+                        ? t('selectFriend', { ns: 'friendship' })
+                        : t('searchFriend', { ns: 'friendship' })
+                    }
                     // this prop is only used when sharing tag with friends
                     userList={(tagIdToShare !== "") ?activeFriendships :undefined}
                     onClickUserListSelection={(usersIds: SearchResult[]) => {
@@ -667,7 +687,10 @@ export const Account = () => {
                         setOpenTagModal(false)
                         setOpenFriendsModal(true)
                     }}
-                    title={(selectedTag !== "") ?undefined :'Create new tag:'}
+                    title={(selectedTag !== "")
+                        ?undefined
+                        : t('buttons.createTag', { ns: 'common' })
+                }
                 />
             }
         </Grid>

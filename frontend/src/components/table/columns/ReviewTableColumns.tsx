@@ -5,7 +5,7 @@ import {createColumnHelper, Row} from "@tanstack/react-table";
 import {IndeterminateCheckbox, TableDataCell, TableHeaderCell} from "../ExtraTableComponents";
 import {
     getCurrentLangTranslated,
-    getListOfBasicCaseFromExistingTranslations,
+    getListOfBasicCaseFromExistingTranslations, getPoSKeyByLabel,
     stringAvatar
 } from "../../generalUseFunctions";
 import React from "react";
@@ -14,6 +14,7 @@ import GroupIcon from '@mui/icons-material/Group';
 import {UserData} from "../../../ts/interfaces";
 import globalTheme from "../../../theme/theme";
 import {Grid} from "@mui/material";
+import {useTranslation} from "react-i18next";
 
 export type TableWordData = {
     id: string,
@@ -39,7 +40,7 @@ export type TableWordData = {
 }
 
 // As the order of selected languages changes, so should the order they are displayed on the table
-export const createColumnsReviewTable = (selectedLanguagesList: string[], displayGender: boolean, user: UserData) => {
+export const createColumnsReviewTable = (selectedLanguagesList: string[], displayGender: boolean, user: UserData, translateFunction: (access: string) => string) => {
     const newColumnHelper = createColumnHelper<TableWordData>()
 
     const newlySortedColumns = selectedLanguagesList.map((language: string) => {
@@ -272,7 +273,7 @@ export const createColumnsReviewTable = (selectedLanguagesList: string[], displa
                     (info.getValue() !== undefined)
                         ?
                         <TableDataCell
-                            content={info.getValue()}
+                            content={translateFunction(info.getValue())}
                             type={"text"}
                             textAlign={"center"}
                             onlyForDisplay={true}

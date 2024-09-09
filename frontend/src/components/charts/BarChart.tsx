@@ -5,6 +5,7 @@ import {partOfSpeechChartColors} from "../../theme/chartsColors";
 import globalTheme from "../../theme/theme";
 import {Data} from "c3";
 import {MetricsType} from "../../ts/enums";
+import {useTranslation} from "react-i18next";
 
 interface BarChartProps {
     data: any,
@@ -28,6 +29,7 @@ const defaultOptions = (xType: string): any => {
 type WordsPerMonth = {_id: any, label: string,  partOfSpeech: string, count: number}
 
 const BarChart = (props: BarChartProps) => {
+    const { t } = useTranslation(['dashboard', 'common'])
     const {data, xType, title} = props
     const [groupsChecked, setGroupsChecked] = useState<boolean>(true)
 
@@ -163,7 +165,7 @@ const BarChart = (props: BarChartProps) => {
                                     props.onTypeChange(MetricsType.WORDS)
                                 }}
                             >
-                                Month
+                                {t('buttons.byMonth', {ns: 'common'})}
                             </Button>
                         </Grid>
                         <Grid
@@ -182,7 +184,7 @@ const BarChart = (props: BarChartProps) => {
                                     props.onTypeChange(MetricsType.TRANSLATIONS)
                                 }}
                             >
-                                Language
+                                {t('buttons.byLanguage', {ns: 'common'})}
                             </Button>
                         </Grid>
                     </Grid>
@@ -226,7 +228,7 @@ const BarChart = (props: BarChartProps) => {
                                     : 'black'
                             }}
                         >
-                            Group by type
+                            {t('buttons.groupByType', {ns: 'common'})}
                         </Button>
                     </Grid>
                     <Grid
@@ -247,7 +249,7 @@ const BarChart = (props: BarChartProps) => {
                                     : undefined
                             }}
                         >
-                            Separate by type
+                            {t('buttons.separateByType', {ns: 'common'})}
                         </Button>
                     </Grid>
                 </Grid>

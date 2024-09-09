@@ -30,6 +30,7 @@ export function SpinningText(props: SpinningTextProps) {
 
     // we only display translations for languages that the user has selected (always at least 2)
     const matchingLanguagesItems = ((user!!) && (user?.languages!!) && (user.languages.length > 1))
+        // TODO: this should put UI-selected language first on the list
         ? props.translations.filter((languageItem: LanguageAndLabel) => {
             return(user.languages.includes(languageItem.language))
         })

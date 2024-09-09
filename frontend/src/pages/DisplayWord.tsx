@@ -11,6 +11,7 @@ import {getWordById, updateWordById} from "../features/words/wordSlice";
 import {toast} from "react-toastify";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {AppDispatch} from "../app/store";
+import {useTranslation} from "react-i18next";
 
 interface RouterWordProps{
     wordId: string
@@ -23,6 +24,7 @@ export function DisplayWord(props: DisplayWordProps){
     // --------------- THIRD-PARTY HOOKS ---------------
     const navigate = useNavigate()
     const dispatch = useDispatch<AppDispatch>()
+    const { t } = useTranslation(['common', 'wordRelated'])
     // @ts-ignore
     const { wordId } = useParams<RouterWordProps>()
 
@@ -42,7 +44,7 @@ export function DisplayWord(props: DisplayWordProps){
 
     useEffect(() => {
         if(isError){
-            toast.error(`Something went wrong: ${message}`, {
+            toast.error(t('displayWord.toastError', { error: message, ns: 'wordRelated' }), {
                 toastId: "click-on-modal"
             })
         }
@@ -52,7 +54,7 @@ export function DisplayWord(props: DisplayWordProps){
         // isLoading switches back to false once the response from backend is set on redux
         // finishedUpdating will only be false while waiting for a response from backend
         if(!finishedUpdating && !isLoading){
-            toast.success(`Word was updated successfully`, {
+            toast.success(t('displayWord.toastUpdateSuccess', { ns: 'wordRelated' }), {
                 toastId: "click-on-modal"
             })
             // we reverse to the original state, before sending data to update
@@ -93,16 +95,17 @@ export function DisplayWord(props: DisplayWordProps){
                     fullWidth={true}
                     startIcon={<ArrowBackIcon />}
                 >
-                    Return
+                    {t('buttons.return', { ns: 'common' })}
                 </Button>
             </Grid>
             <WordForm
+
                 title={
                     (currentlySelectedPoS !== undefined)
-                        ? `Detailed view: ${currentlySelectedPoS.toLowerCase() }`
-                        : "Detailed view"
+                        ? t('displayWord.titlePos', { currentPos: currentlySelectedPoS.toLowerCase(), ns: 'wordRelated' })
+                        : t('displayWord.titleSimple', { ns: 'wordRelated' })
             }
-                subTitle={"All the currently stored translations for this word"}
+                subTitle={t('displayWord.subtitle', { ns: 'wordRelated' })}
                 onSave={(wordData: WordData) => {
                     const updatedWordData = {
                         id: wordId,

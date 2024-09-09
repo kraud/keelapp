@@ -15,6 +15,7 @@ import PendingIcon from '@mui/icons-material/Pending';
 import HelpIcon from '@mui/icons-material/Help';
 import {waitDelay} from "../components/generalUseFunctions";
 import LinearIndeterminate from "../components/Spinner";
+import {useTranslation} from "react-i18next";
 
 interface RouteVerificationUserProps{
     userId: string,
@@ -26,8 +27,9 @@ interface VerificationUserProps{
 }
 
 export const VerificationUser = (props: VerificationUserProps) => {
-    const navigate = useNavigate();
+    const navigate = useNavigate()
     const dispatch = useDispatch<AppDispatch>()
+    const { t } = useTranslation(['loginRegister'])
     // @ts-ignore
     const {userId, tokenId } = useParams<RouteVerificationUserProps>()
 
@@ -41,7 +43,7 @@ export const VerificationUser = (props: VerificationUserProps) => {
 
     useEffect(() => {
         if(userId === undefined || tokenId === undefined){
-            toast.error("There was an error with this link.")
+            toast.error(t('errors.linkError', { ns: 'loginRegister' }))
             navigate("/Error")
         } else {
             dispatch(verifyUser({userId: userId, tokenId: tokenId}))
@@ -94,10 +96,10 @@ export const VerificationUser = (props: VerificationUserProps) => {
                             }}
                         >
                             {(isLoadingAuth)
-                                ? 'Validating...'
+                                ? t('userVerification.validating', { ns: 'loginRegister' })
                                 : (isSuccess)
-                                    ? 'Validated successfully!'
-                                    : "Going in..."
+                                    ? t('userVerification.validatingSuccess', { ns: 'loginRegister' })
+                                    : t('userVerification.goingIn', { ns: 'loginRegister' })
                             }
                         </Typography>
                     </Grid>
@@ -164,10 +166,10 @@ export const VerificationUser = (props: VerificationUserProps) => {
                             fontWeight={"bold"}
                         >
                             {(isLoadingAuth)
-                                ? 'You will be redirected automatically after validation is completed.'
+                                ? t('userVerification.messagePreValidation', { ns: 'loginRegister' })
                                 : (isSuccess)
-                                    ? 'Not redirected automatically? Click here to continue.'
-                                    : 'Oops. Something went wrong.'
+                                    ? t('userVerification.messagePostValidation', { ns: 'loginRegister' })
+                                    : t('userVerification.errorValidation', { ns: 'loginRegister' })
                             }
                         </Typography>
                     </Grid>

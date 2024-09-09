@@ -7,6 +7,7 @@ import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
 import {CountryFlag} from "./GeneralUseComponents";
 import {Lang} from "../ts/enums";
+import TranslateIcon from '@mui/icons-material/Translate';
 
 interface DnDSortableItemProps{
     id: string,
@@ -18,12 +19,25 @@ interface DnDSortableItemProps{
     sxProps?: SxProps<Theme>
     displayItems?: 'text' | 'flag' | 'both',
     onActionButtonClick: (itemId: string) => void
+    // for selecting UI language
+    displayLeftActionButton?: boolean
+    onActionButtonLeftClick?: (itemId: string) => void
 }
 
 export function DnDSortableItem(props: DnDSortableItemProps){
     const componentStyles = {
         descriptionButton: {
-            borderRadius: (props.disabled!!) ?'5px' :'5px 0px 0px 5px',
+            borderRadius: ((props.disabled!!) && !(props.displayLeftActionButton))
+                ? '5px' // disabled and NOT marked => no action buttons displayed => corner radius all corners
+                : (props.displayLeftActionButton)
+                    ? (props.disabled!!)
+                        ? '0px 5px 5px 0px' // disabled AND marked => only display squared corners on left
+                        : ((props.onActionButtonLeftClick!!))
+                            ? '0px' // not disabled AND NOT marked, BUT with an onClick function available => icons on both sides (all right corners)
+                            : '5px 0px 0px 5px' // NOT disabled and NOT marked, and with no onClick functions for marking => only button on right side (only right corners on right side)
+                    : (((props.onActionButtonLeftClick!!)))
+                        ? '0px' // not disabled AND NOT marked AND possible to mark => icons on both sides (all right corners)
+                        : '5px 0px 0px 5px', // not disabled AND NOT marked AND NOT possible to mark => icon on right sides (right corners on right side only)
             marginRight: '1px',
             "&.Mui-disabled": {
                 background: "#0072CE",
@@ -32,12 +46,22 @@ export function DnDSortableItem(props: DnDSortableItemProps){
             cursor: (props.disabled!!) ?'default' :'move',
             minHeight: '36.5px'
         },
-        actionButton: {
+        actionButtonRight: {
             borderRadius: '0px 5px 5px 0px',
             minWidth: '21px',
             paddingRight: '1px',
             paddingLeft: '1px',
             background: (props.containerLabel === 'selected') ?globalTheme.palette.error.main :globalTheme.palette.success.main,
+            color: "#fff"
+        },
+        actionButtonLeft: {
+            borderRadius: '5px 0px 0px 5px',
+            minWidth: '21px',
+            paddingRight: '4px',
+            paddingLeft: '4px',
+            marginRight: '2px',
+            background: (props.displayLeftActionButton!!) ?globalTheme.palette.secondary.main :globalTheme.palette.warning.main,
+            // background: (props.containerLabel === 'selected') ?globalTheme.palette.error.main :globalTheme.palette.success.main,
             color: "#fff"
         },
     }
@@ -131,6 +155,25 @@ export function DnDSortableItem(props: DnDSortableItemProps){
             */}
             {!(props.invisible!!) &&
                 <>
+                    {((props.displayLeftActionButton!) || ((props.onActionButtonLeftClick !== undefined) && (!(props.disabled!)))) &&
+                        <Button
+                            variant={"contained"}
+                            color={"success"}
+                            onClick={() => {
+                                if(props.onActionButtonLeftClick !== undefined){
+                                    props.onActionButtonLeftClick(props.id)
+                                }
+                            }}
+                            disabled={props.disabled!}
+                            sx={componentStyles.actionButtonLeft}
+                        >
+                            <TranslateIcon
+                                sx={{
+                                    width: '20px'
+                                }}
+                            />
+                        </Button>
+                    }
                     <Button
                         variant={"contained"}
                         color={"info"}
@@ -148,7 +191,7 @@ export function DnDSortableItem(props: DnDSortableItemProps){
                                 props.onActionButtonClick(props.id)
                             }}
                             disabled={props.disabled!}
-                            sx={componentStyles.actionButton}
+                            sx={componentStyles.actionButtonRight}
                         >
                             {(props.containerLabel === 'selected') ?'-' :'+'}
                         </Button>

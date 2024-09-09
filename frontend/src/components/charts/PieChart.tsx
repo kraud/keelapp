@@ -7,6 +7,7 @@ import {useNavigate} from "react-router-dom";
 import {partOfSpeechChartColors} from "../../theme/chartsColors";
 import Tooltip from "@mui/material/Tooltip";
 import {MetricsType} from "../../ts/enums";
+import {useTranslation} from "react-i18next";
 
 const defaultOptions = (untis: string) => {
     return {
@@ -65,6 +66,7 @@ interface PieChartProps {
 }
 
 const PieChart = (props: PieChartProps) => {
+    const { t } = useTranslation(['dashboard', 'common'])
     // check if using custom or default options for pie chart
     const {data, unit, options, title} = props
     const navigate = useNavigate()
@@ -174,7 +176,7 @@ const PieChart = (props: PieChartProps) => {
                                     props.onTypeChange(MetricsType.WORDS)
                                 }}
                             >
-                                Word type
+                                {t('buttons.distributionByWordType', {ns: 'common'})}
                             </Button>
                         </Grid>
                         <Grid
@@ -193,7 +195,7 @@ const PieChart = (props: PieChartProps) => {
                                     props.onTypeChange(MetricsType.TRANSLATIONS)
                                 }}
                             >
-                                Language
+                                {t('buttons.distributionByLanguage', {ns: 'common'})}
                             </Button>
                         </Grid>
                     </Grid>
@@ -221,12 +223,24 @@ const PieChart = (props: PieChartProps) => {
                     variant={'h6'}
                     align={"center"}
                 >
-                    Your worst category is:
-
+                    {t('charts.pie.worstCategory', {ns: 'dashboard'})}
                     <Tooltip
                         title={(props.currentType === MetricsType.WORDS)
-                            ? 'Click here to add a new '+(worstCategory).toLowerCase()
-                            : 'Click here to add a new word in '+(worstCategory)
+                            ? t(
+                                'charts.pie.tooltip.newWordByCategory',
+                                {
+                                    ns: 'dashboard',
+                                    category: t(`partOfSpeech.${(worstCategory).toLowerCase()}`, {ns: 'common'})
+                                }
+                            )
+                            : t(
+                                'charts.pie.tooltip.newWordByLanguage',
+                                {
+                                    ns: 'dashboard',
+                                    language: (worstCategory).toLowerCase()
+                                    // TODO: add translations for all languages?
+                                    // language: t(`languages.${(worstCategory).toLowerCase()}`, {ns: 'common'})
+                                })
                         }
                     >
                         <Button
@@ -235,7 +249,9 @@ const PieChart = (props: PieChartProps) => {
                             }}
                             variant={"text"}
                         >
-                            {worstCategory}
+                            {(worstCategory).toLowerCase()}
+                            {/* TODO: add translations for all languages? */}
+                            {/*{t(`languages.${(worstCategory).toLowerCase()}`, {ns: 'common'})}*/}
                         </Button>
                     </Tooltip>
                 </Typography>

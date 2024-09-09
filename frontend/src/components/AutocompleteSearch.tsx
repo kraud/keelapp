@@ -18,6 +18,7 @@ import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined';
 import {getPartOfSpeechAbbreviated} from "./forms/commonFunctions";
 import {getFriendRequestButtonLabel} from "./generalUseFunctions";
 import {useSelector} from "react-redux";
+import {useTranslation} from "react-i18next";
 
 interface AutocompleteSearchProps {
     options: SearchResult[]
@@ -44,6 +45,7 @@ interface AutocompleteSearchProps {
 }
 
 export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
+    const { t } = useTranslation(['common'])
     const [value, setValue] = useState<SearchResult|null>(null)
     const [inputValue, setInputValue] = useState<string>('')
     const [options, setOptions] = useState<SearchResult[]>([])
@@ -231,7 +233,10 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
             includeInputInList
             filterSelectedOptions
             value={value}
-            noOptionsText={(loadingLocal || props.isSearchLoading) ?"Loading..." :"No matches"}
+            noOptionsText={(loadingLocal || props.isSearchLoading)
+                ? t('header.search.loading', {ns: 'common'})
+                : t('header.search.noMatches', {ns: 'common'})
+            }
             onChange={(event: any, newValue: SearchResult | null) => {
                 setValue(newValue)
             }}
@@ -280,7 +285,10 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                                 </InputAdornment>
                             )
                         }}
-                        placeholder={(props.placeholder !== undefined) ?props.placeholder :"Search..."}
+                        placeholder={(props.placeholder !== undefined)
+                            ? props.placeholder
+                            : t('header.search.placeholder', {ns: 'common'})
+                    }
                         fullWidth
                         sx={{
                             '& .MuiAutocomplete-inputRoot': {

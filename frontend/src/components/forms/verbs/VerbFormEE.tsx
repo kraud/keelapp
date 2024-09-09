@@ -19,6 +19,7 @@ import Typography from "@mui/material/Typography";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import globalTheme from "../../../theme/theme";
 import Tooltip from "@mui/material/Tooltip";
+import {useTranslation} from "react-i18next";
 
 interface VerbFormEEProps {
     currentTranslationData: TranslationItem,
@@ -27,6 +28,7 @@ interface VerbFormEEProps {
 }
 // Displays the fields required to add the estonian translation of a verb (and handles the validations)
 export function VerbFormEE(props: VerbFormEEProps) {
+    const { t } = useTranslation(['wordRelated'])
     const dispatch = useDispatch<AppDispatch>()
     const {autocompletedTranslationVerbEE, isErrorAT, isSuccessAT, isLoadingAT, messageAT} = useSelector((state: any) => state.autocompletedTranslations)
     const [searchInEnglish, setSearchInEnglish] = useState(false)
@@ -36,54 +38,54 @@ export function VerbFormEE(props: VerbFormEEProps) {
     const validationSchema = Yup.object().shape({
         infinitiveMa: (searchInEnglish)
             ? Yup.string()
-                .required("-ma infinitive is required")
-                .matches(/^[^0-9]+$/, 'Must not include numbers')
+                .required(t('wordForm.verb.errors.formEE.infinitiveMaRequired', { ns: 'wordRelated' }))
+                .matches(/^[^0-9]+$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' }))
             : Yup.string()
-                .required("-ma infinitive is required")
-                .matches(/^[^0-9]+$/, 'Must not include numbers')
-                .matches(/^(?!.*\d).*(ma)$/, "Please input infinitive form (ends in '-ma')."),
+                .required(t('wordForm.verb.errors.formEE.infinitiveMaRequired', { ns: 'wordRelated' }))
+                .matches(/^[^0-9]+$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' }))
+                .matches(/^(?!.*\d).*(ma)$/, t('wordForm.verb.errors.formEE.infinitiveMaNotMatching', { ns: 'wordRelated' })),
         infinitiveDa: Yup.string()
-            .required("-da infinitive is required")
-            .matches(/^[^0-9]+$/, 'Must not include numbers'),
+            .required(t('wordForm.verb.errors.formEE.infinitiveDaRequired', { ns: 'wordRelated' }))
+            .matches(/^[^0-9]+$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         // KINDEL: PRESENT
         kindelPresent1s: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         kindelPresent2s: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         kindelPresent3s: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         kindelPresent1pl: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         kindelPresent2pl: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         kindelPresent3pl: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         // KINDEL: SIMPLE PAST
         kindelSimplePast1s: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         kindelSimplePast2s: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         kindelSimplePast3s: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         kindelSimplePast1pl: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         kindelSimplePast2pl: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         kindelSimplePast3pl: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         // KINDEL: PAST PERFECT
         kindelPastPerfect1s: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         kindelPastPerfect2s: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         kindelPastPerfect3s: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         kindelPastPerfect1pl: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         kindelPastPerfect2pl: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         kindelPastPerfect3pl: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
     })
 
     const {
@@ -445,8 +447,6 @@ export function VerbFormEE(props: VerbFormEEProps) {
         setSearchInEnglish(false)
     }
 
-    // TODO: should this logic be replaced with a function that triggers alongside onChange for that field?
-    // before making the request, we check if the query is correct according to the form's validation
     const validAutocompleteRequest = errors['infinitiveMa'] === undefined
     useEffect(() => {
         if((infinitiveMa !== "") && (validAutocompleteRequest)){
@@ -489,10 +489,11 @@ export function VerbFormEE(props: VerbFormEEProps) {
                         >
                             <AutocompleteButtonWithStatus
                                 tooltipLabels={{
-                                    emptyQuery: "Please input '-ma infinitive' first.",
-                                    noMatch: "Sorry, we don't know this word!",
-                                    foundMatch: "There is information about this word stored in our system."
+                                    emptyQuery: t('wordForm.autocompleteTranslationButton.emptyQuery', { ns: 'wordRelated', requiredField: "-ma infinitive" }),
+                                    noMatch: t('wordForm.autocompleteTranslationButton.noMatch', { ns: 'wordRelated' }),
+                                    foundMatch: t('wordForm.autocompleteTranslationButton.foundMatch', { ns: 'wordRelated' }),
                                 }}
+                                actionButtonLabel={t('wordForm.autocompleteTranslationButton.label', { ns: 'wordRelated', wordType: "" })}
                                 queryValue={infinitiveMa}
                                 autocompleteResponse={autocompletedTranslationVerbEE}
                                 loadingState={isLoadingAT}
@@ -506,7 +507,7 @@ export function VerbFormEE(props: VerbFormEEProps) {
                                 value="end"
                                 control={
                                     <Tooltip
-                                        title={"Careful, this won't work for all verbs! If needed, try in Estonian."}
+                                        title={t('wordForm.verb.errors.formEE.searchInEnglishWarning', { ns: 'wordRelated' })}
                                     >
                                         <Checkbox
                                             checked={searchInEnglish}
@@ -517,7 +518,7 @@ export function VerbFormEE(props: VerbFormEEProps) {
                                         />
                                     </Tooltip>
                                 }
-                                label="Search in english"
+                                label={t('wordForm.verb.errors.formEE.searchInEnglishLabel', { ns: 'wordRelated' })}
                                 labelPlacement="end"
                             />
                             <Grid
