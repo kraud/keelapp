@@ -24,7 +24,7 @@ export function AddWord() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const {user} = useSelector((state: any) => state.auth)
-    let {currentlySelectedPoS} = useSelector((state: any) => state.words)
+    const {currentlySelectedPoS} = useSelector((state: any) => state.words)
     const {partOfSpeech} = useParams<AddWordParams>()
     const [paramPoS, setParamPoS] = useState<PartOfSpeech | undefined>(undefined)
 

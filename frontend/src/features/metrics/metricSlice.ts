@@ -59,7 +59,6 @@ export const metricSlice = createSlice({
                 state.isLoading = false
                 state.isError = true
                 state.message = action.payload as string
-                // state.userList = []
             })
     }
 })

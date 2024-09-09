@@ -1,22 +1,21 @@
 import React, {useEffect, useState} from 'react';
 import C3Chart from "./C3Chart";
 import {Button, Grid, Typography} from "@mui/material";
-import {Data} from "c3";
+import {Data, Primitive} from "c3";
 import globalTheme from "../../theme/theme";
 import {useNavigate} from "react-router-dom";
 import {partOfSpeechChartColors} from "../../theme/chartsColors";
 import Tooltip from "@mui/material/Tooltip";
 import {MetricsType} from "../../ts/enums";
 
-const defaultOptions = (untis) => {
+const defaultOptions = (untis: string) => {
     return {
         legend: {
             position: 'right'
         },
         tooltip: {
             format: {
-                value: function (value, ratio, id) {
-                    // example: 980 translations
+                value: function (value: Primitive, ratio: number | undefined, id: string, index: number): string {
                     return value + " " + untis
                 }
             }
