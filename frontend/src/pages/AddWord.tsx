@@ -11,12 +11,7 @@ import {routeVariantsAnimation} from "./management/RoutesWithAnimation";
 import {AppDispatch} from "../app/store";
 import {useTranslation} from "react-i18next";
 import {PartOfSpeech} from "../ts/enums";
-
-// TODO: remove after merging with UI-Language branch. Copied from generalUseFunctions
-export function getPoSKeyByLabel(partOfSpeechLabel: PartOfSpeech){
-    const match = Object.keys(PartOfSpeech)[Object.values(PartOfSpeech).indexOf(partOfSpeechLabel)] as string
-    return((match!!) ?match :"")
-}
+import {getPoSKeyByLabel} from "../components/generalUseFunctions";
 
 type AddWordParams = {
     partOfSpeech: string

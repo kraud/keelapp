@@ -8,6 +8,7 @@ import { ThemeProvider } from "@mui/material"
 import { BrowserRouter as Router} from 'react-router-dom'
 // import i18n (needs to be bundled)
 import './i18n'
+import LoadingScreen from "./pages/LoadingScreen";
 
 const container: any = document.getElementById('root');
 const root = createRoot(container);
@@ -19,7 +20,11 @@ root.render(
                 theme={globalTheme}
             >
                 <Router>
-                    <Suspense fallback="...is loading">
+                    <Suspense
+                        fallback={
+                            <LoadingScreen/>
+                        }
+                    >
                         <App/>
                     </Suspense>
                 </Router>

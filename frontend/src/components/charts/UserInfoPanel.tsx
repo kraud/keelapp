@@ -3,9 +3,11 @@ import {useEffect, useState} from "react";
 import {Grid} from "@mui/material";
 import React from "react";
 import UserInfoCard from "./UserInfoCard";
+import {useTranslation} from "react-i18next";
 
 
 export function UserInfoPanel() {
+    const { t } = useTranslation(['dashboard'])
     const {isSuccess, data} = useSelector((state: any) => state.metrics)
 
     const [totalWords, setTotalWords] = useState<string>("")
@@ -40,7 +42,7 @@ export function UserInfoPanel() {
                 xs={true}
             >
                 <UserInfoCard
-                    title={"Total Words"}
+                    title={t('userInfoCards.totalWords', {ns: 'dashboard'})}
                     data={totalWords}
                 />
             </Grid>
@@ -50,7 +52,7 @@ export function UserInfoPanel() {
                 xs={true}
             >
                 <UserInfoCard
-                    title={"Incomplete Words"}
+                    title={t("userInfoCards.incompleteWords", {ns: 'dashboard'})}
                     data={incompleteWords}
                     link={"review"}
                 />
@@ -61,7 +63,7 @@ export function UserInfoPanel() {
                 xs={true}
             >
                 <UserInfoCard
-                    title={"Languages"}
+                    title={t("userInfoCards.languages", {ns: 'dashboard'})}
                     data={totalLanguages}
                 />
             </Grid>

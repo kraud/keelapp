@@ -63,7 +63,13 @@
     "createExercises": "Loo harjutusi",
     "detailedView": "Detailne vaade",
     "assignTag": "Määra silt",
-    "deleteSelected": "Kustuta valitud"
+    "deleteSelected": "Kustuta valitud",
+    "groupByType": "Rühmitage tüübi järgi",
+    "separateByType": "Eraldage tüübi järgi",
+    "distributionByWordType": "Sõna tüüp",
+    "distributionByLanguage": "Keel",
+    "byMonth": "Kuu",
+    "byLanguage": "Keel"
   },
   "partOfSpeech": {
     "noun": "Nimisõna",

@@ -63,7 +63,13 @@
     "createExercises": "Crear ejercicios",
     "detailedView": "Vista detallada",
     "assignTag": "Asignar Tags",
-    "deleteSelected": "Borrar seleccionados"
+    "deleteSelected": "Borrar seleccionados",
+    "groupByType": "Agrupar por tipo",
+    "separateByType": "Separar por tipo",
+    "distributionByWordType": "Tipo de palabra",
+    "distributionByLanguage": "Idioma",
+    "byMonth": "Mes",
+    "byLanguage": "Idioma"
   },
   "partOfSpeech": {
     "noun": "Sustantivo",
