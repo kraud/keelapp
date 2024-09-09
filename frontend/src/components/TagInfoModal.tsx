@@ -26,18 +26,19 @@ import {ConfirmationButton} from "./ConfirmationButton";
 import {deleteManyWordsById} from "../features/words/wordSlice";
 import {useFollowUnfollowTag, useIsUserFollowingTag} from "../hooks/useFollowUnfollowTag";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import {useTranslation} from "react-i18next";
 
 
-interface FriendSearchModalProps {
+interface TagInfoModalProps {
     open: boolean
     setOpen: (value: boolean) => void
     tagId: string | undefined
     setMadeChangesToTagList: (status: boolean) => void
-    triggerAction?: (tagId: string) => void // we'll use this to open FriendSearchModal and send the tagId to another user
+    triggerAction?: (tagId: string) => void // we'll use this to open TagInfoModal and send the tagId to another user
     title?: string
 }
 
-export const TagInfoModal = (props: FriendSearchModalProps) => {
+export const TagInfoModal = (props: TagInfoModalProps) => {
     const lessThanSmall = useMediaQuery(globalTheme.breakpoints.down("sm"))
     const componentStyles = {
         mainContainer: {
@@ -55,6 +56,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
 
     }
     const dispatch = useDispatch()
+    const { t } = useTranslation(['common', 'tags'])
     // 'fullTagData' will remain the same as it in BE. In case we need to cancel changes, we have this to copy the info from.
     const {fullTagData, isSuccessTags, isLoadingTags, followedTagsByUser} = useSelector((state: any) => state.tags)
     const {isLoading, isSuccess} = useSelector((state: any) => state.words)
@@ -132,18 +134,18 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
     useEffect(() => {
         if(!isLoadingTags && isSuccessTags && (fullTagData !== undefined)){
             if(!isEditing && isDeleting){ // if not editing and fullTagData updated => just deleted that tag now stored in fullTagData
-                toast.info(`${fullTagData.label} tag was deleted!`)
+                toast.info(t('toastMessages.tagDeleted', { tagLabel: fullTagData.label, ns: 'tags' }))
                 // TODO: close modal? Add timer to close?
                 setIsDeleting(false)
                 setIsCurrentTagHasBeenDeleted(true)
             }
             // but, before we check if we're updating an existing one
             if(!isEditing && isUpdating){
-                toast.success('Tag was updated successfully!')
+                toast.success(t('toastMessages.tagUpdated', { ns: 'tags' }))
                 setIsUpdating(false)
             }
             if(!isEditing && isCreating){
-                toast.success('Tag was created successfully!')
+                toast.success(t('toastMessages.tagCreated', { ns: 'tags' }))
                 setIsCreating(false)
             }
             setTagCurrentData(fullTagData)
@@ -160,7 +162,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
     useEffect(() => {
         if(fullTagData !== undefined){
             if(!isLoading && isSuccess && isDeletingWords){
-                toast.success('Words were deleted successfully!')
+                toast.success(t('toastMessages.wordsDeleted', { ns: 'tags' }))
                 setIsDeletingWords(false)
                 dispatch(clearFullTagDataWords())
             }
@@ -191,7 +193,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                                 )
                             }
                         >
-                            Save changes
+                            {t('buttons.saveChanges', { ns: 'common' })}
                         </Button>
                     </Grid>
                     <Grid
@@ -209,7 +211,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                             fullWidth={true}
                             endIcon={<ClearIcon />}
                         >
-                            Cancel
+                            {t('buttons.cancel', { ns: 'common' })}
                         </Button>
                     </Grid>
                     <Grid
@@ -230,7 +232,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                                 (isLoadingTags) // we disable all buttons while waiting for BE confirmation
                             }
                         >
-                            Delete tag
+                            {t('buttons.deleteTag', { ns: 'common' })}
                         </Button>
                     </Grid>
                 </>)
@@ -255,7 +257,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                                 )
                             }
                         >
-                            Create tag
+                            {t('buttons.createTag', { ns: 'common' })}
                         </Button>
                     </Grid>
                     <Grid
@@ -270,7 +272,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                             fullWidth={true}
                             endIcon={<ClearIcon />}
                         >
-                            Cancel
+                            {t('buttons.cancel', { ns: 'common' })}
                         </Button>
                     </Grid>
                 </>)
@@ -295,7 +297,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                                         startIcon={<SendIcon/>}
                                         disabled={false}
                                     >
-                                        Send to friend
+                                        {t('buttons.sendToFriend', { ns: 'common' })}
                                     </Button>
                                 </Grid>
                                 <Grid
@@ -305,7 +307,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                                 >
                                     <ConfirmationButton
                                         onConfirm={() => deleteTagWords()}
-                                        buttonLabel={'Delete All Words'}
+                                        buttonLabel={t('buttons.deleteAllWords', { ns: 'common' })}
                                         buttonProps={{
                                             variant: "contained",
                                             color: "warning",
@@ -327,7 +329,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                                         fullWidth={true}
                                         endIcon={<EditIcon/>}
                                     >
-                                        Edit
+                                        {t('buttons.edit', { ns: 'common' })}
                                     </Button>
                                 </Grid>
                             </>
@@ -345,7 +347,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                                 fullWidth={true}
                                 endIcon={<ClearIcon />}
                             >
-                                Close
+                                {t('buttons.close', { ns: 'common' })}
                             </Button>
                         </Grid>
                         </>
@@ -361,7 +363,10 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                         >
                             <ConfirmationButton
                                 onConfirm={() => onClickFollowUnfollow()}
-                                buttonLabel={userFollowsTag ?'Unfollow tag' :'Follow tag'}
+                                buttonLabel={userFollowsTag
+                                    ? t('buttons.unfollowTag', { ns: 'common' })
+                                    : t('buttons.followTag', { ns: 'common' })
+                            }
                                 buttonProps={{
                                     variant: "contained",
                                     color: "warning",
@@ -383,7 +388,7 @@ export const TagInfoModal = (props: FriendSearchModalProps) => {
                                 fullWidth={true}
                                 endIcon={<ClearIcon />}
                             >
-                                Close
+                                {t('buttons.close', { ns: 'common' })}
                             </Button>
                         </Grid>
                     </>

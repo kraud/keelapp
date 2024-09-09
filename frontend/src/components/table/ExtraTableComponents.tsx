@@ -22,6 +22,7 @@ import LinearIndeterminate from "../Spinner";
 import Box from "@mui/material/Box";
 import {WordFormSelector} from "../forms/WordFormSelector";
 import DoneIcon from "@mui/icons-material/Done";
+import BlockIcon from '@mui/icons-material/Block';
 import {useSearchParams} from "react-router-dom";
 import {AutocompleteMultiple} from "../AutocompleteMultiple";
 import {checkEqualArrayContent, extractTagsArrayFromUnknownFormat} from "../generalUseFunctions";
@@ -29,6 +30,7 @@ import {ConfirmationButton} from "../ConfirmationButton";
 import {CountryFlag} from "../GeneralUseComponents";
 import Tooltip from "@mui/material/Tooltip";
 import {SortDirection} from "@tanstack/react-table";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 interface TableHeaderCellProps {
     content: any
@@ -94,18 +96,21 @@ interface TableDataCellProps {
     onlyForDisplay?: boolean //  Will not change the cursor to pointer and if it's text, it won't be clickable.
 
     wordId?: string,
+    wordUser?: string,
+    existingTranslationsLabels?: string,
     language?: Lang,
     partOfSpeech?: PartOfSpeech,
 }
 
 export function TableDataCell(props: TableDataCellProps){
+    const lessThanMedium = useMediaQuery(globalTheme.breakpoints.down("md"))
     const componentStyles = {
         mainModalContainer: {
             position: 'absolute',
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            width: 'min(80vw, max-content)',
+            width: (lessThanMedium) ? '90vw' :'min(80vw, max-content)',
             background: 'white',
             border: '4px solid #0072CE',
             borderRadius: '25px',
@@ -749,8 +754,16 @@ export function TableDataCell(props: TableDataCellProps){
                                 })
                             }
                         }}
+                        disabled={((user._id !== props.wordUser) && (props.type === 'text'))}
                     >
-                        <AddIcon color={"primary"} fontSize={'inherit'}/>
+                        {/*
+                            NB! Other props.type (i.e. 'array') do no have wordUser data, but if they come from another user
+                            => will be part of a Tag, so this icons will not be displayed.
+                        */}
+                        {((user._id !== props.wordUser) && (props.type === 'text'))
+                            ? <BlockIcon color={"disabled"} fontSize={'inherit'}/>
+                            : <AddIcon color={"primary"} fontSize={'inherit'}/>
+                        }
                     </IconButton>
                 }
             </Grid>
@@ -811,7 +824,7 @@ export function TableDataCell(props: TableDataCellProps){
                                 <Grid
                                     item={true}
                                     container={true}
-                                    justifyContent={"flex-end"}
+                                    justifyContent={{xs: "flex-start", md: "flex-end"}}
                                     spacing={2}
                                     sx={{
                                         marginBottom: globalTheme.spacing(2)
@@ -844,76 +857,104 @@ export function TableDataCell(props: TableDataCellProps){
                                             }
                                             </Typography>
                                         }
+                                            <Typography
+                                                variant={"subtitle1"}
+                                                alignSelf={"end"}
+                                                sx={{
+                                                    marginRight: {xs: 'none', md: globalTheme.spacing(3)},
+                                                    fontStyle: 'italic'
+                                                }}
+                                            >
+                                                {props.existingTranslationsLabels}
+                                            </Typography>
                                         {(isLoading) && <LinearIndeterminate/>}
                                     </Grid>
                                     <Grid
+                                        container={true}
                                         item={true}
+                                        alignContent={"center"}
+                                        justifyContent={{xs: "center", md: 'flex-end'}}
+                                        xs
+                                        spacing={1}
                                     >
-                                        <ConfirmationButton
-                                            onConfirm={() => {
-                                                deleteOnClick()
-                                            }}
-                                            buttonLabel={'Delete'}
-                                            buttonProps={{
-                                                variant: "outlined",
-                                                color: "warning",
-                                                disabled: (props.type === "text") &&
-                                                    (
-                                                        (word.translations.length < 3)
+                                        <Grid
+                                            item={true}
+                                            xs={true}
+                                            md= {'auto'}
+                                        >
+                                            <ConfirmationButton
+                                                onConfirm={() => {
+                                                    deleteOnClick()
+                                                }}
+                                                buttonLabel={'Delete'}
+                                                buttonProps={{
+                                                    variant: "outlined",
+                                                    color: "warning",
+                                                    disabled: (
+                                                        (!userIsWordAuthor)
                                                         ||
-                                                        !(checkCurrentLanguageIncludedInTranslations()) // if not included => we can simply click away, no need to delete
+                                                        ((props.type === "text") &&
+                                                        (
+                                                            (word.translations.length < 3)
+                                                            ||
+                                                            !(checkCurrentLanguageIncludedInTranslations()) // if not included => we can simply click away, no need to delete
+                                                        ))
                                                     ),
-                                                sx: {
-                                                    display: (props.type === "array") ?"none" :"initial"
-                                                }
-                                            }}
-                                        />
-                                    </Grid>
-                                    <Grid
-                                        item={true}
-                                    >
-                                        <Button
-                                            variant={"outlined"}
-                                            color={"secondary"}
-                                            disabled={(
-                                                (
-                                                    displayComponentAsLabels && !userIsWordAuthor
-                                                )
-                                                    ||
-                                                (
-                                                    (!displayComponentAsLabels) &&
+                                                    sx: {
+                                                        display: (props.type === "array") ?"none" :"initial"
+                                                    }
+                                                }}
+                                            />
+                                        </Grid>
+                                        <Grid
+                                            item={true}
+                                            xs={true}
+                                            md= {'auto'}
+                                        >
+                                            <Button
+                                                variant={"outlined"}
+                                                color={"secondary"}
+                                                fullWidth={true}
+                                                disabled={(
                                                     (
+                                                        displayComponentAsLabels && !userIsWordAuthor
+                                                    )
+                                                        ||
+                                                    (
+                                                        (!displayComponentAsLabels) &&
+                                                        (
+                                                            (
+                                                                props.type === "text" &&
+                                                                !selectedTranslationData!.completionState! // (!) selectedTranslationData will never be undefined when type === "text"
+                                                            )
+                                                            ||
+                                                            (
+                                                                (props.type === "array") &&
+                                                                (selectedWordTagsData.completionState === undefined) // TODO: fix logic to hide cancel button on new tags
+                                                            ) // it should always be allowed to edit/cancel/save any tags
+                                                        )
+                                                    )
+                                                )}
+                                                onClick={() => editSaveCancelChangesOnClick()}
+                                            >
+                                                {(displayComponentAsLabels)
+                                                    ? "Edit"
+                                                    : (
                                                         (
                                                             props.type === "text" &&
-                                                            !selectedTranslationData!.completionState! // (!) selectedTranslationData will never be undefined when type === "text"
+                                                            (selectedTranslationData!.isDirty) // (!) selectedTranslationData will never be undefined when type === "text"
                                                         )
                                                         ||
                                                         (
-                                                            (props.type === "array") &&
-                                                            (selectedWordTagsData.completionState === undefined) // TODO: fix logic to hide cancel button on new tags
-                                                        ) // it should always be allowed to edit/cancel/save any tags
+                                                            props.type === "array" &&
+                                                            (selectedWordTagsData.isDirty)
+                                                        )
                                                     )
-                                                )
-                                            )}
-                                            onClick={() => editSaveCancelChangesOnClick()}
-                                        >
-                                            {(displayComponentAsLabels)
-                                                ? "Edit"
-                                                : (
-                                                    (
-                                                        props.type === "text" &&
-                                                        (selectedTranslationData!.isDirty) // (!) selectedTranslationData will never be undefined when type === "text"
-                                                    )
-                                                    ||
-                                                    (
-                                                        props.type === "array" &&
-                                                        (selectedWordTagsData.isDirty)
-                                                    )
-                                                )
-                                                    ?"Save changes"
-                                                    :"Cancel"
-                                            }
-                                        </Button>
+                                                        ?"Save changes"
+                                                        :"Cancel"
+                                                }
+                                            </Button>
+                                        </Grid>
                                     </Grid>
                                 </Grid>
                                 {getModalComponent()}

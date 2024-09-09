@@ -15,6 +15,7 @@ import {motion} from "framer-motion";
 import {childVariantsAnimation, routeVariantsAnimation} from "./management/RoutesWithAnimation";
 import {AppDispatch} from "../app/store";
 import {getAppTitle} from "./Login";
+import {useTranslation} from "react-i18next";
 
 export interface UserPasswordData {
     userId: string;
@@ -33,7 +34,7 @@ interface ResetPasswordProps {
 }
 
 export const ResetPassword = (props: ResetPasswordProps) => {
-
+    const { t } = useTranslation(['common', 'loginRegister'])
     // --------------- STYLING ---------------
     const componentStyles = {
         mainContainer: {
@@ -48,17 +49,23 @@ export const ResetPassword = (props: ResetPasswordProps) => {
     // --------------- THIRD-PARTY HOOKS ---------------
     const navigate = useNavigate()
     const dispatch = useDispatch<AppDispatch>()
-    const {userId, tokenId } = useParams<RouteResetPasswordParams>()
+    const {userId, tokenId} = useParams<RouteResetPasswordParams>()
 
     const isSettingNewPassword = userId !== undefined && tokenId !== undefined
 
     // --------------- FORM VALIDATION SCHEMA ---------------
     // Validates password and confirmation only when
     const validationSchema = Yup.object().shape({
-        email: (isSettingNewPassword ? Yup.string() : Yup.string().email("Valid E-mail required").required("Valid E-mail required")),
-        password: (isSettingNewPassword ? Yup.string().required("Password is required") : Yup.string()),
+        email: (isSettingNewPassword
+            ? Yup.string()
+            : Yup.string()
+                .required(t('errors.emailRequired', { ns: 'loginRegister' })))
+                .email(t('errors.invalidEmail', { ns: 'loginRegister' })),
+        password: (isSettingNewPassword
+            ? Yup.string().required(t('errors.passwordRequired', { ns: 'loginRegister' }))
+            : Yup.string()),
         password2: (isSettingNewPassword
-            ? Yup.string().required("Password2 is required").oneOf([Yup.ref('password')], "Passwords don't match")
+            ? Yup.string().required(t('errors.passwordRepeatRequired', { ns: 'loginRegister' })).oneOf([Yup.ref('password')], "Passwords don't match")
             : Yup.string()
         ) 
     })
@@ -78,7 +85,10 @@ export const ResetPassword = (props: ResetPasswordProps) => {
             toast.error(message)
         }
         if(isSuccess) {
-            const successMessage = isSettingNewPassword ? "Password updated successfully!" : "Email sent successfully!";
+            const successMessage =
+                (isSettingNewPassword)
+                    ? t('toastMessages.passwordUpdated', { ns: 'loginRegister' })
+                    : t('toastMessages.emailSent', { ns: 'loginRegister' })
             toast.success(successMessage)
             navigate("/")
         }
@@ -99,7 +109,6 @@ export const ResetPassword = (props: ResetPasswordProps) => {
 
             dispatch(updatePassword(passData))
         } else if (data.email !== undefined && data.email !== '') {
-            console.log("request pass")
             dispatch(requestPasswordResetToken(data.email))
         } 
     }
@@ -132,15 +141,18 @@ export const ResetPassword = (props: ResetPasswordProps) => {
                         variant={"h2"}
                         align={"center"}
                     >
-                        {isSettingNewPassword ? "Password reset" : "Forgot your password?"}
+                        {isSettingNewPassword
+                            ? t('resetPassword.titleReset', { ns: 'loginRegister' })
+                            : t('resetPassword.titleForgot', { ns: 'loginRegister' })
+                        }
                     </Typography>
                     <Typography
                         variant={"subtitle2"}
                         align={"center"}
                     >
                         {isSettingNewPassword
-                            ? "Enter a new password below"
-                            : "Enter the email address associated with your account and we'll send you a link to reset your password"}
+                            ? t('resetPassword.subtitleNewPassword', { ns: 'loginRegister' })
+                            : t('resetPassword.subtitleEnterEmail', { ns: 'loginRegister' })}
                     </Typography>
                 </Grid>
                 <Grid
@@ -165,7 +177,7 @@ export const ResetPassword = (props: ResetPasswordProps) => {
                                 {/* TODO: should this also allow login in with username? */}
                                 <TextInputFormWithHook
                                     control={control}
-                                    label={"E-mail"}
+                                    label={t('formLabels.email', { ns: 'loginRegister' })}
                                     name={"email"}
                                     defaultValue={""}
                                     errors={errors.email}
@@ -182,7 +194,7 @@ export const ResetPassword = (props: ResetPasswordProps) => {
                             >
                                 <TextInputFormWithHook
                                     control={control}
-                                    label={"Password"}
+                                    label={t('formLabels.password', { ns: 'loginRegister' })}
                                     name={"password"}
                                     defaultValue={""}
                                     errors={errors.password}
@@ -199,7 +211,7 @@ export const ResetPassword = (props: ResetPasswordProps) => {
                             >
                                 <TextInputFormWithHook
                                     control={control}
-                                    label={"Confirm password"}
+                                    label={t('formLabels.confirmPassword', { ns: 'loginRegister' })}
                                     name={"password2"}
                                     defaultValue={""}
                                     errors={errors.password2}
@@ -239,7 +251,7 @@ export const ResetPassword = (props: ResetPasswordProps) => {
                                         color={"success"}
                                         disabled={isLoadingAuth}
                                     >
-                                        Submit
+                                        {t('buttons.submit', { ns: 'common' })}
                                     </Button>
                                 </Grid>
                             </Grid>
@@ -260,7 +272,7 @@ export const ResetPassword = (props: ResetPasswordProps) => {
                                     }}
                                     disabled={isLoadingAuth}
                                 >
-                                    Already registered?
+                                    {t('switchSectionButtons.alreadyRegistered', {ns: 'loginRegister'})}
                                 </Button>
                             </Grid>
                         </Grid>

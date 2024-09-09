@@ -8,6 +8,7 @@ import {TextInputFormWithHook} from "../../TextInputFormHook";
 import {WordItem, TranslationItem} from "../../../ts/interfaces";
 import {AdverbCases, Lang} from "../../../ts/enums";
 import {getDisabledInputFieldDisplayLogic, getWordByCase} from "../commonFunctions";
+import {useTranslation} from "react-i18next";
 
 interface AdverbFormESProps {
     currentTranslationData: TranslationItem,
@@ -16,17 +17,17 @@ interface AdverbFormESProps {
 }
 // Displays the fields required to add the english translation of a noun (and handles the validations)
 export function AdverbFormES(props: AdverbFormESProps) {
-
+    const { t } = useTranslation(['wordRelated'])
     const { currentTranslationData } = props
 
     const validationSchema = Yup.object().shape({
         adverb: Yup.string()
-            .required("Adverb is required")
-            .matches(/^[^0-9]+$/, 'Must not include numbers'),
+            .required(t('wordForm.adverb.errors.formES.adverbRequired', { ns: 'wordRelated' }))
+            .matches(/^[^0-9]+$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         comparative: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         superlative: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
     })
 
     interface AdverbData {

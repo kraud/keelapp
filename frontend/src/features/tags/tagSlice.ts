@@ -94,11 +94,11 @@ export const getFollowedTagsByUser = createAsyncThunk('tags/getFollowedTags', as
 })
 
 // Get a tag data by its label (total or partial match)
-export const searchTagsByLabel = createAsyncThunk(`tags/searchTag`, async (request: {query: string, includeOtherUsersTags?: boolean}, thunkAPI) => {
+export const searchTagsByLabel = createAsyncThunk(`tags/searchTag`, async (request: {query: string, includeOtherUsersTags?: boolean, includeFollowedTags?: boolean}, thunkAPI) => {
     try {
         // @ts-ignore
         const token = thunkAPI.getState().auth.user.token
-        return await tagService.searchTags(token, request.query, request.includeOtherUsersTags)
+        return await tagService.searchTags(token, request.query, request.includeOtherUsersTags, request.includeFollowedTags)
     } catch(error: any) {
         const message = (
                 error.response &&

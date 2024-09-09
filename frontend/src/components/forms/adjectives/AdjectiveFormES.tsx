@@ -8,6 +8,7 @@ import {WordItem, TranslationItem} from "../../../ts/interfaces";
 import {AdjectiveCases, Lang} from "../../../ts/enums";
 import {getDisabledInputFieldDisplayLogic, getWordByCase} from "../commonFunctions";
 import {RadioGroupWithHook} from "../../RadioGroupFormHook";
+import {useTranslation} from "react-i18next";
 
 interface AdjectiveFormESProps {
     currentTranslationData: TranslationItem,
@@ -16,22 +17,23 @@ interface AdjectiveFormESProps {
 }
 // Displays the fields required to add the english translation of a noun (and handles the validations)
 export function AdjectiveFormES(props: AdjectiveFormESProps) {
+    const { t } = useTranslation(['wordRelated'])
     const { currentTranslationData } = props
 
     // validation when adjective varies depending on gender
     const validationSchemaByGender = Yup.object().shape({
-        gender: Yup.string().required("Required")
+        gender: Yup.string().required(t('wordForm.adjective.errors.formES.genderRequired', { ns: 'wordRelated' }))
             .oneOf(["Neutral", "M/F"], "Required"),
         maleSingular: Yup.string()
-            .required("Masculine singular degree is required")
-            .matches(/^[^0-9]+$/, 'Must not include numbers'),
+            .required(t('wordForm.adjective.errors.formES.singularMasculineDegreeRequired', { ns: 'wordRelated' }))
+            .matches(/^[^0-9]+$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         femaleSingular: Yup.string()
-            .required("Female singular degree is required")
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .required(t('wordForm.adjective.errors.formES.singularFemaleDegreeRequired', { ns: 'wordRelated' }))
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         malePlural: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         femalePlural: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         // The following values are added to help with TS verifications, so it is compatible with the neutral-schema
         // neutralSingular: Yup.string().nullable(),
         // neutralPlural: Yup.string().nullable(),
@@ -39,14 +41,14 @@ export function AdjectiveFormES(props: AdjectiveFormESProps) {
 
     // validation when adjective varies depending on gender
     const validationSchemaNeutral = Yup.object().shape({
-        gender: Yup.string().required("Required")
-            .oneOf(["Neutral", "M/F"], "Required"),
+        gender: Yup.string().required(t('wordForm.adjective.errors.formES.genderRequired', { ns: 'wordRelated' }))
+            .oneOf(["Neutral", "M/F"], t('wordForm.adjective.errors.formES.genderRequired', { ns: 'wordRelated' })),
         neutralSingular: Yup.string()
-            .required("Neutral singular degree is required")
-            .matches(/^[^0-9]+$/, 'Must not include numbers'),
+            .required(t('wordForm.adjective.errors.formES.singularNeutralDegreeRequired', { ns: 'wordRelated' }))
+            .matches(/^[^0-9]+$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         neutralPlural: Yup.string()
-            .required("Neutral plural degree is required")
-            .matches(/^[^0-9]+$/, 'Must not include numbers'),
+            .required(t('wordForm.adjective.errors.formES.pluralNeutralDegreeRequired', { ns: 'wordRelated' }))
+            .matches(/^[^0-9]+$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         // The following values are added to help with TS verifications, so it is compatible with the gender-schema
         // maleSingular: Yup.string().nullable(),
         // femaleSingular: Yup.string().nullable(),

@@ -333,6 +333,34 @@ export const getWordChipDataByLangInOrder = (word: WordDataBE, langPriorityList:
     }
 }
 
+// When displaying an empty translation-form in a modal, we display the list of existing translations' base-case, for reference
+// This uses as origin the data for a row from the main review-table
+export const getListOfBasicCaseFromExistingTranslations = (word: any, langPriorityList: Lang[]) => {
+
+    const basicCasesFromTranslationsInSelectedLanguages: string[] = []
+    langPriorityList.forEach((selectedLang) => {
+        // In a table row, the format for the data to be displayed on each cell is data+'2-char-country-code'
+        const matchingTranslation = word[`data${Object.keys(Lang)[Object.values(Lang).indexOf(selectedLang)]}`]
+        if(matchingTranslation!!){
+            basicCasesFromTranslationsInSelectedLanguages.push(matchingTranslation)
+        }
+    })
+    let formattedString = ''
+    basicCasesFromTranslationsInSelectedLanguages.forEach((translationCase: string, index: number) => {
+        switch(index){
+            case(0): {
+                formattedString = translationCase
+                break
+            }
+            default: {
+                formattedString = formattedString+'/'+translationCase
+                break
+            }
+        }
+    })
+    return(formattedString)
+}
+
 const getRequiredFieldsData = (translation: TranslationItem, partOfSpeech: PartOfSpeech) => {
     //Fields depend on Part of Speech + Language
     switch (partOfSpeech){
@@ -510,4 +538,14 @@ export function setTimerTriggerFunction(functionToRunAfterTimer: () => void, tim
     timerID = setTimeout(() => {
         functionToRunAfterTimer()
     }, (timer) ? timer :450)
+}
+
+export function getLangKeyByLabel(languageLabel: Lang){
+    const match = Object.keys(Lang)[Object.values(Lang).indexOf(languageLabel)] as string
+    return((match!!) ?match :"")
+}
+
+export function getPoSKeyByLabel(partOfSpeechLabel: PartOfSpeech){
+    const match = Object.keys(PartOfSpeech)[Object.values(PartOfSpeech).indexOf(partOfSpeechLabel)] as string
+    return((match!!) ?match :"")
 }

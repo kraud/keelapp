@@ -3,13 +3,18 @@ import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
 import {createColumnHelper, Row} from "@tanstack/react-table";
 import {IndeterminateCheckbox, TableDataCell, TableHeaderCell} from "../ExtraTableComponents";
-import {getCurrentLangTranslated, stringAvatar} from "../../generalUseFunctions";
+import {
+    getCurrentLangTranslated,
+    getListOfBasicCaseFromExistingTranslations, getPoSKeyByLabel,
+    stringAvatar
+} from "../../generalUseFunctions";
 import React from "react";
 import Avatar from "@mui/material/Avatar";
 import GroupIcon from '@mui/icons-material/Group';
 import {UserData} from "../../../ts/interfaces";
 import globalTheme from "../../../theme/theme";
 import {Grid} from "@mui/material";
+import {useTranslation} from "react-i18next";
 
 export type TableWordData = {
     id: string,
@@ -35,7 +40,7 @@ export type TableWordData = {
 }
 
 // As the order of selected languages changes, so should the order they are displayed on the table
-export const createColumnsReviewTable = (selectedLanguagesList: string[], displayGender: boolean, user: UserData) => {
+export const createColumnsReviewTable = (selectedLanguagesList: string[], displayGender: boolean, user: UserData, translateFunction: (access: string) => string) => {
     const newColumnHelper = createColumnHelper<TableWordData>()
 
     const newlySortedColumns = selectedLanguagesList.map((language: string) => {
@@ -144,6 +149,8 @@ export const createColumnsReviewTable = (selectedLanguagesList: string[], displa
                         language={currentLanguageData.language}
                         partOfSpeech={info.row.original.partOfSpeech}
                         wordId={info.row.original.id}
+                        wordUser={info.row.original.user}
+                        existingTranslationsLabels={getListOfBasicCaseFromExistingTranslations(info.row.original, user.languages)}
                         content={info.getValue()}
                         wordGender={(currentLanguageData.wordGender !== undefined)
                             //@ts-ignore
@@ -266,7 +273,7 @@ export const createColumnsReviewTable = (selectedLanguagesList: string[], displa
                     (info.getValue() !== undefined)
                         ?
                         <TableDataCell
-                            content={info.getValue()}
+                            content={translateFunction(info.getValue())}
                             type={"text"}
                             textAlign={"center"}
                             onlyForDisplay={true}
@@ -298,6 +305,7 @@ export const createColumnsReviewTable = (selectedLanguagesList: string[], displa
                                 type={"array"}
                                 textAlign={"center"}
                                 onlyForDisplay={false}
+                                existingTranslationsLabels={getListOfBasicCaseFromExistingTranslations(info.row.original, user.languages)}
                                 sxProps={{
                                     minWidth: "50px"
                                 }}

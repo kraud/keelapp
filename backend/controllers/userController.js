@@ -7,6 +7,7 @@ const Token = require('../models/tokenModel')
 const sendMail = require('../utils/sendEmail')
 const crypto = require('crypto')
 const mongoose = require("mongoose");
+const {calculateBasicUserMetrics} = require('./metricController')
 
 function queryParamToBool(value) {
     return ((value+'').toLowerCase() === 'true')
@@ -123,7 +124,7 @@ const loginUser = asyncHandler(async(req, res) => {
 // @route   PUT /api/users/updateUser
 // @access  Public
 const updateUser = asyncHandler(async(req, res) => {
-    const {email, name, username, languages} = req.body
+    const {email, name, username, languages, uiLanguage} = req.body
 
     const usernameExists = await User.findOne({username: username})
     // NB! ._id returns the 'new ObjectId("idString") object. Instead, we use .id to access the "idString" value directly.
@@ -140,6 +141,7 @@ const updateUser = asyncHandler(async(req, res) => {
             username: username,
             // NB! email can't be changed
             languages: languages,
+            uiLanguage: uiLanguage,
             // if more fields are added to user, add them to the update here
         },{new: true}).select({ password: 0, createdAt: 0 , updatedAt: 0, __v: 0 })
         res.status(200).json(updatedUser)
@@ -395,6 +397,30 @@ const updatePassword = asyncHandler(async (req, res) => {
     res.status(200).json({})
 })
 
+// @desc    Get basic metrics for dashboard
+// @route   GET /api/users
+// @access  Private
+const getBasicUserMetrics = asyncHandler(async (req, res) => {
+    let user = req.user;
+    try {
+        let metrics = await calculateBasicUserMetrics(user)
+
+        const metrics_data = {
+            totalWords: metrics.totalWords,
+            incompleteWordsCount: metrics.incompleteWordsCount,
+            translationsPerLanguage: metrics.translationsByLanguage,
+            translationsPerLanguageAndPOS: metrics.translationsByLanguageAndPOS,
+            wordsPerPOS: metrics.wordsPerPOS,
+            wordsPerMonth: metrics.wordsPerMonth
+        }
+
+        res.status(200).json(metrics_data)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({error})
+    }
+})
+
 // Generate JWT
 const generateToken = (id) => {
     return jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: '30d'})
@@ -410,6 +436,7 @@ module.exports = {
     queryParamToBool,
     verifyUser,
     requestPasswordReset,
-    updatePassword
+    updatePassword,
+    getBasicUserMetrics
 }
 

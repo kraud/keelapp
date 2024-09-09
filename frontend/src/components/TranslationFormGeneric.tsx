@@ -7,6 +7,7 @@ import globalTheme from "../theme/theme";
 import Tooltip from "@mui/material/Tooltip";
 import {getCurrentLangTranslated} from "./generalUseFunctions";
 import {CountryFlag} from "./GeneralUseComponents";
+import {useTranslation} from "react-i18next";
 
 interface WordFormGenericProps {
     index: number, // needed to know on which item in completeWordData.translations list this form data is stored
@@ -31,6 +32,7 @@ interface WordFormGenericProps {
 // Displays available language options, and once selected it displays the correct fields to input
 // This form will only display buttons/textfields/selects for A SINGLE language+word combo
 export function TranslationFormGeneric(props: WordFormGenericProps) {
+    const { t } = useTranslation(['wordRelated'])
     const [currentLang, setCurrentLang] = useState<Lang | null>(null)
     const componentStyles = {
         translationForm: {
@@ -182,7 +184,7 @@ export function TranslationFormGeneric(props: WordFormGenericProps) {
                     <Typography
                         variant={"subtitle2"}
                     >
-                        Pick a language for the new word
+                        {t('translationFormGeneric.selectLanguage', {ns: 'wordRelated'})}
                     </Typography>
                     : (currentLang !== null) &&
                         <WordFormSelector

@@ -13,9 +13,8 @@ import LinearIndeterminate from "../../Spinner";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../../../app/store";
 import {setTimerTriggerFunction} from "../../generalUseFunctions";
-import {
-    getAutocompletedEstonianNounData, getAutocompletedSpanishNounGender
-} from "../../../features/autocompletedTranslation/autocompletedTranslationSlice";
+import {getAutocompletedSpanishNounGender} from "../../../features/autocompletedTranslation/autocompletedTranslationSlice";
+import {useTranslation} from "react-i18next";
 
 interface NounFormESProps {
     currentTranslationData: TranslationItem,
@@ -24,20 +23,22 @@ interface NounFormESProps {
 }
 // Displays the fields required to add the spanish translation of a noun (and handles the validations)
 export function NounFormES(props: NounFormESProps) {
+    const { t } = useTranslation(['common', 'wordRelated'])
     const dispatch = useDispatch<AppDispatch>()
     const {autocompletedTranslationNounES, isErrorAT, isSuccessAT, isLoadingAT, messageAT} = useSelector((state: any) => state.autocompletedTranslations)
-
+    const translatedGenderLabel = t('linguisticFeature.gender', {ns: 'common'})
 
     const { currentTranslationData } = props
 
     const validationSchema = Yup.object().shape({
-        gender: Yup.string().required("Required")
-            .oneOf(["el", "la", "el/la"], "Required"),
+        gender: Yup.string()
+            .required(t('wordForm.noun.errors.formES.genderRequired', { ns: 'wordRelated' }))
+            .oneOf(["el", "la", "el/la"], t('wordForm.noun.errors.formES.genderRequired', { ns: 'wordRelated' })),
         singular: Yup.string()
-            .required("Singular form is required")
-            .matches(/^[^0-9]+$/, 'Must not include numbers'),
+            .required(t('wordForm.noun.errors.formES.singularFormRequired', { ns: 'wordRelated' }))
+            .matches(/^[^0-9]+$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         plural: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers')
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' }))
     })
 
     const {
@@ -177,16 +178,16 @@ export function NounFormES(props: NounFormESProps) {
                         >
                             <AutocompleteButtonWithStatus
                                 tooltipLabels={{
-                                    emptyQuery: "Please input 'Singular palabra' first.",
-                                    noMatch: "Sorry, we don't know this word!",
-                                    foundMatch: "There is information about this word stored in our system.",
+                                    emptyQuery: t('wordForm.autocompleteTranslationButton.emptyQuery', { ns: 'wordRelated', requiredField: "Singular palabra" }),
+                                    noMatch: t('wordForm.autocompleteTranslationButton.noMatch', { ns: 'wordRelated' }),
+                                    foundMatch: t('wordForm.autocompleteTranslationButton.foundMatch', { ns: 'wordRelated' }),
                                     partialMatch: (isSuccessAT && messageAT !== "") ?messageAT :undefined
                                 }}
                                 queryValue={singularWord}
                                 autocompleteResponse={autocompletedTranslationNounES}
                                 loadingState={isLoadingAT}
                                 onAutocompleteClick={() => onAutocompleteClick()}
-                                actionButtonLabel={'Autocomplete gender'}
+                                actionButtonLabel={t('wordForm.autocompleteTranslationButton.label', { ns: 'wordRelated', wordType: translatedGenderLabel })}
                             />
                             <Grid
                                 item={true}

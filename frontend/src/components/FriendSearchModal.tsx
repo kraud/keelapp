@@ -36,6 +36,7 @@ import {FriendList, ChipList} from "./GeneralUseComponents";
 import {useNavigate} from "react-router-dom";
 import {ConfirmationButton} from "./ConfirmationButton";
 import SendIcon from '@mui/icons-material/Send';
+import {useTranslation} from "react-i18next";
 
 type FriendSearchModalProps = {
     open: boolean
@@ -69,6 +70,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
     }
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const { t } = useTranslation(['common', 'friendship'])
     const {user} = useSelector((state: any) => state.auth)
     const {userList, userResult, isLoadingUser} = useSelector((state: any) => state.user)
     const {requesterNotifications, isLoadingNotifications, isSuccessNotifications} = useSelector((state: any) => state.notifications)
@@ -154,19 +156,19 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
             (sentRequest || cancelledRequest || deletedRequest || acceptedRequest)
         ){
             if(sentRequest){
-                toast.info("Friend request sent")
+                toast.info(t('toastMessages.friendRequestSent', { ns: 'friendship' }))
                 setSentRequest(false)
             }
             if(cancelledRequest){
-                toast.info("Friend request deleted")
+                toast.info(t('toastMessages.friendRequestDeleted', { ns: 'friendship' }))
                 setCancelledRequest(false)
             }
             if(acceptedRequest){
-                toast.info("Friend request accepted")
+                toast.info(t('toastMessages.friendRequestAccepted', { ns: 'friendship' }))
                 setAcceptedRequest(false)
             }
             if(deletedRequest){
-                toast.info("Friendship deleted")
+                toast.info(t('toastMessages.friendshipDeleted', { ns: 'friendship' }))
                 setDeletedRequest(false)
             }
             if(sentRequest || cancelledRequest || deletedRequest || acceptedRequest){
@@ -312,7 +314,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                         sxPropsInput={{
                                             color: 'black',
                                         }}
-                                        placeholder={"Search for friends..."}
+                                        placeholder={t('autocompletePlaceholder', { ns: 'friendship' })}
                                         iconColor={"primary"}
                                     />
                                 </Grid>
@@ -383,7 +385,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                                 fullWidth={true}
                                                 endIcon={<ForwardToInboxIcon />}
                                             >
-                                                Send tag
+                                                {t('buttons.sendTag', { ns: 'common' })}
                                             </Button>
                                         </Grid>
                                     </Grid>
@@ -432,7 +434,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                                         textDecoration: "underline"
                                                     }}
                                                 >
-                                                    Tags:
+                                                    {t('sections.tags', { ns: 'common' })}:
                                                 </Typography>
                                             </Grid>
                                         }
@@ -490,7 +492,12 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                                     }
                                                 }
                                             }}
-                                            buttonLabel={['Add friend', 'Accept request', 'Cancel request', 'Delete Friendship'][getFriendRequestButtonLabel(friendships, selectedUser.id)]}
+                                            buttonLabel={[
+                                                t('buttons.addFriend', { ns: 'common' }),
+                                                t('buttons.acceptRequest', { ns: 'common' }),
+                                                t('buttons.cancelRequest', { ns: 'common' }),
+                                                t('buttons.deleteFriendship', { ns: 'common' })
+                                            ][getFriendRequestButtonLabel(friendships, selectedUser.id)]}
                                             buttonProps={{
                                                 variant: "contained",
                                                 color: ["primary", "success", "error", "error"][getFriendRequestButtonLabel(friendships, selectedUser.id)],
@@ -503,7 +510,12 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                                 ||
                                                 getFriendRequestButtonLabel(friendships, selectedUser.id) === 1
                                             }
-                                            confirmationButtonLabel={[undefined, undefined, "Confirm cancel request", "Confirm delete friend"][getFriendRequestButtonLabel(friendships, selectedUser.id)]}
+                                            confirmationButtonLabel={[
+                                                undefined,
+                                                undefined,
+                                                t('buttons.confirmCancelRequest', { ns: 'common' }),
+                                                t('buttons.confirmDeleteFriendship', { ns: 'common' })
+                                            ][getFriendRequestButtonLabel(friendships, selectedUser.id)]}
                                         />
                                     </Grid>
                                     <Grid
@@ -525,7 +537,7 @@ export const FriendSearchModal = (props: FriendSearchModalProps) => {
                                             endIcon={<ClearIcon />}
                                             disabled={(isLoadingNotifications || isLoadingFriendships)}
                                         >
-                                            Cancel
+                                            {t('buttons.cancel', { ns: 'common' })}
                                         </Button>
                                     </Grid>
                                 </Grid>

@@ -7,6 +7,7 @@ import {TextInputFormWithHook} from "../../TextInputFormHook";
 import {WordItem, TranslationItem} from "../../../ts/interfaces";
 import {AdjectiveCases, Lang, NounCases} from "../../../ts/enums";
 import {getDisabledInputFieldDisplayLogic, getWordByCase} from "../commonFunctions";
+import {useTranslation} from "react-i18next";
 
 interface AdjectiveFormENProps {
     currentTranslationData: TranslationItem,
@@ -15,17 +16,17 @@ interface AdjectiveFormENProps {
 }
 // Displays the fields required to add the english translation of a noun (and handles the validations)
 export function AdjectiveFormEN(props: AdjectiveFormENProps) {
-
+    const { t } = useTranslation(['wordRelated'])
     const { currentTranslationData } = props
 
     const validationSchema = Yup.object().shape({
         positive: Yup.string()
-            .required("Positive degree is required")
-            .matches(/^[^0-9]+$/, 'Must not include numbers'),
+            .required(t('wordForm.adjective.errors.formEN.positiveDegreeRequired', { ns: 'wordRelated' }))
+            .matches(/^[^0-9]+$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         comparative: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         superlative: Yup.string().nullable()
-            .matches(/^[^0-9]+$|^$/, 'Must not include numbers'),
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
     })
 
     interface AdjectiveData {
