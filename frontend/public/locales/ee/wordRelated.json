@@ -79,7 +79,8 @@
     "missingImplementationPoS": "Seda sõnaliiki ei ole veel rakendatud, vabandame!"
   },
   "translationFormGeneric": {
-    "selectLanguage": "Vali uue sõna keel"
+    "selectLanguage": "Vali uue sõna keel",
+    "switchLanguage": "Keele vahetamine:"
   },
   "wordFormSelector": {
     "languageNotAvailable": "See keel pole veel saadaval",

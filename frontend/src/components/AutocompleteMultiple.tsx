@@ -9,6 +9,7 @@ import {Theme} from "@mui/material/styles";
 import {FilterItem, SearchResult, TagData} from "../ts/interfaces";
 import {searchTagsByLabel} from "../features/tags/tagSlice";
 import LinearIndeterminate from "./Spinner";
+import {useTranslation} from "react-i18next";
 
 interface AutocompleteMultipleProps {
     values: TagData[], // TODO: this will be changed to SearchResult, so we can change component behaviour depending on type
@@ -26,6 +27,7 @@ interface AutocompleteMultipleProps {
 }
 
 export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
+    const { t } = useTranslation(['tags'])
     const [inputValue, setInputValue] = useState<string>('')
     const [options, setOptions] = useState<TagData[]>([])
     const [open, setOpen] = useState(false)
@@ -251,7 +253,7 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
                                 </InputAdornment>
                             )
                         }}
-                        placeholder={"Search tags..."}
+                        placeholder={t('searchTags', {ns: 'tags'})}
                         fullWidth
                         sx={{
                             '& .MuiAutocomplete-inputRoot': {

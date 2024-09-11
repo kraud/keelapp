@@ -79,7 +79,8 @@
     "missingImplementationPoS": "Diese Wortart ist noch nicht implementiert, es tut uns leid!"
   },
   "translationFormGeneric": {
-    "selectLanguage": "Wähle eine Sprache für das neue Wort"
+    "selectLanguage": "Wähle eine Sprache für das neue Wort",
+    "switchLanguage": "Sprache wechseln:"
   },
   "wordFormSelector": {
     "languageNotAvailable": "Diese Sprache ist noch nicht verfügbar",

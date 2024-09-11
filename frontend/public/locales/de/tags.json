@@ -31,6 +31,7 @@
     "toastTagDeletedSuccess": "Tag {{tagLabel}} wurde gelöscht!",
     "toastTagCloneSuccess": "Tag und Wörter wurden erfolgreich zu deinem Konto hinzugefügt!"
   },
+  "searchTags": "Tags suchen...",
   "noWordsAssigned": "- noch keine Wörter zugewiesen -",
   "createdByYou": "Von dir erstellt",
   "createdByUser": "Erstellt von {{username}}",

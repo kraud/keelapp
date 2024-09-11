@@ -31,6 +31,7 @@
     "toastTagDeletedSuccess": "{{tagLabel}} tag was deleted!",
     "toastTagCloneSuccess": "Tag and words were successfully added to your account!"
   },
+  "searchTags": "Search Tags...",
   "noWordsAssigned": "- no words assigned yet -",
   "createdByYou": "Created by you",
   "createdByUser": "Created by {{username}}",

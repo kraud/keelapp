@@ -36,6 +36,8 @@
     "cancel": "Tühista",
     "return": "Tagasi",
     "close": "Sulgeda",
+    "clear": "Tühjenda",
+    "remove": "Eemalda",
     "reset": "Lähtesta",
     "submit": "Esita",
     "addAnotherTranslation": "Lisa veel üks tõlge",
@@ -70,6 +72,12 @@
     "distributionByLanguage": "Keel",
     "byMonth": "Kuu",
     "byLanguage": "Keel"
+  },
+  "languages": {
+    "english": "Inglise",
+    "estonian": "Eesti",
+    "german": "Saksa",
+    "spanish": "Hispaania"
   },
   "partOfSpeech": {
     "noun": "Nimisõna",

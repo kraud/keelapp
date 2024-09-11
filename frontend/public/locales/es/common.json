@@ -36,6 +36,8 @@
     "cancel": "Cancelar",
     "return": "Volver",
     "close": "Cerrar",
+    "clear": "Borrar",
+    "remove": "Remover",
     "reset": "Restablecer",
     "submit": "Enviar",
     "addAnotherTranslation": "Agregar otra traducción",
@@ -70,6 +72,12 @@
     "distributionByLanguage": "Idioma",
     "byMonth": "Mes",
     "byLanguage": "Idioma"
+  },
+  "languages": {
+    "english": "Inglés",
+    "estonian": "Estonio",
+    "german": "Alemán",
+    "spanish": "Español"
   },
   "partOfSpeech": {
     "noun": "Sustantivo",
