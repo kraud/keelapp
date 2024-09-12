@@ -7,6 +7,7 @@ import userReducer from '../features/users/userSlice'
 import tagReducer from '../features/tags/tagSlice'
 import metricReducer from '../features/metrics/metricSlice'
 import autocompletedTranslationReducer from '../features/autocompletedTranslation/autocompletedTranslationSlice'
+import exerciseReducer from '../features/exercises/exerciseSlice'
 
 export const store = configureStore({
   reducer: {
@@ -18,7 +19,8 @@ export const store = configureStore({
     tags: tagReducer,
     metrics: metricReducer,
     autocompletedTranslations: autocompletedTranslationReducer,
+    exercises: exerciseReducer,
   },
-});
+})
 
 export type AppDispatch = typeof store.dispatch
