@@ -29,6 +29,7 @@ import {checkEnvironmentAndIterationToDisplay} from "./forms/commonFunctions";
 import {getIconByEnvironment, triggerToastMessageWithButton} from "./GeneralUseComponents";
 import {useTranslation} from "react-i18next";
 import {AppDispatch} from "../app/store";
+import {getExercisesForUser} from "../features/exercises/exerciseSlice";
 
 
 function ResponsiveAppBar() {
@@ -127,6 +128,11 @@ function ResponsiveAppBar() {
                     } else {
                         toast.error(t('header.notImplemented', {ns: 'common'}))
                     }
+                    break
+                }
+                case(t('header.practice', {ns: 'common'})): {
+                    toast.info("let me check...")
+                    dispatch(getExercisesForUser({stuff: 'data'}))
                     break
                 }
                 default: {

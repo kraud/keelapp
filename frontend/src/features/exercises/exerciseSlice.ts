@@ -1,7 +1,11 @@
 import {createSlice, createAsyncThunk} from "@reduxjs/toolkit"
 import exerciseService from "./exerciseService";
+import {createWord} from "../words/wordSlice";
+import {EquivalentTranslationValues} from "../../ts/interfaces";
 
 interface ExerciseSliceState {
+    exercises: EquivalentTranslationValues[],
+
     isError: boolean,
     isSuccess: boolean,
     isLoading: boolean,
@@ -9,6 +13,8 @@ interface ExerciseSliceState {
 }
 
 const initialState: ExerciseSliceState = {
+    exercises: [],
+
     isError: false,
     isSuccess: false,
     isLoading: false,
@@ -16,7 +22,7 @@ const initialState: ExerciseSliceState = {
 }
 
 // Get exercises for this user
-export const getExercisesForUSer = createAsyncThunk('exercises/getExercises', async (exerciseParameters, thunkAPI) => {
+export const getExercisesForUser = createAsyncThunk('exercises/getExercises', async (exerciseParameters: any, thunkAPI) => {
     try {
         // @ts-ignore
         const token = thunkAPI.getState().auth.user.token
@@ -38,14 +44,29 @@ export const exerciseSlice = createSlice({
     initialState,
     reducers: {
         resetExercisesSliceState: (state) => {
-            state.isLoading = false
-            state.isSuccess = false
-            state.isError = false
-            state.message = ''
+            state.isLoading = initialState.isLoading
+            state.isSuccess = initialState.isSuccess
+            state.isError = initialState.isError
+            state.message = initialState.message
+            state.exercises = initialState.exercises
         }
     },
     extraReducers: (builder) => {
-
+        builder
+            .addCase(getExercisesForUser.pending, (state) => {
+                state.isLoading = true
+                state.isSuccess = false
+            })
+            .addCase(getExercisesForUser.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.exercises = action.payload
+            })
+            .addCase(getExercisesForUser.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload as string
+            })
     }
 })
 

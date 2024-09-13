@@ -183,3 +183,19 @@ export interface EstonianAPIRequest {
     query: string,
     searchInEnglish?: boolean
 }
+
+export interface EquivalentTranslationValues {
+    partOfSpeech: PartOfSpeech, // should match the one on WordData
+    matchingTranslations : {
+        itemA: {
+            language: Lang,
+            case: NounCases | VerbCases | AdverbCases| AdjectiveCases,
+            value: string,
+        },
+        itemB: {
+            language: Lang,
+            case: NounCases | VerbCases | AdverbCases | AdjectiveCases,
+            value: string,
+        }
+    }
+}
