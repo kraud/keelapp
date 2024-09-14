@@ -133,6 +133,7 @@ function ResponsiveAppBar() {
                 case(t('header.practice', {ns: 'common'})): {
                     toast.info("let me check...")
                     dispatch(getExercisesForUser({stuff: 'data'}))
+                    navigate('/practice')
                     break
                 }
                 default: {
