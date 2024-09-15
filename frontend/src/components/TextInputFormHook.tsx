@@ -11,7 +11,7 @@ interface TextInputFormWithHookProps {
     label: string
     defaultValue: string
     errors?: any
-    type?: "password"|"text"|"email"
+    type?: "password"|"text"|"email"|'number'
     fullWidth?: boolean
     onChange?: (value: any) => void // Needed to inform parent component about the Textfield current value
     disabled?: boolean

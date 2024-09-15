@@ -6,8 +6,8 @@ import {Checkbox, FormGroup, FormHelperText} from "@mui/material";
 export interface CheckboxItemData {
     label: string,
     value: any
-
 }
+
 interface CheckboxGroupWithHookProps {
     control: Control<any, any>, // Comes from the useForm() hook in React-Hook-Form
     name: string // Necessary to identify component from a form in React-Hook-Form

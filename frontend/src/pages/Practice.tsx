@@ -12,10 +12,22 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import {Lang, PartOfSpeech} from "../ts/enums";
+import {ExerciseParameterSelector} from "../components/ExerciseParameterSelector";
+import {toast} from "react-toastify";
+import {getExercisesForUser} from "../features/exercises/exerciseSlice";
 
 interface CardAnswerData {
     index: number,
     answer: string,
+}
+
+export interface ExerciseParameters {
+    languages: Lang[],
+    partsOfSpeech: PartOfSpeech[],
+    amountOfExercises: number,
+    input: 'Multiple-Choice' | 'Text-Input',
+    mode: 'Single-Try' | 'Multiple-Tries'
 }
 
 interface PracticeProps {
@@ -23,14 +35,33 @@ interface PracticeProps {
 }
 
 export const Practice = (props: PracticeProps) => {
-    const {exercises, isErrorExercises, isSuccessExercises, isLoadingExercises} = useSelector((state: any) => state.exercises)
-
-    const { t } = useTranslation(['partOfSpeechCases', 'exercises', 'common'])
     const dispatch = useDispatch<AppDispatch>()
+    const {exercises, isErrorExercises, isSuccessExercises, isLoadingExercises, wordIdsSelectedForExercises} = useSelector((state: any) => state.exercises)
+    const {user} = useSelector((state: any) => state.auth)
+    const { t } = useTranslation(['partOfSpeechCases', 'exercises', 'common'])
+
+
+    const initialParameters = {
+        languages: user.languages as Lang[],
+        partsOfSpeech: [PartOfSpeech.verb, PartOfSpeech.noun], // TODO: keep adding PoS as we create the GroupedCategories JSON objects
+        amountOfExercises: 10,
+        input: 'Text-Input',
+        mode: 'Single-Try'
+    }
 
     const [currentCardIndex, setCurrentCardIndex] = useState(0)
+    //@ts-ignore
+    const [parameters, setParameters] = useState<ExerciseParameters>(initialParameters)
+    // if false => display parameter selection
+    const [acceptedParameters, setAcceptedParameters] = useState(false)
 
     const [cardAnswers, setCardAnswers] = useState<CardAnswerData[]>([])
+
+    const onAcceptParameters = () => {
+        toast.info("let me check...")
+        dispatch(getExercisesForUser({parameters}))
+        setAcceptedParameters(true)
+    }
 
 
     return(
@@ -40,6 +71,7 @@ export const Practice = (props: PracticeProps) => {
             initial="initial"
             animate="final"
             container={true}
+            justifyContent={'center'}
             item={true}
             sx={{
                 marginTop: globalTheme.spacing(4),
@@ -81,290 +113,304 @@ export const Practice = (props: PracticeProps) => {
                     </Typography>
                 </Grid>
             </Grid>
-            <Grid
-                container={true}
-                justifyContent={'center'}
-                alignItems={'center'}
-                item={true}
-                xs={12}
-                sx={{
-                    border: '3px solid #2E2E2EFF',
-                }}
-            >
-                {(isLoadingExercises && !isSuccessExercises)
-                    ?
-                        <LinearIndeterminate/>
-                    :
-                    <Grid
-                        container={true}
-                        justifyContent={'center'}
-                        alignItems={'center'}
-                        // direction={'column'}
-                        item={true}
-                        xs={12}
-                        sm={10}
-                        md={8}
-                        lg={7}
-                        xl={6}
-                        sx={{
-                            border: '4px solid gray',
-                            // borderRadius: '25px',
-                            height: '55vh',
-                            // background: '#d3d3d3',
+            {!(acceptedParameters) // if parameters have not been yet accepted => display them
+                ?
+                    <ExerciseParameterSelector
+                        languages={user.languages}
+                        defaultParameters={parameters}
+                        onParametersChange={(newParameters: ExerciseParameters) => {
+                            setParameters(newParameters)
                         }}
-                    >
-                        {/*BUTTON BACK*/}
-                        <Grid
-                            container={true}
-                            item={true}
-                            justifyContent={'center'}
-                            // rowSpacing={3}
-                            alignItems={'center'}
-                            xs={'auto'}
-                            sx={{
-                                border: '4px solid red',
-                            }}
-                        >
-                            <Grid
-                                item={true}
-                                xs={true}
-                                sx={{
-                                    border: '4px solid green',
-                                    // width: '40px'
-                                }}
-                            >
-                                <IconButton
-                                    color={'primary'}
-                                    disabled={(currentCardIndex === 0)}
-                                    onClick={() => {
-                                        setCurrentCardIndex((currentIndex) => {
-                                            if(currentIndex > 0){
-                                                return(currentIndex-1)
-                                            } else {
-                                                // Not possible, but TS requires it. Button is disabled.
-                                                return(currentIndex)
-                                            }
-                                        })
-                                    }}
-                                >
-                                    <ChevronLeftIcon
-                                        sx={{
-                                            fontSize: 100,
-                                            // width: '40px'
-                                            marginLeft: '-35px',
-                                            marginRight: '-35px'
-                                        }}
-                                    />
-                                </IconButton>
-                            </Grid>
-                        </Grid>
+                        onAccept={() => {
+                            onAcceptParameters()
+                        }}
+                    />
+                :
+                <Grid
+                    container={true}
+                    justifyContent={'center'}
+                    alignItems={'center'}
+                    item={true}
+                    xs={12}
+                    sx={{
+                        border: '3px solid #2E2E2EFF',
+                    }}
+                >
+                    {(isLoadingExercises && !isSuccessExercises)
+                        ?
+                        <LinearIndeterminate/>
+                        :
                         <Grid
                             container={true}
                             justifyContent={'center'}
                             alignItems={'center'}
-                            direction={'column'}
+                            // direction={'column'}
                             item={true}
-                            xs={true}
+                            xs={12}
+                            sm={10}
+                            md={8}
+                            lg={7}
+                            xl={6}
                             sx={{
-                                border: '4px solid blue',
-                                borderRadius: '25px',
+                                border: '4px solid gray',
+                                // borderRadius: '25px',
                                 height: '55vh',
-                                background: '#d3d3d3',
+                                // background: '#d3d3d3',
                             }}
                         >
+                            {/*BUTTON BACK*/}
                             <Grid
                                 container={true}
                                 item={true}
-                                direction={'column'}
-                                justifyContent={'space-around'}
-                                xs={true}
+                                justifyContent={'center'}
                                 // rowSpacing={3}
                                 alignItems={'center'}
+                                xs={'auto'}
                                 sx={{
                                     border: '4px solid red',
-                                    height: '100%'
                                 }}
                             >
                                 <Grid
-                                    container={true}
-                                    justifyContent={'center'}
                                     item={true}
+                                    xs={true}
                                     sx={{
                                         border: '4px solid green',
+                                        // width: '40px'
                                     }}
                                 >
-                                    <Grid
-                                        item={true}
-                                        xs={'auto'}
-                                        sx={{
-                                            border: '2px solid gray',
+                                    <IconButton
+                                        color={'primary'}
+                                        disabled={(currentCardIndex === 0)}
+                                        onClick={() => {
+                                            setCurrentCardIndex((currentIndex) => {
+                                                if(currentIndex > 0){
+                                                    return(currentIndex-1)
+                                                } else {
+                                                    // Not possible, but TS requires it. Button is disabled.
+                                                    return(currentIndex)
+                                                }
+                                            })
                                         }}
                                     >
-                                        <CountryFlag
-                                            country={exercises[currentCardIndex].matchingTranslations.itemA.language}
-                                            border={true}
+                                        <ChevronLeftIcon
+                                            sx={{
+                                                fontSize: 100,
+                                                // width: '40px'
+                                                marginLeft: '-35px',
+                                                marginRight: '-35px'
+                                            }}
                                         />
-                                    </Grid>
-                                    <Grid
-                                        item={true}
-                                        xs={12}
-                                        sx={{
-                                            border: '2px solid gray',
-                                        }}
-                                    >
-                                        <Typography
-                                            sx={{
-                                                typography: {
-                                                    xs: 'h6',
-                                                    sm: 'h5',
-                                                    md: 'h3',
-                                                },
-                                            }}
-                                            align={"center"}
-                                        >
-                                            {/* TODO: itemA or itemB should be random selection */}
-                                            {exercises[currentCardIndex].matchingTranslations.itemA.value}
-                                        </Typography>
-                                    </Grid>
-                                    <Grid
-                                        item={true}
-                                        xs={12}
-                                        sx={{
-                                            border: '2px solid gray',
-                                        }}
-                                    >
-                                        <Typography
-                                            sx={{
-                                                typography: {
-                                                    xs: 'body2',
-                                                    sm: 'body1',
-                                                    md: 'h6',
-                                                },
-                                            }}
-                                            align={"center"}
-                                        >
-                                            {t(`${(exercises[currentCardIndex].partOfSpeech as string).toLowerCase()}.${exercises[currentCardIndex].matchingTranslations.itemA.case}`, {ns: 'partOfSpeechCases'})}
-                                        </Typography>
-                                    </Grid>
-                                </Grid>
-                                <Grid
-                                    container={true}
-                                    justifyContent={'center'}
-                                    item={true}
-                                    sx={{
-                                        border: '4px solid green',
-                                    }}
-                                >
-                                    <Grid
-                                        item={true}
-                                        xs={'auto'}
-                                        sx={{
-                                            border: '2px solid gray',
-                                        }}
-                                    >
-                                        <CountryFlag
-                                            country={exercises[currentCardIndex].matchingTranslations.itemB.language}
-                                            border={true}
-                                        />
-                                    </Grid>
-                                    <Grid
-                                        item={true}
-                                        xs={12}
-                                        sx={{
-                                            border: '2px solid gray',
-                                        }}
-                                    >
-                                        <Typography
-                                            sx={{
-                                                typography: {
-                                                    xs: 'h6',
-                                                    sm: 'h5',
-                                                    md: 'h3',
-                                                },
-                                            }}
-                                            align={"center"}
-                                        >
-                                            {/* TODO: itemB or itemB should be random selection */}
-                                            {exercises[currentCardIndex].matchingTranslations.itemB.value}
-                                        </Typography>
-                                    </Grid>
-                                </Grid>
-                                <Grid
-                                    container={true}
-                                    justifyContent={'center'}
-                                    alignItems={'center'}
-                                    item={true}
-                                    sx={{
-                                        border: '4px solid green',
-                                    }}
-                                >
-
-                                    <Grid
-                                        item={true}
-                                        xs={8}
-                                        sx={{
-                                            border: '2px solid gray',
-                                        }}
-                                    >
-                                        <Button
-                                            variant={'contained'}
-                                            color={'success'}
-                                            fullWidth={true}
-                                        >
-                                            Check
-                                        </Button>
-                                    </Grid>
+                                    </IconButton>
                                 </Grid>
                             </Grid>
-                        </Grid>
-                        {/* BUTTON FORWARD */}
-                        <Grid
-                            container={true}
-                            item={true}
-                            justifyContent={'center'}
-                            // rowSpacing={3}
-                            alignItems={'center'}
-                            xs={'auto'}
-                            sx={{
-                                border: '4px solid red',
-                            }}
-                        >
                             <Grid
+                                container={true}
+                                justifyContent={'center'}
+                                alignItems={'center'}
+                                direction={'column'}
                                 item={true}
                                 xs={true}
                                 sx={{
-                                    border: '4px solid green',
-                                    // width: '40px'
+                                    border: '4px solid blue',
+                                    borderRadius: '25px',
+                                    height: '55vh',
+                                    background: '#d3d3d3',
                                 }}
                             >
-                                <IconButton
-                                    color={'primary'}
-                                    disabled={(currentCardIndex === (exercises.length -1))}
-                                    onClick={() => {
-                                        setCurrentCardIndex((currentIndex) => {
-                                            if(currentIndex < (exercises.length -1)){
-                                                return(currentIndex+1)
-                                            } else {
-                                                // Not possible, but TS requires it. Button is disabled.
-                                                return(currentIndex)
-                                            }
-                                        })
+                                <Grid
+                                    container={true}
+                                    item={true}
+                                    direction={'column'}
+                                    justifyContent={'space-around'}
+                                    xs={true}
+                                    // rowSpacing={3}
+                                    alignItems={'center'}
+                                    sx={{
+                                        border: '4px solid red',
+                                        height: '100%'
                                     }}
                                 >
-                                    <ChevronRightIcon
+                                    <Grid
+                                        container={true}
+                                        justifyContent={'center'}
+                                        item={true}
                                         sx={{
-                                            fontSize: 100,
-                                            // width: '40px'
-                                            marginLeft: '-35px',
-                                            marginRight: '-35px'
+                                            border: '4px solid green',
                                         }}
-                                    />
-                                </IconButton>
+                                    >
+                                        <Grid
+                                            item={true}
+                                            xs={'auto'}
+                                            sx={{
+                                                border: '2px solid gray',
+                                            }}
+                                        >
+                                            <CountryFlag
+                                                country={(exercises.length > 0) ? exercises[currentCardIndex].matchingTranslations.itemA.language :undefined}
+                                                border={true}
+                                            />
+                                        </Grid>
+                                        <Grid
+                                            item={true}
+                                            xs={12}
+                                            sx={{
+                                                border: '2px solid gray',
+                                            }}
+                                        >
+                                            <Typography
+                                                sx={{
+                                                    typography: {
+                                                        xs: 'h6',
+                                                        sm: 'h5',
+                                                        md: 'h3',
+                                                    },
+                                                }}
+                                                align={"center"}
+                                            >
+                                                {/* TODO: itemA or itemB should be random selection */}
+                                                {exercises[currentCardIndex].matchingTranslations.itemA.value}
+                                            </Typography>
+                                        </Grid>
+                                        <Grid
+                                            item={true}
+                                            xs={12}
+                                            sx={{
+                                                border: '2px solid gray',
+                                            }}
+                                        >
+                                            <Typography
+                                                sx={{
+                                                    typography: {
+                                                        xs: 'body2',
+                                                        sm: 'body1',
+                                                        md: 'h6',
+                                                    },
+                                                }}
+                                                align={"center"}
+                                            >
+                                                {t(`${(exercises[currentCardIndex].partOfSpeech as string).toLowerCase()}.${exercises[currentCardIndex].matchingTranslations.itemA.case}`, {ns: 'partOfSpeechCases'})}
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
+                                    <Grid
+                                        container={true}
+                                        justifyContent={'center'}
+                                        item={true}
+                                        sx={{
+                                            border: '4px solid green',
+                                        }}
+                                    >
+                                        <Grid
+                                            item={true}
+                                            xs={'auto'}
+                                            sx={{
+                                                border: '2px solid gray',
+                                            }}
+                                        >
+                                            <CountryFlag
+                                                country={(exercises.length > 0) ? exercises[currentCardIndex].matchingTranslations.itemB.language :undefined}
+                                                border={true}
+                                            />
+                                        </Grid>
+                                        <Grid
+                                            item={true}
+                                            xs={12}
+                                            sx={{
+                                                border: '2px solid gray',
+                                            }}
+                                        >
+                                            <Typography
+                                                sx={{
+                                                    typography: {
+                                                        xs: 'h6',
+                                                        sm: 'h5',
+                                                        md: 'h3',
+                                                    },
+                                                }}
+                                                align={"center"}
+                                            >
+                                                {/* TODO: itemB or itemB should be random selection */}
+                                                {exercises[currentCardIndex].matchingTranslations.itemB.value}
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
+                                    <Grid
+                                        container={true}
+                                        justifyContent={'center'}
+                                        alignItems={'center'}
+                                        item={true}
+                                        sx={{
+                                            border: '4px solid green',
+                                        }}
+                                    >
+
+                                        <Grid
+                                            item={true}
+                                            xs={8}
+                                            sx={{
+                                                border: '2px solid gray',
+                                            }}
+                                        >
+                                            <Button
+                                                variant={'contained'}
+                                                color={'success'}
+                                                fullWidth={true}
+                                            >
+                                                Check
+                                            </Button>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            {/* BUTTON FORWARD */}
+                            <Grid
+                                container={true}
+                                item={true}
+                                justifyContent={'center'}
+                                // rowSpacing={3}
+                                alignItems={'center'}
+                                xs={'auto'}
+                                sx={{
+                                    border: '4px solid red',
+                                }}
+                            >
+                                <Grid
+                                    item={true}
+                                    xs={true}
+                                    sx={{
+                                        border: '4px solid green',
+                                        // width: '40px'
+                                    }}
+                                >
+                                    <IconButton
+                                        color={'primary'}
+                                        disabled={(currentCardIndex === (exercises.length -1))}
+                                        onClick={() => {
+                                            setCurrentCardIndex((currentIndex) => {
+                                                if(currentIndex < (exercises.length -1)){
+                                                    return(currentIndex+1)
+                                                } else {
+                                                    // Not possible, but TS requires it. Button is disabled.
+                                                    return(currentIndex)
+                                                }
+                                            })
+                                        }}
+                                    >
+                                        <ChevronRightIcon
+                                            sx={{
+                                                fontSize: 100,
+                                                // width: '40px'
+                                                marginLeft: '-35px',
+                                                marginRight: '-35px'
+                                            }}
+                                        />
+                                    </IconButton>
+                                </Grid>
                             </Grid>
                         </Grid>
-                    </Grid>
-                }
-            </Grid>
+                    }
+                </Grid>
+            }
         </Grid>
     )
 }

@@ -21,7 +21,8 @@ const Word = require("../models/wordModel")
 // 	}
 // }
 
-
+// NB! It is important that any language-case (key-value) pair is on the third level of the JSON object,
+// because the algorithm won't keep going down indefinitely
 const nounGroupedCategories = {
     singular: {
         nominative: {
@@ -41,10 +42,14 @@ const nounGroupedCategories = {
         dative: {
             "German": "singularDativDE",
         },
-        gender: {
-            "Spanish": "genderES",
-            "German": "genderDE",
-        }
+        // NB! We comment these out, because we can't compare genders directly between languages
+        // (not all female nouns in Spanish are also female in German, for example).
+        // We could make a special exercise case, where we pick both genders and both singular-nominative cases,
+        // and display them on the exercise card?
+        // gender: {
+        //     "Spanish": "genderES",
+        //     "German": "genderDE",
+        // }
     },
     plural: {
         nominative: {
@@ -67,6 +72,8 @@ const nounGroupedCategories = {
     }
 }
 
+// NB! It is important that any language-case (key-value) pair is on the third level of the JSON object,
+// because the algorithm won't keep going down indefinitely
 const verbGroupedCategories = {
     present: {
         firstSingular: {
@@ -162,14 +169,19 @@ const verbGroupedCategories = {
 };
 
 
-
+// This functions receives:
+// a single word, with all of its translations
+// a list of the languages that are relevant to the user
+// the corresponding grouped-categories relevant to the PoS of the word.
 function findEquivalentTranslations(
     wordData,
     languages,
     groupedCategories
 ) {
 
-    // Helper function to generate unique pairs of languages
+    // Helper function to generate unique pairs of languages.
+    // This must be done at a word-level because each one might have a different set of available languages,
+    // depending on the translations assigned to it.
     function getUniqueLanguagePairs(langs) {
         const pairs = [];
         for (let i = 0; i < langs.length; i++) {
@@ -180,10 +192,11 @@ function findEquivalentTranslations(
         return pairs
     }
 
+    // First, we get ALL stored languages per word
     const availableLanguages = wordData.translations.map(t => t.language);
-    // Get the intersection of the passed languages and the available languages in wordData
-    const validLanguages = languages.filter(lang => availableLanguages.includes(lang));
-
+    // Get the intersection of the user-required languages and the languages stored in wordData.translations
+    const validLanguages = languages.filter(lang => availableLanguages.includes(lang))
+    // Now we calculate all the possible unique pairs of the intersection-languages
     const languagePairs = getUniqueLanguagePairs(validLanguages)
     const equivalentValues = []
 
@@ -201,11 +214,11 @@ function findEquivalentTranslations(
                 if (languageCases[langA] && languageCases[langB]) {
                     const itemA = wordData.translations
                         .find(t => t.language === langA)
-                        ?.cases.find(c => c.caseName === languageCases[langA]);
+                        ?.cases.find(c => c.caseName === languageCases[langA])
 
                     const itemB = wordData.translations
                         .find(t => t.language === langB)
-                        ?.cases.find(c => c.caseName === languageCases[langB]);
+                        ?.cases.find(c => c.caseName === languageCases[langB])
 
                     // If both languages have a matching word for this case, add to results
                     if (itemA && itemB) {
@@ -252,7 +265,12 @@ const getGroupedCategories = (partOfSpeech) => {
 // @route   GET /api/exercises
 // @access  Private
 const getExercises = asyncHandler(async (req, res) => {
-    const parameters = req.query.parameters
+    const parameters = {
+        ...req.query.parameters,
+        amountOfExercises: parseInt(req.query.parameters.amountOfExercises, 10)
+    }
+
+    console.log('received parameters', parameters)
 
     // words related to other-users-tags, that the current user follows.
     const followedWordsId = await getWordsIdFromFollowedTagsByUserId(req.user.id)
@@ -275,18 +293,21 @@ const getExercises = asyncHandler(async (req, res) => {
                 ]
             },
             {
-                partOfSpeech: 'Verb'
+                partOfSpeech: {
+                    $in: parameters.partsOfSpeech
+                }
             }
+            // TODO: if there is a pre-selected list of words, all other parameters could/should be ignored?
         ]
     })
 
     let exercises = []
     matchingWordData // if words not pre-selected => this list could be too big, we should pre-filter by only candidates with real exercise-potential first(*)?
-        .slice(0,6) // this should be a random selection
+        .slice(0, parameters.amountOfExercises) // this should be a random selection
         .forEach((matchingWord) => {
         const matchingExercises = findEquivalentTranslations(
             matchingWord,
-            ['English', 'Spanish', 'German', 'Estonian'],
+            parameters.languages,
             // ['German', 'Estonian'],
             getGroupedCategories(matchingWord.partOfSpeech)
         )

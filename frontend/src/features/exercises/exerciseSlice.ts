@@ -1,9 +1,10 @@
-import {createSlice, createAsyncThunk} from "@reduxjs/toolkit"
+import {createSlice, createAsyncThunk, PayloadAction} from "@reduxjs/toolkit"
 import exerciseService from "./exerciseService"
 import {EquivalentTranslationValues} from "../../ts/interfaces"
 
 interface ExerciseSliceState {
     exercises: EquivalentTranslationValues[],
+    wordIdsSelectedForExercises: string[],
 
     isErrorExercises: boolean,
     isSuccessExercises: boolean,
@@ -13,6 +14,7 @@ interface ExerciseSliceState {
 
 const initialState: ExerciseSliceState = {
     exercises: [],
+    wordIdsSelectedForExercises: [],
 
     isErrorExercises: false,
     isSuccessExercises: false,
@@ -43,11 +45,19 @@ export const exerciseSlice = createSlice({
     initialState,
     reducers: {
         resetExercisesSliceState: (state) => {
-            state.isLoadingExercises = initialState.isLoadingExercises
-            state.isSuccessExercises = initialState.isSuccessExercises
-            state.isErrorExercises = initialState.isErrorExercises
-            state.message = initialState.message
-            state.exercises = initialState.exercises
+            return(initialState)
+        },
+        setWordIdsSelectedForExercises: (state: any, action: PayloadAction) => {
+            return ({
+                ...state,
+                wordIdsSelectedForExercises: action.payload
+            })
+        },
+        resetWordIdsSelectedForExercises: (state: any) => {
+            return ({
+                ...state,
+                wordIdsSelectedForExercises: initialState.wordIdsSelectedForExercises
+            })
         }
     },
     extraReducers: (builder) => {
