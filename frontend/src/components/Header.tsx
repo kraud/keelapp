@@ -29,7 +29,7 @@ import {checkEnvironmentAndIterationToDisplay} from "./forms/commonFunctions";
 import {getIconByEnvironment, triggerToastMessageWithButton} from "./GeneralUseComponents";
 import {useTranslation} from "react-i18next";
 import {AppDispatch} from "../app/store";
-import {getExercisesForUser} from "../features/exercises/exerciseSlice";
+import {resetWordIdsSelectedForExercises} from "../features/exercises/exerciseSlice";
 
 
 function ResponsiveAppBar() {
@@ -131,6 +131,7 @@ function ResponsiveAppBar() {
                     break
                 }
                 case(t('header.practice', {ns: 'common'})): {
+                    dispatch(resetWordIdsSelectedForExercises())
                     navigate('/practice')
                     break
                 }

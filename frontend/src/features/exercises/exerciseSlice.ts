@@ -58,6 +58,12 @@ export const exerciseSlice = createSlice({
                 ...state,
                 wordIdsSelectedForExercises: initialState.wordIdsSelectedForExercises
             })
+        },
+        resetExerciseList: (state: any) => {
+            return ({
+                ...state,
+                exercises: initialState.exercises
+            })
         }
     },
     extraReducers: (builder) => {
@@ -79,5 +85,5 @@ export const exerciseSlice = createSlice({
     }
 })
 
-export const {resetExercisesSliceState, setWordIdsSelectedForExercises, resetWordIdsSelectedForExercises} = exerciseSlice.actions
+export const {resetExercisesSliceState, setWordIdsSelectedForExercises, resetWordIdsSelectedForExercises, resetExerciseList} = exerciseSlice.actions
 export default exerciseSlice.reducer

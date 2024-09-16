@@ -4,7 +4,7 @@ const {getWordsIdFromFollowedTagsByUserId} = require("./intermediary/userFollowi
 const Word = require("../models/wordModel")
 
 // Format returned by 'findEquivalentTranslations'
-// interface equivalentTranslationValues {
+// interface EquivalentTranslationValues {
 // 	multiLang: true, // boolean
 // 	partOfSpeech: PartOfSpeech,
 // 	translations : {
@@ -166,8 +166,114 @@ const verbGroupedCategories = {
             "German": "indicativeSimpleFuture3plDE",
         }
     }
-};
+}
 
+// This function should return the amount required of exercises, by capturing them from as many different words as possible (randomly)
+// function getRequiredAmountOfExercises(
+//     exercisesByWord, // exercises are grouped by word
+//     amountOfExercises,
+// ) {
+//
+//     // These 2 boolean will never be both true simultaneously
+//     const requireMultipleExercisesPerWord = amountOfExercises > (exercisesByWord.length)
+//     const requireFewerExercisesPerWord = amountOfExercises < (exercisesByWord.length)
+//     // NB! if requireMultipleExercisesPerWord & requireFewerExercisesPerWord both false => same amount exercises as words
+//     let availableExercisesByWord = exercisesByWord // we will me removing items as we select them to be returned
+//     let filteredExercises = []
+//
+//     // TODO:
+//     //  if we need to return more than 1 per word (in case more exercises than words required)
+//     //  Logic: if amount requested exercises > amount items in matchingWordData => we need more than 1 exercise from some words until we match both amounts
+//     //  To do this, we'll get 1 exercise from each word first,
+//     //  and on the next pass we pick a word at random and get another exercise from it until we get enough (same logic as if 'requireFewerExercisesPerWord' true)
+//     if(requireMultipleExercisesPerWord){
+//         // first-pass:
+//         //      => we get one exercise per word => we can go through the full word-list in order (returned list will be shuffled before being returned)
+//         //      => exercises inside will be chosen randomly (and removed from that list, so we don't pick it more than once)
+//         // Nth-pass: (depending on 'amountOfExercises', we might need to do multiple passes through 'exercisesByWord' after the first pass, or maybe we won't even complete a second pass before matching 'amountOfExercises' and 'filteredExercises.length'
+//         //      => word from list is selected randomly (to avoid always pulling from the first items)
+//         //      => we get one exercise per word
+//         //      => exercises inside will be chosen randomly (and removed from that list, so we don't pick it more than once)
+//         //      => we stop when 'filteredExercises' length === 'amountOfExercises'
+//         // NB! we should go through words sequentially, when in random order, so we get at least one exercise from each word before getting another from a previously used word
+//     } else if(requireFewerExercisesPerWord){
+//         //  TODO:
+//         //   Alternative: if amount requested exercises < amount items in matchingWordData => not every word will return an exercise
+//         //   Because of this, we'll select words at random and get 1 exercise from each one
+//         // first-and-only-pass (same logic as Nth pass in 'requireMultipleExercisesPerWord: true'):
+//         //      => word from list is selected randomly (to avoid always pulling from the first items)
+//         //      => we get one exercise per word
+//         //      => exercises inside will be chosen randomly (and removed from that list, so we don't pick it more than once)
+//         //      => we stop when 'filteredExercises' length === 'amountOfExercises'
+//
+//     } else {
+//         // same amount exercises as words => one exercise per word
+//         // one pass => we get one translation per word (same logic as first-pass in 'requireMultipleExercisesPerWord: true')
+//     }
+//
+//     return(filteredExercises)
+// }
+
+function getRequiredAmountOfExercises(
+    exercisesByWord, // exercises are grouped by word
+    amountOfExercises,
+) {
+    const requireMultipleExercisesPerWord = amountOfExercises > exercisesByWord.length;
+    const requireFewerExercisesPerWord = amountOfExercises < exercisesByWord.length;
+
+    let availableExercisesByWord = [...exercisesByWord]; // Clone to avoid mutating the original
+    let filteredExercises = [];
+
+    // Helper function to randomly select one exercise from each word group
+    function randomlySelectExerciseByWord(exercisesList) {
+        return exercisesList.map(word => {
+            const randomIndex = Math.floor(Math.random() * word.exercises.length)
+            const selectedExercise = word.exercises[randomIndex]
+            word.exercises.splice(randomIndex, 1) // Remove the selected exercise
+            return selectedExercise
+        })
+    }
+
+    // Helper function for selecting exercises multiple times if needed
+    function randomlySelectExercisesMultipleWords(availableExercisesByWord, neededAmount) {
+        let selectedExercises = []
+        let wordsInRandomOrder = [...availableExercisesByWord] // Clone the array
+        while (selectedExercises.length < neededAmount) {
+            shuffleArray(wordsInRandomOrder) // Shuffle the array for randomness
+            selectedExercises.push(
+                ...randomlySelectExerciseByWord(wordsInRandomOrder)
+                    .slice(0, neededAmount - selectedExercises.length) // Ensure we don't overshoot
+            )
+            wordsInRandomOrder = wordsInRandomOrder.filter(word => word.exercises.length > 0) // Keep only words with remaining exercises
+            if (wordsInRandomOrder.length === 0) break // Stop if no exercises left
+        }
+        return selectedExercises
+    }
+
+    // Helper function to shuffle array in-place
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    // Main logic
+    if (requireMultipleExercisesPerWord) {
+        // Select one exercise per word first, then loop through randomly until reaching the required amount
+        filteredExercises = randomlySelectExercisesMultipleWords(availableExercisesByWord, amountOfExercises)
+    } else if (requireFewerExercisesPerWord) {
+        // Select random exercises from randomly picked words, stopping when the required amount is reached
+        shuffleArray(availableExercisesByWord); // Randomly shuffle word list
+        filteredExercises = randomlySelectExerciseByWord(availableExercisesByWord)
+            .slice(0, amountOfExercises) // Take as many as needed
+    } else {
+        // One exercise per word, equal number of exercises and words
+        filteredExercises = randomlySelectExerciseByWord(availableExercisesByWord)
+    }
+
+    return filteredExercises
+}
 
 // This functions receives:
 // a single word, with all of its translations
@@ -211,7 +317,7 @@ function findEquivalentTranslations(
 
         // Iterate over each case within the group (e.g., nominative, accusative)
         for (const caseType in groupCategories) {
-            // TODO: there should be a list of cases to ignore (gender, regularity, etc.)
+            // TODO: there should be a list of cases to ignore (gender, regularity, etc.) => simply do not include them in groupedCategories object
             const languageCases = groupCategories[caseType]
 
             // Now check each pair of languages for matching cases
@@ -308,28 +414,29 @@ const getExercises = asyncHandler(async (req, res) => {
                     $in: parameters.partsOfSpeech
                 }
             }
+            // could we check here if there is overlap of at least 1 language with the ones in parameters and filter accordingly?
         ]
     })
 
-    let exercises = []
-    matchingWordData // if words not pre-selected => this list could be too big, we should pre-filter by only candidates with real exercise-potential first(*)?
-        .slice(0, parameters.amountOfExercises) // this should be a random selection
-        // .slice(0, 6) // this should be a random selection
-        .forEach((matchingWord) => {
-        const matchingExercises = findEquivalentTranslations(
-            matchingWord,
-            parameters.languages
-        )
-        // TODO: we should group the exercises before storing them,
-        //  so we can determine if we'll return more than 1 per word (in case more exercises than words required)
-        //  Logic: if amount requested exercises > amount items in matchingWordData => we need more than 1 exercise from some words until we match both amounts
-        //  To do this, we'll get 1 exercise from each word first, and on the next pass we pick a word at random and get another exercise from it until we get enough
-        //  Alternative: if amount requested exercises < amount items in matchingWordData => not every word will return an exercise
-        //  Because of this, we'll select words at random and get 1 exercise from each one
-        exercises.push(...matchingExercises)
-    })
 
-    res.status(200).json(exercises) // before sending the data back, we should limit the amount according to parameters
+    let exercisesByWord = []
+    matchingWordData // if words not pre-selected => this list could be too big, we should pre-filter by only candidates with real exercise-potential first(*)?
+        .forEach((matchingWord) => {
+            const matchingExercises = findEquivalentTranslations(
+                matchingWord,
+                parameters.languages
+            )
+            // If we found exercises for that word, we save them, and we'll filter them later
+            if(matchingExercises.length > 0){
+                exercisesByWord.push({
+                    _id: matchingWord._id,
+                    exercises: matchingExercises // EquivalentTranslationValues[]
+                })
+            }
+        })
+    let filteredExercises = getRequiredAmountOfExercises(exercisesByWord, parameters.amountOfExercises)
+
+    res.status(200).json(filteredExercises)
 })
 
 

@@ -15,7 +15,11 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import {Lang, PartOfSpeech} from "../ts/enums";
 import {ExerciseParameterSelector} from "../components/ExerciseParameterSelector";
 import {toast} from "react-toastify";
-import {getExercisesForUser} from "../features/exercises/exerciseSlice";
+import {
+    getExercisesForUser,
+    resetExerciseList,
+    resetWordIdsSelectedForExercises
+} from "../features/exercises/exerciseSlice";
 
 interface CardAnswerData {
     index: number,
@@ -83,7 +87,10 @@ export const Practice = (props: PracticeProps) => {
             })
         })
         setAcceptedParameters(false)
+        setCurrentCardIndex(0)
         setCardAnswers([])
+        // dispatch(resetWordIdsSelectedForExercises())
+        dispatch(resetExerciseList())
     }
 
 
@@ -207,9 +214,6 @@ export const Practice = (props: PracticeProps) => {
                                     xl={6}
                                     sx={{
                                         border: '4px solid green',
-                                        // borderRadius: '25px',
-                                        height: '55vh',
-                                        // background: '#d3d3d3',
                                     }}
                                 >
                                     {/*BUTTON BACK*/}
@@ -257,165 +261,183 @@ export const Practice = (props: PracticeProps) => {
                                             </IconButton>
                                         </Grid>
                                     </Grid>
-                                    <Grid
-                                        container={true}
-                                        justifyContent={'center'}
-                                        alignItems={'center'}
-                                        direction={'column'}
-                                        item={true}
-                                        xs={true}
-                                        sx={{
-                                            border: '4px solid red',
-                                            borderRadius: '25px',
-                                            height: '55vh',
-                                            background: '#d3d3d3',
-                                        }}
-                                    >
-                                        <Grid
+                                    {!(exercises.length > 0)
+                                        ? <Grid
                                             container={true}
+                                            justifyContent={'center'}
                                             item={true}
-                                            direction={'column'}
-                                            justifyContent={'space-around'}
-                                            xs={true}
-                                            // rowSpacing={3}
+                                            xs={6}
+                                        >
+                                            <Grid
+                                                item={true}
+                                            >
+                                                <Typography
+                                                    variant={'h3'}
+                                                >
+                                                    No results matching those parameters, please try again with different settings.
+                                                </Typography>
+                                            </Grid>
+                                        </Grid>
+                                        : <Grid
+                                            container={true}
+                                            justifyContent={'center'}
                                             alignItems={'center'}
+                                            direction={'column'}
+                                            item={true}
+                                            xs={true}
                                             sx={{
                                                 border: '4px solid red',
-                                                height: '100%'
+                                                borderRadius: '25px',
+                                                height: '55vh',
+                                                background: '#d3d3d3',
                                             }}
                                         >
                                             <Grid
                                                 container={true}
-                                                justifyContent={'center'}
                                                 item={true}
-                                                sx={{
-                                                    border: '4px solid green',
-                                                }}
-                                            >
-                                                <Grid
-                                                    item={true}
-                                                    xs={'auto'}
-                                                    sx={{
-                                                        border: '2px solid gray',
-                                                    }}
-                                                >
-                                                    <CountryFlag
-                                                        country={(exercises.length > 0) ? exercises[currentCardIndex].matchingTranslations.itemA.language :undefined}
-                                                        border={true}
-                                                    />
-                                                </Grid>
-                                                <Grid
-                                                    item={true}
-                                                    xs={12}
-                                                    sx={{
-                                                        border: '2px solid gray',
-                                                    }}
-                                                >
-                                                    <Typography
-                                                        sx={{
-                                                            typography: {
-                                                                xs: 'h6',
-                                                                sm: 'h5',
-                                                                md: 'h3',
-                                                            },
-                                                        }}
-                                                        align={"center"}
-                                                    >
-                                                        {/* TODO: itemA or itemB should be random selection */}
-                                                        {exercises[currentCardIndex].matchingTranslations.itemA.value}
-                                                    </Typography>
-                                                </Grid>
-                                                <Grid
-                                                    item={true}
-                                                    xs={12}
-                                                    sx={{
-                                                        border: '2px solid gray',
-                                                    }}
-                                                >
-                                                    <Typography
-                                                        sx={{
-                                                            typography: {
-                                                                xs: 'body2',
-                                                                sm: 'body1',
-                                                                md: 'h6',
-                                                            },
-                                                        }}
-                                                        align={"center"}
-                                                    >
-                                                        {t(`${(exercises[currentCardIndex].partOfSpeech as string).toLowerCase()}.${exercises[currentCardIndex].matchingTranslations.itemA.case}`, {ns: 'partOfSpeechCases'})}
-                                                    </Typography>
-                                                </Grid>
-                                            </Grid>
-                                            <Grid
-                                                container={true}
-                                                justifyContent={'center'}
-                                                item={true}
-                                                sx={{
-                                                    border: '4px solid green',
-                                                }}
-                                            >
-                                                <Grid
-                                                    item={true}
-                                                    xs={'auto'}
-                                                    sx={{
-                                                        border: '2px solid gray',
-                                                    }}
-                                                >
-                                                    <CountryFlag
-                                                        country={(exercises.length > 0) ? exercises[currentCardIndex].matchingTranslations.itemB.language :undefined}
-                                                        border={true}
-                                                    />
-                                                </Grid>
-                                                <Grid
-                                                    item={true}
-                                                    xs={12}
-                                                    sx={{
-                                                        border: '2px solid gray',
-                                                    }}
-                                                >
-                                                    <Typography
-                                                        sx={{
-                                                            typography: {
-                                                                xs: 'h6',
-                                                                sm: 'h5',
-                                                                md: 'h3',
-                                                            },
-                                                        }}
-                                                        align={"center"}
-                                                    >
-                                                        {/* TODO: itemB or itemB should be random selection */}
-                                                        {exercises[currentCardIndex].matchingTranslations.itemB.value}
-                                                    </Typography>
-                                                </Grid>
-                                            </Grid>
-                                            <Grid
-                                                container={true}
-                                                justifyContent={'center'}
+                                                direction={'column'}
+                                                justifyContent={'space-around'}
+                                                xs={true}
+                                                // rowSpacing={3}
                                                 alignItems={'center'}
-                                                item={true}
                                                 sx={{
-                                                    border: '4px solid green',
+                                                    border: '4px solid yellow',
+                                                    height: '100%'
                                                 }}
                                             >
-
                                                 <Grid
+                                                    container={true}
+                                                    justifyContent={'center'}
                                                     item={true}
-                                                    xs={8}
                                                     sx={{
-                                                        border: '2px solid gray',
+                                                        border: '4px solid black',
                                                     }}
                                                 >
-                                                    <Button
-                                                        variant={'contained'}
-                                                        color={'success'}
-                                                        fullWidth={true}
+                                                    <Grid
+                                                        item={true}
+                                                        xs={'auto'}
+                                                        sx={{
+                                                            border: '2px solid gray',
+                                                        }}
                                                     >
-                                                        Check
-                                                    </Button>
+                                                        <CountryFlag
+                                                            country={exercises[currentCardIndex].matchingTranslations.itemA.language}
+                                                            border={true}
+                                                        />
+                                                    </Grid>
+                                                    <Grid
+                                                        item={true}
+                                                        xs={12}
+                                                        sx={{
+                                                            border: '2px solid gray',
+                                                        }}
+                                                    >
+                                                        <Typography
+                                                            sx={{
+                                                                typography: {
+                                                                    xs: 'h6',
+                                                                    sm: 'h5',
+                                                                    md: 'h3',
+                                                                },
+                                                            }}
+                                                            align={"center"}
+                                                        >
+                                                            {/* TODO: itemA or itemB should be random selection */}
+                                                            {exercises[currentCardIndex].matchingTranslations.itemA.value}
+                                                        </Typography>
+                                                    </Grid>
+                                                    <Grid
+                                                        item={true}
+                                                        xs={12}
+                                                        sx={{
+                                                            border: '2px solid gray',
+                                                        }}
+                                                    >
+                                                        <Typography
+                                                            sx={{
+                                                                typography: {
+                                                                    xs: 'body2',
+                                                                    sm: 'body1',
+                                                                    md: 'h6',
+                                                                },
+                                                            }}
+                                                            align={"center"}
+                                                        >
+                                                            {t(`${(exercises[currentCardIndex].partOfSpeech as string).toLowerCase()}.${exercises[currentCardIndex].matchingTranslations.itemA.case}`, {ns: 'partOfSpeechCases'})}
+                                                        </Typography>
+                                                    </Grid>
+                                                </Grid>
+                                                <Grid
+                                                    container={true}
+                                                    justifyContent={'center'}
+                                                    item={true}
+                                                    sx={{
+                                                        border: '4px solid green',
+                                                    }}
+                                                >
+                                                    <Grid
+                                                        item={true}
+                                                        xs={'auto'}
+                                                        sx={{
+                                                            border: '2px solid gray',
+                                                        }}
+                                                    >
+                                                        <CountryFlag
+                                                            country={exercises[currentCardIndex].matchingTranslations.itemB.language}
+                                                            border={true}
+                                                        />
+                                                    </Grid>
+                                                    <Grid
+                                                        item={true}
+                                                        xs={12}
+                                                        sx={{
+                                                            border: '2px solid gray',
+                                                        }}
+                                                    >
+                                                        <Typography
+                                                            sx={{
+                                                                typography: {
+                                                                    xs: 'h6',
+                                                                    sm: 'h5',
+                                                                    md: 'h3',
+                                                                },
+                                                            }}
+                                                            align={"center"}
+                                                        >
+                                                            {/* TODO: itemB or itemB should be random selection */}
+                                                            {exercises[currentCardIndex].matchingTranslations.itemB.value}
+                                                        </Typography>
+                                                    </Grid>
+                                                </Grid>
+                                                <Grid
+                                                    container={true}
+                                                    justifyContent={'center'}
+                                                    alignItems={'center'}
+                                                    item={true}
+                                                    sx={{
+                                                        border: '4px solid green',
+                                                    }}
+                                                >
+
+                                                    <Grid
+                                                        item={true}
+                                                        xs={8}
+                                                        sx={{
+                                                            border: '2px solid gray',
+                                                        }}
+                                                    >
+                                                        <Button
+                                                            variant={'contained'}
+                                                            color={'success'}
+                                                            fullWidth={true}
+                                                        >
+                                                            Check
+                                                        </Button>
+                                                    </Grid>
                                                 </Grid>
                                             </Grid>
                                         </Grid>
-                                    </Grid>
+                                    }
                                     {/* BUTTON FORWARD */}
                                     <Grid
                                         container={true}
@@ -461,6 +483,7 @@ export const Practice = (props: PracticeProps) => {
                                             </IconButton>
                                         </Grid>
                                     </Grid>
+                                    {/* ACTION BUTTONS */}
                                     <Grid
                                         container={true}
                                         justifyContent={'center'}
