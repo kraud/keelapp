@@ -79,5 +79,5 @@ export const exerciseSlice = createSlice({
     }
 })
 
-export const {resetExercisesSliceState} = exerciseSlice.actions
+export const {resetExercisesSliceState, setWordIdsSelectedForExercises, resetWordIdsSelectedForExercises} = exerciseSlice.actions
 export default exerciseSlice.reducer

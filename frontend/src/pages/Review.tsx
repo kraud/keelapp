@@ -25,6 +25,7 @@ import Box from "@mui/material/Box";
 import LinearIndeterminate from "../components/Spinner";
 import {AppDispatch} from "../app/store";
 import {useTranslation} from "react-i18next";
+import {setWordIdsSelectedForExercises} from "../features/exercises/exerciseSlice";
 
 export function Review(){
     const componentStyles = {
@@ -235,12 +236,12 @@ export function Review(){
     }
     // TODO: should we change it to saving the row info instead?
     const getWordsIdFromRowSelection = (rowSelection: unknown) => {
-        let wordIdsToDelete: string[] = []
+        let wordIds: string[] = []
         // @ts-ignore
         Object.keys(rowSelection).forEach((selectionDataIndex: string) => {
-            wordIdsToDelete.push(wordsSimple.words[parseInt(selectionDataIndex)].id)
+            wordIds.push(wordsSimple.words[parseInt(selectionDataIndex)].id)
         })
-        return(wordIdsToDelete)
+        return(wordIds)
     }
 
     const deleteSelectedRows = (rowSelection: unknown) => {
@@ -509,11 +510,15 @@ export function Review(){
                             id: "create-exercises",
                             variant: "outlined",
                             color: "secondary",
-                            disabled: true, // TODO: to be implemented eventually, will redirect to a version of the Practice screen
+                            disabled: false,
                             label: t('buttons.createExercises', { ns: 'common' }),
-                            onClick: () => null,
+                            onClick: (rowSelection: any) => {
+                                //@ts-ignore
+                                dispatch(setWordIdsSelectedForExercises(getWordsIdFromRowSelection(rowSelection)))
+                                navigate('/practice')
+                            },
                             displayBySelectionAmount: (amountSelected: number) => {
-                                return (amountSelected > 1)
+                                return (amountSelected > 2)
                             },
                         },
                         {

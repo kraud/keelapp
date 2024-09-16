@@ -173,10 +173,10 @@ const verbGroupedCategories = {
 // a single word, with all of its translations
 // a list of the languages that are relevant to the user
 // the corresponding grouped-categories relevant to the PoS of the word.
+// This functions returns all the possible exercises between the translations associated with this word
 function findEquivalentTranslations(
     wordData,
-    languages,
-    groupedCategories
+    languages
 ) {
 
     // Helper function to generate unique pairs of languages.
@@ -199,6 +199,11 @@ function findEquivalentTranslations(
     // Now we calculate all the possible unique pairs of the intersection-languages
     const languagePairs = getUniqueLanguagePairs(validLanguages)
     const equivalentValues = []
+
+    // TODO: we currently only have groupedCategories for pairs of languages,
+    //  we need to to create groupedCategories for single-translation exercises as well,
+    //  this way we can create better exercises when answers are multiple-choice in PoS like Nouns (which in Spanish/English only have 2 fields)
+    const groupedCategories = getGroupedCategories(wordData.partOfSpeech)
 
     // Iterate over each linguistic group (e.g., singular/plural for nouns, present/past for verbs)
     for (const group in groupedCategories) {
@@ -265,52 +270,62 @@ const getGroupedCategories = (partOfSpeech) => {
 // @route   GET /api/exercises
 // @access  Private
 const getExercises = asyncHandler(async (req, res) => {
+    // const parameters = req.query.parameters.parameters
     const parameters = {
-        ...req.query.parameters,
-        amountOfExercises: parseInt(req.query.parameters.amountOfExercises, 10)
+        ...req.query.parameters.parameters,
+        amountOfExercises: parseInt(req.query.parameters.parameters.amountOfExercises, 10)
     }
-
-    console.log('received parameters', parameters)
 
     // words related to other-users-tags, that the current user follows.
     const followedWordsId = await getWordsIdFromFollowedTagsByUserId(req.user.id)
 
-    // word query should also filter by those that have at last 2 translations from the required by user (*)
-    // (maybe 1 is ok too, if they are from Lang+PoS combo that can create exercises from single translation?)
-    // const matchingWordData = await Word.find({
-    //     $or: [
-    //         {"user": mongoose.Types.ObjectId(req.user.id)},
-    //         {"_id": {$in: followedWordsId}}
-    //     ]
-    // })
 
-    const matchingWordData = await Word.find({
-        $and:[
-            {
+    // If the user pre-selected words to create exercises => we'll not check for any other words
+    const getWordFilterQuery = (parametersIncludePreselectWords) => {
+        if(parametersIncludePreselectWords){
+            return({
+                _id: {
+                    $in: parameters.preSelectedWords
+                }
+            })
+        } else {
+            return({
                 $or: [
                     {"user": mongoose.Types.ObjectId(req.user.id)},
                     {"_id": {$in: followedWordsId}}
                 ]
-            },
+            })
+        }
+    }
+    const preSelectedWordsIncludedInParameters = (parameters.preSelectedWords !== undefined) && (parameters.preSelectedWords.length > 0)
+    // word query should also filter by those that have at last 2 translations from the required by user (*)
+    // (maybe 1 is ok too, if they are from Lang+PoS combo that can create exercises from single translation?)
+    const matchingWordData = await Word.find({
+        $and:[
+            getWordFilterQuery(preSelectedWordsIncludedInParameters),
             {
                 partOfSpeech: {
                     $in: parameters.partsOfSpeech
                 }
             }
-            // TODO: if there is a pre-selected list of words, all other parameters could/should be ignored?
         ]
     })
 
     let exercises = []
     matchingWordData // if words not pre-selected => this list could be too big, we should pre-filter by only candidates with real exercise-potential first(*)?
         .slice(0, parameters.amountOfExercises) // this should be a random selection
+        // .slice(0, 6) // this should be a random selection
         .forEach((matchingWord) => {
         const matchingExercises = findEquivalentTranslations(
             matchingWord,
-            parameters.languages,
-            // ['German', 'Estonian'],
-            getGroupedCategories(matchingWord.partOfSpeech)
+            parameters.languages
         )
+        // TODO: we should group the exercises before storing them,
+        //  so we can determine if we'll return more than 1 per word (in case more exercises than words required)
+        //  Logic: if amount requested exercises > amount items in matchingWordData => we need more than 1 exercise from some words until we match both amounts
+        //  To do this, we'll get 1 exercise from each word first, and on the next pass we pick a word at random and get another exercise from it until we get enough
+        //  Alternative: if amount requested exercises < amount items in matchingWordData => not every word will return an exercise
+        //  Because of this, we'll select words at random and get 1 exercise from each one
         exercises.push(...matchingExercises)
     })
 
