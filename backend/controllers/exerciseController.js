@@ -378,8 +378,8 @@ const getGroupedCategories = (partOfSpeech) => {
 const getExercises = asyncHandler(async (req, res) => {
     // const parameters = req.query.parameters.parameters
     const parameters = {
-        ...req.query.parameters.parameters,
-        amountOfExercises: parseInt(req.query.parameters.parameters.amountOfExercises, 10)
+        ...req.query.parameters,
+        amountOfExercises: parseInt(req.query.parameters.amountOfExercises, 10)
     }
 
     // words related to other-users-tags, that the current user follows.

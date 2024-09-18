@@ -18,6 +18,7 @@ interface DnDSortableItemProps{
     disabled?: boolean
     sxProps?: SxProps<Theme>
     displayItems?: 'text' | 'flag' | 'both',
+    hideIndex?: boolean,
     onActionButtonClick: (itemId: string) => void
     // for selecting UI language
     displayLeftActionButton?: boolean
@@ -82,7 +83,7 @@ export function DnDSortableItem(props: DnDSortableItemProps){
     const getDisplayElements = () => {
         const displayContentWithIndex = (displayItem: any) => {
             return(
-                (props.index !== undefined)
+                ((props.index !== undefined) && !(props.hideIndex!!))
                     ? `#${props.index + 1}: ${displayItem}`
                     : displayItem
             )

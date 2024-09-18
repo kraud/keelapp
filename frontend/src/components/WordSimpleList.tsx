@@ -5,6 +5,7 @@ import React from "react";
 import {ExerciseParameters} from "../pages/Practice";
 import {CountryFlag} from "./GeneralUseComponents";
 import globalTheme from "../theme/theme";
+import Tooltip from "@mui/material/Tooltip";
 
 interface WordSimpleListProps {
     wordsSelectedForExercises: any[] // simple-word
@@ -33,7 +34,8 @@ export const WordSimpleList = (props: WordSimpleListProps) => {
             const indexInGroupedList = wordsGroupedByPoS.findIndex((groupByPoS: GroupedWordsByPoS) => {
                 return(groupByPoS.partOfSpeech === simpleWord.partOfSpeech)
             })
-            if(indexInGroupedList >= 0){ // if part of speech is already included in the list
+            if(indexInGroupedList >= 0){ // if Part of Speech is already included in the list
+                // we update the list of words related to that Part of Speech
                 wordsGroupedByPoS.splice(
                     indexInGroupedList,
                     1,
@@ -72,9 +74,10 @@ export const WordSimpleList = (props: WordSimpleListProps) => {
             justifyContent={'center'}
             item={true}
         >
-            {((getWordsSeparatedByPoS()).map((groupedCategory: GroupedWordsByPoS) => {
+            {((getWordsSeparatedByPoS()).map((groupedCategory: GroupedWordsByPoS, index: number) => {
                 return(
                     <Grid
+                        key={index}
                         container={true}
                         item={true}
                         sx={{
@@ -132,77 +135,88 @@ export const WordSimpleList = (props: WordSimpleListProps) => {
                                     minWidth: 'max-content',
                                 }}
                             >
-                                {(groupedCategory.words).map((selectedWord: any) => {
-                                    const fieldsByActiveLanguage: string[] = getFormattedKeyString(props.parameters.languages)
-                                    return(
-                                        <Grid
-                                            container={true}
-                                            direction={'column'}
-                                            alignItems={'flex-start'}
-                                            justifyContent={'flex-start'}
-                                            item={true}
-                                            // xs={4}
-                                            // xl={3}
-                                            sx={{
-                                                border: '2px solid black',
-                                                borderRadius: '15px',
-                                                // fixed width
-                                                // maxWidth: '250px !important',
-                                                // minWidth: '250px !important'
-                                                // width: '175px !important'
-                                                // dynamic width depending on word
-                                                width: 'max-content',
-                                                // minWidth: 'max-content',
-                                                // maxWidth: 'max-content',
-                                                paddingX: globalTheme.spacing(1)
-                                            }}
-                                        >
-                                            {((getExistingTranslations(selectedWord, fieldsByActiveLanguage)).map((activeLanguageField: string) => {
-                                                return(
-                                                    <Grid
-                                                        container={true}
-                                                        justifyContent={'flex-start'}
-                                                        alignItems={'center'}
-                                                        item={true}
-                                                        // xs={12}
-                                                        xs={'auto'}
-                                                        sx={{
-                                                            border: '2px solid blue'
-                                                        }}
-                                                    >
-                                                        <Grid
-                                                            item={true}
-                                                            xs={'auto'}
+                                {(groupedCategory.words).map((selectedWord: any, index: number) => {
+                                    const dataFieldsByActiveLanguage: string[] = getFormattedKeyString(props.parameters.languages)
+                                    const translationsToBeDisplayed = getExistingTranslations(selectedWord, dataFieldsByActiveLanguage)
+                                    if(translationsToBeDisplayed.length > 0){
+                                        return(
+                                            <Grid
+                                                key={index}
+                                                container={true}
+                                                direction={'column'}
+                                                alignItems={'flex-start'}
+                                                justifyContent={'flex-start'}
+                                                item={true}
+                                                // xs={4}
+                                                // xl={3}
+                                                sx={{
+                                                    border: '2px solid black',
+                                                    borderRadius: '15px',
+                                                    // fixed width
+                                                    // maxWidth: '250px !important',
+                                                    // minWidth: '250px !important'
+                                                    // width: '175px !important'
+                                                    // dynamic width depending on word
+                                                    width: 'max-content',
+                                                    // minWidth: 'max-content',
+                                                    // maxWidth: 'max-content',
+                                                    paddingX: globalTheme.spacing(1)
+                                                }}
+                                            >
+                                                {(translationsToBeDisplayed.map((activeLanguageField: string, index: number) => {
+                                                    return(
+                                                        <Tooltip
+                                                            title={`Registered cases: ${selectedWord[`registeredCases${activeLanguageField.slice(-2)}`]}`}
                                                         >
-                                                            <CountryFlag
-                                                                country={Lang[activeLanguageField.slice(-2)] as Lang}
-                                                                border={true}
-                                                                sxProps={{
-                                                                    marginRight: globalTheme.spacing(1),
-                                                                }}
-                                                            />
-                                                        </Grid>
-                                                        <Grid
-                                                            item={true}
-                                                            xs={'auto'}
-                                                        >
-                                                            <Typography
+                                                            <Grid
+                                                                key={index}
+                                                                container={true}
+                                                                justifyContent={'flex-start'}
+                                                                alignItems={'center'}
+                                                                item={true}
+                                                                // xs={12}
+                                                                xs={'auto'}
                                                                 sx={{
-                                                                    typography: {
-                                                                        xs: 'body2',
-                                                                        sm: 'h6',
-                                                                    },
+                                                                    border: '2px solid blue'
                                                                 }}
-                                                                align={"center"}
                                                             >
-                                                                {selectedWord[activeLanguageField]}
-                                                            </Typography>
-                                                        </Grid>
-                                                    </Grid>
-                                                )
-                                            }))}
-                                        </Grid>
-                                    )
+                                                                <Grid
+                                                                    item={true}
+                                                                    xs={'auto'}
+                                                                >
+                                                                    <CountryFlag
+                                                                        country={Lang[activeLanguageField.slice(-2)] as Lang}
+                                                                        border={true}
+                                                                        sxProps={{
+                                                                            marginRight: globalTheme.spacing(1),
+                                                                        }}
+                                                                    />
+                                                                </Grid>
+                                                                <Grid
+                                                                    item={true}
+                                                                    xs={'auto'}
+                                                                >
+                                                                    <Typography
+                                                                        sx={{
+                                                                            typography: {
+                                                                                xs: 'body2',
+                                                                                sm: 'h6',
+                                                                            },
+                                                                        }}
+                                                                        align={"center"}
+                                                                    >
+                                                                        {selectedWord[activeLanguageField]}
+                                                                    </Typography>
+                                                                </Grid>
+                                                            </Grid>
+                                                        </Tooltip>
+                                                    )
+                                                }))}
+                                            </Grid>
+                                        )
+                                    } else {
+                                        return(null)
+                                    }
                                 })}
                             </Grid>
                         </Grid>

@@ -12,20 +12,22 @@ import * as Yup from "yup";
 import {yupResolver} from "@hookform/resolvers/yup/dist/yup";
 
 interface ExerciseParameterSelectorProps {
-    languages: Lang[]
     defaultParameters: ExerciseParameters,
     onParametersChange: (data: ExerciseParameters) => void,
     onAccept: () => void
+    availableLanguages: Lang[]
+    availablePoS: PartOfSpeech[]
+    disabled?: boolean
 }
 
 export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps) => {
     const { t } = useTranslation(['review', 'common'])
-    // Languages currently displayed as columns on the table
-    const [allSelectedLanguages, setAllSelectedLanguages] = useState<string[]>(props.languages)
+    // Languages currently displayed as columns on the selector
+    const [allSelectedLanguages, setAllSelectedLanguages] = useState<string[]>(props.availableLanguages)
     // Languages currently not displayed as columns on the table
     const [otherLanguages, setOtherLanguages] = useState<string[]>([])
     const [amountOfExercises, setAmountOfExercises] = useState<number>(10)
-    const [selectedPartOfSpeech, setSelectedPartOfSpeech] = useState<PartOfSpeech[]>([])
+    const [selectedPartOfSpeech, setSelectedPartOfSpeech] = useState<PartOfSpeech[]>(props.defaultParameters.partsOfSpeech)
 
 
     const validationSchema = Yup.object().shape({
@@ -56,15 +58,13 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
     })
 
     useEffect(() => {
-        if(isValid){
-            props.onParametersChange({
-                languages: allSelectedLanguages as Lang[],
-                partsOfSpeech: selectedPartOfSpeech, // TODO: keep adding PoS as we create the GroupedCategories JSON objects
-                amountOfExercises: amountOfExercises,
-                input: 'Text-Input',
-                mode: 'Single-Try'
-            })
-        }
+        props.onParametersChange({
+            languages: allSelectedLanguages as Lang[],
+            partsOfSpeech: selectedPartOfSpeech, // TODO: keep adding PoS as we create the GroupedCategories JSON objects
+            amountOfExercises: amountOfExercises,
+            input: 'Text-Input',
+            mode: 'Single-Try'
+        })
     },[allSelectedLanguages, selectedPartOfSpeech, amountOfExercises])
 
     const {
@@ -75,8 +75,8 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
         mode: "all", // Triggers validation/errors without having to submit
     })
 
-    const getPartsOfSpeechOptionElements = () => {
-        const formattedOptions = props.defaultParameters.partsOfSpeech.map((partOfSpeech: PartOfSpeech) => {
+    const getPartsOfSpeechOptionElements = (listPoS: PartOfSpeech[]) => {
+        const formattedOptions = listPoS.map((partOfSpeech: PartOfSpeech) => {
             return({
                 label: partOfSpeech,
                 value:PartOfSpeech[(partOfSpeech).toLowerCase()]
@@ -88,12 +88,13 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
     const setValuesInForm = () => {
         setValue(
             'partsOfSpeech',
-            getPartsOfSpeechOptionElements(),
+            getPartsOfSpeechOptionElements(props.defaultParameters.partsOfSpeech),
             {
                 shouldValidate: true,
                 shouldTouch: true
             }
         )
+        // setSelectedPartOfSpeech(props.defaultParameters.partsOfSpeech)
     }
 
     useEffect(() => {
@@ -107,8 +108,7 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
             justifyContent={'center'}
             alignItems={'center'}
             item={true}
-            xs={11}
-            md={8}
+            xs={12}
             sx={{
                 border: '2px solid black'
             }}
@@ -159,6 +159,9 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                         direction={"horizontal"}
                         selectedItemsTitle={t('fieldLabels.activeLanguages', { ns: 'review' })} // TODO: set custom text
                         otherItemsTitle={t('fieldLabels.hiddenLanguages', { ns: 'review' })} // TODO: set custom text
+                        disabled={props.disabled!!}
+                        displayItems={'both'}
+                        hideIndex={true}
                     />
                 </Grid>
                 {/* PART OF SPEECH SELECTION */}
@@ -173,10 +176,7 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                         control={control}
                         groupLabel={"Parts of speech"}
                         name={"partsOfSpeech"}
-                        options={[
-                            {label: 'Verb', value: PartOfSpeech.verb},
-                            {label: 'Noun', value: PartOfSpeech.noun},
-                        ]}
+                        options={getPartsOfSpeechOptionElements(props.availablePoS)}
                         defaultValue={[]} // add default items if pre-selected words?
                         errors={errors.partsOfSpeech}
                         onChange={(selectionPoS: CheckboxItemData[]) => {
@@ -187,7 +187,7 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                             )
                         }}
                         fullWidth={false}
-                        // disabled={props.displayOnly}
+                        disabled={props.disabled!!}
                     />
                 </Grid>
                 {/* NUMBER OF EXERCISES */}
@@ -203,6 +203,7 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                         label={'Amount of exercises'}
                         name={"amountExercises"}
                         defaultValue={"10"}
+                        disabled={props.disabled!!}
                         errors={errors.amountExercises}
                         onChange={(value: any) => {
                             setAmountOfExercises(parseInt(value, 10))
@@ -225,7 +226,7 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                         variant={'contained'}
                         color={'success'}
                         fullWidth={true}
-                        disabled={!isValid}
+                        disabled={!isValid || props.disabled!!}
                         onClick={() => {
                             props.onAccept()
                         }}
