@@ -107,7 +107,8 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
             justifyContent={'center'}
             alignItems={'center'}
             item={true}
-            xs={8}
+            xs={11}
+            md={8}
             sx={{
                 border: '2px solid black'
             }}
