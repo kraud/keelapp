@@ -25,7 +25,7 @@ import Box from "@mui/material/Box";
 import LinearIndeterminate from "../components/Spinner";
 import {AppDispatch} from "../app/store";
 import {useTranslation} from "react-i18next";
-import {setWordIdsSelectedForExercises} from "../features/exercises/exerciseSlice";
+import {setWordsSelectedForExercises} from "../features/exercises/exerciseSlice";
 
 export function Review(){
     const componentStyles = {
@@ -242,6 +242,15 @@ export function Review(){
             wordIds.push(wordsSimple.words[parseInt(selectionDataIndex)].id)
         })
         return(wordIds)
+    }
+    // TODO: should we change it to saving the row info instead?
+    const getWordsDataFromRowSelection = (rowSelection: unknown) => {
+        let selectedWordsData: any[] = [] // simple-word
+        // @ts-ignore
+        Object.keys(rowSelection).forEach((selectionDataIndex: string) => {
+            selectedWordsData.push(wordsSimple.words[parseInt(selectionDataIndex)])
+        })
+        return(selectedWordsData)
     }
 
     const deleteSelectedRows = (rowSelection: unknown) => {
@@ -514,7 +523,7 @@ export function Review(){
                             label: t('buttons.createExercises', { ns: 'common' }),
                             onClick: (rowSelection: any) => {
                                 //@ts-ignore
-                                dispatch(setWordIdsSelectedForExercises(getWordsIdFromRowSelection(rowSelection)))
+                                dispatch(setWordsSelectedForExercises(getWordsDataFromRowSelection(rowSelection)))
                                 navigate('/practice')
                             },
                             displayBySelectionAmount: (amountSelected: number) => {

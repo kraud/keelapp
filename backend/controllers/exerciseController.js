@@ -215,7 +215,7 @@ const verbGroupedCategories = {
 // }
 
 function getRequiredAmountOfExercises(
-    exercisesByWord, // exercises are grouped by word
+    exercisesByWord, // exercises are grouped by word []
     amountOfExercises,
 ) {
     const requireMultipleExercisesPerWord = amountOfExercises > exercisesByWord.length;
@@ -280,7 +280,7 @@ function getRequiredAmountOfExercises(
 // a list of the languages that are relevant to the user
 // the corresponding grouped-categories relevant to the PoS of the word.
 // This functions returns all the possible exercises between the translations associated with this word
-function findEquivalentTranslations(
+function findExercisesByEquivalentTranslations(
     wordData,
     languages
 ) {
@@ -422,15 +422,15 @@ const getExercises = asyncHandler(async (req, res) => {
     let exercisesByWord = []
     matchingWordData // if words not pre-selected => this list could be too big, we should pre-filter by only candidates with real exercise-potential first(*)?
         .forEach((matchingWord) => {
-            const matchingExercises = findEquivalentTranslations(
+            const matchingExercisesPerWord = findExercisesByEquivalentTranslations(
                 matchingWord,
                 parameters.languages
             )
             // If we found exercises for that word, we save them, and we'll filter them later
-            if(matchingExercises.length > 0){
+            if(matchingExercisesPerWord.length > 0){
                 exercisesByWord.push({
                     _id: matchingWord._id,
-                    exercises: matchingExercises // EquivalentTranslationValues[]
+                    exercises: matchingExercisesPerWord // EquivalentTranslationValues[]
                 })
             }
         })

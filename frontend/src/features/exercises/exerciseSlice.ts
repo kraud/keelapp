@@ -4,7 +4,7 @@ import {EquivalentTranslationValues} from "../../ts/interfaces"
 
 interface ExerciseSliceState {
     exercises: EquivalentTranslationValues[],
-    wordIdsSelectedForExercises: string[],
+    wordsSelectedForExercises: any[], // simple word data
 
     isErrorExercises: boolean,
     isSuccessExercises: boolean,
@@ -14,7 +14,7 @@ interface ExerciseSliceState {
 
 const initialState: ExerciseSliceState = {
     exercises: [],
-    wordIdsSelectedForExercises: [],
+    wordsSelectedForExercises: [],
 
     isErrorExercises: false,
     isSuccessExercises: false,
@@ -47,16 +47,16 @@ export const exerciseSlice = createSlice({
         resetExercisesSliceState: (state) => {
             return(initialState)
         },
-        setWordIdsSelectedForExercises: (state: any, action: PayloadAction) => {
+        setWordsSelectedForExercises: (state: any, action: PayloadAction) => {
             return ({
                 ...state,
-                wordIdsSelectedForExercises: action.payload
+                wordsSelectedForExercises: action.payload
             })
         },
-        resetWordIdsSelectedForExercises: (state: any) => {
+        resetWordsSelectedForExercises: (state: any) => {
             return ({
                 ...state,
-                wordIdsSelectedForExercises: initialState.wordIdsSelectedForExercises
+                wordsSelectedForExercises: initialState.wordsSelectedForExercises
             })
         },
         resetExerciseList: (state: any) => {
@@ -85,5 +85,5 @@ export const exerciseSlice = createSlice({
     }
 })
 
-export const {resetExercisesSliceState, setWordIdsSelectedForExercises, resetWordIdsSelectedForExercises, resetExerciseList} = exerciseSlice.actions
+export const {resetExercisesSliceState, setWordsSelectedForExercises, resetWordsSelectedForExercises, resetExerciseList} = exerciseSlice.actions
 export default exerciseSlice.reducer

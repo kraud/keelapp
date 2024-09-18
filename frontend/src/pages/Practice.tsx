@@ -18,12 +18,15 @@ import {toast} from "react-toastify";
 import {
     getExercisesForUser,
     resetExerciseList,
-    resetWordIdsSelectedForExercises
+    resetWordsSelectedForExercises
 } from "../features/exercises/exerciseSlice";
+import {getLangKeyByLabel} from "../components/generalUseFunctions";
+import {WordSimpleList} from "../components/WordSimpleList";
 
 interface CardAnswerData {
     index: number,
     answer: string,
+    correct: boolean,
 }
 
 export interface ExerciseParameters {
@@ -32,7 +35,7 @@ export interface ExerciseParameters {
     amountOfExercises: number,
     input: 'Multiple-Choice' | 'Text-Input',
     mode: 'Single-Try' | 'Multiple-Tries'
-    preSelectedWords?: string[]
+    preSelectedWords?: any[] // simple-word data
 }
 
 interface PracticeProps {
@@ -41,7 +44,7 @@ interface PracticeProps {
 
 export const Practice = (props: PracticeProps) => {
     const dispatch = useDispatch<AppDispatch>()
-    const {exercises, isErrorExercises, isSuccessExercises, isLoadingExercises, wordIdsSelectedForExercises} = useSelector((state: any) => state.exercises)
+    const {exercises, isErrorExercises, isSuccessExercises, isLoadingExercises, wordsSelectedForExercises} = useSelector((state: any) => state.exercises)
     const {user} = useSelector((state: any) => state.auth)
     const { t } = useTranslation(['partOfSpeechCases', 'exercises', 'common'])
 
@@ -62,6 +65,15 @@ export const Practice = (props: PracticeProps) => {
 
     const [cardAnswers, setCardAnswers] = useState<CardAnswerData[]>([])
 
+    const getRelevantPoSFromWordSelection = (selectedWords: any[]) => {
+        const allPoS = selectedWords.map((selectedWord) => {
+            return(selectedWord.partOfSpeech)
+        })
+        const relevantPartsOfSpeech = new Set(allPoS)
+        console.log('PoS', Array.from(relevantPartsOfSpeech))
+        return(Array.from(relevantPartsOfSpeech))
+    }
+
     const onAcceptParameters = () => {
         toast.info("let me check...")
         dispatch(getExercisesForUser({parameters}))
@@ -69,15 +81,16 @@ export const Practice = (props: PracticeProps) => {
     }
 
     useEffect(() => {
-        if(wordIdsSelectedForExercises.length > 0){
+        if(wordsSelectedForExercises.length > 0){
             setParameters((prevState) => {
                 return({
                     ...prevState,
-                    preSelectedWords: wordIdsSelectedForExercises
+                    partsOfSpeech: getRelevantPoSFromWordSelection(wordsSelectedForExercises),
+                    preSelectedWords: wordsSelectedForExercises
                 })
             })
         }
-    }, [])
+    }, [wordsSelectedForExercises])
 
     const onClickReset = () => {
         setParameters((prevState) => {
@@ -89,10 +102,8 @@ export const Practice = (props: PracticeProps) => {
         setAcceptedParameters(false)
         setCurrentCardIndex(0)
         setCardAnswers([])
-        // dispatch(resetWordIdsSelectedForExercises())
         dispatch(resetExerciseList())
     }
-
 
     return(
         <Grid
@@ -141,26 +152,36 @@ export const Practice = (props: PracticeProps) => {
                         {`Exercises ${currentCardIndex+1}/${exercises.length}`}
                     </Typography>
                 </Grid>
-                {(wordIdsSelectedForExercises.length > 0) &&
+                {(wordsSelectedForExercises.length > 0) &&
                     <Grid
+                        container={true}
+                        justifyContent={'center'}
                         item={true}
-                        xs={12}
-                        sx={{
-                            border: '3px solid green',
-                        }}
                     >
-                        <Typography
+                        <Grid
+                            item={true}
+                            xs={12}
                             sx={{
-                                typography: {
-                                    xs: 'body1',
-                                    sm: 'h6',
-                                    md: 'h5',
-                                },
+                                border: '3px solid green',
                             }}
-                            align={"center"}
                         >
-                            {`Parameters will apply to exercises created from ${wordIdsSelectedForExercises.length} words`}
-                        </Typography>
+                            <Typography
+                                sx={{
+                                    typography: {
+                                        xs: 'body1',
+                                        sm: 'h6',
+                                        md: 'h5',
+                                    },
+                                }}
+                                align={"center"}
+                            >
+                                {`Parameters will apply to exercises created from ${wordsSelectedForExercises.length} words`}
+                            </Typography>
+                        </Grid>
+                        <WordSimpleList
+                            wordsSelectedForExercises={wordsSelectedForExercises}
+                            parameters={parameters}
+                        />
                     </Grid>
                 }
             </Grid>
@@ -217,6 +238,7 @@ export const Practice = (props: PracticeProps) => {
                                     }}
                                 >
                                     {/*BUTTON BACK*/}
+                                    {/* TODO: there will be different types of cards (depending on exercise type: multiple-choice, text-input, etc.*/}
                                     <Grid
                                         container={true}
                                         item={true}

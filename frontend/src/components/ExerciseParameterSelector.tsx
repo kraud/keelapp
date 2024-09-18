@@ -29,8 +29,14 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
 
 
     const validationSchema = Yup.object().shape({
-        // partsOfSpeech: Yup.string(),
-        // verbCases: Yup.array(),
+        partsOfSpeech: Yup
+            .array()
+            .test({
+                message: 'You must select at least one item',
+                test: arr => {
+                    return((arr !== undefined) && (arr.length > 0))
+                },
+            }),
         amountExercises: Yup
             .number()
             .required('Amount is required value')
@@ -68,6 +74,31 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
         resolver: yupResolver(validationSchema), // TODO: create Schema later, to support PoS selection and exercise amount number
         mode: "all", // Triggers validation/errors without having to submit
     })
+
+    const getPartsOfSpeechOptionElements = () => {
+        const formattedOptions = props.defaultParameters.partsOfSpeech.map((partOfSpeech: PartOfSpeech) => {
+            return({
+                label: partOfSpeech,
+                value:PartOfSpeech[(partOfSpeech).toLowerCase()]
+            })
+        })
+        return(formattedOptions)
+    }
+
+    const setValuesInForm = () => {
+        setValue(
+            'partsOfSpeech',
+            getPartsOfSpeechOptionElements(),
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+    }
+
+    useEffect(() => {
+        setValuesInForm()
+    },[props.defaultParameters])
 
     return(
         <Grid
@@ -193,6 +224,7 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                         variant={'contained'}
                         color={'success'}
                         fullWidth={true}
+                        disabled={!isValid}
                         onClick={() => {
                             props.onAccept()
                         }}
