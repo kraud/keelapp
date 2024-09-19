@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react"
 import {Grid, InputAdornment, Typography} from "@mui/material"
 import {DnDLanguageOrderSelector} from "./DnDLanguageOrderSelector";
-import {Lang, PartOfSpeech, VerbCaseTypeDE} from "../ts/enums";
+import {Lang, PartOfSpeech} from "../ts/enums";
 import {useTranslation} from "react-i18next";
 import {CheckboxGroupWithHook, CheckboxItemData} from "./CheckboxGroupFormHook";
 import {useForm} from "react-hook-form";
@@ -10,6 +10,7 @@ import {ExerciseParameters} from "../pages/Practice";
 import Button from "@mui/material/Button";
 import * as Yup from "yup";
 import {yupResolver} from "@hookform/resolvers/yup/dist/yup";
+import {RadioGroupWithHook} from "./RadioGroupFormHook";
 
 interface ExerciseParameterSelectorProps {
     defaultParameters: ExerciseParameters,
@@ -28,6 +29,7 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
     const [otherLanguages, setOtherLanguages] = useState<string[]>([])
     const [amountOfExercises, setAmountOfExercises] = useState<number>(10)
     const [selectedPartOfSpeech, setSelectedPartOfSpeech] = useState<PartOfSpeech[]>(props.defaultParameters.partsOfSpeech)
+    const [typeOfExercise, setTypeOfExercise] = useState<string>('Text-Input') // TODO: should be an enum
 
 
     const validationSchema = Yup.object().shape({
@@ -62,10 +64,11 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
             languages: allSelectedLanguages as Lang[],
             partsOfSpeech: selectedPartOfSpeech, // TODO: keep adding PoS as we create the GroupedCategories JSON objects
             amountOfExercises: amountOfExercises,
-            input: 'Text-Input',
+            //@ts-ignore
+            type: typeOfExercise,
             mode: 'Single-Try'
         })
-    },[allSelectedLanguages, selectedPartOfSpeech, amountOfExercises])
+    },[allSelectedLanguages, selectedPartOfSpeech, amountOfExercises, typeOfExercise])
 
     const {
         control,
@@ -211,6 +214,32 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                         fullWidth={true}
                         type={'number'}
                         // disabled={props.displayOnly}
+                    />
+                </Grid>
+                {/* TYPE OF EXERCISES */}
+                <Grid
+                    item={true}
+                    xs={12}
+                    sx={{
+                        border: '2px solid red'
+                    }}
+                >
+                    <RadioGroupWithHook
+                        control={control}
+                        label={"Type"}
+                        name={"type"}
+                        options={['Multiple-Choice', 'Text-Input']}
+                        defaultValue={"Text-Input"}
+                        errors={errors.type}
+                        onChange={(value: any) => {
+                            setTypeOfExercise(value)
+                        }}
+                        fullWidth={false}
+                        disabled={props.disabled!!}
+                        labelTooltipMessage={
+                            'This will determine the type of card to be displayed'
+                        }
+                        disableUnselect={true}
                     />
                 </Grid>
 

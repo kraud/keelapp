@@ -167,9 +167,9 @@ export const WordSimpleList = (props: WordSimpleListProps) => {
                                                     return(
                                                         <Tooltip
                                                             title={`Registered cases: ${selectedWord[`registeredCases${activeLanguageField.slice(-2)}`]}`}
+                                                            key={index}
                                                         >
                                                             <Grid
-                                                                key={index}
                                                                 container={true}
                                                                 justifyContent={'flex-start'}
                                                                 alignItems={'center'}

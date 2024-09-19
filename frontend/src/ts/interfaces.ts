@@ -184,8 +184,14 @@ export interface EstonianAPIRequest {
     searchInEnglish?: boolean
 }
 
-export interface EquivalentTranslationValues {
+export type EquivalentTranslationValues = {
     partOfSpeech: PartOfSpeech, // should match the one on WordData
+    multiLang?: boolean,
+    type?: 'Multiple-Choice' | 'Text-Input',
+} & (TextInput | MultipleChoice)
+
+export type TextInput = {
+    type: 'Text-Input',
     matchingTranslations : {
         itemA: {
             language: Lang,
@@ -196,6 +202,23 @@ export interface EquivalentTranslationValues {
             language: Lang,
             case: NounCases | VerbCases | AdverbCases | AdjectiveCases,
             value: string,
+        }
+    }
+}
+
+export type MultipleChoice = {
+    type: 'Multiple-Choice',
+    matchingTranslations : {
+        itemA: {
+            language: Lang,
+            case: NounCases | VerbCases | AdverbCases| AdjectiveCases,
+            value: string,
+        },
+        itemB: {
+            language: Lang,
+            case: NounCases | VerbCases | AdverbCases | AdjectiveCases,
+            value: string,
+            otherValues: string[],
         }
     }
 }

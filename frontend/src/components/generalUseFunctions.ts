@@ -549,3 +549,12 @@ export function getPoSKeyByLabel(partOfSpeechLabel: PartOfSpeech){
     const match = Object.keys(PartOfSpeech)[Object.values(PartOfSpeech).indexOf(partOfSpeechLabel)] as string
     return((match!!) ?match :"")
 }
+
+
+// Helper function to shuffle array in-place
+export function shuffleArray(array: any[]) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}

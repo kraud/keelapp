@@ -6,8 +6,9 @@ const Word = require("../models/wordModel")
 // Format returned by 'findEquivalentTranslations'
 // interface EquivalentTranslationValues {
 // 	multiLang: true, // boolean
+// 	type: 'Multiple-Choice' | 'Text-Input' | 'All',
 // 	partOfSpeech: PartOfSpeech,
-// 	translations : {
+// 	matchingTranslations : {
 // 		itemA: {
 // 			language: Lang,
 // 			case: caseEnum-according-to-PoS,
@@ -17,6 +18,7 @@ const Word = require("../models/wordModel")
 // 			language: Lang,
 // 			case: caseEnum-according-to-PoS,
 // 			value: string,
+// 			otherValues: string[],
 // 		}
 // 	}
 // }
@@ -214,6 +216,15 @@ const verbGroupedCategories = {
 //     return(filteredExercises)
 // }
 
+
+// Helper function to shuffle array in-place
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
 function getRequiredAmountOfExercises(
     exercisesByWord, // exercises are grouped by word []
     amountOfExercises,
@@ -250,14 +261,6 @@ function getRequiredAmountOfExercises(
         return selectedExercises
     }
 
-    // Helper function to shuffle array in-place
-    function shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-    }
-
     // Main logic
     if (requireMultipleExercisesPerWord) {
         // Select one exercise per word first, then loop through randomly until reaching the required amount
@@ -275,6 +278,70 @@ function getRequiredAmountOfExercises(
     return filteredExercises
 }
 
+const getFormattedExercise = (type, itemA, itemB, partOfSpeech) => {
+    // Currently, the difference between the types is only 2 fields, but We create it this way
+    // in case the format for the different type of exercises change a lot in the future
+    switch(type) {
+        case('Multiple-Choice'): {
+            return({
+                partOfSpeech: partOfSpeech,
+                type: "Multiple-Choice",
+                matchingTranslations: {
+                    itemA: {
+                        language: itemA.language,
+                        case: itemA.case,
+                        value: itemA.value,
+                    },
+                    itemB: {
+                        language: itemB.language,
+                        case: itemB.case,
+                        value: itemB.value,
+                        otherValues: []
+                    }
+                }
+            })
+        }
+
+        case('Text-Input'): {
+            return({
+                partOfSpeech: partOfSpeech,  // Ensure partOfSpeech is used
+                type: "Text-Input",
+                matchingTranslations: {
+                    itemA: {
+                        language: itemA.language,
+                        case: itemA.case,
+                        value: itemA.value,
+                    },
+                    itemB: {
+                        language: itemB.language,
+                        case: itemB.case,
+                        value: itemB.value
+                    }
+                }
+            })
+        }
+        // TODO: this should return random type of exercise (either M-C or T-I)
+        default: { // 'All'
+            return({
+                partOfSpeech: partOfSpeech, // Ensure partOfSpeech is used
+                type: "Other",
+                matchingTranslations: {
+                    itemA: {
+                        language: itemA.language,
+                        case: itemA.case,
+                        value: itemA.value,
+                    },
+                    itemB: {
+                        language: itemB.language,
+                        case: itemB.case,
+                        value: itemB.value,
+                    }
+                }
+            })
+        }
+    }
+}
+
 // This functions receives:
 // a single word, with all of its translations
 // a list of the languages that are relevant to the user
@@ -282,7 +349,8 @@ function getRequiredAmountOfExercises(
 // This functions returns all the possible exercises between the translations associated with this word
 function findExercisesByEquivalentTranslations(
     wordData,
-    languages
+    languages,
+    exerciseType //  'Multiple-Choice' | 'Text-Input' | 'all',
 ) {
 
     // Helper function to generate unique pairs of languages.
@@ -333,21 +401,24 @@ function findExercisesByEquivalentTranslations(
 
                     // If both languages have a matching word for this case, add to results
                     if (itemA && itemB) {
-                        equivalentValues.push({
-                            partOfSpeech: wordData.partOfSpeech || "",  // Ensure partOfSpeech is used
-                            matchingTranslations: {
-                                itemA: {
-                                    language: langA,
-                                    case: languageCases[langA],
-                                    value: itemA.word
-                                },
-                                itemB: {
-                                    language: langB,
-                                    case: languageCases[langB],
-                                    value: itemB.word
-                                }
-                            }
-                        });
+                        const dataItemA = {
+                            language: langA,
+                            case: languageCases[langA],
+                            value: itemA.word
+                        }
+                        const dataItemB = {
+                            language: langB,
+                            case: languageCases[langB],
+                            value: itemB.word
+                        }
+                        equivalentValues.push(
+                            getFormattedExercise(
+                                exerciseType,
+                                dataItemA,
+                                dataItemB,
+                                wordData.partOfSpeech || ""
+                            )
+                        )
                     }
                 }
             }
@@ -369,6 +440,138 @@ const getGroupedCategories = (partOfSpeech) => {
             return({})
         }
     }
+}
+
+// Some cases stored in a TranslationItem.cases are not relevant to a Multiple-Choice exercise (like those related to noun-gender, or verb-regularity for example),
+// so we use this function to filter them according to different parameters
+// potentialCase: string
+const calculateIfNotRelevantCase = (potentialCase) => {
+    let ignore = false
+    if(
+        (potentialCase.startsWith('gender')) // nouns[ES || DE]
+        ||
+        (potentialCase.startsWith('gradable')) // adverbs[DE]
+        ||
+        (potentialCase.startsWith('regularity')) // verbs[EN || ES ]
+        ||
+        (potentialCase.startsWith('auxVerb')) // verbs[DE]
+        ||
+        (potentialCase.startsWith('caseType')) // verbs[DE]
+        ||
+        (potentialCase.startsWith('prefix')) // verbs[DE]
+    ){
+        ignore = true
+    }
+    return(ignore)
+}
+
+const isOriginalValueFromThisTranslation = (fullListOfCases, originalCase, originalValue) => {
+    return(
+        fullListOfCases.some((caseRelatedToTranslation) => {
+            return(
+                (caseRelatedToTranslation.caseName === originalCase) &&
+                (caseRelatedToTranslation.word === originalValue)
+            )
+        })
+    )
+    // console.log('listOfCasesRelatedToTranslation', listOfCasesRelatedToTranslation)
+    // console.log('originalCase', originalCase)
+    // console.log('check if included', listOfCasesRelatedToTranslation.includes(originalCase))
+    // console.log('===============================')
+    // return(listOfCasesRelatedToTranslation.includes(originalCase))
+}
+
+// This will always find other words that match the language for a Multiple-Choice-type exercise, IF THE OPTIONS EXIST. If not, the list will return as many options as available.
+const getOtherValues = (targetLanguage, originalValue, originalCase, allMatchingWords, dataOrigin, requiredAmount) => {
+    switch (dataOrigin){
+        case('matching-words'): {
+            // we use 'allMatchingWords' as source of other options
+            const shuffledMatchingWords = [...allMatchingWords]
+            shuffleArray(shuffledMatchingWords) // this should guarantee that we won't be getting the same words in the "other-options" for different exercises
+            let requiredTranslations = []
+            shuffledMatchingWords.forEach((matchingWord) => {
+                // let breakFromWords = false
+                if(requiredAmount > requiredTranslations.length){
+                    (matchingWord.translations).forEach((matchingWordTranslation) => {
+                        let breakFromTranslations = false
+                        if(!breakFromTranslations){
+                            if(matchingWordTranslation.language === targetLanguage){
+                                // TODO: if we want to force matching Part of Speech, it should be added here
+                                let keepSearching = true
+                                let count = 0
+                                while(keepSearching && (count < 25)){ // to avoid potential infinite loop, we add a max amount of random checks
+                                    const randomCaseIndex = Math.floor(Math.random() * matchingWordTranslation.cases.length)
+                                    const potentialWord = matchingWordTranslation.cases[randomCaseIndex].word
+                                    const potentialCase = matchingWordTranslation.cases[randomCaseIndex].caseName
+                                    // to avoid including the 'correct-option' in the other options
+                                    // and to avoid including any other case from the translation related to originalValue
+                                    const sameTranslationOriginAsOriginalValue = isOriginalValueFromThisTranslation(matchingWordTranslation.cases, originalCase, originalValue)
+                                    const ignoreWord = (
+                                        calculateIfNotRelevantCase(potentialCase)
+                                        ||
+                                        sameTranslationOriginAsOriginalValue
+                                    )
+                                    if(!ignoreWord){ // to avoid matching with gender-related-cases or other word-properties
+                                        requiredTranslations.push(potentialWord)
+                                        keepSearching = false // this should break from the while
+                                    } else {
+                                        // to avoid infinite loop in case translation has only one case stored (which is the same as the 'correct-option' for this Multiple-Choice exercise).
+                                        if(matchingWordTranslation.cases.length === 1){
+                                            // this should break from the while
+                                            keepSearching = false
+                                        } else {
+                                            count++
+                                        }
+                                    }
+                                }
+                                breakFromTranslations = true // this should break from '(matchingWord.translations).forEach(...)' and continue next matchingWord
+                            }
+                        }
+                    })
+                }
+            })
+            return(requiredTranslations)
+        }
+        case('all-available-words'): {
+            // we use 'allMatchingWords' as source of other options
+            // TODO: implement logic making query to BE for the required data for this exercise
+            return([])
+        }
+    }
+}
+
+const getMissingDataForMCExercises = (incompleteExercises, allMatchingWords, dataOrigin) => {
+    // const additionalOptionsByLanguageRequired = [] //  AdditionalOptionsRequired[]
+    // const additionalValues = getOptionalValuesFromWordsMatchingParameters(matchingWordData, additionalOptionsByLanguageRequired)
+    // const mergedListOfExercises = mergeExercisesWithAdditionalValues(matchingWordData, additionalValues)
+
+    // let exercisesWithFullData = [...incompleteExercises]
+    // incomplete exercises, that we'll iterate over and improve the ones that are missing data (Multiple-Choice).
+    // Not all items will be Multiple-Choice, in case user selected 'All' type, where each item is either 'Text-Input' or 'Multiple-Choice' at random.
+    let exercisesWithFullData = incompleteExercises.map((exercise) => {
+        if(exercise.type === 'Multiple-Choice'){
+            return({
+                ...exercise,
+                matchingTranslations: {
+                    ...exercise.matchingTranslations,
+                    itemB: {
+                        ...exercise.matchingTranslations.itemB,
+                        otherValues: getOtherValues(
+                            exercise.matchingTranslations.itemB.language,
+                            exercise.matchingTranslations.itemB.value,
+                            exercise.matchingTranslations.itemB.case,
+                            allMatchingWords,
+                            dataOrigin,
+                            2 // TODO: this should be a parameter
+                        )
+                    }
+                }
+            })
+        } else { // if it's not Multiple-Choice => exercise is complete => store it in list
+            return(exercise)
+        }
+    })
+    return(exercisesWithFullData)
 }
 
 
@@ -424,7 +627,8 @@ const getExercises = asyncHandler(async (req, res) => {
         .forEach((matchingWord) => {
             const matchingExercisesPerWord = findExercisesByEquivalentTranslations(
                 matchingWord,
-                parameters.languages
+                parameters.languages,
+                parameters.type,
             )
             // If we found exercises for that word, we save them, and we'll filter them later
             if(matchingExercisesPerWord.length > 0){
@@ -435,10 +639,18 @@ const getExercises = asyncHandler(async (req, res) => {
             }
         })
     let filteredExercises = getRequiredAmountOfExercises(exercisesByWord, parameters.amountOfExercises)
-
-    res.status(200).json(filteredExercises)
+    if(['Multiple-Choice', 'All'].includes(parameters.type)){ // 'All' would make each item-type random, so we need to check which ones we need to search
+        const exercisesWithMCData = getMissingDataForMCExercises(
+            filteredExercises,
+            matchingWordData,
+            // TODO: this should be optional if the user wants to only use words that match the parameters, or the full list of words they have stored in their account
+            'matching-words' // 'matching-words' | 'all-available-words' TODO: should be a parameter
+        )
+        res.status(200).json(exercisesWithMCData)
+    } else { // type: 'Text-Input' => no need to add additional options
+        res.status(200).json(filteredExercises)
+    }
 })
-
 
 module.exports = {
     getExercises,
