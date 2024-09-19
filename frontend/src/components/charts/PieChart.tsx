@@ -8,6 +8,7 @@ import {partOfSpeechChartColors} from "../../theme/chartsColors";
 import Tooltip from "@mui/material/Tooltip";
 import {MetricsType} from "../../ts/enums";
 import {useTranslation} from "react-i18next";
+import {languageTranslator, partOfSpeechTranslator} from "../generalUseFunctions";
 
 const defaultOptions = (untis: string) => {
     return {
@@ -25,31 +26,37 @@ const defaultOptions = (untis: string) => {
 }
 
 // transforma el array devuelto de DATOS con por el BE a una estrucutra
-function transformArray(originalArray: PieCharC3[]) {
-    let response = {}
-    originalArray.forEach(obj => {
-        response[obj._id] = obj.count
+function translateAndTransform(translator: (access: string) => string, originalArray: PieCharC3[]) {
+    let translatedData = {}
+    let worstCategory: string = ""
+    let worstCategoryCount: number
+
+    originalArray.forEach((obj) => {
+        let translatedLabel = translator(obj[obj.type])
+        translatedData[translatedLabel] = obj.count
+        if (worstCategoryCount === undefined || obj.count < worstCategoryCount) {
+            worstCategory = obj[obj.type]
+            worstCategoryCount = obj.count
+        }
     });
-    return response
+
+    return {translatedData, worstCategory}
 }
 
-interface PieCharC3{
-    _id : any,
+interface PieCharC3 {
+    _id: any,
+    label: string,
+    type: string,
     count: number
 }
 
 // Funcion que toma una entrada con la estructura de exampleJsonData y le da el formato esperado de la librería C3
-const parseData = (dataArray: []): Data => {
-    let newArray = {}
-    if(dataArray.length > 0) {
-        newArray = transformArray(dataArray)
-    }
-
+const parseData = (dataArray: {}): Data => {
     return ({
-        json: [newArray],
+        json: [dataArray],
         keys: {
             // ["Spanish", "Estonian", ... ]
-            value: Object.keys(newArray),
+            value: Object.keys(dataArray),
         },
         type: 'pie',
         colors: partOfSpeechChartColors
@@ -68,39 +75,31 @@ interface PieChartProps {
 const PieChart = (props: PieChartProps) => {
     const { t } = useTranslation(['dashboard', 'common'])
     // check if using custom or default options for pie chart
-    const {data, unit, options, title} = props
+    const {data, unit, options, title, currentType} = props
     const navigate = useNavigate()
 
     const handleRedirect = (link: string | undefined, word: string | undefined) => {
         if (link !== undefined) {
             navigate(link + word?.toString())
         }
-    };
+    }
 
     let chart_options = options!! ? options : defaultOptions(unit)
+
+    const lanTranslator = languageTranslator(t)
+    const posTranslator = partOfSpeechTranslator(t)
 
     const [pieData, setPieData] = useState<Data>(parseData([]))
     const [worstCategory, setWorstCategory] = useState<string>("")
 
-    function getWorstCategory(parsedData: [PieCharC3]) {
-        if(parsedData.length > 0){
-            let worst = parsedData[0]._id
-            let count = parsedData[0].count
-            parsedData.forEach(pieData =>{
-                if(pieData.count < count){
-                    worst = pieData._id
-                    count = pieData.count
-                }
-            })
-            return worst
-        }
-        return ""
-    }
-
     useEffect(() => {
-        setPieData(parseData(data))
-        setWorstCategory(getWorstCategory(data))
-    }, [data])
+        if (data.length > 0) {
+            let translatorFunction = currentType === MetricsType.WORDS ? posTranslator : lanTranslator
+            let {translatedData, worstCategory} = translateAndTransform(translatorFunction, data)
+            setPieData(parseData(translatedData))
+            setWorstCategory(worstCategory)
+        }
+    }, [data, currentType])
 
     return (
         <Grid
@@ -230,7 +229,8 @@ const PieChart = (props: PieChartProps) => {
                                 'charts.pie.tooltip.newWordByCategory',
                                 {
                                     ns: 'dashboard',
-                                    category: t(`partOfSpeech.${(worstCategory).toLowerCase()}`, {ns: 'common'})
+                                    category: worstCategory
+                                        // t(`partOfSpeech.${(worstCategory).toLowerCase()}`, {ns: 'common'})
                                 }
                             )
                             : t(
@@ -249,7 +249,10 @@ const PieChart = (props: PieChartProps) => {
                             }}
                             variant={"text"}
                         >
-                            {(worstCategory).toLowerCase()}
+                            {(props.currentType === MetricsType.WORDS)
+                                ? posTranslator(worstCategory)
+                                : lanTranslator(worstCategory)
+                            }
                             {/* TODO: add translations for all languages? */}
                             {/*{t(`languages.${(worstCategory).toLowerCase()}`, {ns: 'common'})}*/}
                         </Button>

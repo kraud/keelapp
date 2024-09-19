@@ -10,6 +10,7 @@ import {
 } from "../ts/interfaces";
 import {toast} from "react-toastify";
 import {useSelector} from "react-redux";
+import type {TFunction} from "i18next";
 
 export const getCurrentLangTranslated = (currentLang?: Lang) => {
     switch(currentLang) {
@@ -548,4 +549,25 @@ export function getLangKeyByLabel(languageLabel: Lang){
 export function getPoSKeyByLabel(partOfSpeechLabel: PartOfSpeech){
     const match = Object.keys(PartOfSpeech)[Object.values(PartOfSpeech).indexOf(partOfSpeechLabel)] as string
     return((match!!) ?match :"")
+}
+
+
+export function partOfSpeechTranslator(t: TFunction) {
+    return (
+        (partOfSpeech: string) => {
+            return(
+                t(`partOfSpeech.${getPoSKeyByLabel(partOfSpeech as PartOfSpeech)}`, { ns: 'common' })
+            )
+        }
+    )
+}
+
+export function languageTranslator(t: TFunction) {
+    return (
+        (language: string) => {
+            return(
+                t(`languages.${language.toLowerCase()}`, { ns: 'common' })
+            )
+        }
+    )
 }
