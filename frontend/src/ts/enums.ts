@@ -443,3 +443,9 @@ export enum MetricsType {
     WORDS,
     TRANSLATIONS
 }
+
+export enum ExerciseType {
+    'Multiple-Choice' = 'Multiple-Choice',
+    'Text-Input' = 'Text-Input',
+    'Random' = 'Random'
+}

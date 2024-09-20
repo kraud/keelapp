@@ -6,7 +6,7 @@ const Word = require("../models/wordModel")
 // Format returned by 'findEquivalentTranslations'
 // interface EquivalentTranslationValues {
 // 	multiLang: true, // boolean
-// 	type: 'Multiple-Choice' | 'Text-Input' | 'All',
+// 	type: 'Multiple-Choice' | 'Text-Input' | 'Random',
 // 	partOfSpeech: PartOfSpeech,
 // 	matchingTranslations : {
 // 		itemA: {
@@ -278,50 +278,65 @@ function getRequiredAmountOfExercises(
     return filteredExercises
 }
 
+const getMCExercise = (itemA, itemB, partOfSpeech) => {
+    return({
+        partOfSpeech: partOfSpeech,
+        type: "Multiple-Choice",
+        matchingTranslations: {
+            itemA: {
+                language: itemA.language,
+                case: itemA.case,
+                value: itemA.value,
+            },
+            itemB: {
+                language: itemB.language,
+                case: itemB.case,
+                value: itemB.value,
+                otherValues: []
+            }
+        }
+    })
+}
+const getTIExercise = (itemA, itemB, partOfSpeech) => {
+    return({
+        partOfSpeech: partOfSpeech,  // Ensure partOfSpeech is used
+        type: "Text-Input",
+        matchingTranslations: {
+            itemA: {
+                language: itemA.language,
+                case: itemA.case,
+                value: itemA.value,
+            },
+            itemB: {
+                language: itemB.language,
+                case: itemB.case,
+                value: itemB.value
+            }
+        }
+    })
+}
+
 const getFormattedExercise = (type, itemA, itemB, partOfSpeech) => {
     // Currently, the difference between the types is only 2 fields, but We create it this way
     // in case the format for the different type of exercises change a lot in the future
     switch(type) {
         case('Multiple-Choice'): {
-            return({
-                partOfSpeech: partOfSpeech,
-                type: "Multiple-Choice",
-                matchingTranslations: {
-                    itemA: {
-                        language: itemA.language,
-                        case: itemA.case,
-                        value: itemA.value,
-                    },
-                    itemB: {
-                        language: itemB.language,
-                        case: itemB.case,
-                        value: itemB.value,
-                        otherValues: []
-                    }
-                }
-            })
+            return(getMCExercise(itemA, itemB, partOfSpeech))
+        }
+        case('Text-Input'): {
+            return(getTIExercise(itemA, itemB, partOfSpeech))
+        }
+        // TODO: potential additional type: 50%-50%?
+        case('Random'): {
+            const randomValue = (Math.floor(Math.random() * 10))%2
+            if(randomValue === 1){
+                return(getMCExercise(itemA, itemB, partOfSpeech))
+            } else {
+                return(getTIExercise(itemA, itemB, partOfSpeech))
+            }
         }
 
-        case('Text-Input'): {
-            return({
-                partOfSpeech: partOfSpeech,  // Ensure partOfSpeech is used
-                type: "Text-Input",
-                matchingTranslations: {
-                    itemA: {
-                        language: itemA.language,
-                        case: itemA.case,
-                        value: itemA.value,
-                    },
-                    itemB: {
-                        language: itemB.language,
-                        case: itemB.case,
-                        value: itemB.value
-                    }
-                }
-            })
-        }
-        // TODO: this should return random type of exercise (either M-C or T-I)
-        default: { // 'All'
+        default: { // 'Other?'
             return({
                 partOfSpeech: partOfSpeech, // Ensure partOfSpeech is used
                 type: "Other",
@@ -350,7 +365,7 @@ const getFormattedExercise = (type, itemA, itemB, partOfSpeech) => {
 function findExercisesByEquivalentTranslations(
     wordData,
     languages,
-    exerciseType //  'Multiple-Choice' | 'Text-Input' | 'all',
+    exerciseType //  'Multiple-Choice' | 'Text-Input' | 'Random',
 ) {
 
     // Helper function to generate unique pairs of languages.
@@ -425,7 +440,7 @@ function findExercisesByEquivalentTranslations(
         }
     }
 
-    return equivalentValues;
+    return equivalentValues
 }
 
 const getGroupedCategories = (partOfSpeech) => {
@@ -639,7 +654,7 @@ const getExercises = asyncHandler(async (req, res) => {
             }
         })
     let filteredExercises = getRequiredAmountOfExercises(exercisesByWord, parameters.amountOfExercises)
-    if(['Multiple-Choice', 'All'].includes(parameters.type)){ // 'All' would make each item-type random, so we need to check which ones we need to search
+    if(['Multiple-Choice', 'Random'].includes(parameters.type)){
         const exercisesWithMCData = getMissingDataForMCExercises(
             filteredExercises,
             matchingWordData,

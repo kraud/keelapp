@@ -5,9 +5,8 @@ import {routeVariantsAnimation} from "./management/RoutesWithAnimation";
 import globalTheme from "../theme/theme";
 import {Grid, Typography} from "@mui/material";
 import React, {useEffect, useState} from "react";
-import {useTranslation} from "react-i18next";
 import LinearIndeterminate from "../components/Spinner";
-import {Lang, PartOfSpeech} from "../ts/enums";
+import {ExerciseType, Lang, PartOfSpeech} from "../ts/enums";
 import {ExerciseParameterSelector} from "../components/ExerciseParameterSelector";
 import {toast} from "react-toastify";
 import {
@@ -27,7 +26,8 @@ export interface ExerciseParameters {
     languages: Lang[],
     partsOfSpeech: PartOfSpeech[],
     amountOfExercises: number,
-    type: 'Multiple-Choice' | 'Text-Input',
+    type: ExerciseType,
+    // type: 'Multiple-Choice' | 'Text-Input' | 'Random',
     mode: 'Single-Try' | 'Multiple-Tries'
     preSelectedWords?: any[] // simple-word data
 }
@@ -40,18 +40,18 @@ export const Practice = (props: PracticeProps) => {
     const dispatch = useDispatch<AppDispatch>()
     const {exercises, isErrorExercises, isSuccessExercises, isLoadingExercises, wordsSelectedForExercises} = useSelector((state: any) => state.exercises)
     const {user} = useSelector((state: any) => state.auth)
-    const { t } = useTranslation(['partOfSpeechCases', 'exercises', 'common'])
 
+
+    const initialListOfPoS: PartOfSpeech[] = [PartOfSpeech.noun, PartOfSpeech.verb] // TODO: add missing PoS as we create BE logic to create exercises
 
     const initialParameters: ExerciseParameters = {
         languages: user.languages as Lang[],
-        partsOfSpeech: [PartOfSpeech.verb, PartOfSpeech.noun], // TODO: keep adding PoS as we create the GroupedCategories JSON objects
+        partsOfSpeech: initialListOfPoS,
         amountOfExercises: 10,
-        type: 'Text-Input',
+        type: ExerciseType['Text-Input'],
         mode: 'Single-Try'
     }
 
-    const initialListOfPoS: PartOfSpeech[] = [PartOfSpeech.noun, PartOfSpeech.verb]
 
     const [currentCardIndex, setCurrentCardIndex] = useState(0)
     //@ts-ignore
@@ -74,7 +74,7 @@ export const Practice = (props: PracticeProps) => {
 
     const onAcceptParameters = () => {
         toast.info("let me check...")
-        dispatch(getExercisesForUser({
+        const dispatchParameters = {
             ...parameters,
             // BE expects only id for pre-selected words
             preSelectedWords: (parameters.preSelectedWords !== undefined)
@@ -82,7 +82,8 @@ export const Practice = (props: PracticeProps) => {
                     return(preSelectedWordSimple.id)
                 })
                 : undefined
-        }))
+        }
+        dispatch(getExercisesForUser(dispatchParameters))
         setAcceptedParameters(true)
     }
 
@@ -103,7 +104,11 @@ export const Practice = (props: PracticeProps) => {
         setParameters((prevState) => {
             return({
                 ...prevState,
-                ...initialParameters
+                ...initialParameters,
+                // If there are pre-selected words, we must keep the list of available PoS in sync with the PoS listed in pre-selected words.
+                ...(wordsSelectedForExercises.length > 0)
+                    ? {partsOfSpeech: getRelevantPoSFromWordSelection(wordsSelectedForExercises)}
+                    : {}
             })
         })
         setAcceptedParameters(false)
@@ -176,7 +181,7 @@ export const Practice = (props: PracticeProps) => {
                         justifyContent={'center'}
                         item={true}
                         xs={12}
-                        lg={8}
+                        lg={7}
                     >
                         <Grid
                             item={true}
@@ -210,7 +215,7 @@ export const Practice = (props: PracticeProps) => {
                             container={true}
                             item={true}
                             xs={12}
-                            lg={4}
+                            lg={5}
                         >
                             <ExerciseParameterSelector
                                 availableLanguages={user.languages}
@@ -250,7 +255,7 @@ export const Practice = (props: PracticeProps) => {
                                     <LinearIndeterminate/>
                                     :
                                     <ExerciseCard
-                                        type={parameters.type}
+                                        type={exercises[currentCardIndex].type}
                                         currentCardIndex={currentCardIndex}
                                         setCurrentCardIndex={(value: number) => {
                                             setCurrentCardIndex(value)

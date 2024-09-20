@@ -7,10 +7,11 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import React from "react";
 import {useTranslation} from "react-i18next";
 import {shuffleArray} from "./generalUseFunctions";
+import {ExerciseType} from "../ts/enums";
 
 
 interface ExerciseCardProps {
-    type: 'Multiple-Choice' | 'Text-Input',
+    type: ExerciseType,
     currentCardIndex: number,
     setCurrentCardIndex: (index: number) => void
     exercises: any[],
@@ -21,9 +22,9 @@ interface ExerciseCardProps {
 export const ExerciseCard = (props: ExerciseCardProps) => {
     const { t } = useTranslation(['partOfSpeechCases'])
 
-    const getOptionsToDisplay = (type: 'Multiple-Choice' | 'Text-Input') => {
+    const getOptionsToDisplay = (type: ExerciseType) => {
         switch(type){
-            case("Multiple-Choice"): {
+            case(ExerciseType["Multiple-Choice"]): {
                 let allOptions = [
                     props.exercises[props.currentCardIndex].matchingTranslations.itemB.value,
                     ...props.exercises[props.currentCardIndex].matchingTranslations.itemB.otherValues
@@ -33,14 +34,13 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                     <Grid
                         container={true}
                         item={true}
-                        // direction={'column'}
                         alignItems={'center'}
                         justifyContent={'center'}
-                        // justifyContent={'flex-origin'}
                     >
-                        {allOptions.map((option: string) => {
+                        {allOptions.map((option: string, index: number) => {
                             return(
                                 <Grid
+                                    key={index}
                                     item={true}
                                     xs={12}
                                     sx={{
@@ -60,7 +60,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                     </Grid>
                 )
             }
-            case("Text-Input"): {
+            case(ExerciseType["Text-Input"]): {
                 return(
                     <Grid
                         item={true}
@@ -96,7 +96,6 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
             container={true}
             justifyContent={'center'}
             alignItems={'center'}
-            // direction={'column'}
             item={true}
             xs={12}
             sm={10}
@@ -108,12 +107,10 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
             }}
         >
             {/*BUTTON BACK*/}
-            {/* TODO: there will be different types of cards (depending on exercise type: multiple-choice, text-input, etc.*/}
             <Grid
                 container={true}
                 item={true}
                 justifyContent={'center'}
-                // rowSpacing={3}
                 alignItems={'center'}
                 xs={'auto'}
                 sx={{
@@ -125,7 +122,6 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                     xs={true}
                     sx={{
                         border: '4px solid yellow',
-                        // width: '40px'
                     }}
                 >
                     <IconButton
@@ -143,7 +139,6 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                         <ChevronLeftIcon
                             sx={{
                                 fontSize: 100,
-                                // width: '40px'
                                 marginLeft: '-35px',
                                 marginRight: '-35px'
                             }}
@@ -314,7 +309,6 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                 container={true}
                 item={true}
                 justifyContent={'center'}
-                // rowSpacing={3}
                 alignItems={'center'}
                 xs={'auto'}
                 sx={{
@@ -326,7 +320,6 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                     xs={true}
                     sx={{
                         border: '4px solid yellow',
-                        // width: '40px'
                     }}
                 >
                     <IconButton
@@ -344,7 +337,6 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                         <ChevronRightIcon
                             sx={{
                                 fontSize: 100,
-                                // width: '40px'
                                 marginLeft: '-35px',
                                 marginRight: '-35px'
                             }}

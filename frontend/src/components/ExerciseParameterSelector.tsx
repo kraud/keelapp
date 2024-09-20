@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react"
-import {Grid, InputAdornment, Typography} from "@mui/material"
+import {Grid, Typography} from "@mui/material"
 import {DnDLanguageOrderSelector} from "./DnDLanguageOrderSelector";
-import {Lang, PartOfSpeech} from "../ts/enums";
+import {ExerciseType, Lang, PartOfSpeech} from "../ts/enums";
 import {useTranslation} from "react-i18next";
 import {CheckboxGroupWithHook, CheckboxItemData} from "./CheckboxGroupFormHook";
 import {useForm} from "react-hook-form";
@@ -27,9 +27,6 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
     const [allSelectedLanguages, setAllSelectedLanguages] = useState<string[]>(props.availableLanguages)
     // Languages currently not displayed as columns on the table
     const [otherLanguages, setOtherLanguages] = useState<string[]>([])
-    const [amountOfExercises, setAmountOfExercises] = useState<number>(10)
-    const [selectedPartOfSpeech, setSelectedPartOfSpeech] = useState<PartOfSpeech[]>(props.defaultParameters.partsOfSpeech)
-    const [typeOfExercise, setTypeOfExercise] = useState<string>('Text-Input') // TODO: should be an enum
 
 
     const validationSchema = Yup.object().shape({
@@ -41,7 +38,7 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                     return((arr !== undefined) && (arr.length > 0))
                 },
             }),
-        amountExercises: Yup
+        amountOfExercises: Yup
             .number()
             .required('Amount is required value')
             .typeError("Please enter a valid number")
@@ -59,22 +56,24 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
             ),
     })
 
-    useEffect(() => {
-        props.onParametersChange({
+    const runOnParametersChange = (newParameter?: Object) => {
+        const updatedData = {
             languages: allSelectedLanguages as Lang[],
-            partsOfSpeech: selectedPartOfSpeech, // TODO: keep adding PoS as we create the GroupedCategories JSON objects
-            amountOfExercises: amountOfExercises,
+            partsOfSpeech: getPartsOfSpeechValueFromOptionElements(getValues('partsOfSpeech')),
+            amountOfExercises: parseInt(getValues('amountOfExercises'), 10),
             //@ts-ignore
-            type: typeOfExercise,
-            mode: 'Single-Try'
-        })
-    },[allSelectedLanguages, selectedPartOfSpeech, amountOfExercises, typeOfExercise])
+            type: getValues('type'),
+            mode: 'Single-Try',
+            ...newParameter // name must much a property from ExerciseParameters, so it only overrides that matching property
+        }
+        props.onParametersChange(updatedData as ExerciseParameters)
+    }
 
     const {
         control,
-        formState: { errors, isValid, isDirty }, setValue,
+        formState: { errors, isValid, isDirty }, setValue, getValues,
     } = useForm({
-        resolver: yupResolver(validationSchema), // TODO: create Schema later, to support PoS selection and exercise amount number
+        resolver: yupResolver(validationSchema),
         mode: "all", // Triggers validation/errors without having to submit
     })
 
@@ -82,10 +81,16 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
         const formattedOptions = listPoS.map((partOfSpeech: PartOfSpeech) => {
             return({
                 label: partOfSpeech,
-                value:PartOfSpeech[(partOfSpeech).toLowerCase()]
+                value: partOfSpeech
             })
         })
         return(formattedOptions)
+    }
+    const getPartsOfSpeechValueFromOptionElements = (listOptions: {value: string, label: string}[]) => {
+        const valueList = listOptions.map((option: {value: string, label: string}) => {
+            return(option.value)
+        })
+        return(valueList)
     }
 
     const setValuesInForm = () => {
@@ -97,12 +102,11 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                 shouldTouch: true
             }
         )
-        // setSelectedPartOfSpeech(props.defaultParameters.partsOfSpeech)
     }
 
     useEffect(() => {
         setValuesInForm()
-    },[props.defaultParameters])
+    },[props.defaultParameters.partsOfSpeech])
 
     return(
         <Grid
@@ -156,7 +160,10 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                 >
                     <DnDLanguageOrderSelector
                         allSelectedItems={allSelectedLanguages}
-                        setAllSelectedItems={(languages: string[]) => setAllSelectedLanguages(languages)}
+                        setAllSelectedItems={(languages: string[]) => {
+                            setAllSelectedLanguages(languages)
+                            runOnParametersChange({languages: languages})
+                        }}
                         otherItems={otherLanguages}
                         setOtherItems={(languages: string[]) => setOtherLanguages(languages)}
                         direction={"horizontal"}
@@ -181,13 +188,10 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                         name={"partsOfSpeech"}
                         options={getPartsOfSpeechOptionElements(props.availablePoS)}
                         defaultValue={[]} // add default items if pre-selected words?
+                        // defaultValue={getPartsOfSpeechOptionElements(props.defaultParameters.partsOfSpeech)}
                         errors={errors.partsOfSpeech}
                         onChange={(selectionPoS: CheckboxItemData[]) => {
-                            setSelectedPartOfSpeech(
-                                selectionPoS.map((selection) => {
-                                    return(selection.value)
-                                })
-                            )
+                            runOnParametersChange()
                         }}
                         fullWidth={false}
                         disabled={props.disabled!!}
@@ -204,16 +208,16 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                     <TextInputFormWithHook
                         control={control}
                         label={'Amount of exercises'}
-                        name={"amountExercises"}
-                        defaultValue={"10"}
+                        name={"amountOfExercises"}
+                        defaultValue={(props.defaultParameters.amountOfExercises)}
                         disabled={props.disabled!!}
-                        errors={errors.amountExercises}
+                        errors={errors.amountOfExercises}
                         onChange={(value: any) => {
-                            setAmountOfExercises(parseInt(value, 10))
+                            const newAmount = parseInt(value, 10)
+                            runOnParametersChange({amountOfExercises: newAmount})
                         }}
                         fullWidth={true}
                         type={'number'}
-                        // disabled={props.displayOnly}
                     />
                 </Grid>
                 {/* TYPE OF EXERCISES */}
@@ -228,11 +232,11 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                         control={control}
                         label={"Type"}
                         name={"type"}
-                        options={['Multiple-Choice', 'Text-Input']}
-                        defaultValue={"Text-Input"}
+                        options={Object.values(ExerciseType)}
+                        defaultValue={ExerciseType["Text-Input"]}
                         errors={errors.type}
-                        onChange={(value: any) => {
-                            setTypeOfExercise(value)
+                        onChange={(value: ExerciseType) => {
+                            runOnParametersChange({type: value})
                         }}
                         fullWidth={false}
                         disabled={props.disabled!!}

@@ -13,7 +13,7 @@ interface CheckboxGroupWithHookProps {
     name: string // Necessary to identify component from a form in React-Hook-Form
     groupLabel: string,
     options: CheckboxItemData[]
-    defaultValue: [],
+    defaultValue: any[],
     errors?: any,
     fullWidth?: boolean
     currentValues?: CheckboxItemData[]
@@ -59,7 +59,6 @@ export const CheckboxGroupWithHook = (props: CheckboxGroupWithHookProps) => {
         <FormGroup
             sx={{}}
             row
-            // name={props.name}
         >
             <Controller
                 name={props.name}
