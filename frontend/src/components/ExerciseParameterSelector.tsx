@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react"
 import {Grid, Typography} from "@mui/material"
 import {DnDLanguageOrderSelector} from "./DnDLanguageOrderSelector";
-import {ExerciseType, Lang, PartOfSpeech} from "../ts/enums";
+import {CardTypeSelection, ExerciseTypeSelection, Lang, PartOfSpeech} from "../ts/enums";
 import {useTranslation} from "react-i18next";
 import {CheckboxGroupWithHook, CheckboxItemData} from "./CheckboxGroupFormHook";
 import {useForm} from "react-hook-form";
@@ -63,6 +63,7 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
             amountOfExercises: parseInt(getValues('amountOfExercises'), 10),
             //@ts-ignore
             type: getValues('type'),
+            multiLang: getValues('multiLang'),
             mode: 'Single-Try',
             ...newParameter // name must much a property from ExerciseParameters, so it only overrides that matching property
         }
@@ -232,16 +233,42 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                         control={control}
                         label={"Type"}
                         name={"type"}
-                        options={Object.values(ExerciseType)}
-                        defaultValue={ExerciseType["Text-Input"]}
+                        options={Object.values(ExerciseTypeSelection)}
+                        defaultValue={ExerciseTypeSelection["Text-Input"]}
                         errors={errors.type}
-                        onChange={(value: ExerciseType) => {
+                        onChange={(value: ExerciseTypeSelection) => {
                             runOnParametersChange({type: value})
                         }}
                         fullWidth={false}
                         disabled={props.disabled!!}
                         labelTooltipMessage={
                             'This will determine the type of card to be displayed'
+                        }
+                        disableUnselect={true}
+                    />
+                </Grid>
+                {/* TYPE OF CARDS */}
+                <Grid
+                    item={true}
+                    xs={12}
+                    sx={{
+                        border: '2px solid red'
+                    }}
+                >
+                    <RadioGroupWithHook
+                        control={control}
+                        label={"Languages per card"}
+                        name={"multiLang"}
+                        options={Object.values(CardTypeSelection)}
+                        defaultValue={CardTypeSelection["Random"]}
+                        errors={errors.multiLang}
+                        onChange={(value: ExerciseTypeSelection) => {
+                            runOnParametersChange({multiLang: value})
+                        }}
+                        fullWidth={false}
+                        disabled={props.disabled!!}
+                        labelTooltipMessage={
+                            'This will determine the amount of languages that will be part of the exercises displayed in an exercise card'
                         }
                         disableUnselect={true}
                     />

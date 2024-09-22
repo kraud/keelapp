@@ -7,11 +7,11 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import React from "react";
 import {useTranslation} from "react-i18next";
 import {shuffleArray} from "./generalUseFunctions";
-import {ExerciseType} from "../ts/enums";
+import {ExerciseTypeSelection} from "../ts/enums";
 
 
 interface ExerciseCardProps {
-    type: ExerciseType,
+    type: ExerciseTypeSelection,
     currentCardIndex: number,
     setCurrentCardIndex: (index: number) => void
     exercises: any[],
@@ -22,9 +22,9 @@ interface ExerciseCardProps {
 export const ExerciseCard = (props: ExerciseCardProps) => {
     const { t } = useTranslation(['partOfSpeechCases'])
 
-    const getOptionsToDisplay = (type: ExerciseType) => {
+    const getOptionsToDisplay = (type: ExerciseTypeSelection) => {
         switch(type){
-            case(ExerciseType["Multiple-Choice"]): {
+            case(ExerciseTypeSelection["Multiple-Choice"]): {
                 let allOptions = [
                     props.exercises[props.currentCardIndex].matchingTranslations.itemB.value,
                     ...props.exercises[props.currentCardIndex].matchingTranslations.itemB.otherValues
@@ -60,7 +60,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                     </Grid>
                 )
             }
-            case(ExerciseType["Text-Input"]): {
+            case(ExerciseTypeSelection["Text-Input"]): {
                 return(
                     <Grid
                         item={true}

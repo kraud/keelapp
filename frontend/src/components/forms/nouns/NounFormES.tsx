@@ -5,7 +5,7 @@ import {Grid} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {TextInputFormWithHook} from "../../TextInputFormHook";
 import {WordItem, TranslationItem} from "../../../ts/interfaces";
-import {Lang, NounCases, VerbCases} from "../../../ts/enums";
+import {GenderDE, GenderES, Lang, NounCases, VerbCases} from "../../../ts/enums";
 import {getDisabledInputFieldDisplayLogic, getWordByCase} from "../commonFunctions";
 import {RadioGroupWithHook} from "../../RadioGroupFormHook";
 import {AutocompleteButtonWithStatus} from "../AutocompleteButtonWithStatus";
@@ -50,7 +50,7 @@ export function NounFormES(props: NounFormESProps) {
 
     const [singularWord, setSingularWord] = useState("")
     const [pluralWord, setPluralWord] = useState("")
-    const [genderWord, setGenderWord] = useState<"el"|"la"|"">("")
+    const [genderWord, setGenderWord] = useState<"el"|"la"|"el/la"|"">("")
 
     useEffect(() => {
         const currentCases: WordItem[] = [
@@ -208,7 +208,7 @@ export function NounFormES(props: NounFormESProps) {
                             control={control}
                             label={"Gender"}
                             name={"gender"}
-                            options={["el", "la", "el/la"]}
+                            options={[GenderES.M, GenderES.F, GenderES.N]}
                             defaultValue={""}
                             errors={errors.gender}
                             onChange={(value: any) => {

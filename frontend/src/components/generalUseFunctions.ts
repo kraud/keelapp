@@ -1,4 +1,4 @@
-import {ExerciseType, Lang, PartOfSpeech} from "../ts/enums";
+import {ExerciseTypeSelection, Lang, PartOfSpeech} from "../ts/enums";
 import {
     FilterItem,
     FriendshipData,

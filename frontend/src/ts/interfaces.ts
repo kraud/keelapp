@@ -186,7 +186,7 @@ export interface EstonianAPIRequest {
 
 export type EquivalentTranslationValues = {
     partOfSpeech: PartOfSpeech, // should match the one on WordData
-    multiLang?: boolean,
+    onlyMultiLanguage?: boolean,
     type?: 'Multiple-Choice' | 'Text-Input',
 } & (TextInput | MultipleChoice)
 

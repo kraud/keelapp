@@ -6,7 +6,7 @@ import globalTheme from "../theme/theme";
 import {Grid, Typography} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import LinearIndeterminate from "../components/Spinner";
-import {ExerciseType, Lang, PartOfSpeech} from "../ts/enums";
+import {CardTypeSelection, ExerciseTypeSelection, Lang, PartOfSpeech} from "../ts/enums";
 import {ExerciseParameterSelector} from "../components/ExerciseParameterSelector";
 import {toast} from "react-toastify";
 import {
@@ -26,7 +26,8 @@ export interface ExerciseParameters {
     languages: Lang[],
     partsOfSpeech: PartOfSpeech[],
     amountOfExercises: number,
-    type: ExerciseType,
+    multiLang: CardTypeSelection,
+    type: ExerciseTypeSelection,
     // type: 'Multiple-Choice' | 'Text-Input' | 'Random',
     mode: 'Single-Try' | 'Multiple-Tries'
     preSelectedWords?: any[] // simple-word data
@@ -48,7 +49,8 @@ export const Practice = (props: PracticeProps) => {
         languages: user.languages as Lang[],
         partsOfSpeech: initialListOfPoS,
         amountOfExercises: 10,
-        type: ExerciseType['Text-Input'],
+        multiLang: CardTypeSelection['Random'], // By default, exercises will include exercise cards with single and multi languages exercises
+        type: ExerciseTypeSelection['Text-Input'],
         mode: 'Single-Try'
     }
 
@@ -105,7 +107,7 @@ export const Practice = (props: PracticeProps) => {
             return({
                 ...prevState,
                 ...initialParameters,
-                // If there are pre-selected words, we must keep the list of available PoS in sync with the PoS listed in pre-selected words.
+                // If there are pre-selected words, we must keep the list of available PoS in-sync with the PoS listed in pre-selected words.
                 ...(wordsSelectedForExercises.length > 0)
                     ? {partsOfSpeech: getRelevantPoSFromWordSelection(wordsSelectedForExercises)}
                     : {}

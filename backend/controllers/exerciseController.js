@@ -2,6 +2,8 @@ var mongoose = require('mongoose')
 const asyncHandler = require("express-async-handler")
 const {getWordsIdFromFollowedTagsByUserId} = require("./intermediary/userFollowingTagController")
 const Word = require("../models/wordModel")
+const {nounGroupedCategoriesMultiLanguage} = require("../utils/equivalentTranslations/multiLang/nouns");
+const {verbGroupedCategoriesMultiLanguage} = require("../utils/equivalentTranslations/multiLang/verbs");
 
 // Format returned by 'findEquivalentTranslations'
 // interface EquivalentTranslationValues {
@@ -21,199 +23,6 @@ const Word = require("../models/wordModel")
 // 			otherValues: string[],
 // 		}
 // 	}
-// }
-
-// NB! It is important that any language-case (key-value) pair is on the third level of the JSON object,
-// because the algorithm won't keep going down indefinitely
-const nounGroupedCategories = {
-    singular: {
-        nominative: {
-            "English": "singularEN",
-            "Spanish": "singularES",
-            "German": "singularNominativDE",
-            "Estonian": "singularNimetavEE",
-        },
-        accusative: {
-            "German": "singularAkkusativDE",
-            "Estonian": "singularOsastavEE",
-        },
-        genitive: {
-            "German": "singularGenitivDE",
-            "Estonian": "singularOmastavEE",
-        },
-        dative: {
-            "German": "singularDativDE",
-        },
-        // NB! We comment these out, because we can't compare genders directly between languages
-        // (not all female nouns in Spanish are also female in German, for example).
-        // We could make a special exercise case, where we pick both genders and both singular-nominative cases,
-        // and display them on the exercise card?
-        // gender: {
-        //     "Spanish": "genderES",
-        //     "German": "genderDE",
-        // }
-    },
-    plural: {
-        nominative: {
-            "English": "pluralEN",
-            "Spanish": "pluralES",
-            "German": "pluralNominativDE",
-            "Estonian": "pluralNimetavEE",
-        },
-        accusative: {
-            "German": "pluralAkkusativDE",
-            "Estonian": "pluralOsastavEE",
-        },
-        genitive: {
-            "German": "pluralGenitivDE",
-            "Estonian": "pluralOmastavEE",
-        },
-        dative: {
-            "German": "pluralDativDE",
-        }
-    }
-}
-
-// NB! It is important that any language-case (key-value) pair is on the third level of the JSON object,
-// because the algorithm won't keep going down indefinitely
-const verbGroupedCategories = {
-    present: {
-        firstSingular: {
-            "English": "simplePresent1sEN",
-            "Spanish": "indicativePresent1sES",
-            "German": "indicativePresent1sDE",
-            "Estonian": "kindelPresent1sEE",
-        },
-        secondSingular: {
-            "English": "simplePresent2sEN",
-            "Spanish": "indicativePresent2sES",
-            "German": "indicativePresent2sDE",
-            "Estonian": "kindelPresent2sEE",
-        },
-        thirdSingular: {
-            "English": "simplePresent3sEN",
-            "Spanish": "indicativePresent3sES",
-            "German": "indicativePresent3sDE",
-            "Estonian": "kindelPresent3sEE",
-        },
-        firstPlural: {
-            "English": "simplePresent1plEN",
-            "Spanish": "indicativePresent1plES",
-            "German": "indicativePresent1plDE",
-            "Estonian": "kindelPresent1plEE",
-        },
-        thirdPlural: {
-            "English": "simplePresent3plEN",
-            "Spanish": "indicativePresent3plES",
-            "German": "indicativePresent3plDE",
-            "Estonian": "kindelPresent3plEE",
-        }
-    },
-    past: {
-        firstSingular: {
-            "English": "simplePast1sEN",
-            "Spanish": "indicativePerfectSimplePast1sES",
-            "German": "indicativeSimplePast1sDE",
-            "Estonian": "kindelSimplePast1sEE",
-        },
-        secondSingular: {
-            "English": "simplePast2sEN",
-            "Spanish": "indicativePerfectSimplePast2sES",
-            "German": "indicativeSimplePast2sDE",
-            "Estonian": "kindelSimplePast2sEE",
-        },
-        thirdSingular: {
-            "English": "simplePast3sEN",
-            "Spanish": "indicativePerfectSimplePast3sES",
-            "German": "indicativeSimplePast3sDE",
-            "Estonian": "kindelSimplePast3sEE",
-        },
-        firstPlural: {
-            "English": "simplePast1plEN",
-            "Spanish": "indicativePerfectSimplePast1plES",
-            "German": "indicativeSimplePast1plDE",
-            "Estonian": "kindelSimplePast1plEE",
-        },
-        thirdPlural: {
-            "English": "simplePast3plEN",
-            "Spanish": "indicativePerfectSimplePast3plES",
-            "German": "indicativeSimplePast3plDE",
-            "Estonian": "kindelSimplePast3plEE",
-        }
-    },
-    future: {
-        firstSingular: {
-            "English": "simpleFuture1sEN",
-            "Spanish": "indicativeFuture1sES",
-            "German": "indicativeSimpleFuture1sDE",
-        },
-        secondSingular: {
-            "English": "simpleFuture2sEN",
-            "Spanish": "indicativeFuture2sES",
-            "German": "indicativeSimpleFuture2sDE",
-        },
-        thirdSingular: {
-            "English": "simpleFuture3sEN",
-            "Spanish": "indicativeFuture3sES",
-            "German": "indicativeSimpleFuture3sDE",
-        },
-        firstPlural: {
-            "English": "simpleFuture1plEN",
-            "Spanish": "indicativeFuture1plES",
-            "German": "indicativeSimpleFuture1plDE",
-        },
-        thirdPlural: {
-            "English": "simpleFuture3plEN",
-            "Spanish": "indicativeFuture3plES",
-            "German": "indicativeSimpleFuture3plDE",
-        }
-    }
-}
-
-// This function should return the amount required of exercises, by capturing them from as many different words as possible (randomly)
-// function getRequiredAmountOfExercises(
-//     exercisesByWord, // exercises are grouped by word
-//     amountOfExercises,
-// ) {
-//
-//     // These 2 boolean will never be both true simultaneously
-//     const requireMultipleExercisesPerWord = amountOfExercises > (exercisesByWord.length)
-//     const requireFewerExercisesPerWord = amountOfExercises < (exercisesByWord.length)
-//     // NB! if requireMultipleExercisesPerWord & requireFewerExercisesPerWord both false => same amount exercises as words
-//     let availableExercisesByWord = exercisesByWord // we will me removing items as we select them to be returned
-//     let filteredExercises = []
-//
-//     // TODO:
-//     //  if we need to return more than 1 per word (in case more exercises than words required)
-//     //  Logic: if amount requested exercises > amount items in matchingWordData => we need more than 1 exercise from some words until we match both amounts
-//     //  To do this, we'll get 1 exercise from each word first,
-//     //  and on the next pass we pick a word at random and get another exercise from it until we get enough (same logic as if 'requireFewerExercisesPerWord' true)
-//     if(requireMultipleExercisesPerWord){
-//         // first-pass:
-//         //      => we get one exercise per word => we can go through the full word-list in order (returned list will be shuffled before being returned)
-//         //      => exercises inside will be chosen randomly (and removed from that list, so we don't pick it more than once)
-//         // Nth-pass: (depending on 'amountOfExercises', we might need to do multiple passes through 'exercisesByWord' after the first pass, or maybe we won't even complete a second pass before matching 'amountOfExercises' and 'filteredExercises.length'
-//         //      => word from list is selected randomly (to avoid always pulling from the first items)
-//         //      => we get one exercise per word
-//         //      => exercises inside will be chosen randomly (and removed from that list, so we don't pick it more than once)
-//         //      => we stop when 'filteredExercises' length === 'amountOfExercises'
-//         // NB! we should go through words sequentially, when in random order, so we get at least one exercise from each word before getting another from a previously used word
-//     } else if(requireFewerExercisesPerWord){
-//         //  TODO:
-//         //   Alternative: if amount requested exercises < amount items in matchingWordData => not every word will return an exercise
-//         //   Because of this, we'll select words at random and get 1 exercise from each one
-//         // first-and-only-pass (same logic as Nth pass in 'requireMultipleExercisesPerWord: true'):
-//         //      => word from list is selected randomly (to avoid always pulling from the first items)
-//         //      => we get one exercise per word
-//         //      => exercises inside will be chosen randomly (and removed from that list, so we don't pick it more than once)
-//         //      => we stop when 'filteredExercises' length === 'amountOfExercises'
-//
-//     } else {
-//         // same amount exercises as words => one exercise per word
-//         // one pass => we get one translation per word (same logic as first-pass in 'requireMultipleExercisesPerWord: true')
-//     }
-//
-//     return(filteredExercises)
 // }
 
 
@@ -267,7 +76,7 @@ function getRequiredAmountOfExercises(
         filteredExercises = randomlySelectExercisesMultipleWords(availableExercisesByWord, amountOfExercises)
     } else if (requireFewerExercisesPerWord) {
         // Select random exercises from randomly picked words, stopping when the required amount is reached
-        shuffleArray(availableExercisesByWord); // Randomly shuffle word list
+        shuffleArray(availableExercisesByWord) // Randomly shuffle word list
         filteredExercises = randomlySelectExerciseByWord(availableExercisesByWord)
             .slice(0, amountOfExercises) // Take as many as needed
     } else {
@@ -278,10 +87,11 @@ function getRequiredAmountOfExercises(
     return filteredExercises
 }
 
-const getMCExercise = (itemA, itemB, partOfSpeech) => {
+const getMCExerciseMultiLang = (itemA, itemB, partOfSpeech) => {
     return({
         partOfSpeech: partOfSpeech,
         type: "Multiple-Choice",
+        multiLang: true,
         matchingTranslations: {
             itemA: {
                 language: itemA.language,
@@ -297,10 +107,11 @@ const getMCExercise = (itemA, itemB, partOfSpeech) => {
         }
     })
 }
-const getTIExercise = (itemA, itemB, partOfSpeech) => {
+const getTIExerciseMultiLang = (itemA, itemB, partOfSpeech) => {
     return({
         partOfSpeech: partOfSpeech,  // Ensure partOfSpeech is used
         type: "Text-Input",
+        multiLang: true,
         matchingTranslations: {
             itemA: {
                 language: itemA.language,
@@ -321,18 +132,18 @@ const getFormattedExercise = (type, itemA, itemB, partOfSpeech) => {
     // in case the format for the different type of exercises change a lot in the future
     switch(type) {
         case('Multiple-Choice'): {
-            return(getMCExercise(itemA, itemB, partOfSpeech))
+            return(getMCExerciseMultiLang(itemA, itemB, partOfSpeech))
         }
         case('Text-Input'): {
-            return(getTIExercise(itemA, itemB, partOfSpeech))
+            return(getTIExerciseMultiLang(itemA, itemB, partOfSpeech))
         }
         // TODO: potential additional type: 50%-50%?
         case('Random'): {
             const randomValue = (Math.floor(Math.random() * 10))%2
             if(randomValue === 1){
-                return(getMCExercise(itemA, itemB, partOfSpeech))
+                return(getMCExerciseMultiLang(itemA, itemB, partOfSpeech))
             } else {
-                return(getTIExercise(itemA, itemB, partOfSpeech))
+                return(getTIExerciseMultiLang(itemA, itemB, partOfSpeech))
             }
         }
 
@@ -357,6 +168,19 @@ const getFormattedExercise = (type, itemA, itemB, partOfSpeech) => {
     }
 }
 
+// Helper function to generate unique pairs of languages.
+// This must be done at a word-level because each one might have a different set of available languages,
+// depending on the translations assigned to it.
+function getUniqueLanguagePairs(languages) {
+    const pairs = [];
+    for (let i = 0; i < languages.length; i++) {
+        for (let j = i + 1; j < languages.length; j++) {
+            pairs.push([languages[i], languages[j]]);
+        }
+    }
+    return pairs
+}
+
 // This functions receives:
 // a single word, with all of its translations
 // a list of the languages that are relevant to the user
@@ -368,23 +192,12 @@ function findExercisesByEquivalentTranslations(
     exerciseType //  'Multiple-Choice' | 'Text-Input' | 'Random',
 ) {
 
-    // Helper function to generate unique pairs of languages.
-    // This must be done at a word-level because each one might have a different set of available languages,
-    // depending on the translations assigned to it.
-    function getUniqueLanguagePairs(langs) {
-        const pairs = [];
-        for (let i = 0; i < langs.length; i++) {
-            for (let j = i + 1; j < langs.length; j++) {
-                pairs.push([langs[i], langs[j]]);
-            }
-        }
-        return pairs
-    }
-
     // First, we get ALL stored languages per word
     const availableLanguages = wordData.translations.map(t => t.language);
     // Get the intersection of the user-required languages and the languages stored in wordData.translations
     const validLanguages = languages.filter(lang => availableLanguages.includes(lang))
+    // TODO: this is were single-lang path should split
+
     // Now we calculate all the possible unique pairs of the intersection-languages
     const languagePairs = getUniqueLanguagePairs(validLanguages)
     const equivalentValues = []
@@ -446,10 +259,10 @@ function findExercisesByEquivalentTranslations(
 const getGroupedCategories = (partOfSpeech) => {
     switch(partOfSpeech) {
         case('Noun'): {
-            return(nounGroupedCategories)
+            return(nounGroupedCategoriesMultiLanguage)
         }
         case('Verb'): {
-            return(verbGroupedCategories)
+            return(verbGroupedCategoriesMultiLanguage)
         }
         default: {
             return({})
@@ -489,11 +302,6 @@ const isOriginalValueFromThisTranslation = (fullListOfCases, originalCase, origi
             )
         })
     )
-    // console.log('listOfCasesRelatedToTranslation', listOfCasesRelatedToTranslation)
-    // console.log('originalCase', originalCase)
-    // console.log('check if included', listOfCasesRelatedToTranslation.includes(originalCase))
-    // console.log('===============================')
-    // return(listOfCasesRelatedToTranslation.includes(originalCase))
 }
 
 // This will always find other words that match the language for a Multiple-Choice-type exercise, IF THE OPTIONS EXIST. If not, the list will return as many options as available.
@@ -556,15 +364,11 @@ const getOtherValues = (targetLanguage, originalValue, originalCase, allMatching
 }
 
 const getMissingDataForMCExercises = (incompleteExercises, allMatchingWords, dataOrigin) => {
-    // const additionalOptionsByLanguageRequired = [] //  AdditionalOptionsRequired[]
-    // const additionalValues = getOptionalValuesFromWordsMatchingParameters(matchingWordData, additionalOptionsByLanguageRequired)
-    // const mergedListOfExercises = mergeExercisesWithAdditionalValues(matchingWordData, additionalValues)
 
-    // let exercisesWithFullData = [...incompleteExercises]
     // incomplete exercises, that we'll iterate over and improve the ones that are missing data (Multiple-Choice).
     // Not all items will be Multiple-Choice, in case user selected 'All' type, where each item is either 'Text-Input' or 'Multiple-Choice' at random.
     let exercisesWithFullData = incompleteExercises.map((exercise) => {
-        if(exercise.type === 'Multiple-Choice'){
+        if(exercise.type === 'Multiple-Choice'){ // TODO: (single-language)+(multiple-choice) will skip this, because we get data when creating the exercise
             return({
                 ...exercise,
                 matchingTranslations: {
@@ -594,7 +398,6 @@ const getMissingDataForMCExercises = (incompleteExercises, allMatchingWords, dat
 // @route   GET /api/exercises
 // @access  Private
 const getExercises = asyncHandler(async (req, res) => {
-    // const parameters = req.query.parameters.parameters
     const parameters = {
         ...req.query.parameters,
         amountOfExercises: parseInt(req.query.parameters.amountOfExercises, 10)

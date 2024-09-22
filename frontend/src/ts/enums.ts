@@ -420,6 +420,12 @@ export enum GenderDE {
     N = "das" // NEUTRAL
 }
 
+export enum GenderES {
+    M = "el", // MALE
+    F = "la", // FEMALE
+    N = "el/la" // NEUTRAL
+}
+
 export enum AuxVerbDE {
     H = "haben", // MALE
     S = "sein", // FEMALE
@@ -444,8 +450,14 @@ export enum MetricsType {
     TRANSLATIONS
 }
 
-export enum ExerciseType {
+export enum ExerciseTypeSelection {
     'Multiple-Choice' = 'Multiple-Choice',
     'Text-Input' = 'Text-Input',
+    'Random' = 'Random'
+}
+
+export enum CardTypeSelection {
+    'Multi-Language' = 'Multi-Language',
+    'Single-Language' = 'Single-Language',
     'Random' = 'Random'
 }
