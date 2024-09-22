@@ -1,22 +1,73 @@
 
 // NB! It is important that any language-case (key-value) pair is on the third level of the JSON object,
 // because the algorithm won't keep going down indefinitely
-import {GenderDE} from "../../../../frontend/src/ts/enums";
 
 const verbGroupedCategoriesSingleLanguage = {
-    Spanish: {
-        multipleChoice: {
+    "Spanish": {
+        "Multiple-Choice": {
+            regularity: {
+                "questionWord": "infinitiveNonFiniteSimpleES",
+                "correctValue": "regularityES",
+                "otherValues": ['regular', 'irregular'],
+                // "otherValues": [VerbRegularity.regular, VerbRegularity.irregular],
+            },
+        },
+        "Text-Input": {
+            participle: {
+                "questionWord": "infinitiveNonFiniteSimpleES",
+                "correctValue": "participleNonFiniteSimpleES",
+            },
+            gerund: {
+                "questionWord": "infinitiveNonFiniteSimpleES",
+                "correctValue": "gerundNonFiniteSimpleES",
+            },
+        },
+    },
+    "English": {
+        "Multiple-Choice": {
+            regularity: {
+                "questionWord": "simplePresent1sEN",
+                "correctValue": "regularityEN",
+                "otherValues": ['regular', 'irregular'],
+                // "otherValues": [VerbRegularity.regular, VerbRegularity.irregular],
+            },
+        },
+        "Text-Input": {
+            // categoryName: {
+            //     "questionWord": "",
+            //     "correctValue": "",
+            // },
+        },
+    },
+    "German": {
+        "Multiple-Choice": {
+            auxVerb: {
+                "questionWord": "infinitiveDE",
+                "correctValue": "auxVerbDE",
+                "otherValues": ['haben', 'sein'],
+                // "otherValues": [AuxVerbDE.H, AuxVerbDE.S],
+            },
+        },
+        "Text-Input": {
+            // categoryName: {
+            //     "questionWord": "",
+            //     "correctValue": "",
+            // },
+        },
+    },
+    "Estonian": {
+        "Multiple-Choice": {
             // categoryName: {
             //     "questionWord": "",
             //     "correctValue": "",
             //     "otherValues": [],
             // },
         },
-        textInput: {
-            participle: {
-                "questionWord": "infinitiveNonFiniteSimpleES",
-                "correctValue": "participleNonFiniteSimpleES",
-            },
+        "Text-Input": {
+            // categoryName: {
+            //     "questionWord": "",
+            //     "correctValue": "",
+            // },
         },
     },
 }

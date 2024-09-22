@@ -1,19 +1,20 @@
 
 // NB! It is important that any language-case (key-value) pair is on the third level of the JSON object,
 // because the algorithm won't keep going down indefinitely
-import {GenderDE} from "../../../../frontend/src/ts/enums";
 
 const nounGroupedCategoriesSingleLanguage = {
-    Spanish: {
-        multipleChoice: {
+    "Spanish": {
+        "Multiple-Choice": {
+            // TODO: should this be a list of exercises?
             gender: {
                 "questionWord": "singularES",
                 "correctValue": "genderES",
+                // TODO: should this be: ['N', 'F', 'N'] = > then we cast the value using enum?
                 "otherValues": ['el', 'la', 'el/la'], // we'll filter the options != to correct value
                 // "otherValues": [GenderDE.M, GenderDE.F, GenderDE.N],
             },
         },
-        textInput: {
+        "Text-Input": {
             // TODO: look into other cases to practice within noun-ES
             // categoryName: {
             //     "questionWord": "",
@@ -21,16 +22,17 @@ const nounGroupedCategoriesSingleLanguage = {
             // },
         },
     },
-    German: {
-        multipleChoice: {
+    "German": {
+        "Multiple-Choice": {
             gender: {
                 "questionWord": "singularNominativDE",
                 "correctValue": "genderDE",
+                // TODO: should this be: ['N', 'F', 'N'] = > then we cast the value using enum?
                 "otherValues": ['der', 'die', 'das'], // we'll filter the options != to correct value
                 // "otherValues": [GenderDE.M, GenderDE.F, GenderDE.N],
             },
         },
-        textInput: {
+        "Text-Input": {
             // TODO: look into other cases to practice within noun-DE
             // categoryName: {
             //     "questionWord": "",
@@ -38,8 +40,8 @@ const nounGroupedCategoriesSingleLanguage = {
             // },
         },
     },
-    Estonian: {
-        multipleChoice: {
+    "Estonian": {
+        "Multiple-Choice": {
             // TODO: look into other cases to practice within noun-EE
             // categoryName: {
             //     "questionWord": "",
@@ -47,11 +49,27 @@ const nounGroupedCategoriesSingleLanguage = {
             //     "otherValues": [],
             // },
         },
-        textInput: {
+        "Text-Input": {
             shortForm: {
-                "questionWord": "singularNominativDE",
+                "questionWord": "singularNimetavEE",
                 "correctValue": "shortFormEE",
             },
+        },
+    },
+    "English": {
+        "Multiple-Choice": {
+            // TODO: look into other cases to practice within noun-EE
+            // categoryName: {
+            //     "questionWord": "",
+            //     "correctValue": "",
+            //     "otherValues": [],
+            // },
+        },
+        "Text-Input": {
+            // categoryName: {
+            //     "questionWord": "",
+            //     "correctValue": "",
+            // },
         },
     },
     // TODO: look into cases to practice within noun-EN? (irregular plural?)

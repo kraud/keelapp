@@ -5,7 +5,7 @@ import {Grid} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {TextInputFormWithHook} from "../../TextInputFormHook";
 import {TranslationItem, WordItem} from "../../../ts/interfaces";
-import {Lang, VerbCases, verbRegularity} from "../../../ts/enums";
+import {Lang, VerbCases, VerbRegularity} from "../../../ts/enums";
 import {getDisabledInputFieldDisplayLogic, getWordByCase} from "../commonFunctions";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../../../app/store";
@@ -766,7 +766,7 @@ export function VerbFormES(props: VerbFormESProps) {
                                     control={control}
                                     label={"Regularity"}
                                     name={"regularity"}
-                                    options={[verbRegularity.regular, verbRegularity.irregular]}
+                                    options={[VerbRegularity.regular, VerbRegularity.irregular]}
                                     defaultValue={""}
                                     errors={errors.auxiliaryVerb}
                                     onChange={(value: any) => {

@@ -26,9 +26,8 @@ export interface ExerciseParameters {
     languages: Lang[],
     partsOfSpeech: PartOfSpeech[],
     amountOfExercises: number,
-    multiLang: CardTypeSelection,
-    type: ExerciseTypeSelection,
-    // type: 'Multiple-Choice' | 'Text-Input' | 'Random',
+    multiLang: CardTypeSelection, // 'Multi-Language' | 'Single-Language' | 'Random',
+    type: ExerciseTypeSelection, //  'Multiple-Choice' | 'Text-Input' | 'Random',
     mode: 'Single-Try' | 'Multiple-Tries'
     preSelectedWords?: any[] // simple-word data
 }
@@ -239,6 +238,7 @@ export const Practice = (props: PracticeProps) => {
                             />
                         </Grid>
                     : (isLoadingExercises && !isSuccessExercises)
+                        // TODO: this is not displayed => fix later
                         ? <LinearIndeterminate/>
                         :
                             <Grid
@@ -257,7 +257,7 @@ export const Practice = (props: PracticeProps) => {
                                     <LinearIndeterminate/>
                                     :
                                     <ExerciseCard
-                                        type={exercises[currentCardIndex].type}
+                                        type={exercises[currentCardIndex]?.type}
                                         currentCardIndex={currentCardIndex}
                                         setCurrentCardIndex={(value: number) => {
                                             setCurrentCardIndex(value)

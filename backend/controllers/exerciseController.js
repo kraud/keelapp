@@ -4,6 +4,8 @@ const {getWordsIdFromFollowedTagsByUserId} = require("./intermediary/userFollowi
 const Word = require("../models/wordModel")
 const {nounGroupedCategoriesMultiLanguage} = require("../utils/equivalentTranslations/multiLang/nouns");
 const {verbGroupedCategoriesMultiLanguage} = require("../utils/equivalentTranslations/multiLang/verbs");
+const {nounGroupedCategoriesSingleLanguage} = require("../utils/equivalentTranslations/singleLang/nouns");
+const {verbGroupedCategoriesSingleLanguage} = require("../utils/equivalentTranslations/singleLang/verbs");
 
 // Format returned by 'findEquivalentTranslations'
 // interface EquivalentTranslationValues {
@@ -127,7 +129,60 @@ const getTIExerciseMultiLang = (itemA, itemB, partOfSpeech) => {
     })
 }
 
-const getFormattedExercise = (type, itemA, itemB, partOfSpeech) => {
+const getMCExerciseSingleLang = (itemA, itemB, partOfSpeech) => {
+    return({
+        partOfSpeech: partOfSpeech,
+        type: "Multiple-Choice",
+        multiLang: false,
+        matchingTranslations: {
+            itemA: {
+                language: itemA.language,
+                case: itemA.case,
+                value: itemA.value,
+            },
+            itemB: {
+                language: itemB.language,
+                case: itemB.case,
+                value: itemB.value,
+                otherValues: itemB.otherValues // for Single-Lang these options are hardcoded
+            }
+        }
+    })
+}
+
+const getTIExerciseSingleLang = (itemA, itemB, partOfSpeech) => {
+    return({
+        partOfSpeech: partOfSpeech,
+        type: "Text-Input",
+        multiLang: false,
+        matchingTranslations: {
+            itemA: {
+                language: itemA.language,
+                case: itemA.case,
+                value: itemA.value,
+            },
+            itemB: {
+                language: itemB.language,
+                case: itemB.case,
+                value: itemB.value
+            }
+        }
+    })
+}
+
+const runRandomFunction = (functionA, functionB) => {
+    // get random number between 0-10 and check if even or odd
+    const randomValue = (Math.floor(Math.random() * 10))%2
+    if(randomValue === 1){
+        return(functionA)
+    } else {
+        return(functionB)
+    }
+}
+
+// This returns a single exercise object, with the correct fields, according to:
+// type: 'Multiple-Choice' (should include array for other -incorrect- options) or 'Text-Input' (will only include values for question and answer to be typed)
+const getFormattedExerciseForMultiLang = (type, itemA, itemB, partOfSpeech) => {
     // Currently, the difference between the types is only 2 fields, but We create it this way
     // in case the format for the different type of exercises change a lot in the future
     switch(type) {
@@ -139,18 +194,57 @@ const getFormattedExercise = (type, itemA, itemB, partOfSpeech) => {
         }
         // TODO: potential additional type: 50%-50%?
         case('Random'): {
-            const randomValue = (Math.floor(Math.random() * 10))%2
-            if(randomValue === 1){
-                return(getMCExerciseMultiLang(itemA, itemB, partOfSpeech))
-            } else {
-                return(getTIExerciseMultiLang(itemA, itemB, partOfSpeech))
-            }
+            return(
+                runRandomFunction(
+                    getMCExerciseMultiLang(itemA, itemB, partOfSpeech),
+                    getTIExerciseMultiLang(itemA, itemB, partOfSpeech)
+                )
+            )
         }
 
         default: { // 'Other?'
             return({
-                partOfSpeech: partOfSpeech, // Ensure partOfSpeech is used
+                partOfSpeech: partOfSpeech,
                 type: "Other",
+                multiLang: true,
+                matchingTranslations: {
+                    itemA: {
+                        language: itemA.language,
+                        case: itemA.case,
+                        value: itemA.value,
+                    },
+                    itemB: {
+                        language: itemB.language,
+                        case: itemB.case,
+                        value: itemB.value,
+                    }
+                }
+            })
+        }
+    }
+}
+
+// This returns a single exercise object, with the correct fields, according to:
+// type: 'Multiple-Choice' (should include array for other -incorrect- options) or 'Text-Input' (will only include values for question and answer to be typed)
+const getFormattedExerciseForSingleLang = (type, itemA, itemB, partOfSpeech) => {
+    // Currently, the difference between the types is only 2 fields, but We create it this way
+    // in case the format for the different type of exercises change a lot in the future
+    switch(type) {
+        case('Multiple-Choice'): {
+            return(getMCExerciseSingleLang(itemA, itemB, partOfSpeech))
+        }
+        case('Text-Input'): {
+            return(getTIExerciseSingleLang(itemA, itemB, partOfSpeech))
+        }
+        // NB! single-lang exercises are not designed to work as both Multiple-Choice or Text-Input,
+        //  so for 'random-type' we create all the exercises possible from the fixed cases, and random selection is made later.
+
+
+        default: { // 'Other?'
+            return({
+                partOfSpeech: partOfSpeech,
+                type: "Other",
+                multiLang: false,
                 matchingTranslations: {
                     itemA: {
                         language: itemA.language,
@@ -181,67 +275,55 @@ function getUniqueLanguagePairs(languages) {
     return pairs
 }
 
-// This functions receives:
-// a single word, with all of its translations
-// a list of the languages that are relevant to the user
-// the corresponding grouped-categories relevant to the PoS of the word.
-// This functions returns all the possible exercises between the translations associated with this word
-function findExercisesByEquivalentTranslations(
+
+function calculateSingleLanguageExercises(
+    validLanguages,
     wordData,
-    languages,
-    exerciseType //  'Multiple-Choice' | 'Text-Input' | 'Random',
+    exerciseType
 ) {
+    let calculatedExercises = []
+    const groupedCategories = getGroupedCategories(wordData.partOfSpeech, false)
 
-    // First, we get ALL stored languages per word
-    const availableLanguages = wordData.translations.map(t => t.language);
-    // Get the intersection of the user-required languages and the languages stored in wordData.translations
-    const validLanguages = languages.filter(lang => availableLanguages.includes(lang))
-    // TODO: this is were single-lang path should split
+    if(groupedCategories !== undefined) { // will only be 'undefined' for PoS that have no exercise-file defined
+        // Iterate over each valid language
+        validLanguages.forEach((validLanguage) => {
+            const exercisesByRequestedType = (exerciseType === 'Random')
+            // if random => we must create exercises for all types and then filter at the end randomly =>
+            ? groupedCategories[validLanguage]
+            // if not random => we only get exercises for the type
+            : {[exerciseType]: (groupedCategories[validLanguage])[exerciseType]} // NB! This might break for-loop logic, because we're already "one level down"
 
-    // Now we calculate all the possible unique pairs of the intersection-languages
-    const languagePairs = getUniqueLanguagePairs(validLanguages)
-    const equivalentValues = []
+            // Iterate over the types ('multipleChoice', 'textInput') of exercises stored for this combination of PoS+language
+            for (const typeOfExercise in exercisesByRequestedType) {
+                const exerciseList = exercisesByRequestedType[typeOfExercise]
 
-    // TODO: we currently only have groupedCategories for pairs of languages,
-    //  we need to to create groupedCategories for single-translation exercises as well,
-    //  this way we can create better exercises when answers are multiple-choice in PoS like Nouns (which in Spanish/English only have 2 fields)
-    const groupedCategories = getGroupedCategories(wordData.partOfSpeech)
-
-    // Iterate over each linguistic group (e.g., singular/plural for nouns, present/past for verbs)
-    for (const group in groupedCategories) {
-        const groupCategories = groupedCategories[group]
-
-        // Iterate over each case within the group (e.g., nominative, accusative)
-        for (const caseType in groupCategories) {
-            // TODO: there should be a list of cases to ignore (gender, regularity, etc.) => simply do not include them in groupedCategories object
-            const languageCases = groupCategories[caseType]
-
-            // Now check each pair of languages for matching cases
-            for (const [langA, langB] of languagePairs) {
-                if (languageCases[langA] && languageCases[langB]) {
-                    const itemA = wordData.translations
-                        .find(t => t.language === langA)
-                        ?.cases.find(c => c.caseName === languageCases[langA])
-
-                    const itemB = wordData.translations
-                        .find(t => t.language === langB)
-                        ?.cases.find(c => c.caseName === languageCases[langB])
-
-                    // If both languages have a matching word for this case, add to results
-                    if (itemA && itemB) {
+                for (const exercise in exerciseList) {
+                    const qw = wordData.translations
+                        .find(t => t.language === validLanguage)
+                        ?.cases.find(c => c.caseName === exerciseList[exercise].questionWord)
+                    const cv = wordData.translations
+                        .find(t => t.language === validLanguage)
+                        ?.cases.find(c => c.caseName === exerciseList[exercise].correctValue)
+                    if(
+                        (qw !== undefined) &&
+                        (cv !== undefined)
+                    ) {
                         const dataItemA = {
-                            language: langA,
-                            case: languageCases[langA],
-                            value: itemA.word
+                            language: validLanguage,
+                            case: exerciseList[exercise].questionWord,
+                            value: qw.word
                         }
                         const dataItemB = {
-                            language: langB,
-                            case: languageCases[langB],
-                            value: itemB.word
+                            language: validLanguage,
+                            case: exerciseList[exercise].correctValue,
+                            value: cv.word,
+                            otherValues: (typeOfExercise === 'Multiple-Choice')
+                                ? exerciseList[exercise].otherValues
+                                : []
                         }
-                        equivalentValues.push(
-                            getFormattedExercise(
-                                exerciseType,
+                        calculatedExercises.push(
+                            getFormattedExerciseForSingleLang(
+                                typeOfExercise,
                                 dataItemA,
                                 dataItemB,
                                 wordData.partOfSpeech || ""
@@ -250,22 +332,153 @@ function findExercisesByEquivalentTranslations(
                     }
                 }
             }
+        })
+    }
+
+
+    return(calculatedExercises)
+}
+
+function calculateMultiLanguageExercises(
+    validLanguages,
+    wordData,
+    exerciseType
+) {
+    let calculatedExercises = []
+    // Now we calculate all the possible unique pairs of the intersection-languages
+    const languagePairs = getUniqueLanguagePairs(validLanguages)
+    const groupedCategories = getGroupedCategories(wordData.partOfSpeech, true)
+
+    if(groupedCategories !== undefined) { // will only be 'undefined' for PoS that have no exercise-file defined
+        // Iterate over each linguistic group (e.g., singular/plural for nouns, present/past for verbs)
+        for (const group in groupedCategories) {
+            const groupCategories = groupedCategories[group]
+
+            // Iterate over each case within the group (e.g., nominative, accusative)
+            for (const caseType in groupCategories) {
+                const casesByLanguage = groupCategories[caseType]
+
+                // Now check each pair of languages for matching cases
+                for (const [langA, langB] of languagePairs) {
+                    if (casesByLanguage[langA] && casesByLanguage[langB]) {
+                        const itemA = wordData.translations
+                            .find(t => t.language === langA)
+                            ?.cases.find(c => c.caseName === casesByLanguage[langA])
+
+                        const itemB = wordData.translations
+                            .find(t => t.language === langB)
+                            ?.cases.find(c => c.caseName === casesByLanguage[langB])
+
+                        // If both languages have a matching word for this case, add to results
+                        if (itemA && itemB) {
+                            const dataItemA = {
+                                language: langA,
+                                case: casesByLanguage[langA],
+                                value: itemA.word
+                            }
+                            const dataItemB = {
+                                language: langB,
+                                case: casesByLanguage[langB],
+                                value: itemB.word
+                            }
+                            calculatedExercises.push(
+                                getFormattedExerciseForMultiLang(
+                                    exerciseType,
+                                    dataItemA,
+                                    dataItemB,
+                                    wordData.partOfSpeech || ""
+                                )
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 
-    return equivalentValues
+    return(calculatedExercises)
 }
 
-const getGroupedCategories = (partOfSpeech) => {
-    switch(partOfSpeech) {
-        case('Noun'): {
-            return(nounGroupedCategoriesMultiLanguage)
+// This functions receives:
+// a single word, with all of its translations
+// a list of the languages that are relevant to the user
+// the corresponding grouped-categories relevant to the PoS of the word.
+// This functions returns all the possible exercises between the translations associated with this word
+function findExercisesByEquivalentTranslations(
+    wordData,
+    languages,
+    exerciseType, //  'Multiple-Choice' | 'Text-Input' | 'Random',
+    multiLang, //  'Multi-Language' | 'Single-Language' | 'Random',
+) {
+
+    // First, we get ALL stored languages per word
+    const availableLanguages = wordData.translations.map(t => t.language)
+    // Get the intersection of the user-required languages and the languages stored in wordData.translations
+    const validLanguages = languages.filter(lang => availableLanguages.includes(lang))
+    let calculatedExercises = []
+
+    switch(multiLang) {
+        case('Multi-Language'): {
+            calculatedExercises = calculateMultiLanguageExercises(
+                validLanguages,
+                wordData,
+                exerciseType,
+                calculatedExercises
+            )
+            break
         }
-        case('Verb'): {
-            return(verbGroupedCategoriesMultiLanguage)
+        case('Single-Language'): {
+            calculatedExercises = calculateSingleLanguageExercises(
+                validLanguages,
+                wordData,
+                exerciseType
+            )
+            break
+        }
+        // we create exercises for both situations, and then the exercise-selection will be made at random
+        // TODO: debate if this should be random in the sense that we'll do one OR the other?
+        case('Random'): {
+            calculatedExercises = calculateMultiLanguageExercises(
+                validLanguages,
+                wordData,
+                exerciseType
+            )
+            calculatedExercises = [
+                ...calculatedExercises,
+                ...calculateSingleLanguageExercises(
+                    validLanguages,
+                    wordData,
+                    exerciseType
+                )
+            ]
+            break
         }
         default: {
-            return({})
+            break
+        }
+    }
+
+    return calculatedExercises
+}
+
+const getGroupedCategories = (partOfSpeech, multiLang) => {
+    switch(partOfSpeech) {
+        case('Noun'): {
+            if(multiLang){
+                return(nounGroupedCategoriesMultiLanguage)
+            } else {
+                return(nounGroupedCategoriesSingleLanguage)
+            }
+        }
+        case('Verb'): {
+            if(multiLang){
+                return(verbGroupedCategoriesMultiLanguage)
+            } else {
+                return(verbGroupedCategoriesSingleLanguage)
+            }
+        }
+        default: {
+            return(undefined)
         }
     }
 }
@@ -368,7 +581,10 @@ const getMissingDataForMCExercises = (incompleteExercises, allMatchingWords, dat
     // incomplete exercises, that we'll iterate over and improve the ones that are missing data (Multiple-Choice).
     // Not all items will be Multiple-Choice, in case user selected 'All' type, where each item is either 'Text-Input' or 'Multiple-Choice' at random.
     let exercisesWithFullData = incompleteExercises.map((exercise) => {
-        if(exercise.type === 'Multiple-Choice'){ // TODO: (single-language)+(multiple-choice) will skip this, because we get data when creating the exercise
+        if(
+            (exercise.type === 'Multiple-Choice') &&
+            (exercise.multiLang) // (single-language)+(multiple-choice) will skip this, because we set hardcoded data when creating the exercise
+        ){
             return({
                 ...exercise,
                 matchingTranslations: {
@@ -447,6 +663,7 @@ const getExercises = asyncHandler(async (req, res) => {
                 matchingWord,
                 parameters.languages,
                 parameters.type,
+                parameters.multiLang,
             )
             // If we found exercises for that word, we save them, and we'll filter them later
             if(matchingExercisesPerWord.length > 0){
@@ -457,7 +674,11 @@ const getExercises = asyncHandler(async (req, res) => {
             }
         })
     let filteredExercises = getRequiredAmountOfExercises(exercisesByWord, parameters.amountOfExercises)
-    if(['Multiple-Choice', 'Random'].includes(parameters.type)){
+    if(
+        (['Multiple-Choice', 'Random'].includes(parameters.type)) &&
+        // Single-Language have hardcoded options in Multiple-Choice (so we only need to get missing data when {type: Multiple-Choice OR Random})
+        (parameters.multiLang !== 'Single-Language')
+    ){
         const exercisesWithMCData = getMissingDataForMCExercises(
             filteredExercises,
             matchingWordData,

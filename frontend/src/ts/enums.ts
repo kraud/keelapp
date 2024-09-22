@@ -103,7 +103,7 @@ export enum VerbCases {
     regularityEN = "regularityEN",
     // SIMPLE: --------------
     // Same for every pronoun except 3s m/f/n
-    simplePresent1sEN = "simplePresent1sEN",
+    simplePresent1sEN = "simplePresent1sEN", // DEFAULT CASE
     simplePresent2sEN = "simplePresent2sEN",
     simplePresent3sEN = "simplePresent3sEN", // ONLY VARIANT
     simplePresent1plEN = "simplePresent1plEN",
@@ -330,7 +330,7 @@ export enum PrefixesVerbDE {
     zuryck = 'zurück', // NB! Careful with this one. Can cause issues.
 }
 
-export enum pronounDE {
+export enum PronounDE {
     // SIMPLIFIED:
         // Singular (sg)
     Sg1 = 'ich',
@@ -387,18 +387,18 @@ export enum pronounDE {
     DatPl3DE = 'ihnen',
 }
 
-export enum verbRegularity {
+export enum VerbRegularity {
     regular = 'regular',
     irregular = 'irregular'
 }
 
-export enum verbMoodDE {
+export enum VerbMoodDE {
     indicativeDE = 'indicativeDE',
     subjunctiveDE = 'subjunctiveDE',
     imperativeDE = 'imperativeDE',
 }
 
-export enum verbTensesIndicativeDE {
+export enum VerbTensesIndicativeDE {
     presentDE = 'presentDE', // Präsens
     simplePastDE = 'simplePastDE', // Präteritum
     presentPerfectDE = 'presentPerfectDE', // Perfekt
@@ -427,9 +427,9 @@ export enum GenderES {
 }
 
 export enum AuxVerbDE {
-    H = "haben", // MALE
-    S = "sein", // FEMALE
-    W = "werden" // NEUTRAL
+    H = "haben",
+    S = "sein",
+    W = "werden"
 }
 
 export enum PartOfSpeech {

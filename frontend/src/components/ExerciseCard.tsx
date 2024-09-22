@@ -8,13 +8,14 @@ import React from "react";
 import {useTranslation} from "react-i18next";
 import {shuffleArray} from "./generalUseFunctions";
 import {ExerciseTypeSelection} from "../ts/enums";
+import {EquivalentTranslationValues} from "../ts/interfaces";
 
 
 interface ExerciseCardProps {
     type: ExerciseTypeSelection,
     currentCardIndex: number,
     setCurrentCardIndex: (index: number) => void
-    exercises: any[],
+    exercises: EquivalentTranslationValues[],
     isLoadingExercises: boolean
     onClickReset: () => void
 }
@@ -25,10 +26,19 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
     const getOptionsToDisplay = (type: ExerciseTypeSelection) => {
         switch(type){
             case(ExerciseTypeSelection["Multiple-Choice"]): {
-                let allOptions = [
-                    props.exercises[props.currentCardIndex].matchingTranslations.itemB.value,
-                    ...props.exercises[props.currentCardIndex].matchingTranslations.itemB.otherValues
-                ]
+                let allOptions: string[] = []
+                const currentExercise: EquivalentTranslationValues = props.exercises[props.currentCardIndex]
+                if(currentExercise.type === 'Multiple-Choice'){
+                    allOptions = [
+                        currentExercise.matchingTranslations.itemB.value,
+                        // we filter here so in case this is a (multiLang:false) exercise, we don't display the correct option twice
+                        ...(currentExercise.matchingTranslations.itemB.otherValues).filter((otherValue: string) => {
+                            return(otherValue !== currentExercise.matchingTranslations.itemB.value)
+                        })
+                    ]
+                }
+
+
                 shuffleArray(allOptions)
                 return(
                     <Grid
