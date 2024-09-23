@@ -15,12 +15,8 @@ import {
 } from "../features/exercises/exerciseSlice";
 import {WordSimpleList} from "../components/WordSimpleList";
 import {ExerciseCard} from "../components/ExerciseCard";
+import {ExerciseResult} from "../ts/interfaces";
 
-interface CardAnswerData {
-    index: number,
-    answer: string,
-    correct: boolean,
-}
 
 export interface ExerciseParameters {
     languages: Lang[],
@@ -60,7 +56,7 @@ export const Practice = (props: PracticeProps) => {
     // if false => display parameter selection
     const [acceptedParameters, setAcceptedParameters] = useState(false)
 
-    const [cardAnswers, setCardAnswers] = useState<CardAnswerData[]>([])
+    const [cardAnswers, setCardAnswers] = useState<ExerciseResult[]>([])
 
     // This wil determine which checkboxes are displayed on ParameterSelector for Parts of Speech (so we don't display PoS options NOT included on pre-selected words).
     const [relevantPoSForPreSelectedWords, setRelevantPoSForPreSelectedWords] = useState<PartOfSpeech[]>(initialListOfPoS)
@@ -266,6 +262,16 @@ export const Practice = (props: PracticeProps) => {
                                         isLoadingExercises={isLoadingExercises}
                                         onClickReset={() => {
                                             onClickReset()
+                                        }}
+                                        exercisesResults={cardAnswers}
+                                        setExercisesResults={(newAnswer: ExerciseResult) => {
+                                            setCardAnswers((prevState: ExerciseResult[]) => {
+                                                // TODO: should we set newAnswer at the index specified in newAnswer.indexInList?
+                                                return([
+                                                    ...prevState,
+                                                    newAnswer
+                                                ])
+                                            })
                                         }}
                                     />
                                 }

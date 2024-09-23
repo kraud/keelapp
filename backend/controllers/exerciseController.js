@@ -40,11 +40,11 @@ function getRequiredAmountOfExercises(
     exercisesByWord, // exercises are grouped by word []
     amountOfExercises,
 ) {
-    const requireMultipleExercisesPerWord = amountOfExercises > exercisesByWord.length;
-    const requireFewerExercisesPerWord = amountOfExercises < exercisesByWord.length;
+    const requireMultipleExercisesPerWord = amountOfExercises > exercisesByWord.length
+    const requireFewerExercisesPerWord = amountOfExercises < exercisesByWord.length
 
-    let availableExercisesByWord = [...exercisesByWord]; // Clone to avoid mutating the original
-    let filteredExercises = [];
+    let availableExercisesByWord = [...exercisesByWord] // Clone to avoid mutating the original
+    let filteredExercises = []
 
     // Helper function to randomly select one exercise from each word group
     function randomlySelectExerciseByWord(exercisesList) {

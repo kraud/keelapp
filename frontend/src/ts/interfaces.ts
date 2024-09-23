@@ -222,3 +222,10 @@ export type MultipleChoice = {
         }
     }
 }
+
+export interface ExerciseResult {
+    answer: string,
+    correct: boolean,
+    indexInList: number,
+    time: number, // Date => will be used for statistics about this translation
+}
