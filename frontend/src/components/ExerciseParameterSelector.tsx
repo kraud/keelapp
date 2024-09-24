@@ -11,6 +11,7 @@ import Button from "@mui/material/Button";
 import * as Yup from "yup";
 import {yupResolver} from "@hookform/resolvers/yup/dist/yup";
 import {RadioGroupWithHook} from "./RadioGroupFormHook";
+import globalTheme from "../theme/theme";
 
 interface ExerciseParameterSelectorProps {
     defaultParameters: ExerciseParameters,
@@ -115,29 +116,33 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
             direction={'column'}
             justifyContent={'center'}
             alignItems={'center'}
+            rowSpacing={2}
             item={true}
             xs={12}
             sx={{
-                border: '2px solid black'
+                border: '4px solid #0072CE',
+                borderRadius: '25px',
+                paddingX: globalTheme.spacing(2),
+                paddingBottom: globalTheme.spacing(2)
             }}
         >
             <Grid
                 container={true}
                 justifyContent={'center'}
                 item={true}
-                sx={{
-                    border: '2px solid blue'
-                }}
             >
                 <Grid
                     item={true}
                     xs={'auto'}
-                    sx={{
-                        border: '2px solid red'
-                    }}
                 >
                     <Typography
-                        variant={'h6'}
+                        sx={{
+                            typography: {
+                                xs: 'h6',
+                                md: 'h5',
+                                lg: 'h4',
+                            },
+                        }}
                     >
                         Parameters:
                     </Typography>
@@ -147,17 +152,12 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                 container={true}
                 justifyContent={'center'}
                 item={true}
-                sx={{
-                    border: '2px solid blue'
-                }}
+                rowSpacing={2}
             >
                 {/* LANGUAGE SELECTION */}
                 <Grid
                     item={true}
                     xs={12}
-                    sx={{
-                        border: '2px solid red'
-                    }}
                 >
                     <DnDLanguageOrderSelector
                         allSelectedItems={allSelectedLanguages}
@@ -179,9 +179,6 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                 <Grid
                     item={true}
                     xs={12}
-                    sx={{
-                        border: '2px solid red'
-                    }}
                 >
                     <CheckboxGroupWithHook
                         control={control}
@@ -202,9 +199,6 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                 <Grid
                     item={true}
                     xs={12}
-                    sx={{
-                        border: '2px solid red'
-                    }}
                 >
                     <TextInputFormWithHook
                         control={control}
@@ -225,13 +219,10 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                 <Grid
                     item={true}
                     xs={12}
-                    sx={{
-                        border: '2px solid red'
-                    }}
                 >
                     <RadioGroupWithHook
                         control={control}
-                        label={"Type"}
+                        label={"Exercise type"}
                         name={"type"}
                         options={Object.values(ExerciseTypeSelection)}
                         defaultValue={ExerciseTypeSelection["Text-Input"]}
@@ -251,9 +242,6 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                 <Grid
                     item={true}
                     xs={12}
-                    sx={{
-                        border: '2px solid red'
-                    }}
                 >
                     <RadioGroupWithHook
                         control={control}
@@ -273,14 +261,12 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                         disableUnselect={true}
                     />
                 </Grid>
+                {/* TODO: add slider for difficulty and BE logic for it (difficulty level 0-1-2-3) */}
 
                 {/* ACTION BUTTONS */}
                 <Grid
                     item={true}
                     xs={8}
-                    sx={{
-                        border: '2px solid red'
-                    }}
                 >
                     <Button
                         variant={'contained'}
@@ -291,7 +277,7 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                             props.onAccept()
                         }}
                     >
-                        Continue
+                        Create exercises
                     </Button>
                 </Grid>
             </Grid>

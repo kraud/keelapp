@@ -49,7 +49,6 @@ export const Practice = (props: PracticeProps) => {
         mode: 'Single-Try'
     }
 
-
     const [currentCardIndex, setCurrentCardIndex] = useState(0)
     //@ts-ignore
     const [parameters, setParameters] = useState<ExerciseParameters>(initialParameters)
@@ -125,21 +124,22 @@ export const Practice = (props: PracticeProps) => {
             item={true}
             sx={{
                 marginTop: globalTheme.spacing(4),
-                border: '3px solid black'
+                border: '4px solid #0072CE',
+                borderRadius: '25px',
+                paddingX: globalTheme.spacing(2),
+                paddingBottom: globalTheme.spacing(2)
             }}
             xs={12}
             md={11}
-            lg={10}
-            xl={9}
+            lg={12}
+            xl={(wordsSelectedForExercises.length > 0) ?10 :9}
         >
             <Grid
                 container={true}
                 justifyContent={'center'}
                 alignItems={'flex-start'}
                 item={true}
-                sx={{
-                    border: '3px solid blue',
-                }}
+                spacing={3}
                 direction={{
                     xs: 'row',
                     lg: 'row-reverse',
@@ -149,14 +149,13 @@ export const Practice = (props: PracticeProps) => {
                     item={true}
                     xs={12}
                     sx={{
-                        border: '3px solid green',
-                        // borderColor: '#2e2e2e',
+                        marginTop: globalTheme.spacing(2)
                     }}
                 >
                     <Typography
                         sx={{
                             typography: {
-                                xs: 'h4',
+                                xs: 'h3',
                                 sm: 'h3',
                                 md: 'h1',
                             },
@@ -182,9 +181,9 @@ export const Practice = (props: PracticeProps) => {
                     >
                         <Grid
                             item={true}
-                            xs={12}
+                            xs={10}
                             sx={{
-                                border: '3px solid green',
+                                display: {xs: 'none', lg: 'inherit'}
                             }}
                         >
                             <Typography
@@ -193,6 +192,7 @@ export const Practice = (props: PracticeProps) => {
                                         xs: 'body1',
                                         sm: 'h6',
                                         md: 'h5',
+                                        xl: 'h5',
                                     },
                                 }}
                                 align={"center"}
@@ -212,7 +212,7 @@ export const Practice = (props: PracticeProps) => {
                             container={true}
                             item={true}
                             xs={12}
-                            lg={5}
+                            lg={(wordsSelectedForExercises.length > 0) ?5 :8}
                         >
                             <ExerciseParameterSelector
                                 availableLanguages={user.languages}
@@ -244,7 +244,6 @@ export const Practice = (props: PracticeProps) => {
                                 item={true}
                                 xs={12}
                                 sx={{
-                                    border: '3px solid blue',
                                     height: 'max-content'
                                 }}
                             >

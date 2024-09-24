@@ -56,7 +56,7 @@ export const WordSimpleList = (props: WordSimpleListProps) => {
         })
         const filteredGroups = wordsGroupedByPoS.filter((groupsByPoS: GroupedWordsByPoS) => {
             return(props.parameters.partsOfSpeech.includes(groupsByPoS.partOfSpeech))
-        })
+        }).sort((a, b) => b.words.length - a.words.length)
         return(filteredGroups)
     }
 
@@ -65,6 +65,16 @@ export const WordSimpleList = (props: WordSimpleListProps) => {
             languages.map((language: Lang) => {
                 return("data"+(getLangKeyByLabel(language)))
             })
+        )
+    }
+
+    const getAmountOfActiveWords = (groupedCategory: GroupedWordsByPoS) => {
+        return(
+            (groupedCategory.words).filter((selectedWord: any, index: number) => {
+                const dataFieldsByActiveLanguage: string[] = getFormattedKeyString(props.parameters.languages)
+                const translationsToBeDisplayed = getExistingTranslations(selectedWord, dataFieldsByActiveLanguage)
+                return(translationsToBeDisplayed.length > 0)
+            }).length
         )
     }
 
@@ -94,7 +104,7 @@ export const WordSimpleList = (props: WordSimpleListProps) => {
                                 item={true}
                                 xs={'auto'}
                                 sx={{
-                                    border: '2px solid pink'
+                                    paddingX: globalTheme.spacing(2),
                                 }}
                             >
                                 <Typography
@@ -106,7 +116,7 @@ export const WordSimpleList = (props: WordSimpleListProps) => {
                                     }}
                                     align={"center"}
                                 >
-                                    {groupedCategory.partOfSpeech}
+                                    {groupedCategory.partOfSpeech} ({getAmountOfActiveWords(groupedCategory)})
                                 </Typography>
                             </Grid>
                         </Grid>
@@ -115,24 +125,23 @@ export const WordSimpleList = (props: WordSimpleListProps) => {
                             item={true}
                             xs={12}
                             sx={{
-
-                                // display: 'relative',
                                 whiteSpace: 'nowrap',
                                 overflowX: 'auto',
                                 overflowY: 'hidden',
-                                // maxWidth: 'min-content',
-                                // minWidth: 'max-content',
                                 scrollBehavior: 'smooth',
-                                border: '2px solid red',
                             }}
                         >
                             <Grid
                                 container={true}
                                 item={true}
+                                xs={'auto'}
                                 sx={{
                                     overflowY: 'hidden',
-                                    border: '2px solid yellow',
                                     minWidth: 'max-content',
+                                    paddingY: globalTheme.spacing(2),
+                                    paddingX: globalTheme.spacing(2),
+                                    backgroundColor: '#e1e1e1',
+                                    borderRadius: '25px'
                                 }}
                             >
                                 {(groupedCategory.words).map((selectedWord: any, index: number) => {
@@ -147,20 +156,15 @@ export const WordSimpleList = (props: WordSimpleListProps) => {
                                                 alignItems={'flex-start'}
                                                 justifyContent={'flex-start'}
                                                 item={true}
-                                                // xs={4}
-                                                // xl={3}
                                                 sx={{
                                                     border: '2px solid black',
                                                     borderRadius: '15px',
-                                                    // fixed width
-                                                    // maxWidth: '250px !important',
-                                                    // minWidth: '250px !important'
-                                                    // width: '175px !important'
+                                                    marginRight: globalTheme.spacing(1),
+                                                    paddingY: globalTheme.spacing(1),
+                                                    paddingX: globalTheme.spacing(1),
                                                     // dynamic width depending on word
                                                     width: 'max-content',
-                                                    // minWidth: 'max-content',
-                                                    // maxWidth: 'max-content',
-                                                    paddingX: globalTheme.spacing(1)
+                                                    backgroundColor: 'white'
                                                 }}
                                             >
                                                 {(translationsToBeDisplayed.map((activeLanguageField: string, index: number) => {
@@ -174,11 +178,7 @@ export const WordSimpleList = (props: WordSimpleListProps) => {
                                                                 justifyContent={'flex-start'}
                                                                 alignItems={'center'}
                                                                 item={true}
-                                                                // xs={12}
                                                                 xs={'auto'}
-                                                                sx={{
-                                                                    border: '2px solid blue'
-                                                                }}
                                                             >
                                                                 <Grid
                                                                     item={true}

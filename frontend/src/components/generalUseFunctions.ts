@@ -558,3 +558,13 @@ export function shuffleArray(array: any[]) {
         [array[i], array[j]] = [array[j], array[i]];
     }
 }
+
+export function deterministicSort(array: string[]) {
+    return array.sort((a: string, b: string) => {
+        // Generate a simple hash based on the string characters
+        const hashA = a.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        const hashB = b.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+
+        return hashA - hashB;
+    })
+}

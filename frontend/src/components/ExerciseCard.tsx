@@ -6,7 +6,7 @@ import Button from "@mui/material/Button";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import React, {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
-import {shuffleArray} from "./generalUseFunctions";
+import {deterministicSort} from "./generalUseFunctions";
 import {ExerciseTypeSelection} from "../ts/enums";
 import {EquivalentTranslationValues, ExerciseResult} from "../ts/interfaces";
 import {Bounce, toast} from "react-toastify";
@@ -33,6 +33,25 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
     // TODO: maybe this should filter the list and the element with to 'indexInList' that matches?
     const currentCardAnswer: ExerciseResult = props.exercisesResults[props.currentCardIndex]
 
+    const componentStyles = {
+        textField: {
+            fieldset: {
+                border: 'none',
+            },
+            input: {
+                border: `4px solid ${
+                    !(currentCardAnswer!!)
+                        ? globalTheme.palette.primary.main // default before answering
+                        : (currentCardAnswer!!) && (currentCardAnswer.correct)
+                            ? globalTheme.palette.success.main // correct answer
+                            : globalTheme.palette.error.main // wrong answer
+                }`,
+                borderRadius: '25px',
+                background: "white"
+            }
+        }
+    }
+
     const checkIfCorrectAnswer = (answer: string) => {
         let answerStatus: boolean = false
         switch (props.type){
@@ -48,11 +67,12 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                 break
             }
         }
+        // TODO: improve content in toasts
         if(answerStatus){
             toast.success('Correct! ✅', {
                 position: "bottom-center",
-                autoClose: 2000,
-                hideProgressBar: false,
+                autoClose: 500,
+                hideProgressBar: true,
                 closeOnClick: true,
                 pauseOnHover: false,
                 draggable: false,
@@ -63,8 +83,8 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
         } else {
             toast.error(`Incorrect! ❌ - Correct answer: ${correctValue}`, {
                 position: "bottom-center",
-                autoClose: 2000,
-                hideProgressBar: false,
+                autoClose: 500,
+                hideProgressBar: true,
                 closeOnClick: true,
                 pauseOnHover: false,
                 draggable: false,
@@ -97,7 +117,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                         })
                     ]
                 }
-                shuffleArray(allOptions) // TODO: make a deterministic version of this, so options always have the same order (through multiple renders)
+                allOptions = deterministicSort(allOptions)
 
                 return(
                     <Grid
@@ -170,14 +190,8 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                             InputProps={{
                                 readOnly: (currentCardAnswer!!) && (currentCardAnswer?.answer !== ""),
                             }}
-                            color={
-                                !(currentCardAnswer!!)
-                                    ? 'primary'
-                                    : (currentCardAnswer!!) && (currentCardAnswer.correct)
-                                        ? 'success'
-                                        : 'error'
-                            }
                             value={textInputAnswer}
+                            sx={componentStyles.textField}
                         />
                     </Grid>
                 )
@@ -209,9 +223,6 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
             md={8}
             lg={7}
             xl={6}
-            sx={{
-                // border: '4px solid green',
-            }}
         >
             {/*BUTTON BACK*/}
             <Grid
@@ -220,23 +231,15 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                 justifyContent={'center'}
                 alignItems={'center'}
                 xs={'auto'}
-                sx={{
-                    // border: '4px solid red',
-                }}
             >
                 <Grid
                     item={true}
                     xs={true}
-                    sx={{
-                        // border: '4px solid yellow',
-                    }}
                 >
                     <IconButton
                         color={'primary'}
                         disabled={
                             (props.currentCardIndex === 0)
-                            // ||
-                            // ((currentCardAnswer!!) && (currentCardAnswer?.answer !== ""))
                         }
                         onClick={() => {
                             if(props.currentCardIndex > 0){

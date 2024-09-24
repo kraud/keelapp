@@ -518,7 +518,7 @@ const isOriginalValueFromThisTranslation = (fullListOfCases, originalCase, origi
 }
 
 // This will always find other words that match the language for a Multiple-Choice-type exercise, IF THE OPTIONS EXIST. If not, the list will return as many options as available.
-const getOtherValues = (targetLanguage, originalValue, originalCase, allMatchingWords, dataOrigin, requiredAmount) => {
+const getOtherValues = (targetLanguage, originalValue, originalCase, allMatchingWords, dataOrigin, requiredAmount, partOfSpeech) => {
     switch (dataOrigin){
         case('matching-words'): {
             // we use 'allMatchingWords' as source of other options
@@ -531,14 +531,18 @@ const getOtherValues = (targetLanguage, originalValue, originalCase, allMatching
                     (matchingWord.translations).forEach((matchingWordTranslation) => {
                         let breakFromTranslations = false
                         if(!breakFromTranslations){
-                            if(matchingWordTranslation.language === targetLanguage){
-                                // TODO: if we want to force matching Part of Speech, it should be added here
+                            if( //  Difficulty level 0? Any PoS, any language could be an option in Multiple-Choice
+                                (matchingWordTranslation.language === targetLanguage)
+                                // Multiple-Choice will only include results of the same Language (should be a parameter - Difficulty level 1?)
+                                // && (matchingWord.partOfSpeech === partOfSpeech) // Multiple-Choice will only include results of the same PoS. TODO: (should be a parameter - Difficulty level 2?)
+                            ){
                                 let keepSearching = true
                                 let count = 0
                                 while(keepSearching && (count < 25)){ // to avoid potential infinite loop, we add a max amount of random checks
                                     const randomCaseIndex = Math.floor(Math.random() * matchingWordTranslation.cases.length)
                                     const potentialWord = matchingWordTranslation.cases[randomCaseIndex].word
                                     const potentialCase = matchingWordTranslation.cases[randomCaseIndex].caseName
+                                    // TODO: Difficulty level 3, options will ONLY come from same sameTranslationOriginAsOriginalValue? (should be a parameter) Maybe only apply to verbs?
                                     // to avoid including the 'correct-option' in the other options
                                     // and to avoid including any other case from the translation related to originalValue
                                     const sameTranslationOriginAsOriginalValue = isOriginalValueFromThisTranslation(matchingWordTranslation.cases, originalCase, originalValue)
@@ -597,7 +601,8 @@ const getMissingDataForMCExercises = (incompleteExercises, allMatchingWords, dat
                             exercise.matchingTranslations.itemB.case,
                             allMatchingWords,
                             dataOrigin,
-                            2 // TODO: this should be a parameter
+                            2, // TODO: this should be a parameter
+                            exercise.partOfSpeech
                         )
                     }
                 }
