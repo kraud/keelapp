@@ -59,10 +59,9 @@ export const Practice = (props: PracticeProps) => {
         partsOfSpeech: initialListOfPoS,
         amountOfExercises: 10,
         multiLang: CardTypeSelection['Random'], // By default, exercises will include exercise cards with single and multi languages exercises
-        // type: ExerciseTypeSelection['Text-Input'],
-        // type: ExerciseTypeSelection['Multiple-Choice'],
-        type: ExerciseTypeSelection['Random'],
+        type: ExerciseTypeSelection['Text-Input'],
         mode: 'Single-Try',
+        // @ts-ignore // for testing during development, TODO: remove later
         difficultyMC: 1,
         difficultyTI: 1,
     }
@@ -130,10 +129,6 @@ export const Practice = (props: PracticeProps) => {
         setCardAnswers([])
         dispatch(resetExerciseList())
     }
-
-    useEffect(() => {
-        console.log('parameters', parameters)
-    }, [parameters])
 
     return(
         <Grid
@@ -240,7 +235,6 @@ export const Practice = (props: PracticeProps) => {
                                 availableLanguages={user.languages}
                                 defaultParameters={parameters}
                                 onParametersChange={(newParameters: ExerciseParameters) => {
-                                    console.log('newParameters', newParameters)
                                     setParameters((prevState) => {
                                         // This way we won't overwrite fields not modified inside ParameterSelector
                                         return({

@@ -14,6 +14,33 @@ import {RadioGroupWithHook} from "./RadioGroupFormHook";
 import globalTheme from "../theme/theme";
 import Tooltip from "@mui/material/Tooltip";
 
+const difficultyMCSliderMarks = [
+    {
+        value: 0,
+        label: 'Level 0',
+        // label: '0️⃣',
+        tooltipText: 'Any word-type - any language'
+    },
+    {
+        value: 1,
+        label: 'Level 1',
+        // label: '1️⃣',
+        tooltipText: 'Any word-type - same language'
+    },
+    {
+        value: 2,
+        label: 'Level 2',
+        // label: '2️⃣',
+        tooltipText: 'Same word-type - same language'
+    },
+    {
+        value: 3,
+        label: 'Level 3',
+        // label: '3️⃣',
+        tooltipText: 'Same word - same language - different cases'
+    },
+]
+
 interface ExerciseParameterSelectorProps {
     defaultParameters: ExerciseParameters,
     onParametersChange: (data: ExerciseParameters) => void,
@@ -24,41 +51,14 @@ interface ExerciseParameterSelectorProps {
 }
 
 export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps) => {
+
     const { t } = useTranslation(['review', 'common'])
     // Languages currently displayed as columns on the selector
     const [allSelectedLanguages, setAllSelectedLanguages] = useState<string[]>(props.availableLanguages)
     // Languages currently not displayed as columns on the table
     const [otherLanguages, setOtherLanguages] = useState<string[]>([])
     const [displayAdvancedOptions, setDisplayAdvancedOptions] = useState<boolean>(false)
-
-
-    const marks = [
-        {
-            value: 0,
-            label: 'Level 0',
-            // label: '0️⃣',
-            tooltipText: 'Any word-type - any language'
-        },
-        {
-            value: 1,
-            label: 'Level 1',
-            // label: '1️⃣',
-            tooltipText: 'Any word-type - same language'
-        },
-        {
-            value: 2,
-            label: 'Level 2',
-            // label: '2️⃣',
-            tooltipText: 'Same word-type - same language'
-        },
-        {
-            value: 3,
-            label: 'Level 3',
-            // label: '3️⃣',
-            tooltipText: 'Same word - same language - different cases'
-        },
-    ]
-
+    const [difficultyMC, setDifficultyMC] = useState<number>(difficultyMCSliderMarks[1].value)
 
     const validationSchema = Yup.object().shape({
         partsOfSpeech: Yup
@@ -96,7 +96,7 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
             type: getValues('type'),
             multiLang: getValues('multiLang'),
             mode: 'Single-Try',
-            difficultyMC: getValues('difficultyMC'),
+            difficultyMC: difficultyMC,
             ...newParameter // name must much a property from ExerciseParameters, so it only overrides that matching property
         }
         props.onParametersChange(updatedData as ExerciseParameters)
@@ -374,18 +374,19 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                                         xs={10}
                                     >
                                         <Slider
-                                            defaultValue={marks[1].value}
+                                            defaultValue={difficultyMCSliderMarks[1].value}
                                             step={null}
                                             valueLabelDisplay={"auto"}
-                                            marks={marks}
+                                            marks={difficultyMCSliderMarks}
                                             valueLabelFormat={(value: number, index: number) => {
                                                 return(
-                                                    (marks.find((mark) => {
+                                                    (difficultyMCSliderMarks.find((mark) => {
                                                         return (mark.value === value)
                                                     }))?.tooltipText
                                                 )
                                             }}
                                             onChangeCommitted={(event: React.SyntheticEvent | Event, value: number | number[]) => {
+                                                setDifficultyMC(value as number)
                                                 runOnParametersChange({difficultyMC: value as number})
                                             }}
                                             min={0}

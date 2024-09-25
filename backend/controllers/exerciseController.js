@@ -517,32 +517,171 @@ const isOriginalValueFromThisTranslation = (fullListOfCases, originalCase, origi
     )
 }
 
-// This will always find other words that match the language for a Multiple-Choice-type exercise, IF THE OPTIONS EXIST. If not, the list will return as many options as available.
-const getOtherValues = (targetLanguage, originalValue, originalCase, allMatchingWords, dataOrigin, requiredAmount, partOfSpeech, difficulty) => {
-    const exerciseDifficulty = (difficulty !== undefined) ?difficulty :0
-    switch (dataOrigin){
-        case('matching-words'): {
-            // we use 'allMatchingWords' as source of other options
-            const shuffledMatchingWords = [...allMatchingWords]
-            shuffleArray(shuffledMatchingWords) // this should guarantee that we won't be getting the same words in the "other-options" for different exercises
-            let requiredTranslations = []
-            shuffledMatchingWords.forEach((matchingWord) => {
-                // let breakFromWords = false
-                if(requiredAmount > requiredTranslations.length){
-                    (matchingWord.translations).forEach((matchingWordTranslation) => {
-                        let breakFromTranslations = false
-                        if(!breakFromTranslations){
-                            if( //  Difficulty level 0. Any PoS, any language could be an option in Multiple-Choice
-                                (exerciseDifficulty === 0)
+const getMissingValuesByDifficulty = (exerciseDifficulty, shuffledTranslations, matchingWord, originalCase, originalValue, targetLanguage, partOfSpeech, requiredAmount, requiredTranslations) => {
+    let returnValues = []
+    switch(exerciseDifficulty){
+        case(0): {
+            let breakFromWords = false;
+            (shuffledTranslations).forEach((matchingWordTranslation) => {
+                if((requiredAmount > requiredTranslations.length) && !breakFromWords) {
+                    let keepSearching = true
+                    let count = 0
+                    while(keepSearching && (count < 25)){ // to avoid potential infinite loop, we add a max amount of random checks
+                        const randomCaseIndex = Math.floor(Math.random() * matchingWordTranslation.cases.length)
+                        const potentialWord = matchingWordTranslation.cases[randomCaseIndex].word
+                        const potentialCase = matchingWordTranslation.cases[randomCaseIndex].caseName
+                        // to avoid including the 'correct-option' in the other options
+                        // and to avoid including any other case from the translation related to originalValue
+                        const sameTranslationOriginAsOriginalValue = isOriginalValueFromThisTranslation(matchingWordTranslation.cases, originalCase, originalValue)
+                        const ignoreWord = (
+                            calculateIfNotRelevantCase(potentialCase)
+                            ||
+                            sameTranslationOriginAsOriginalValue
+                        )
+                        if(!ignoreWord){ // to avoid matching with gender-related-cases or other word-properties
+                            // requiredTranslations.push(potentialWord)
+                            returnValues.push(potentialWord)
+                            keepSearching = false // this should break from the while
+                        } else {
+                            // to avoid infinite loop in case translation has only one case stored (which is the same as the 'correct-option' for this Multiple-Choice exercise).
+                            if(matchingWordTranslation.cases.length === 1){
+                                // this should break from the while
+                                keepSearching = false
+                            } else {
+                                count++
+                            }
+                        }
+                    }
+                }
+                breakFromWords = true
+            })
+            break
+        }
+        case(1): {
+            let breakFromWords = false;
+            (shuffledTranslations).forEach((matchingWordTranslation) => {
+                if((requiredAmount > requiredTranslations.length) && !breakFromWords) {
+                    // Difficulty level 1: Multiple-Choice will only include results of the same Language
+                    if(matchingWordTranslation.language === targetLanguage) {
+                        let keepSearching = true
+                        let count = 0
+                        while(keepSearching && (count < 25)){ // to avoid potential infinite loop, we add a max amount of random checks
+                            const randomCaseIndex = Math.floor(Math.random() * matchingWordTranslation.cases.length)
+                            const potentialWord = matchingWordTranslation.cases[randomCaseIndex].word
+                            const potentialCase = matchingWordTranslation.cases[randomCaseIndex].caseName
+                            // to avoid including the 'correct-option' in the other options
+                            // and to avoid including any other case from the translation related to originalValue
+                            const sameTranslationOriginAsOriginalValue = isOriginalValueFromThisTranslation(matchingWordTranslation.cases, originalCase, originalValue)
+                            const ignoreWord = (
+                                calculateIfNotRelevantCase(potentialCase)
                                 ||
-                                // Difficulty level 1: Multiple-Choice will only include results of the same Language
-                                ((exerciseDifficulty === 1) && (matchingWordTranslation.language === targetLanguage))
+                                sameTranslationOriginAsOriginalValue
+                            )
+                            if(!ignoreWord){ // to avoid matching with gender-related-cases or other word-properties
+                                // requiredTranslations.push(potentialWord)
+                                returnValues.push(potentialWord)
+                                keepSearching = false // this should break from the while
+                            } else {
+                                // to avoid infinite loop in case translation has only one case stored (which is the same as the 'correct-option' for this Multiple-Choice exercise).
+                                if(matchingWordTranslation.cases.length === 1){
+                                    // this should break from the while
+                                    keepSearching = false
+                                } else {
+                                    count++
+                                }
+                            }
+                        }
+                    }
+                }
+                breakFromWords = true
+            })
+            break
+        }
+        case(2): {
+            let breakFromWords = false;
+            (shuffledTranslations).forEach((matchingWordTranslation) => {
+                if((requiredAmount > requiredTranslations.length) && !breakFromWords) {
+                    // Difficulty level 2: Multiple-Choice will only include results of the same PoS.
+                    if((matchingWordTranslation.language === targetLanguage) && (matchingWord.partOfSpeech === partOfSpeech)) {
+                        let keepSearching = true
+                        let count = 0
+                        while(keepSearching && (count < 25)){ // to avoid potential infinite loop, we add a max amount of random checks
+                            const randomCaseIndex = Math.floor(Math.random() * matchingWordTranslation.cases.length)
+                            const potentialWord = matchingWordTranslation.cases[randomCaseIndex].word
+                            const potentialCase = matchingWordTranslation.cases[randomCaseIndex].caseName
+                            // to avoid including the 'correct-option' in the other options
+                            // and to avoid including any other case from the translation related to originalValue
+                            const sameTranslationOriginAsOriginalValue = isOriginalValueFromThisTranslation(matchingWordTranslation.cases, originalCase, originalValue)
+                            const ignoreWord = (
+                                calculateIfNotRelevantCase(potentialCase)
                                 ||
-                                // NB! This applies to difficulty 2 and 3
-                                // Difficulty level 2: Multiple-Choice will only include results of the same PoS.
-                                ((exerciseDifficulty > 1) && (matchingWordTranslation.language === targetLanguage) && (matchingWord.partOfSpeech === partOfSpeech))
-                                // Difficulty level 3: Options will ONLY come from same sameTranslationOriginAsOriginalValue. Only apply to verbs? (TODO: review if more PoS are possible)
-                            ){
+                                (sameTranslationOriginAsOriginalValue)
+                            )
+                            if(!ignoreWord){ // to avoid matching with gender-related-cases or other word-properties
+                                // requiredTranslations.push(potentialWord)
+                                returnValues.push(potentialWord)
+                                keepSearching = false // this should break from the while
+                            } else {
+                                // to avoid infinite loop in case translation has only one case stored (which is the same as the 'correct-option' for this Multiple-Choice exercise).
+                                if(matchingWordTranslation.cases.length === 1){
+                                    // this should break from the while
+                                    keepSearching = false
+                                } else {
+                                    count++
+                                }
+                            }
+                        }
+                    }
+                }
+                breakFromWords = true
+            })
+            break
+        }
+        case(3): {
+            const relevantTranslations = shuffledTranslations.filter((randomTranslation) => {
+                return(randomTranslation.language === targetLanguage)
+            })
+            if(relevantTranslations.length > 0){ // word has a translation in the target language
+                const relevantTranslationMatch = relevantTranslations[0]
+                // if Verb => we need to get multiple values from SAME translation => opposite as every other PoS, which takes at most only 1 value from each translation
+                if(matchingWord.partOfSpeech === 'Verb'){ // add &&(partOfSpeech === 'Verb')?
+                    // to avoid including the 'correct-option' in the other options
+                    // and to force only including other cases from the translation related to originalValue
+                    const sameTranslationOriginAsOriginalValue = isOriginalValueFromThisTranslation(relevantTranslationMatch.cases, originalCase, originalValue)
+                    if(sameTranslationOriginAsOriginalValue){
+                        let keepSearching = 0
+                        let count = 0
+                        while((keepSearching < 2) && (count < 25)){ // to avoid potential infinite loop, we add a max amount of random checks
+                            const randomCaseIndex = Math.floor(Math.random() * relevantTranslationMatch.cases.length)
+                            const potentialWord = relevantTranslationMatch.cases[randomCaseIndex].word
+                            const potentialCase = relevantTranslationMatch.cases[randomCaseIndex].caseName
+                            const ignoreWord = (
+                                calculateIfNotRelevantCase(potentialCase)
+                                ||
+                                // OR if it is the same value as the original value displayed as info (itemA.label)
+                                ((originalValue) === (potentialWord))
+                            )
+                            if(!ignoreWord){ // to avoid matching with gender-related-cases or other word-properties
+                                // requiredTranslations.push(potentialWord)
+                                returnValues.push(potentialWord)
+                                keepSearching++ // this should break from the while
+                            } else {
+                                // to avoid infinite loop in case translation has only one case stored (which is the same as the 'correct-option' for this Multiple-Choice exercise).
+                                if(relevantTranslationMatch.cases.length === 1){
+                                    // this should break from the while
+                                    keepSearching = false
+                                } else {
+                                    count++
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    let breakFromWords = false;
+                    (shuffledTranslations).forEach((matchingWordTranslation) => {
+                        if((requiredAmount > requiredTranslations.length) && !breakFromWords) {
+                            // Difficulty level 3: Options will ONLY come from same sameTranslationOriginAsOriginalValue. Only apply to verbs? (TODO: review if more PoS are possible)
+                            if((matchingWordTranslation.language === targetLanguage) && (matchingWord.partOfSpeech === partOfSpeech) && ('Verb' !== matchingWord.partOfSpeech)) {
                                 let keepSearching = true
                                 let count = 0
                                 while(keepSearching && (count < 25)){ // to avoid potential infinite loop, we add a max amount of random checks
@@ -555,16 +694,12 @@ const getOtherValues = (targetLanguage, originalValue, originalCase, allMatching
                                     const ignoreWord = (
                                         calculateIfNotRelevantCase(potentialCase)
                                         ||
-                                        (
-                                            // ignore if it's from same translation AND we're not in difficulty 3
-                                            ((sameTranslationOriginAsOriginalValue) && (!(exerciseDifficulty > 2)))
-                                            ||
-                                            // OR if it is the same value as the original value displayed as info (itemA.label)
-                                            ((originalValue) === (potentialWord))
-                                        )
+                                        // OR if it is the same value as the original value displayed as info (itemA.label)
+                                        ((originalValue) === (potentialWord))
                                     )
                                     if(!ignoreWord){ // to avoid matching with gender-related-cases or other word-properties
-                                        requiredTranslations.push(potentialWord)
+                                        // requiredTranslations.push(potentialWord)
+                                        returnValues.push(potentialWord)
                                         keepSearching = false // this should break from the while
                                     } else {
                                         // to avoid infinite loop in case translation has only one case stored (which is the same as the 'correct-option' for this Multiple-Choice exercise).
@@ -576,12 +711,122 @@ const getOtherValues = (targetLanguage, originalValue, originalCase, allMatching
                                         }
                                     }
                                 }
-                                breakFromTranslations = true // this should break from '(matchingWord.translations).forEach(...)' and continue next matchingWord
                             }
+
                         }
+                        breakFromWords = true
                     })
                 }
+            }
+            break
+        }
+    }
+    return(returnValues)
+}
+
+// This will always find other words that match the language for a Multiple-Choice-type exercise, IF THE OPTIONS EXIST. If not, the list will return as many options as available.
+const getOtherValues = (targetLanguage, originalValue, originalCase, allMatchingWords, dataOrigin, requiredAmount, partOfSpeech, difficulty) => {
+    const exerciseDifficulty = (difficulty !== undefined) ?difficulty :0
+    switch (dataOrigin){
+        case('matching-words'): {
+            // we use 'allMatchingWords' as source of other options
+            const shuffledMatchingWords = [...allMatchingWords]
+
+            shuffleArray(shuffledMatchingWords) // this should guarantee that we won't be getting the same words in the "other-options" for different exercises
+            let requiredTranslations = []
+            shuffledMatchingWords.forEach((matchingWord) => {
+                let shuffledTranslations = [...matchingWord.translations]
+                shuffleArray(shuffledTranslations)
+
+                const acceptedValue = getMissingValuesByDifficulty(
+                    exerciseDifficulty,
+                    shuffledTranslations,
+                    matchingWord,
+                    originalCase,
+                    originalValue,
+                    targetLanguage,
+                    partOfSpeech,
+                    requiredAmount,
+                    requiredTranslations
+                )
+                if(acceptedValue.length > 0) {
+                    requiredTranslations.push(...acceptedValue)
+                }
+                // let breakFromTranslations = false //
+                // if(!breakFromTranslations){ // this does nothing?
+                //     if( //  Difficulty level 0. Any PoS, any language could be an option in Multiple-Choice
+                //         (exerciseDifficulty === 0)
+                //         ||
+                //         // Difficulty level 1: Multiple-Choice will only include results of the same Language
+                //         ((exerciseDifficulty === 1) && (matchingWordTranslation.language === targetLanguage))
+                //         ||
+                //         // NB! This applies to difficulty 2 and 3
+                //         // Difficulty level 2: Multiple-Choice will only include results of the same PoS.
+                //         ((exerciseDifficulty > 1) && (matchingWordTranslation.language === targetLanguage) && (matchingWord.partOfSpeech === partOfSpeech))
+                //         // Difficulty level 3: Options will ONLY come from same sameTranslationOriginAsOriginalValue. Only apply to verbs? (TODO: review if more PoS are possible)
+                //     ){
+                //         let keepSearching = true
+                //         let count = 0
+                //         while(keepSearching && (count < 25)){ // to avoid potential infinite loop, we add a max amount of random checks
+                //             const randomCaseIndex = Math.floor(Math.random() * matchingWordTranslation.cases.length)
+                //             const potentialWord = matchingWordTranslation.cases[randomCaseIndex].word
+                //             const potentialCase = matchingWordTranslation.cases[randomCaseIndex].caseName
+                //             // to avoid including the 'correct-option' in the other options
+                //             // and to avoid including any other case from the translation related to originalValue
+                //             const sameTranslationOriginAsOriginalValue = isOriginalValueFromThisTranslation(matchingWordTranslation.cases, originalCase, originalValue)
+                //             const ignoreWord = (
+                //                 calculateIfNotRelevantCase(potentialCase)
+                //                 ||
+                //                 (
+                //                     // ignore if it's from same translation AND we're NOT in difficulty 3
+                //                     // ((sameTranslationOriginAsOriginalValue) && (!(exerciseDifficulty > 2) && !(['Verb'].includes(matchingWord.partOfSpeech))))
+                //                     (
+                //                         // !((sameTranslationOriginAsOriginalValue) && (exerciseDifficulty > 2) && (['Verb'].includes(matchingWord.partOfSpeech)))
+                //                         // ||
+                //                         ((sameTranslationOriginAsOriginalValue) && (exerciseDifficulty < 3))
+                //                     )
+                //                 )
+                //                 ||
+                //                 // OR if it is the same value as the original value displayed as info (itemA.label)
+                //                 ((originalValue) === (potentialWord))
+                //             )
+                //             if(!ignoreWord){ // to avoid matching with gender-related-cases or other word-properties
+                //                 if(
+                //                     // if level 3 AND a verb => we only return other cases related to the originalValue+originalCase
+                //                     (
+                //                         // To force verbs to only match with other cases of the same translation, when in level 3
+                //                         ((exerciseDifficulty > 2) && (sameTranslationOriginAsOriginalValue) && (['Verb'].includes(matchingWord.partOfSpeech)))
+                //                         ||
+                //                         // To allow nouns to work as level 2, when in level 3
+                //                         ((exerciseDifficulty > 2) && (!sameTranslationOriginAsOriginalValue) && ('Verb' !== matchingWord.partOfSpeech))
+                //                     )
+                //                     ||
+                //                     ((exerciseDifficulty < 3) && !sameTranslationOriginAsOriginalValue)
+                //                 ){
+                //                     requiredTranslations.push(potentialWord)
+                //                     keepSearching = false // this should break from the while
+                //
+                //                 } else if(exerciseDifficulty > 2){
+                //                     count++
+                //                 }
+                //             } else {
+                //                 // to avoid infinite loop in case translation has only one case stored (which is the same as the 'correct-option' for this Multiple-Choice exercise).
+                //                 if(matchingWordTranslation.cases.length === 1){
+                //                     // this should break from the while
+                //                     keepSearching = false
+                //                 } else {
+                //                     count++
+                //                 }
+                //             }
+                //         }
+                //         breakFromTranslations = true // this should break from '(matchingWord.translations).forEach(...)' and continue next matchingWord
+                //     }
+                // }
             })
+            // if((requiredTranslations.length < 2)){
+            //     console.log("NOT ENOUGH from", shuffledMatchingWords)
+            //     console.log("NOT ENOUGH to", originalValue)
+            // }
             return(requiredTranslations)
         }
         case('all-available-words'): {
@@ -635,7 +880,7 @@ const getExercises = asyncHandler(async (req, res) => {
     const parameters = {
         ...req.query.parameters,
         amountOfExercises: parseInt(req.query.parameters.amountOfExercises, 10),
-        difficultyMC: (req.query.parameters.difficultyMC !== undefined) ? parseInt(req.query.parameters.amountOfExercises, 10) : undefined
+        difficultyMC: (req.query.parameters.difficultyMC !== undefined) ? parseInt(req.query.parameters.difficultyMC, 10) : undefined
     }
 
     // words related to other-users-tags, that the current user follows.
