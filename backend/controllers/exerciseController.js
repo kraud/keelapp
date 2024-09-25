@@ -1,6 +1,7 @@
-var mongoose = require('mongoose')
+const mongoose = require('mongoose')
 const asyncHandler = require("express-async-handler")
 const {getWordsIdFromFollowedTagsByUserId} = require("./intermediary/userFollowingTagController")
+const {getPerformanceByWorId} = require("./exercisePerformanceController")
 const Word = require("../models/wordModel")
 const {nounGroupedCategoriesMultiLanguage} = require("../utils/equivalentTranslations/multiLang/nouns");
 const {verbGroupedCategoriesMultiLanguage} = require("../utils/equivalentTranslations/multiLang/verbs");
@@ -39,6 +40,7 @@ function shuffleArray(array) {
 function getRequiredAmountOfExercises(
     exercisesByWord, // exercises are grouped by word []
     amountOfExercises,
+    userId
 ) {
     const requireMultipleExercisesPerWord = amountOfExercises > exercisesByWord.length
     const requireFewerExercisesPerWord = amountOfExercises < exercisesByWord.length
@@ -47,8 +49,14 @@ function getRequiredAmountOfExercises(
     let filteredExercises = []
 
     // Helper function to randomly select one exercise from each word group
-    function randomlySelectExerciseByWord(exercisesList) {
+    function randomlySelectExerciseByWord(exercisesList, userId) {
         return exercisesList.map(word => {
+            const translationsPerformanceArray = getPerformanceByWorId(userId, word) // 1 ExercisePerformance per translation
+            // word.exercises.forEach((value, index) => {
+            //
+            //     //translationsPerformanceArray.filter(aPerformance => aPerformance.translationId === value.matchingTranslations.itemB.translationId)
+            //     //console.log("translationsPerformanceArray", value.matchingTranslations.itemB) // <=
+            // });
             const randomIndex = Math.floor(Math.random() * word.exercises.length)
             const selectedExercise = word.exercises[randomIndex]
             word.exercises.splice(randomIndex, 1) // Remove the selected exercise
@@ -57,13 +65,13 @@ function getRequiredAmountOfExercises(
     }
 
     // Helper function for selecting exercises multiple times if needed
-    function randomlySelectExercisesMultipleWords(availableExercisesByWord, neededAmount) {
+    function randomlySelectExercisesMultipleWords(availableExercisesByWord, neededAmount, userId) {
         let selectedExercises = []
         let wordsInRandomOrder = [...availableExercisesByWord] // Clone the array
         while (selectedExercises.length < neededAmount) {
             shuffleArray(wordsInRandomOrder) // Shuffle the array for randomness
             selectedExercises.push(
-                ...randomlySelectExerciseByWord(wordsInRandomOrder)
+                ...randomlySelectExerciseByWord(wordsInRandomOrder, userId)
                     .slice(0, neededAmount - selectedExercises.length) // Ensure we don't overshoot
             )
             wordsInRandomOrder = wordsInRandomOrder.filter(word => word.exercises.length > 0) // Keep only words with remaining exercises
@@ -75,15 +83,15 @@ function getRequiredAmountOfExercises(
     // Main logic
     if (requireMultipleExercisesPerWord) {
         // Select one exercise per word first, then loop through randomly until reaching the required amount
-        filteredExercises = randomlySelectExercisesMultipleWords(availableExercisesByWord, amountOfExercises)
+        filteredExercises = randomlySelectExercisesMultipleWords(availableExercisesByWord, amountOfExercises, userId)
     } else if (requireFewerExercisesPerWord) {
         // Select random exercises from randomly picked words, stopping when the required amount is reached
         shuffleArray(availableExercisesByWord) // Randomly shuffle word list
-        filteredExercises = randomlySelectExerciseByWord(availableExercisesByWord)
+        filteredExercises = randomlySelectExerciseByWord(availableExercisesByWord, userId)
             .slice(0, amountOfExercises) // Take as many as needed
     } else {
         // One exercise per word, equal number of exercises and words
-        filteredExercises = randomlySelectExerciseByWord(availableExercisesByWord)
+        filteredExercises = randomlySelectExerciseByWord(availableExercisesByWord, userId)
     }
 
     return filteredExercises
@@ -123,6 +131,7 @@ const getTIExerciseMultiLang = (itemA, itemB, partOfSpeech) => {
             itemB: {
                 language: itemB.language,
                 case: itemB.case,
+                translationId: itemB.translationId,
                 value: itemB.value
             }
         }
@@ -301,6 +310,7 @@ function calculateSingleLanguageExercises(
                     const qw = wordData.translations
                         .find(t => t.language === validLanguage)
                         ?.cases.find(c => c.caseName === exerciseList[exercise].questionWord)
+                    const cv_trans = wordData.translations.find(t => t.language === validLanguage);
                     const cv = wordData.translations
                         .find(t => t.language === validLanguage)
                         ?.cases.find(c => c.caseName === exerciseList[exercise].correctValue)
@@ -311,12 +321,13 @@ function calculateSingleLanguageExercises(
                         const dataItemA = {
                             language: validLanguage,
                             case: exerciseList[exercise].questionWord,
-                            value: qw.word
+                            value: qw.word,
                         }
                         const dataItemB = {
                             language: validLanguage,
                             case: exerciseList[exercise].correctValue,
                             value: cv.word,
+                            translationId: cv_trans.id,
                             otherValues: (typeOfExercise === 'Multiple-Choice')
                                 ? exerciseList[exercise].otherValues
                                 : []
@@ -364,7 +375,8 @@ function calculateMultiLanguageExercises(
                         const itemA = wordData.translations
                             .find(t => t.language === langA)
                             ?.cases.find(c => c.caseName === casesByLanguage[langA])
-
+                        const itemBTrans = wordData.translations
+                            .find(t => t.language === langB);
                         const itemB = wordData.translations
                             .find(t => t.language === langB)
                             ?.cases.find(c => c.caseName === casesByLanguage[langB])
@@ -379,7 +391,8 @@ function calculateMultiLanguageExercises(
                             const dataItemB = {
                                 language: langB,
                                 case: casesByLanguage[langB],
-                                value: itemB.word
+                                value: itemB.word,
+                                translationId: itemBTrans._id,
                             }
                             calculatedExercises.push(
                                 getFormattedExerciseForMultiLang(
@@ -619,6 +632,7 @@ const getMissingDataForMCExercises = (incompleteExercises, allMatchingWords, dat
 // @route   GET /api/exercises
 // @access  Private
 const getExercises = asyncHandler(async (req, res) => {
+    let userId = req.user.id
     const parameters = {
         ...req.query.parameters,
         amountOfExercises: parseInt(req.query.parameters.amountOfExercises, 10)
@@ -678,7 +692,8 @@ const getExercises = asyncHandler(async (req, res) => {
                 })
             }
         })
-    let filteredExercises = getRequiredAmountOfExercises(exercisesByWord, parameters.amountOfExercises)
+    let filteredExercises = getRequiredAmountOfExercises(exercisesByWord, parameters.amountOfExercises, userId)
+    // filteredExercises -->
     if(
         (['Multiple-Choice', 'Random'].includes(parameters.type)) &&
         // Single-Language have hardcoded options in Multiple-Choice (so we only need to get missing data when {type: Multiple-Choice OR Random})
