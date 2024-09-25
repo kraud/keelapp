@@ -229,3 +229,9 @@ export interface ExerciseResult {
     indexInList: number,
     time: number, // Date => will be used for statistics about this translation
 }
+
+export interface PerformanceParameters {
+    translation: string,
+    word: string,
+    action: "master"| "forget" | "acknowledge",
+}

@@ -1,4 +1,7 @@
 import {Grid, TextField, Typography} from "@mui/material";
+import CheckIcon from '@mui/icons-material/Check';
+import ForgetIcon from '@mui/icons-material/Block';
+import SchoolIcon from '@mui/icons-material/School';
 import IconButton from "@mui/material/IconButton";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import {CountryFlag} from "./GeneralUseComponents";
@@ -8,10 +11,12 @@ import React, {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import {deterministicSort} from "./generalUseFunctions";
 import {ExerciseTypeSelection} from "../ts/enums";
-import {EquivalentTranslationValues, ExerciseResult} from "../ts/interfaces";
+import {EquivalentTranslationValues, ExerciseResult, PerformanceParameters} from "../ts/interfaces";
 import {Bounce, toast} from "react-toastify";
 import globalTheme from "../theme/theme";
-
+import {saveTranslationPerformance} from "../features/exercisePerformance/exercisePerformanceSlice";
+import {useDispatch} from "react-redux";
+import {AppDispatch} from "../app/store";
 
 interface ExerciseCardProps {
     type: ExerciseTypeSelection,
@@ -27,6 +32,7 @@ interface ExerciseCardProps {
 
 export const ExerciseCard = (props: ExerciseCardProps) => {
     const { t } = useTranslation(['partOfSpeechCases'])
+    const dispatch = useDispatch<AppDispatch>()
     const correctValue = props.exercises[props.currentCardIndex].matchingTranslations.itemB.value
     const [textInputAnswer, setTextInputAnswer] = useState<string>("")
 
@@ -212,6 +218,36 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
         }
     }, [props.currentCardIndex])
 
+    function handleAcknowledgeClick() {
+      const parameters: PerformanceParameters= {
+          action: "acknowledge",
+          word: ,
+          translation: ,
+      }
+
+      dispatch(saveTranslationPerformance(parameters))
+    }
+
+    function handleMasterClick() {
+        const parameters: PerformanceParameters= {
+            action: "master",
+            word: ,
+            translation: ,
+        }
+
+        dispatch(saveTranslationPerformance(parameters))
+    }
+
+    function handleForgetClick() {
+        const parameters: PerformanceParameters= {
+            action: "forget",
+            word: "a",
+            translation: "b",
+        }
+
+        dispatch(saveTranslationPerformance(parameters))
+    }
+
     return(
         <Grid
             container={true}
@@ -364,6 +400,64 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                 >
                                     {t(`${(props.exercises[props.currentCardIndex].partOfSpeech as string).toLowerCase()}.${props.exercises[props.currentCardIndex].matchingTranslations.itemA.case}`, {ns: 'partOfSpeechCases'})}
                                 </Typography>
+                            </Grid>
+                            <Grid
+                                container={true}
+                                item={true}
+                                xs={12}
+                                sx={{
+                                    border: '2px solid green',
+                                }}
+                                justifyContent="center"
+                                spacing={2}
+                            >
+                                <Grid
+                                    item={true}
+                                    xs={3}
+                                >
+                                    <Button
+                                        variant="contained"
+                                        startIcon={<SchoolIcon />}
+                                        fullWidth
+                                        onClick={() => {
+                                            handleMasterClick()
+                                        }}
+                                    >
+                                    </Button>
+                                </Grid>
+                                <Grid
+                                    item={true}
+                                    xs={3}
+                                >
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        startIcon={<CheckIcon />}
+                                        fullWidth
+                                        title={"Acknowledge translation"}
+                                        onClick={() => {
+                                            handleAcknowledgeClick()
+                                        }}
+                                    >
+                                        asdf
+                                    </Button>
+                                </Grid>
+                                <Grid
+                                    item={true}
+                                    xs={3}
+                                >
+                                    <Button
+                                        variant="contained"
+                                        color="secondary"
+                                        startIcon={<ForgetIcon />}
+                                        fullWidth
+                                        onClick={() => {
+                                            handleForgetClick()
+                                        }}
+                                    >
+                                        algo
+                                    </Button>
+                                </Grid>
                             </Grid>
                         </Grid>
                         <Grid
