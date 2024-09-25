@@ -18,14 +18,28 @@ import {ExerciseCard} from "../components/ExerciseCard";
 import {ExerciseResult} from "../ts/interfaces";
 
 
-export interface ExerciseParameters {
+export type ExerciseParameters = {
     languages: Lang[],
     partsOfSpeech: PartOfSpeech[],
     amountOfExercises: number,
     multiLang: CardTypeSelection, // 'Multi-Language' | 'Single-Language' | 'Random',
-    type: ExerciseTypeSelection, //  'Multiple-Choice' | 'Text-Input' | 'Random',
+    // type: ExerciseTypeSelection, //  'Multiple-Choice' | 'Text-Input' | 'Random',
     mode: 'Single-Try' | 'Multiple-Tries'
     preSelectedWords?: any[] // simple-word data
+} & (MCType | TIType | RandomType)
+
+export type MCType = {
+    type: "Multiple-Choice",
+    difficultyMC: number
+}
+export type TIType = {
+    type: "Text-Input",
+    difficultyTI: number
+}
+export type RandomType = {
+    type: 'Random',
+    difficultyTI: number,
+    difficultyMC: number
 }
 
 interface PracticeProps {
@@ -45,8 +59,12 @@ export const Practice = (props: PracticeProps) => {
         partsOfSpeech: initialListOfPoS,
         amountOfExercises: 10,
         multiLang: CardTypeSelection['Random'], // By default, exercises will include exercise cards with single and multi languages exercises
-        type: ExerciseTypeSelection['Text-Input'],
-        mode: 'Single-Try'
+        // type: ExerciseTypeSelection['Text-Input'],
+        // type: ExerciseTypeSelection['Multiple-Choice'],
+        type: ExerciseTypeSelection['Random'],
+        mode: 'Single-Try',
+        difficultyMC: 1,
+        difficultyTI: 1,
     }
 
     const [currentCardIndex, setCurrentCardIndex] = useState(0)
@@ -113,6 +131,10 @@ export const Practice = (props: PracticeProps) => {
         dispatch(resetExerciseList())
     }
 
+    useEffect(() => {
+        console.log('parameters', parameters)
+    }, [parameters])
+
     return(
         <Grid
             component={motion.div} // to implement animations with Framer Motion
@@ -164,7 +186,7 @@ export const Practice = (props: PracticeProps) => {
                     >
                         {(exercises.length > 0)
                             ? `Exercises ${currentCardIndex+1}/${exercises.length}`
-                            : "Create Exercises"
+                            : "Practice"
                         }
                     </Typography>
                 </Grid>
@@ -218,6 +240,7 @@ export const Practice = (props: PracticeProps) => {
                                 availableLanguages={user.languages}
                                 defaultParameters={parameters}
                                 onParametersChange={(newParameters: ExerciseParameters) => {
+                                    console.log('newParameters', newParameters)
                                     setParameters((prevState) => {
                                         // This way we won't overwrite fields not modified inside ParameterSelector
                                         return({

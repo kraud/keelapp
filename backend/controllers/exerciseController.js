@@ -518,7 +518,8 @@ const isOriginalValueFromThisTranslation = (fullListOfCases, originalCase, origi
 }
 
 // This will always find other words that match the language for a Multiple-Choice-type exercise, IF THE OPTIONS EXIST. If not, the list will return as many options as available.
-const getOtherValues = (targetLanguage, originalValue, originalCase, allMatchingWords, dataOrigin, requiredAmount, partOfSpeech) => {
+const getOtherValues = (targetLanguage, originalValue, originalCase, allMatchingWords, dataOrigin, requiredAmount, partOfSpeech, difficulty) => {
+    const exerciseDifficulty = (difficulty !== undefined) ?difficulty :0
     switch (dataOrigin){
         case('matching-words'): {
             // we use 'allMatchingWords' as source of other options
@@ -531,10 +532,16 @@ const getOtherValues = (targetLanguage, originalValue, originalCase, allMatching
                     (matchingWord.translations).forEach((matchingWordTranslation) => {
                         let breakFromTranslations = false
                         if(!breakFromTranslations){
-                            if( //  Difficulty level 0? Any PoS, any language could be an option in Multiple-Choice
-                                (matchingWordTranslation.language === targetLanguage)
-                                // Multiple-Choice will only include results of the same Language (should be a parameter - Difficulty level 1?)
-                                // && (matchingWord.partOfSpeech === partOfSpeech) // Multiple-Choice will only include results of the same PoS. TODO: (should be a parameter - Difficulty level 2?)
+                            if( //  Difficulty level 0. Any PoS, any language could be an option in Multiple-Choice
+                                (exerciseDifficulty === 0)
+                                ||
+                                // Difficulty level 1: Multiple-Choice will only include results of the same Language
+                                ((exerciseDifficulty === 1) && (matchingWordTranslation.language === targetLanguage))
+                                ||
+                                // NB! This applies to difficulty 2 and 3
+                                // Difficulty level 2: Multiple-Choice will only include results of the same PoS.
+                                ((exerciseDifficulty > 1) && (matchingWordTranslation.language === targetLanguage) && (matchingWord.partOfSpeech === partOfSpeech))
+                                // Difficulty level 3: Options will ONLY come from same sameTranslationOriginAsOriginalValue. Only apply to verbs? (TODO: review if more PoS are possible)
                             ){
                                 let keepSearching = true
                                 let count = 0
@@ -542,14 +549,19 @@ const getOtherValues = (targetLanguage, originalValue, originalCase, allMatching
                                     const randomCaseIndex = Math.floor(Math.random() * matchingWordTranslation.cases.length)
                                     const potentialWord = matchingWordTranslation.cases[randomCaseIndex].word
                                     const potentialCase = matchingWordTranslation.cases[randomCaseIndex].caseName
-                                    // TODO: Difficulty level 3, options will ONLY come from same sameTranslationOriginAsOriginalValue? (should be a parameter) Maybe only apply to verbs?
                                     // to avoid including the 'correct-option' in the other options
                                     // and to avoid including any other case from the translation related to originalValue
                                     const sameTranslationOriginAsOriginalValue = isOriginalValueFromThisTranslation(matchingWordTranslation.cases, originalCase, originalValue)
                                     const ignoreWord = (
                                         calculateIfNotRelevantCase(potentialCase)
                                         ||
-                                        sameTranslationOriginAsOriginalValue
+                                        (
+                                            // ignore if it's from same translation AND we're not in difficulty 3
+                                            ((sameTranslationOriginAsOriginalValue) && (!(exerciseDifficulty > 2)))
+                                            ||
+                                            // OR if it is the same value as the original value displayed as info (itemA.label)
+                                            ((originalValue) === (potentialWord))
+                                        )
                                     )
                                     if(!ignoreWord){ // to avoid matching with gender-related-cases or other word-properties
                                         requiredTranslations.push(potentialWord)
@@ -580,7 +592,7 @@ const getOtherValues = (targetLanguage, originalValue, originalCase, allMatching
     }
 }
 
-const getMissingDataForMCExercises = (incompleteExercises, allMatchingWords, dataOrigin) => {
+const getMissingDataForMCExercises = (incompleteExercises, allMatchingWords, dataOrigin, difficulty) => {
 
     // incomplete exercises, that we'll iterate over and improve the ones that are missing data (Multiple-Choice).
     // Not all items will be Multiple-Choice, in case user selected 'All' type, where each item is either 'Text-Input' or 'Multiple-Choice' at random.
@@ -602,7 +614,8 @@ const getMissingDataForMCExercises = (incompleteExercises, allMatchingWords, dat
                             allMatchingWords,
                             dataOrigin,
                             2, // TODO: this should be a parameter
-                            exercise.partOfSpeech
+                            exercise.partOfSpeech,
+                            difficulty
                         )
                     }
                 }
@@ -621,7 +634,8 @@ const getMissingDataForMCExercises = (incompleteExercises, allMatchingWords, dat
 const getExercises = asyncHandler(async (req, res) => {
     const parameters = {
         ...req.query.parameters,
-        amountOfExercises: parseInt(req.query.parameters.amountOfExercises, 10)
+        amountOfExercises: parseInt(req.query.parameters.amountOfExercises, 10),
+        difficultyMC: (req.query.parameters.difficultyMC !== undefined) ? parseInt(req.query.parameters.amountOfExercises, 10) : undefined
     }
 
     // words related to other-users-tags, that the current user follows.
@@ -688,7 +702,8 @@ const getExercises = asyncHandler(async (req, res) => {
             filteredExercises,
             matchingWordData,
             // TODO: this should be optional if the user wants to only use words that match the parameters, or the full list of words they have stored in their account
-            'matching-words' // 'matching-words' | 'all-available-words' TODO: should be a parameter
+            'matching-words', // 'matching-words' | 'all-available-words' TODO: should be a parameter
+            parameters.difficultyMC
         )
         res.status(200).json(exercisesWithMCData)
     } else { // type: 'Text-Input' => no need to add additional options

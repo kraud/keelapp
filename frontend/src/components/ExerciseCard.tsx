@@ -185,7 +185,6 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                                 setTextInputAnswer(event.target.value)
                             }}
-                            // disabled={(currentCardAnswer!!) && (currentCardAnswer?.answer !== "")}
 
                             InputProps={{
                                 readOnly: (currentCardAnswer!!) && (currentCardAnswer?.answer !== ""),

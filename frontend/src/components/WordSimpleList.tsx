@@ -170,7 +170,7 @@ export const WordSimpleList = (props: WordSimpleListProps) => {
                                                 {(translationsToBeDisplayed.map((activeLanguageField: string, index: number) => {
                                                     return(
                                                         <Tooltip
-                                                            title={`Registered cases: ${selectedWord[`registeredCases${activeLanguageField.slice(-2)}`]}`}
+                                                            title={`Registered cases (${activeLanguageField.slice(-2)}): ${selectedWord[`registeredCases${activeLanguageField.slice(-2)}`]}`}
                                                             key={index}
                                                         >
                                                             <Grid

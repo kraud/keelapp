@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from "react"
-import {Grid, Typography} from "@mui/material"
+import {Collapse, Divider, Grid, Slider, Typography} from "@mui/material"
 import {DnDLanguageOrderSelector} from "./DnDLanguageOrderSelector";
 import {CardTypeSelection, ExerciseTypeSelection, Lang, PartOfSpeech} from "../ts/enums";
 import {useTranslation} from "react-i18next";
 import {CheckboxGroupWithHook, CheckboxItemData} from "./CheckboxGroupFormHook";
-import {useForm} from "react-hook-form";
+import {Controller, useForm} from "react-hook-form";
 import {TextInputFormWithHook} from "./TextInputFormHook";
 import {ExerciseParameters} from "../pages/Practice";
 import Button from "@mui/material/Button";
@@ -12,6 +12,7 @@ import * as Yup from "yup";
 import {yupResolver} from "@hookform/resolvers/yup/dist/yup";
 import {RadioGroupWithHook} from "./RadioGroupFormHook";
 import globalTheme from "../theme/theme";
+import Tooltip from "@mui/material/Tooltip";
 
 interface ExerciseParameterSelectorProps {
     defaultParameters: ExerciseParameters,
@@ -28,6 +29,35 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
     const [allSelectedLanguages, setAllSelectedLanguages] = useState<string[]>(props.availableLanguages)
     // Languages currently not displayed as columns on the table
     const [otherLanguages, setOtherLanguages] = useState<string[]>([])
+    const [displayAdvancedOptions, setDisplayAdvancedOptions] = useState<boolean>(false)
+
+
+    const marks = [
+        {
+            value: 0,
+            label: 'Level 0',
+            // label: '0️⃣',
+            tooltipText: 'Any word-type - any language'
+        },
+        {
+            value: 1,
+            label: 'Level 1',
+            // label: '1️⃣',
+            tooltipText: 'Any word-type - same language'
+        },
+        {
+            value: 2,
+            label: 'Level 2',
+            // label: '2️⃣',
+            tooltipText: 'Same word-type - same language'
+        },
+        {
+            value: 3,
+            label: 'Level 3',
+            // label: '3️⃣',
+            tooltipText: 'Same word - same language - different cases'
+        },
+    ]
 
 
     const validationSchema = Yup.object().shape({
@@ -66,6 +96,7 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
             type: getValues('type'),
             multiLang: getValues('multiLang'),
             mode: 'Single-Try',
+            difficultyMC: getValues('difficultyMC'),
             ...newParameter // name must much a property from ExerciseParameters, so it only overrides that matching property
         }
         props.onParametersChange(updatedData as ExerciseParameters)
@@ -173,6 +204,7 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                         disabled={props.disabled!!}
                         displayItems={'both'}
                         hideIndex={true}
+                        alwaysDoubleRow={true}
                     />
                 </Grid>
                 {/* PART OF SPEECH SELECTION */}
@@ -213,6 +245,9 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                         }}
                         fullWidth={true}
                         type={'number'}
+                        sxProps={{
+                            borderRadius: '10px'
+                        }}
                     />
                 </Grid>
                 {/* TYPE OF EXERCISES */}
@@ -261,7 +296,108 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                         disableUnselect={true}
                     />
                 </Grid>
-                {/* TODO: add slider for difficulty and BE logic for it (difficulty level 0-1-2-3) */}
+
+                <Grid
+                    item={true}
+                    xs={10}
+                >
+                    <Divider
+                        orientation="horizontal"
+                        flexItem={true}
+                        sx={{
+                            "&::before, &::after": {
+                                borderColor: "black",
+                            },
+                        }}
+                    >
+                        <Tooltip
+                            title={!(['Random', 'Multiple-Choice'].includes(props.defaultParameters.type))
+                                ? "'Text-Input' exercises don't have advanced options yet"
+                                : ""
+                            }
+                        >
+                            {/* span required to display tooltip over disabled button */}
+                            <span>
+                                <Button
+                                    variant={'text'}
+                                    onClick={() => {
+                                        setDisplayAdvancedOptions((prevValue: boolean) => !prevValue)
+                                    }}
+                                    disabled={!(['Random', 'Multiple-Choice'].includes(props.defaultParameters.type))}
+                                >
+                                    {(displayAdvancedOptions) ? "Hide advanced options" : "Display advanced options"}
+                                </Button>
+                            </span>
+                        </Tooltip>
+                    </Divider>
+                </Grid>
+                <Grid
+                    container={true}
+                    item={true}
+                    xs={12}
+                >
+                    <Collapse
+                        in={displayAdvancedOptions}
+                        sx={{
+                            width: '100%'
+                        }}
+                    >
+                        {(['Random', 'Multiple-Choice'].includes(props.defaultParameters.type)) &&
+                            <Grid
+                                container={true}
+                                item={true}
+                                xs={12}
+                                sx={{
+                                    backgroundColor: '#e1e1e1',
+                                    borderRadius: '25px',
+                                    paddingY: globalTheme.spacing(2)
+                                }}
+                            >
+                                <Grid
+                                    container={true}
+                                    item={true}
+                                    xs={12}
+                                    justifyContent={'center'}
+                                    spacing={1}
+                                >
+                                    <Grid
+                                        item={true}
+                                    >
+                                        <Typography
+                                            variant={'body1'}
+                                        >
+                                            Multiple-Choice difficulty:
+                                        </Typography>
+                                    </Grid>
+                                    <Grid
+                                        item={true}
+                                        xs={10}
+                                    >
+                                        <Slider
+                                            defaultValue={marks[1].value}
+                                            step={null}
+                                            valueLabelDisplay={"auto"}
+                                            marks={marks}
+                                            valueLabelFormat={(value: number, index: number) => {
+                                                return(
+                                                    (marks.find((mark) => {
+                                                        return (mark.value === value)
+                                                    }))?.tooltipText
+                                                )
+                                            }}
+                                            onChangeCommitted={(event: React.SyntheticEvent | Event, value: number | number[]) => {
+                                                runOnParametersChange({difficultyMC: value as number})
+                                            }}
+                                            min={0}
+                                            max={3}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        }
+                    </Collapse>
+                </Grid>
+
 
                 {/* ACTION BUTTONS */}
                 <Grid

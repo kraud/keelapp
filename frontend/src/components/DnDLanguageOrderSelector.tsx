@@ -20,6 +20,7 @@ interface DnDLanguageOrderSelectorProps{
     setAllSelectedItems: (items: string[]) => void
     setOtherItems: (items: string[]) => void
     direction: "vertical" | "horizontal"
+    alwaysDoubleRow?: boolean, // in case we always have 2 rows (one for each container) => we don't need marginX to separate them
     displayItems?: 'text' | 'flag' | 'both'
     hideIndex?: boolean,
     justifyContent?: "center" | "flex-end" | "flex-start"
@@ -36,9 +37,7 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
             padding: globalTheme.spacing(1),
             border: '2px solid black',
             borderRadius: '10px',
-            marginX: globalTheme.spacing(2),
             marginTop: '0',
-            marginLeft: '0',
             minWidth: '150px',
             minHeight: '56.5px',
         },
@@ -164,7 +163,8 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                     direction={"column"}
                     // xs // NB! This makes both columns be displayed side by side
                     sx={{
-                        // width: 'max-content'
+                        marginX: (props.alwaysDoubleRow) ?undefined :globalTheme.spacing(1),
+                        marginY: globalTheme.spacing(1)
                     }}
                 >
                     {(props.selectedItemsTitle !== "") &&
@@ -265,6 +265,10 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                         // xs={'auto'}
                         xs
                         direction={"column"}
+                        sx={{
+                            marginX: (props.alwaysDoubleRow) ?undefined :globalTheme.spacing(1),
+                            marginY: globalTheme.spacing(1)
+                        }}
                     >
                         {(props.otherItemsTitle!!) &&
                             <Grid
