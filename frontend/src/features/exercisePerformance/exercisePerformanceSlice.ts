@@ -34,6 +34,25 @@ export const saveTranslationPerformance = createAsyncThunk('exercises/saveTransl
     }
 })
 
+// Get exercises for this user
+export const saveExerciseResult = createAsyncThunk('exercises/saveExerciseResult', async (performanceParameters: PerformanceParameters, thunkAPI) => {
+    try {
+        // @ts-ignore
+        const token = thunkAPI.getState().auth.user.token
+        return await exercisePerformanceService.saveExerciseResult(performanceParameters, token)
+    } catch(error: any) {
+        const message = (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            )
+            || error.message
+            || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+
 export const exercisePerformanceSlice = createSlice({
     name: 'exercisePerformance',
     initialState,
@@ -60,5 +79,5 @@ export const exercisePerformanceSlice = createSlice({
     }
 })
 
-export const { resetExercisesSliceState} = exercisePerformanceSlice.actions
+export const { resetExercisesSliceState } = exercisePerformanceSlice.actions
 export default exercisePerformanceSlice.reducer

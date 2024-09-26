@@ -19,8 +19,23 @@ const saveTranslationPerformance = async (performanceParameters: PerformancePara
     return(response.data)
 }
 
+// Saves exercise result by id
+const saveExerciseResult = async (performanceParameters: PerformanceParameters, token: any) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        },
+        params: {
+            parameters: performanceParameters
+        },
+    }
+    const response = await axios.get(`${API_URL}/saveExerciseResult`, config)
+    return(response.data)
+}
+
 const exercisePerformanceService = {
-    saveTranslationPerformance
+    saveTranslationPerformance,
+    saveExerciseResult
 }
 
 export default exercisePerformanceService

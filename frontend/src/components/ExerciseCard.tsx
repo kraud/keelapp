@@ -219,33 +219,33 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
     }, [props.currentCardIndex])
 
     function handleAcknowledgeClick() {
-      const parameters: PerformanceParameters= {
-          action: "acknowledge",
-          word: ,
-          translation: ,
-      }
-
-      dispatch(saveTranslationPerformance(parameters))
+      // const parameters: PerformanceParameters= {
+      //     action: "acknowledge",
+      //     word: "word",
+      //     translation: "translation",
+      // }
+      //
+      // dispatch(saveTranslationPerformance(parameters))
     }
 
     function handleMasterClick() {
-        const parameters: PerformanceParameters= {
-            action: "master",
-            word: ,
-            translation: ,
-        }
-
-        dispatch(saveTranslationPerformance(parameters))
+        // const parameters: PerformanceParameters= {
+        //     action: "master",
+        //     word: "wor",
+        //     translation: ,
+        // }
+        //
+        // dispatch(saveTranslationPerformance(parameters))
     }
 
     function handleForgetClick() {
-        const parameters: PerformanceParameters= {
-            action: "forget",
-            word: "a",
-            translation: "b",
-        }
-
-        dispatch(saveTranslationPerformance(parameters))
+        // const parameters: PerformanceParameters= {
+        //     action: "forget",
+        //     word: "a",
+        //     translation: "b",
+        // }
+        //
+        // dispatch(saveTranslationPerformance(parameters))
     }
 
     return(

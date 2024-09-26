@@ -38,7 +38,7 @@ function shuffleArray(array) {
     }
 }
 
-async function getRequiredAmountOfExercises(
+function getRequiredAmountOfExercises(
     exercisesByWord, // exercises are grouped by word []
     amountOfExercises,
     userId
@@ -51,10 +51,9 @@ async function getRequiredAmountOfExercises(
 
     // Helper function to randomly select one exercise from each word group
     function randomlySelectExerciseByWord(exercisesList, userId) {
-        return exercisesList.map(async word => {
-            const translationsPerformanceArray = await getPerformanceByWorId(userId, word) // 1 ExercisePerformance per translation
+        return exercisesList.map(word => {
+            const translationsPerformanceArray = getPerformanceByWorId(userId, word) // 1 ExercisePerformance per translation
             const allExercises = findMatches(word, translationsPerformanceArray)
-            console.log("|", JSON.stringify(allExercises))
             allExercises.sort((a, b) => a.knowledge - b.knowledge)
             const selectedExercise = allExercises[0]
             word.exercises.splice(0, 1)
@@ -88,13 +87,11 @@ async function getRequiredAmountOfExercises(
     } else if (requireFewerExercisesPerWord) {
         // Select random exercises from randomly picked words, stopping when the required amount is reached
         shuffleArray(availableExercisesByWord) // Randomly shuffle word list
-        filteredExercises = await randomlySelectExerciseByWord(availableExercisesByWord, userId)
-            .slice(0, amountOfExercises) // Take as many as needed
+        filteredExercises = randomlySelectExerciseByWord(availableExercisesByWord, userId).slice(0, amountOfExercises) // Take as many as needed
     } else {
         // One exercise per word, equal number of exercises and words
-        filteredExercises = await randomlySelectExerciseByWord(availableExercisesByWord, userId)
+        filteredExercises = randomlySelectExerciseByWord(availableExercisesByWord, userId)
     }
-
     return filteredExercises
 }
 
@@ -693,7 +690,7 @@ const getExercises = asyncHandler(async (req, res) => {
                 })
             }
         })
-    let filteredExercises = await getRequiredAmountOfExercises(exercisesByWord, parameters.amountOfExercises, userId)
+    let filteredExercises = getRequiredAmountOfExercises(exercisesByWord, parameters.amountOfExercises, userId)
     // filteredExercises -->
     if(
         (['Multiple-Choice', 'Random'].includes(parameters.type)) &&
