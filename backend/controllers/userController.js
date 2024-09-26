@@ -81,6 +81,7 @@ const registerUser = asyncHandler(async(req, res) => {
             email: user.email,
             username: user.username,
             languages: [], // user will select them once they log in
+            uiLanguage: 'English', // TODO: this should default to browser-language
             verified: user.verified
         })
     } else {
@@ -111,6 +112,7 @@ const loginUser = asyncHandler(async(req, res) => {
             email: user.email,
             username: user.username,
             languages: user.languages,
+            uiLanguage: user.uiLanguage,
             token: generateToken(user._id),
             verified: user.verified
         })

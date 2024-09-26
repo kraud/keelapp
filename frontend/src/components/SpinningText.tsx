@@ -118,7 +118,7 @@ export function SpinningText(props: SpinningTextProps) {
         matchingLanguagesItems.findIndex((item: LanguageAndLabel) => {
             return(item.language === user.uiLanguage)
         })
-    ].label
+    ]?.label
 
     return(
         <Tooltip
