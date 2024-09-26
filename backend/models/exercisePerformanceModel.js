@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose= require('mongoose')
 
 const exercisePerformanceSchema = mongoose.Schema({
     user:{
@@ -27,6 +27,9 @@ const exercisePerformanceSchema = mongoose.Schema({
             // }],
             lastDate: {
                 type: Date
+            },
+            knowledge:{
+                type: Number
             }
         }]
     }
