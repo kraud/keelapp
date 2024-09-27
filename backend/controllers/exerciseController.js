@@ -517,15 +517,17 @@ const isCorrectOptionValueFromThisTranslation = (fullListOfCases, originalCase, 
     )
 }
 
-const getMissingValuesByDifficulty = (
+// Depending on the selected difficulty, the exercises will be more or less complex. The logic is very similar between them,
+// and the exact variations are still not completely defined, so (for now) each difficulty includes the whole logic-process,
+// but this will might get simplified in the future if/once the logic is settled and we can check if there's overlap and room to reduce duplicated code
+const getValuesForMultiLangAndMultipleChoiceExerciseByDifficulty = (
     exerciseDifficulty, // difficulty of the Multiple-Choice options
     matchingWord, // current word (from filtered-by-parameters list)
     correctOptionCase, // itemB.case
     correctOptionValue, // itemB.value
     correctOptionLanguage, // itemB.language
-    partOfSpeech, // PoS of the word
+    partOfSpeech, // PoS of the exercise
     requiredAmount, // how many options we need to find in total for this Multiple-Choice exercise
-    optionsFound // list of options we already found for this Multiple-Choice exercise
 ) => {
     let shuffledTranslations = [...matchingWord.translations]
     shuffleArray(shuffledTranslations)
@@ -540,7 +542,7 @@ const getMissingValuesByDifficulty = (
                 // and to avoid including any other case from the translation related to correctOptionValue
                 const sameTranslationOriginAsCorrectOptionValue = isCorrectOptionValueFromThisTranslation(matchingWordTranslation.cases, correctOptionCase, correctOptionValue)
                 // TODO: add another boolean here to check if translation is related to info value (itemA.value). We would need additional parameters.
-                if((requiredAmount > optionsFound.length) && !breakFromCurrentWord && !sameTranslationOriginAsCorrectOptionValue) {
+                if(!breakFromCurrentWord && !sameTranslationOriginAsCorrectOptionValue) {
                     const allCases = [...matchingWordTranslation.cases]
                     // we filter not relevant cases here (gender, regularity, etc.)
                     let allCasesRandomOrderAndFiltered = allCases.filter((caseToCheck) => {
@@ -568,7 +570,7 @@ const getMissingValuesByDifficulty = (
                 // and to avoid including any other case from the translation related to correctOptionValue
                 const sameTranslationOriginAsCorrectOptionValue = isCorrectOptionValueFromThisTranslation(relevantTranslationMatch.cases, correctOptionCase, correctOptionValue)
                 // TODO: add another boolean here to check if translation is related to info value (itemA.value). We would need additional parameters.
-                if((requiredAmount > optionsFound.length) && !sameTranslationOriginAsCorrectOptionValue) {
+                if(!sameTranslationOriginAsCorrectOptionValue) {
                     const allCases = [...relevantTranslationMatch.cases]
                     // we filter not relevant cases here (gender, regularity, etc.)
                     let allCasesRandomOrderAndFiltered = allCases.filter((caseToCheck) => {
@@ -595,14 +597,15 @@ const getMissingValuesByDifficulty = (
                     // and to avoid including any other case from the translation related to correctOptionValue
                     const sameTranslationOriginAsCorrectOptionValue = isCorrectOptionValueFromThisTranslation(relevantTranslationMatch.cases, correctOptionCase, correctOptionValue)
                     // TODO: add another boolean here to check if translation is related to info value (itemA.value). We would need additional parameters.
-                    if((requiredAmount > optionsFound.length) && !sameTranslationOriginAsCorrectOptionValue) { // if correct Language and PoS => we check if we still need more items for Multiple-Choice
+                    if(!sameTranslationOriginAsCorrectOptionValue) {
                         const allCases = [...relevantTranslationMatch.cases]
                         // we filter not relevant cases here (gender, regularity, etc.)
                         let allCasesRandomOrderAndFiltered = allCases.filter((caseToCheck) => {
                             // if they match any of the criteria to ignore => we won't consider that item
                             return(!calculateIfNotRelevantCase(caseToCheck.caseName))
                         })
-                        if(allCasesRandomOrderAndFiltered.length > 0){ // if there is at least 1 case that can be used, we add it to return values and break from this word
+                        // if there is at least 1 case that can be used, we add it to return values and break from this word
+                        if(allCasesRandomOrderAndFiltered.length > 0){
                             shuffleArray(allCasesRandomOrderAndFiltered)
                             returnValues.push(allCasesRandomOrderAndFiltered[0].word)
                         }
@@ -636,13 +639,11 @@ const getMissingValuesByDifficulty = (
                             ? undefined // if end undefined => slice extends to the end of the array.
                             : requiredAmount;
                         (allCasesRandomOrderAndFiltered.slice(0, indexEnd)).forEach((randomCase) => { // we slice the list here since we know how many items we want
-                            const potentialWord = randomCase.word
-                            returnValues.push(potentialWord)
+                            returnValues.push(randomCase.word)
                         })
                     } else {
                         // similar logic as level 2 => Applies to all words that are not Verbs (fow now)
                         if(
-                            (requiredAmount > optionsFound.length) &&  // if correct Language and PoS => we check if we still need more items for Multiple-Choice
                             (!sameTranslationOriginAsCorrectOptionValue) && // we check that translation is not match from correct-option
                             (partOfSpeech !== 'Verb' ) // This logic in Level 3, should only apply for NON 'Verbs'
                         ) {
@@ -670,7 +671,7 @@ const getMissingValuesByDifficulty = (
 }
 
 // This will always find other words that match the language for a Multiple-Choice-type exercise, IF THE OPTIONS EXIST. If not, the list will return as many options as available.
-const getOtherValues = (
+const getOtherValuesForMultiLangAndMultipleChoiceExercise = (
     correctOptionLanguage, // itemB.language
     correctOptionValue, // itemB.value
     correctOptionCase, // itemB.case
@@ -689,18 +690,19 @@ const getOtherValues = (
             shuffleArray(shuffledMatchingWords) // this should guarantee that we won't be getting the same words in the "other-options" for different exercises
             let optionsFound = []
             shuffledMatchingWords.forEach((matchingWord) => {
-                const acceptedValues = getMissingValuesByDifficulty(
-                    exerciseDifficulty, // can be made random with a parameter?
-                    matchingWord,
-                    correctOptionCase,
-                    correctOptionValue,
-                    correctOptionLanguage,
-                    partOfSpeech,
-                    requiredAmount,
-                    optionsFound
-                )
-                if(acceptedValues.length > 0) {
-                    optionsFound.push(...acceptedValues)
+                if(requiredAmount > optionsFound.length){
+                    const acceptedValues = getValuesForMultiLangAndMultipleChoiceExerciseByDifficulty(
+                        exerciseDifficulty, // can be made random with a parameter?
+                        matchingWord,
+                        correctOptionCase,
+                        correctOptionValue,
+                        correctOptionLanguage,
+                        partOfSpeech,
+                        requiredAmount
+                    )
+                    if(acceptedValues.length > 0) {
+                        optionsFound.push(...acceptedValues)
+                    }
                 }
             })
             return(optionsFound)
@@ -717,32 +719,36 @@ const getMissingDataForMCExercises = (incompleteExercises, allMatchingWords, dat
 
     // incomplete exercises, that we'll iterate over and improve the ones that are missing data (Multiple-Choice).
     // Not all items will be Multiple-Choice, in case user selected 'All' type, where each item is either 'Text-Input' or 'Multiple-Choice' at random.
-    let exercisesWithFullData = incompleteExercises.map((exercise) => {
+    let exercisesWithFullData = []
+    incompleteExercises.forEach((exercise) => {
         if(
             (exercise.type === 'Multiple-Choice') &&
             (exercise.multiLang) // (single-language)+(multiple-choice) will skip this, because we set hardcoded data when creating the exercise
         ){
-            return({
-                ...exercise,
-                matchingTranslations: {
-                    ...exercise.matchingTranslations,
-                    itemB: {
-                        ...exercise.matchingTranslations.itemB,
-                        otherValues: getOtherValues(
-                            exercise.matchingTranslations.itemB.language,
-                            exercise.matchingTranslations.itemB.value,
-                            exercise.matchingTranslations.itemB.case,
-                            allMatchingWords,
-                            dataOrigin,
-                            2, // TODO: this should be a parameter
-                            exercise.partOfSpeech,
-                            difficulty
-                        )
+            const requiredValues = getOtherValuesForMultiLangAndMultipleChoiceExercise(
+                exercise.matchingTranslations.itemB.language,
+                    exercise.matchingTranslations.itemB.value,
+                    exercise.matchingTranslations.itemB.case,
+                    allMatchingWords,
+                    dataOrigin,
+                    2, // TODO: this should be a parameter
+                    exercise.partOfSpeech,
+                    difficulty
+            )
+            if(requiredValues.length > 0){ // if no value matching the request was found, we remove the exercise from the return list
+                exercisesWithFullData.push({
+                    ...exercise,
+                    matchingTranslations: {
+                        ...exercise.matchingTranslations,
+                        itemB: {
+                            ...exercise.matchingTranslations.itemB,
+                            otherValues: requiredValues
+                        }
                     }
-                }
-            })
+                })
+            }
         } else { // if it's not Multiple-Choice => exercise is complete => store it in list
-            return(exercise)
+            exercisesWithFullData.push(exercise)
         }
     })
     return(exercisesWithFullData)

@@ -11,6 +11,7 @@ import {ExerciseTypeSelection} from "../ts/enums";
 import {EquivalentTranslationValues, ExerciseResult} from "../ts/interfaces";
 import {Bounce, toast} from "react-toastify";
 import globalTheme from "../theme/theme";
+import {ExerciseParameters} from "../pages/Practice";
 
 
 interface ExerciseCardProps {
@@ -23,6 +24,7 @@ interface ExerciseCardProps {
     onClickCheck?: () => void
     exercisesResults: ExerciseResult[]
     setExercisesResults: (newResult: ExerciseResult) => void
+    parameters: ExerciseParameters
 }
 
 export const ExerciseCard = (props: ExerciseCardProps) => {
@@ -52,15 +54,52 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
         }
     }
 
+    const checkTextInputAnswerByDifficulty = (currentAnswer: string, correctValue: string, difficulty: number) => {
+        switch(difficulty){
+            case(1): {
+                const currentAnswerNormalized = currentAnswer.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase()
+                const correctValueNormalized = correctValue.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase()
+                if(
+                    (correctValue !== currentAnswer) &&
+                    (currentAnswerNormalized === correctValueNormalized)
+                ) {
+                    return('partially-correct')
+                }
+                return((correctValueNormalized === currentAnswerNormalized) ? 'correct' : 'wrong')
+            }
+            case(2): {
+                const currentAnswerNoUppercases = currentAnswer.toLowerCase()
+                const correctValueNoUppercases = correctValue.toLowerCase()
+                if(
+                    (correctValue !== currentAnswer) &&
+                    (currentAnswerNoUppercases === correctValueNoUppercases)
+                ) {
+                    return('partially-correct')
+                }
+                return((currentAnswerNoUppercases === correctValueNoUppercases) ? 'correct' : 'wrong')
+            }
+            case(3): {
+                return((currentAnswer === correctValue) ? 'correct' : 'wrong')
+            }
+            default: {
+                return('wrong')
+            }
+        }
+    }
+
     const checkIfCorrectAnswer = (answer: string) => {
-        let answerStatus: boolean = false
+        let answerStatus: 'wrong' | 'correct' | 'partially-correct' = 'wrong' // partially-correct applies to (TI-difficulty: 1)
+        const sanitizedAnswer = answer.trim() // removes whitespace from both ends of this string and returns a new string
         switch (props.type){
             case('Text-Input'):{
-                answerStatus = (correctValue.toLowerCase() === answer.toLowerCase())
+                const difficultyTI: number = (props.parameters.type !== 'Multiple-Choice')
+                    ? props.parameters.difficultyTI
+                    : 2
+                answerStatus = checkTextInputAnswerByDifficulty(sanitizedAnswer, correctValue, difficultyTI)
                 break
             }
             case('Multiple-Choice'):{
-                answerStatus = (correctValue.toLowerCase() === answer.toLowerCase())
+                answerStatus = (correctValue.toLowerCase() === sanitizedAnswer.toLowerCase()) ? 'correct' : 'wrong'
                 break
             }
             default:{
@@ -68,35 +107,53 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
             }
         }
         // TODO: improve content in toasts
-        if(answerStatus){
-            toast.success('Correct! ✅', {
-                position: "bottom-center",
-                autoClose: 500,
-                hideProgressBar: true,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggable: false,
-                progress: undefined,
-                theme: "colored",
-                transition: Bounce,
-            })
-        } else {
-            toast.error(`Incorrect! ❌ - Correct answer: ${correctValue}`, {
-                position: "bottom-center",
-                autoClose: 500,
-                hideProgressBar: true,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggable: false,
-                progress: undefined,
-                theme: "colored",
-                transition: Bounce,
-            })
-
+        switch(answerStatus){
+            case('correct'): {
+                toast.success('Correct! ✅', {
+                    position: "bottom-center",
+                    autoClose: 500,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggable: false,
+                    progress: undefined,
+                    theme: "colored",
+                    transition: Bounce,
+                })
+                break
+            }
+            case("wrong"): {
+                toast.error(`Incorrect! ❌ - Correct answer: ${correctValue}`, {
+                    position: "bottom-center",
+                    autoClose: 1000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggable: false,
+                    progress: undefined,
+                    theme: "colored",
+                    transition: Bounce,
+                })
+                break
+            }
+            case("partially-correct"): {
+                toast.warning(`Partially correct! ⚠ - Correct answer: ${correctValue}`, {
+                    position: "bottom-center",
+                    autoClose: 1000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggable: false,
+                    progress: undefined,
+                    theme: "colored",
+                    transition: Bounce,
+                })
+                break
+            }
         }
         const newExerciseResult = {
             answer: answer,
-            correct: answerStatus,
+            correct: (answerStatus !== 'wrong'), // partially-correct is still "correct"
             indexInList: props.currentCardIndex,
             time: Date.now(),
         }
@@ -156,6 +213,9 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                                         : 'error'
                                                     : 'inherit' // should be gray/disabled
                                         }
+                                        sx={{
+                                            borderRadius: (currentExercise.multiLang) ? 'inherit' :'50px'
+                                        }}
                                     >
                                         {option}
                                     </Button>
@@ -287,7 +347,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                     sx={{
                         border: '4px solid #0072CE',
                         borderRadius: '25px',
-                        height: '55vh',
+                        height: {xs: '40vh', md: '55vh'},
                         background: '#d3d3d3',
                     }}
                 >
@@ -430,7 +490,6 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                     // border: '4px solid green',
                                 }}
                             >
-
                                 <Grid
                                     item={true}
                                     xs={8}
@@ -510,6 +569,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                 justifyContent={'space-evenly'}
                 item={true}
                 xs={12}
+                spacing={2}
                 sx={{
                     // border: '4px solid red',
                     marginY: globalTheme.spacing(2)
