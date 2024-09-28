@@ -414,7 +414,9 @@ function findExercisesByEquivalentTranslations(
     // First, we get ALL stored languages per word
     const availableLanguages = wordData.translations.map(t => t.language)
     // Get the intersection of the user-required languages and the languages stored in wordData.translations
-    const validLanguages = languages.filter(lang => availableLanguages.includes(lang))
+    let randomOrderLanguages = [...languages] // we shuffle languages here, so each word will have better chances of different languages
+    shuffleArray(randomOrderLanguages)
+    const validLanguages = randomOrderLanguages.filter(lang => availableLanguages.includes(lang))
     let calculatedExercises = []
 
     switch(multiLang) {

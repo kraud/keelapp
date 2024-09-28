@@ -163,8 +163,9 @@ export const Practice = (props: PracticeProps) => {
             >
                 {(exercises.length > 0) &&
                     <Grid
+                        container={true}
                         item={true}
-                        xs={12}
+                        xs={'auto'}
                         sx={{
                             marginTop: globalTheme.spacing(2)
                         }}
@@ -173,14 +174,15 @@ export const Practice = (props: PracticeProps) => {
                             sx={{
                                 typography: {
                                     xs: 'h3',
-                                    sm: 'h3',
-                                    md: 'h1',
+                                    sm: 'h2',
+                                    lg: 'h1',
                                 },
                             }}
                             align={"center"}
                         >
                             {`Exercises ${currentCardIndex+1}/${exercises.length}`}
                         </Typography>
+                        <LinearIndeterminate progress={((currentCardIndex+1)/(exercises.length))*100}/>
                     </Grid>
                 }
                 {(

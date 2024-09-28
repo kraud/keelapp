@@ -1,4 +1,11 @@
-import {ExerciseTypeSelection, Lang, PartOfSpeech} from "../ts/enums";
+import {
+    EnglishPronouns, EstonianPronouns,
+    GermanPronouns,
+    Lang,
+    PartOfSpeech,
+    Plurality,
+    SpanishPronouns
+} from "../ts/enums";
 import {
     FilterItem,
     FriendshipData,
@@ -567,4 +574,21 @@ export function deterministicSort(array: string[]) {
 
         return hashA - hashB;
     })
+}
+
+export const getVerbPronoun = (personNumber: 1 | 2 | 3, plurality: Plurality, language: Lang): string => {
+    const key = `${personNumber}${plurality === Plurality.S ? "S" : "P"}` as keyof typeof SpanishPronouns
+
+    switch (language) {
+        case Lang.ES:
+            return SpanishPronouns[key]
+        case Lang.EN:
+            return EnglishPronouns[key]
+        case Lang.DE:
+            return GermanPronouns[key]
+        case Lang.EE:
+            return EstonianPronouns[key]
+        default:
+            return('missing language for pronoun')
+    }
 }

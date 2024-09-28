@@ -1,4 +1,4 @@
-import {Grid, TextField, Typography} from "@mui/material";
+import {Chip, Grid, InputAdornment, TextField, Typography} from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import {CountryFlag} from "./GeneralUseComponents";
@@ -6,13 +6,19 @@ import Button from "@mui/material/Button";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import React, {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
-import {deterministicSort} from "./generalUseFunctions";
-import {ExerciseTypeSelection} from "../ts/enums";
+import {deterministicSort, getVerbPronoun} from "./generalUseFunctions";
+import {ExerciseTypeSelection, PartOfSpeech} from "../ts/enums";
 import {EquivalentTranslationValues, ExerciseResult} from "../ts/interfaces";
 import {Bounce, toast} from "react-toastify";
 import globalTheme from "../theme/theme";
 import {ExerciseParameters} from "../pages/Practice";
+import {NounCasesData, VerbCasesData, WordCasesData} from "../ts/wordCasesDataByPoS";
+import Tooltip from "@mui/material/Tooltip";
 
+interface InfoChipData {
+    label: string,
+    value: string
+}
 
 interface ExerciseCardProps {
     type: ExerciseTypeSelection,
@@ -29,28 +35,33 @@ interface ExerciseCardProps {
 
 export const ExerciseCard = (props: ExerciseCardProps) => {
     const { t } = useTranslation(['partOfSpeechCases'])
+    const wordCasesDescriptions = WordCasesData
     const correctValue = props.exercises[props.currentCardIndex].matchingTranslations.itemB.value
     const [textInputAnswer, setTextInputAnswer] = useState<string>("")
 
+    const currentExerciseData = (props.exercises[props.currentCardIndex])
     // TODO: maybe this should filter the list and the element with to 'indexInList' that matches?
     const currentCardAnswer: ExerciseResult = props.exercisesResults[props.currentCardIndex]
+    const disableCheckButton = (
+        ((currentCardAnswer!!) && (currentCardAnswer?.answer !== ""))
+        ||
+        (textInputAnswer === "")
+    )
 
     const componentStyles = {
         textField: {
             fieldset: {
                 border: 'none',
             },
-            input: {
-                border: `4px solid ${
-                    !(currentCardAnswer!!)
-                        ? globalTheme.palette.primary.main // default before answering
-                        : (currentCardAnswer!!) && (currentCardAnswer.correct)
-                            ? globalTheme.palette.success.main // correct answer
-                            : globalTheme.palette.error.main // wrong answer
-                }`,
-                borderRadius: '25px',
-                background: "white"
-            }
+            border: `4px solid ${
+                !(currentCardAnswer!!)
+                    ? globalTheme.palette.primary.main // default before answering
+                    : (currentCardAnswer!!) && (currentCardAnswer.correct)
+                        ? globalTheme.palette.success.main // correct answer
+                        : globalTheme.palette.error.main // wrong answer
+            }`,
+            borderRadius: '25px',
+            background: "white"
         }
     }
 
@@ -190,15 +201,10 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                     key={index}
                                     item={true}
                                     xs={8}
-                                    sx={{
-                                        // border: '2px solid gray',
-                                    }}
                                 >
                                     <Button
                                         variant={'contained'}
-                                        // color={'secondary'}
                                         fullWidth={true}
-                                        // disabled={(currentCardAnswer !== undefined)}
                                         onClick={() => {
                                             if((currentCardAnswer === undefined)) {
                                                 checkIfCorrectAnswer(option)
@@ -226,28 +232,59 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                 )
             }
             case(ExerciseTypeSelection["Text-Input"]): {
+                const shouldDisplayVerbPronoun = (
+                    (questionWordDescriptionData !== undefined) &&
+                    (isVerbCasesData(questionWordDescriptionData)) &&
+                    !(questionWordDescriptionData.isVerbProperty) &&
+                    (currentExerciseData.partOfSpeech === 'Verb')
+                )
+
                 return(
                     <Grid
                         item={true}
                         xs={10}
-                        sx={{
-                            // border: '2px solid gray',
-                        }}
                     >
-                        {/* TODO: this should be a text-input field */}
                         <TextField
                             id={"filled-basic"}
                             placeholder={"Answer here..."}
-                            inputProps={{min: 0, style: { textAlign: 'center', fontSize: '2.25rem' }}}
+                            inputProps={{
+                                min: 0,
+                                style: {
+                                    textAlign: (shouldDisplayVerbPronoun) ?'left' :'center',
+                                    fontSize: '2.25rem',
+                                    paddingLeft: globalTheme.spacing((shouldDisplayVerbPronoun) ?1 :0)
+                                }
+                            }}
                             variant={"outlined"}
                             size={"medium"}
                             fullWidth={true}
                             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                                 setTextInputAnswer(event.target.value)
                             }}
-
+                            onKeyDown={(e: any) => {
+                                if(
+                                    (e.key === 'Enter') &&
+                                    !disableCheckButton
+                                ){
+                                    checkIfCorrectAnswer(textInputAnswer)
+                                }
+                            }}
+                            autoComplete={'off'}
                             InputProps={{
                                 readOnly: (currentCardAnswer!!) && (currentCardAnswer?.answer !== ""),
+                                autoComplete: 'off',
+                                startAdornment: (shouldDisplayVerbPronoun)
+                                    ?
+                                        <InputAdornment
+                                            position="start"
+                                            sx={{
+                                                fontSize: "1.25rem",
+                                                paddingLeft: globalTheme.spacing(2)
+                                            }}
+                                        >
+                                            [ {getVerbPronoun(questionWordDescriptionData.person, questionWordDescriptionData.plurality, questionWordDescriptionData.language)} ]
+                                        </InputAdornment>
+                                    : undefined,
                             }}
                             value={textInputAnswer}
                             sx={componentStyles.textField}
@@ -270,6 +307,161 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
             setTextInputAnswer(currentCardAnswer.answer)
         }
     }, [props.currentCardIndex])
+
+    const [displayedWordDescriptionData, setDisplayedWordDescriptionData] = useState<NounCasesData | VerbCasesData | undefined>(undefined)
+    const [questionWordDescriptionData, setQuestionWordDescriptionData] = useState<NounCasesData | VerbCasesData | undefined>(undefined)
+    const getDisplayedWordDescription = () => {
+        const currentRelevantPoSData: NounCasesData[] | VerbCasesData[] = wordCasesDescriptions[currentExerciseData.partOfSpeech as string]
+        // @ts-ignore
+        const relevantWordDetails = (currentRelevantPoSData).find((currentPoSCaseList: NounCasesData | VerbCasesData) => {
+            return(currentPoSCaseList.caseName === currentExerciseData.matchingTranslations.itemA.case)
+        })
+        setDisplayedWordDescriptionData(relevantWordDetails)
+    }
+    const getQuestionWordDescription = () => {
+        const currentRelevantPoSData: NounCasesData[] | VerbCasesData[] = wordCasesDescriptions[currentExerciseData.partOfSpeech as string]
+        // @ts-ignore
+        const relevantWordDetails = (currentRelevantPoSData).find((currentPoSCaseList: NounCasesData | VerbCasesData) => {
+            return(currentPoSCaseList.caseName === currentExerciseData.matchingTranslations.itemB.case)
+        })
+        setQuestionWordDescriptionData(relevantWordDetails)
+    }
+
+    useEffect(() => {
+        getDisplayedWordDescription()
+        getQuestionWordDescription()
+    }, [props.currentCardIndex])
+
+    const getChipListOfWordDetails = (relevantWordDescription: NounCasesData | VerbCasesData, chipColor: 'primary' | 'secondary' | 'info',) => {
+        let chips: InfoChipData[] = [{label: 'error', value: 'no data'}]
+        if(relevantWordDescription !== undefined){
+            chips = getChipFieldsByPoS(relevantWordDescription, currentExerciseData.partOfSpeech)
+        }
+
+        return(
+            <Grid
+                item={true}
+                container={true}
+                justifyContent={'center'}
+                spacing={1}
+            >
+                {chips.map((chip: InfoChipData, index: number) => {
+                    return(
+                         <Grid
+                             item={true}
+                             key={index}
+                         >
+                             <Chip
+                                 variant={"filled"}
+                                 color={chipColor}
+                                 label={chip.value}
+                                 size={"small"}
+                                 sx={{
+                                     paddingX: globalTheme.spacing(1),
+                                     borderRadius: '10px',
+                                 }}
+                             />
+                         </Grid>
+                    )
+                })}
+            </Grid>
+        )
+    }
+
+    // Type guard for VerbCasesData
+    const isVerbCasesData = (data: NounCasesData | VerbCasesData): data is VerbCasesData => {
+        return (data as VerbCasesData).isVerbProperty !== undefined;
+    }
+
+    // Type guard for NounCasesData
+    const isNounCasesData = (data: NounCasesData | VerbCasesData): data is NounCasesData => {
+        return (data as NounCasesData).isNounProperty !== undefined;
+    }
+
+    // TODO: some chips could display additional info in Tooltip on hover?
+    const getChipFieldsByPoS = (relevantWordDetails: NounCasesData | VerbCasesData, currentPartOfSpeech: PartOfSpeech) => {
+
+        let returnList: InfoChipData[] = []
+        switch(currentPartOfSpeech){
+            case (PartOfSpeech.verb): {
+                if (isVerbCasesData(relevantWordDetails)) {
+                    const verbData: VerbCasesData = relevantWordDetails; // Now TypeScript knows this is VerbCasesData
+                    if (verbData.isVerbProperty) { // is information about a conjugated verb
+                        returnList = [
+                            {
+                                label: '-',
+                                value: verbData.verbPropertyCategory,
+                            },
+                        ]
+                    } else { // is a conjugated verb
+                        console.log('verbData', verbData.person)
+                        returnList = [
+                            {
+                                label: 'Type',
+                                value: PartOfSpeech.verb,
+                            },
+                            {
+                                label: 'person',
+                                value: t('verbPersonCardinal.number', {ns: 'partOfSpeechCases', count: verbData.person, ordinal: true}),
+                            },
+                            {
+                                label: 'plurality',
+                                value: verbData.plurality, // TODO: translate (singular/plural) for all languages
+                            },
+                            {
+                                label: 'tense',
+                                value: verbData.tense, // TODO: translate for all languages (later)
+                            },
+                            ...(verbData.mood !== undefined)
+                                ? [{ label: 'mood', value: verbData.mood}]
+                                : [],
+                        ]
+                    }
+                }
+                break
+            }
+            case (PartOfSpeech.noun): {
+                if (isNounCasesData(relevantWordDetails)) {
+                    const nounData: NounCasesData = relevantWordDetails; // Now TypeScript knows this is NounCasesData
+                    if (nounData.isNounProperty) { // is information about a noun
+                        returnList = [
+                            {
+                                label: '-',
+                                value: nounData.nounPropertyCategory,
+                            },
+                        ]
+                    } else { // is a noun
+                        returnList = [
+                            {
+                                label: 'Type',
+                                value: PartOfSpeech.noun,
+                            },
+                            {
+                                label: 'declination',
+                                value: nounData.declination,
+                            },
+                            {
+                                label: 'plurality',
+                                value: nounData.plurality, // TODO: translate (singular/plural) for all languages
+                            },
+                        ]
+                    }
+                }
+                break
+            }
+            default: {
+
+            }
+        }
+        return(returnList)
+    }
+
+    const addPronounToVerbDisplayed = (
+        (displayedWordDescriptionData !== undefined) &&
+        (isVerbCasesData(displayedWordDescriptionData)) &&
+        !(displayedWordDescriptionData.isVerbProperty) &&
+        (currentExerciseData.partOfSpeech === 'Verb')
+    )
 
     return(
         <Grid
@@ -357,10 +549,8 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                         direction={'column'}
                         justifyContent={'space-around'}
                         xs={true}
-                        // rowSpacing={3}
                         alignItems={'center'}
                         sx={{
-                            // border: '4px solid yellow',
                             height: '100%'
                         }}
                     >
@@ -368,16 +558,10 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                             container={true}
                             justifyContent={'center'}
                             item={true}
-                            sx={{
-                                // border: '4px solid black',
-                            }}
                         >
                             <Grid
                                 item={true}
                                 xs={'auto'}
-                                sx={{
-                                    // border: '2px solid gray',
-                                }}
                             >
                                 <CountryFlag
                                     country={props.exercises[props.currentCardIndex].matchingTranslations.itemA.language}
@@ -385,54 +569,67 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                 />
                             </Grid>
                             <Grid
+                                container={true}
+                                justifyContent={'center'}
+                                alignItems={'center'}
                                 item={true}
-                                xs={12}
-                                sx={{
-                                    // border: '2px solid gray',
-                                }}
                             >
-                                <Typography
-                                    sx={{
-                                        typography: {
-                                            xs: 'h6',
-                                            sm: 'h5',
-                                            md: 'h3',
-                                        },
-                                    }}
-                                    align={"center"}
+                                {(addPronounToVerbDisplayed) &&
+                                    <Grid
+                                        item={true}
+                                        xs={'auto'}
+                                    >
+                                        <Typography
+                                            sx={{
+                                                typography: {
+                                                    xs: 'body1',
+                                                    sm: 'h6',
+                                                    md: 'h4',
+                                                },
+                                                paddingRight: globalTheme.spacing(2),
+                                                color: 'gray',
+                                            }}
+                                            align={"center"}
+                                        >
+                                            [ {getVerbPronoun(displayedWordDescriptionData.person, displayedWordDescriptionData.plurality, displayedWordDescriptionData.language)} ]
+                                        </Typography>
+                                    </Grid>
+                                }
+                                <Grid
+                                    item={true}
+                                    xs={'auto'}
                                 >
-                                    {props.exercises[props.currentCardIndex].matchingTranslations.itemA.value}
-                                </Typography>
+                                    <Typography
+                                        sx={{
+                                            typography: {
+                                                xs: 'h6',
+                                                sm: 'h5',
+                                                md: 'h3',
+                                            },
+                                        }}
+                                        align={"center"}
+                                    >
+                                        {props.exercises[props.currentCardIndex].matchingTranslations.itemA.value}
+                                    </Typography>
+                                </Grid>
                             </Grid>
-                            <Grid
-                                item={true}
-                                xs={12}
-                                sx={{
-                                    // border: '2px solid gray',
-                                }}
-                            >
-                                <Typography
+                            {(displayedWordDescriptionData !== undefined) &&
+                                <Grid
+                                    item={true}
+                                    xs={12}
                                     sx={{
-                                        typography: {
-                                            xs: 'body2',
-                                            sm: 'body1',
-                                            md: 'h6',
-                                        },
+                                        marginTop: globalTheme.spacing(1)
                                     }}
-                                    align={"center"}
                                 >
-                                    {t(`${(props.exercises[props.currentCardIndex].partOfSpeech as string).toLowerCase()}.${props.exercises[props.currentCardIndex].matchingTranslations.itemA.case}`, {ns: 'partOfSpeechCases'})}
-                                </Typography>
-                            </Grid>
+                                    {getChipListOfWordDetails(displayedWordDescriptionData, "primary")}
+                                </Grid>
+                            }
                         </Grid>
                         <Grid
                             container={true}
                             justifyContent={'center'}
                             spacing={1}
                             item={true}
-                            sx={{
-                                // border: '4px solid green',
-                            }}
                         >
                             <Grid
                                 container={true}
@@ -442,9 +639,6 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                 <Grid
                                     item={true}
                                     xs={'auto'}
-                                    sx={{
-                                        // border: '2px solid gray',
-                                    }}
                                 >
                                     <CountryFlag
                                         country={props.exercises[props.currentCardIndex].matchingTranslations.itemB.language}
@@ -455,27 +649,17 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                             {/* This help should only be visible for (multiLang:false)+(type:Text-Input) exercises */}
                             {(
                                 (props.type === 'Text-Input') &&
-                                !(props.exercises[props.currentCardIndex].multiLang)
+                                !(props.exercises[props.currentCardIndex].multiLang) &&
+                                (questionWordDescriptionData !== undefined)
                             ) &&
                                 <Grid
                                     item={true}
                                     xs={12}
-                                    sx={{
-                                        // border: '2px solid gray',
-                                    }}
                                 >
-                                    <Typography
-                                        sx={{
-                                            typography: {
-                                                xs: 'body2',
-                                                sm: 'body1',
-                                                md: 'h6',
-                                            },
-                                        }}
-                                        align={"center"}
-                                    >
-                                        {t(`${(props.exercises[props.currentCardIndex].partOfSpeech as string).toLowerCase()}.${props.exercises[props.currentCardIndex].matchingTranslations.itemB.case}`, {ns: 'partOfSpeechCases'})}
-                                    </Typography>
+                                    {getChipListOfWordDetails(
+                                        questionWordDescriptionData,
+                                        'secondary'
+                                    )}
                                 </Grid>
                             }
                             {getOptionsToDisplay(props.type)}
@@ -486,32 +670,28 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                 justifyContent={'center'}
                                 alignItems={'center'}
                                 item={true}
-                                sx={{
-                                    // border: '4px solid green',
-                                }}
                             >
                                 <Grid
                                     item={true}
                                     xs={8}
-                                    sx={{
-                                        // border: '2px solid gray',
-                                    }}
                                 >
-                                    <Button
-                                        variant={'contained'}
-                                        color={'success'}
-                                        fullWidth={true}
-                                        onClick={() => {
-                                            checkIfCorrectAnswer(textInputAnswer)
-                                        }}
-                                        disabled={
-                                            ((currentCardAnswer!!) && (currentCardAnswer?.answer !== ""))
-                                            ||
-                                            (textInputAnswer === "")
-                                        }
+                                    <Tooltip
+                                        title={(disableCheckButton) ?"Input answer first" :""}
                                     >
-                                        Check
-                                    </Button>
+                                        <span>
+                                            <Button
+                                                variant={'contained'}
+                                                color={'success'}
+                                                fullWidth={true}
+                                                onClick={() => {
+                                                    checkIfCorrectAnswer(textInputAnswer)
+                                                }}
+                                                disabled={disableCheckButton}
+                                            >
+                                                Check
+                                            </Button>
+                                        </span>
+                                    </Tooltip>
                                 </Grid>
                             </Grid>
                         }
@@ -525,16 +705,10 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                 justifyContent={'center'}
                 alignItems={'center'}
                 xs={'auto'}
-                sx={{
-                    // border: '4px solid red',
-                }}
             >
                 <Grid
                     item={true}
                     xs={true}
-                    sx={{
-                        // border: '4px solid yellow',
-                    }}
                 >
                     <IconButton
                         color={'primary'}
