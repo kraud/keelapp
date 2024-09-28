@@ -202,8 +202,12 @@ export type TextInput = {
             language: Lang,
             case: NounCases | VerbCases | AdverbCases | AdjectiveCases,
             value: string,
+            translationId: any
         }
-    }
+    },
+    knowledge: Number,
+    performance: any,
+    word: string
 }
 
 export type MultipleChoice = {
@@ -219,8 +223,12 @@ export type MultipleChoice = {
             case: NounCases | VerbCases | AdverbCases | AdjectiveCases,
             value: string,
             otherValues: string[],
+            translationId: any
         }
-    }
+    },
+    knowledge: Number,
+    performance: any,
+    word: string
 }
 
 export interface ExerciseResult {
@@ -231,7 +239,11 @@ export interface ExerciseResult {
 }
 
 export interface PerformanceParameters {
-    translation: string,
-    word: string,
-    action: "master"| "forget" | "acknowledge",
+    performanceId?: string,
+    word?: string,
+    action?: "master"| "forget" | "acknowledge",
+    user?: any,
+    translationId?: any,
+    caseName?: string,
+    record?: boolean
 }

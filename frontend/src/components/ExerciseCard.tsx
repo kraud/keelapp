@@ -15,8 +15,9 @@ import {EquivalentTranslationValues, ExerciseResult, PerformanceParameters} from
 import {Bounce, toast} from "react-toastify";
 import globalTheme from "../theme/theme";
 import {saveTranslationPerformance} from "../features/exercisePerformance/exercisePerformanceSlice";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../app/store";
+import {wordSlice} from "../features/words/wordSlice";
 
 interface ExerciseCardProps {
     type: ExerciseTypeSelection,
@@ -35,6 +36,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
     const dispatch = useDispatch<AppDispatch>()
     const correctValue = props.exercises[props.currentCardIndex].matchingTranslations.itemB.value
     const [textInputAnswer, setTextInputAnswer] = useState<string>("")
+    const {user} = useSelector((state: any) => state.auth)
 
     // TODO: maybe this should filter the list and the element with to 'indexInList' that matches?
     const currentCardAnswer: ExerciseResult = props.exercisesResults[props.currentCardIndex]
@@ -74,6 +76,23 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
             }
         }
         // TODO: improve content in toasts
+        let performanceParameters : PerformanceParameters = {
+        }
+
+        if (Object.keys(props.exercises[props.currentCardIndex].performance).length === 0){
+            performanceParameters = {
+                user: user._id,
+                translationId: props.exercises[props.currentCardIndex].matchingTranslations.itemB.translationId,
+                word: props.exercises[props.currentCardIndex].word,
+                caseName: props.exercises[props.currentCardIndex].matchingTranslations.itemB.case,
+            }
+        }
+        else{
+            performanceParameters = {
+                caseName: props.exercises[props.currentCardIndex].matchingTranslations.itemB.case,
+                performanceId: props.exercises[props.currentCardIndex].performance._id
+            }
+        }
         if(answerStatus){
             toast.success('Correct! ✅', {
                 position: "bottom-center",
@@ -86,6 +105,12 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                 theme: "colored",
                 transition: Bounce,
             })
+            performanceParameters = {
+                ...performanceParameters,
+                record: true
+            }
+
+
         } else {
             toast.error(`Incorrect! ❌ - Correct answer: ${correctValue}`, {
                 position: "bottom-center",
@@ -98,6 +123,10 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                 theme: "colored",
                 transition: Bounce,
             })
+            performanceParameters = {
+                ...performanceParameters,
+                record: false
+            }
 
         }
         const newExerciseResult = {
@@ -107,6 +136,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
             time: Date.now(),
         }
         props.setExercisesResults(newExerciseResult)
+        dispatch(saveTranslationPerformance(performanceParameters))
     }
 
     const getOptionsToDisplay = (type: ExerciseTypeSelection) => {
@@ -231,7 +261,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
     function handleMasterClick() {
         // const parameters: PerformanceParameters= {
         //     action: "master",
-        //     word: "wor",
+        //     word: ,
         //     translation: ,
         // }
         //

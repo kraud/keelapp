@@ -7,15 +7,15 @@ const ExercisePerformance = require('../models/exercisePerformanceModel')
  * @param userId String with user _id
  * @param word Word model "instance"
  */
-const getPerformanceByWorId = asyncHandler(async (userId, word) => {
+const getPerformanceByWorId = async (userId, word) => {
     // Array de ExercisePerformance
     let wordObjectId = word._id
     let userObjectId =  mongoose.Types.ObjectId(userId)
-    return await ExercisePerformance.find({user: userObjectId, word: wordObjectId})
-        .then(performances => {
+    return ExercisePerformance.find({user: userObjectId, word: wordObjectId})
+        .then(async performances => {
             return performances; // Procesar el resultado aquí si se necesita
         });
-})
+}
 
 const getPerformanceByWordIdAndTranslationId =  asyncHandler(async (userId, wordId, ) => {
     // Array de ExercisePerformance
@@ -30,15 +30,7 @@ const getPerformanceByWordIdAndTranslationId =  asyncHandler(async (userId, word
 // @desc    Set Word
 // @route   POST /api/saveExerciseResult
 // @access  Private
-const saveExerciseResult = asyncHandler(async (req, res) => {
-    if (!req.body.partOfSpeech) {
-        res.status(400)
-        throw new Error("Please add part of speech")
-    }
-    if (!req.body.translations || req.body.translations.length < 2) {
-        res.status(400)
-        throw new Error("Please add 2 or more translations")
-    }
+const saveTranslationPerformance = asyncHandler(async (req, res) => {
 
     // Body del servicio:
     // performanceId: req.performanceId
@@ -67,6 +59,7 @@ const saveExerciseResult = asyncHandler(async (req, res) => {
                 knowledge: knowledge
             }]
         })
+        return res.status(200).json(exercisePerformance)
     } else {
         //update
         let statByCaseName = exercisePerformance.statsByCase.find(stat => stat.caseName = req.body.caseName);
@@ -91,8 +84,10 @@ const saveExerciseResult = asyncHandler(async (req, res) => {
 
         try{
             exercisePerformance.save()
+            return res.status(200).json(exercisePerformance)
         } catch (error){
             console.log(error)
+            return res.status(500).json(error)
         }
     }
 })
@@ -123,6 +118,7 @@ const findMatches = (word, translationsPerformanceArray) => {
         .map(exercise => {
             const itemB = exercise.matchingTranslations.itemB;
             if (itemB && itemB.translationId && Array.isArray(translationsPerformanceArray)) {
+                console.log("entre")
                 // stat is object of ExercisePerformance
                 const stat = translationsPerformanceArray.find(s => s.translationId.equals(itemB.translationId));
                 if (stat) {
@@ -130,12 +126,13 @@ const findMatches = (word, translationsPerformanceArray) => {
                     const caseMatchingStats = stat.statsByCase.find(statCase => statCase.caseName === itemB.case);
                     if(caseMatchingStats){
                         const newKnowledge = calculateAging(caseMatchingStats.knowledge, caseMatchingStats.lastDate)
-                        return {...exercise, knowledge: newKnowledge, performance: stat }
+                        return {...exercise, knowledge: newKnowledge, performance: stat, word: word._id}
                     }
-                    return {...exercise, knowledge: 0, performance: stat }
+                    return {...exercise, knowledge: 0, performance: stat, word: word._id }
                 }
             }
-            return {...exercise, knowledge:0, performance: {} };
+            console.log("no entre ", translationsPerformanceArray)
+            return {...exercise, knowledge:0, performance: {}, word: word._id};
         })
         .filter(result => result !== null).flat();
 };
@@ -191,7 +188,7 @@ const getPerformanceByWorIdDummy = (userId, word) => {
 
 module.exports = {
     getPerformanceByWorId,
-    saveExerciseResult,
+    saveTranslationPerformance,
     calculateAging,
     findMatches,
     getPerformanceByWorIdDummy,
