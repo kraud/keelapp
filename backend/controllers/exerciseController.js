@@ -56,6 +56,7 @@ async function getRequiredAmountOfExercises(
             let translationsPerformanceArray = await getPerformanceByWorId(userId, word)  // 1 ExercisePerformance per translation
             const allExercises = findMatches(word, translationsPerformanceArray)
             allExercises.sort((a, b) => a.knowledge - b.knowledge)
+            //allExercises.sort((a, b) => b.knowledge - a.knowledge)
             const selectedExercise = allExercises[0]
             word.exercises.splice(0, 1)
             selectedExercises.push(selectedExercise)

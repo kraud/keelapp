@@ -107,9 +107,14 @@ function calculateAging(percentageOfKnowledge, lastDate){
 function calculateNewPercentageOfKnowledge(previousPercentageOfKnowledge, arrayResults){
     if(arrayResults.length > 0){
         const averageOfArray = (arrayResults.filter(Boolean).length / arrayResults.length) * 100;
-        return ((1 * previousPercentageOfKnowledge ) + (3 * averageOfArray))/4
+        if(previousPercentageOfKnowledge > 0){
+            return ((0.5 * previousPercentageOfKnowledge ) + (3.5 * averageOfArray))/4
+        }
+        else{
+            return averageOfArray
+        }
     }
-    return previousPercentageOfKnowledge;
+    return previousPercentageOfKnowledge
 }
 
 const findMatches = (word, translationsPerformanceArray) => {
@@ -118,7 +123,6 @@ const findMatches = (word, translationsPerformanceArray) => {
         .map(exercise => {
             const itemB = exercise.matchingTranslations.itemB;
             if (itemB && itemB.translationId && Array.isArray(translationsPerformanceArray)) {
-                console.log("entre")
                 // stat is object of ExercisePerformance
                 const stat = translationsPerformanceArray.find(s => s.translationId.equals(itemB.translationId));
                 if (stat) {
@@ -131,7 +135,6 @@ const findMatches = (word, translationsPerformanceArray) => {
                     return {...exercise, knowledge: 0, performance: stat, word: word._id }
                 }
             }
-            console.log("no entre ", translationsPerformanceArray)
             return {...exercise, knowledge:0, performance: {}, word: word._id};
         })
         .filter(result => result !== null).flat();
