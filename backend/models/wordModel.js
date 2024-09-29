@@ -24,11 +24,7 @@ const wordSchema = mongoose.Schema(
         },
         clue: {
             type: String,
-        },
-        // TODO: remove, since we have new real Tag and TagWord implementation
-        tags: [{
-            type: String
-        }]
+        }
     },
     {
         timestamps: true,

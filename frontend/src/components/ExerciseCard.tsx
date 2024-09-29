@@ -17,7 +17,6 @@ import globalTheme from "../theme/theme";
 import {saveTranslationPerformance} from "../features/exercisePerformance/exercisePerformanceSlice";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../app/store";
-import {wordSlice} from "../features/words/wordSlice";
 
 interface ExerciseCardProps {
     type: ExerciseTypeSelection,
@@ -34,6 +33,7 @@ interface ExerciseCardProps {
 export const ExerciseCard = (props: ExerciseCardProps) => {
     const { t } = useTranslation(['partOfSpeechCases'])
     const dispatch = useDispatch<AppDispatch>()
+    const currentExercise = props.exercises[props.currentCardIndex]
     const correctValue = props.exercises[props.currentCardIndex].matchingTranslations.itemB.value
     const [textInputAnswer, setTextInputAnswer] = useState<string>("")
     const {user} = useSelector((state: any) => state.auth)
@@ -79,7 +79,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
         let performanceParameters : PerformanceParameters = {
         }
 
-        if (Object.keys(props.exercises[props.currentCardIndex].performance).length === 0){
+        if (currentExercise.performance !== undefined){
             performanceParameters = {
                 user: user._id,
                 translationId: props.exercises[props.currentCardIndex].matchingTranslations.itemB.translationId,
@@ -90,7 +90,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
         else{
             performanceParameters = {
                 caseName: props.exercises[props.currentCardIndex].matchingTranslations.itemB.case,
-                performanceId: props.exercises[props.currentCardIndex].performance._id
+                performanceId: props.exercises[props.currentCardIndex].performance._id,
             }
         }
         if(answerStatus){
@@ -129,12 +129,14 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
             }
 
         }
+
         const newExerciseResult = {
             answer: answer,
             correct: answerStatus,
             indexInList: props.currentCardIndex,
             time: Date.now(),
         }
+
         props.setExercisesResults(newExerciseResult)
         dispatch(saveTranslationPerformance(performanceParameters))
     }

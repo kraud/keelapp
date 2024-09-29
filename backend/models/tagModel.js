@@ -22,12 +22,7 @@ const tagSchema = mongoose.Schema(
         public: { // 'type' as a property name can cause issues with mongoose when defining a schema
             type: String, // 'Public', 'Private', 'Friends-Only'
             required: [true, 'Please specify a tag public status'],
-        },
-        // list of wordIds that contain the current tag's ID in its 'tags' array
-        // TODO: this would have to be updated when changes are made to a word. Potential 2nd source of truth? Should be avoided?
-        wordsId: [{
-            type: String
-        }]
+        }
     },
     {
         timestamps: true
