@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from "react"
-import {Grid, Typography} from "@mui/material"
+import {Collapse, Divider, Grid, Slider, Typography} from "@mui/material"
 import {DnDLanguageOrderSelector} from "./DnDLanguageOrderSelector";
 import {CardTypeSelection, ExerciseTypeSelection, Lang, PartOfSpeech} from "../ts/enums";
 import {useTranslation} from "react-i18next";
 import {CheckboxGroupWithHook, CheckboxItemData} from "./CheckboxGroupFormHook";
-import {useForm} from "react-hook-form";
+import {Controller, useForm} from "react-hook-form";
 import {TextInputFormWithHook} from "./TextInputFormHook";
 import {ExerciseParameters} from "../pages/Practice";
 import Button from "@mui/material/Button";
@@ -12,6 +12,56 @@ import * as Yup from "yup";
 import {yupResolver} from "@hookform/resolvers/yup/dist/yup";
 import {RadioGroupWithHook} from "./RadioGroupFormHook";
 import globalTheme from "../theme/theme";
+import Tooltip from "@mui/material/Tooltip";
+import LinearIndeterminate from "./Spinner";
+
+const difficultyMCSliderMarks = [
+    {
+        value: 0,
+        label: 'Level 0',
+        // label: '0️⃣',
+        tooltipText: 'Any word-type - any language'
+    },
+    {
+        value: 1,
+        label: 'Level 1',
+        // label: '1️⃣',
+        tooltipText: 'Any word-type - same language'
+    },
+    {
+        value: 2,
+        label: 'Level 2',
+        // label: '2️⃣',
+        tooltipText: 'Same word-type - same language'
+    },
+    {
+        value: 3,
+        label: 'Level 3',
+        // label: '3️⃣',
+        tooltipText: 'Same word - same language - different cases'
+    },
+]
+
+const difficultyTISliderMarks = [
+    {
+        value: 1,
+        label: 'Level 1',
+        // label: '1️⃣',
+        tooltipText: 'Ignores capitalization, and special characters.'
+    },
+    {
+        value: 2,
+        label: 'Level 2',
+        // label: '2️⃣',
+        tooltipText: 'Only ignores capitalization.'
+    },
+    {
+        value: 3,
+        label: 'Level 3',
+        // label: '3️⃣',
+        tooltipText: 'Zero tolerance - input must match exactly.'
+    },
+]
 
 interface ExerciseParameterSelectorProps {
     defaultParameters: ExerciseParameters,
@@ -20,15 +70,20 @@ interface ExerciseParameterSelectorProps {
     availableLanguages: Lang[]
     availablePoS: PartOfSpeech[]
     disabled?: boolean
+    isLoading?: boolean
+    preSelectedWordsDisplayed?: boolean
 }
 
 export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps) => {
+
     const { t } = useTranslation(['review', 'common'])
     // Languages currently displayed as columns on the selector
     const [allSelectedLanguages, setAllSelectedLanguages] = useState<string[]>(props.availableLanguages)
     // Languages currently not displayed as columns on the table
     const [otherLanguages, setOtherLanguages] = useState<string[]>([])
-
+    const [displayAdvancedOptions, setDisplayAdvancedOptions] = useState<boolean>(false)
+    const [difficultyMC, setDifficultyMC] = useState<number>(difficultyMCSliderMarks[1].value)
+    const [difficultyTI, setDifficultyTI] = useState<number>(difficultyTISliderMarks[1].value)
 
     const validationSchema = Yup.object().shape({
         partsOfSpeech: Yup
@@ -66,6 +121,8 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
             type: getValues('type'),
             multiLang: getValues('multiLang'),
             mode: 'Single-Try',
+            difficultyMC: difficultyMC,
+            difficultyTI: difficultyTI,
             ...newParameter // name must much a property from ExerciseParameters, so it only overrides that matching property
         }
         props.onParametersChange(updatedData as ExerciseParameters)
@@ -116,14 +173,29 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
             direction={'column'}
             justifyContent={'center'}
             alignItems={'center'}
-            rowSpacing={2}
             item={true}
             xs={12}
             sx={{
                 border: '4px solid #0072CE',
                 borderRadius: '25px',
-                paddingX: globalTheme.spacing(2),
-                paddingBottom: globalTheme.spacing(2)
+                paddingX: {
+                    xs: globalTheme.spacing(2),
+                    lg: (props.preSelectedWordsDisplayed!!)
+                        ? globalTheme.spacing(4)
+                        : globalTheme.spacing(8)
+                },
+                paddingBottom: {
+                    xs: globalTheme.spacing(2),
+                    lg: (props.preSelectedWordsDisplayed!!)
+                        ? globalTheme.spacing(3)
+                        : globalTheme.spacing(6)
+                },
+                paddingTop: {
+                    xs: globalTheme.spacing(2),
+                    lg: (props.preSelectedWordsDisplayed!!)
+                        ? globalTheme.spacing(2)
+                        : globalTheme.spacing(4)
+                },
             }}
         >
             <Grid
@@ -144,7 +216,7 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                             },
                         }}
                     >
-                        Parameters:
+                        Exercise parameters:
                     </Typography>
                 </Grid>
             </Grid>
@@ -173,6 +245,7 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                         disabled={props.disabled!!}
                         displayItems={'both'}
                         hideIndex={true}
+                        alwaysDoubleRow={true}
                     />
                 </Grid>
                 {/* PART OF SPEECH SELECTION */}
@@ -213,6 +286,9 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                         }}
                         fullWidth={true}
                         type={'number'}
+                        sxProps={{
+                            borderRadius: '10px'
+                        }}
                     />
                 </Grid>
                 {/* TYPE OF EXERCISES */}
@@ -261,7 +337,165 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                         disableUnselect={true}
                     />
                 </Grid>
-                {/* TODO: add slider for difficulty and BE logic for it (difficulty level 0-1-2-3) */}
+
+                <Grid
+                    item={true}
+                    xs={10}
+                >
+                    <Divider
+                        orientation="horizontal"
+                        flexItem={true}
+                        sx={{
+                            "&::before, &::after": {
+                                borderColor: "black",
+                            },
+                        }}
+                    >
+                        <Button
+                            variant={'text'}
+                            onClick={() => {
+                                setDisplayAdvancedOptions((prevValue: boolean) => !prevValue)
+                            }}
+                        >
+                            {(displayAdvancedOptions) ? "Hide advanced settings" : "Display advanced settings"}
+                        </Button>
+                    </Divider>
+                </Grid>
+                <Grid
+                    container={true}
+                    item={true}
+                    xs={12}
+                >
+                    <Collapse
+                        in={displayAdvancedOptions}
+                        sx={{
+                            width: '100%'
+                        }}
+                    >
+                        <Grid
+                            container={true}
+                            item={true}
+                            xs={12}
+                            sx={{
+                                backgroundColor: '#e1e1e1',
+                                borderRadius: '25px',
+                                paddingY: globalTheme.spacing(2)
+                            }}
+                        >
+                            <Grid
+                                container={true}
+                                item={true}
+                                xs={12}
+                                justifyContent={'center'}
+                                spacing={1}
+                            >
+                                <Grid
+                                    item={true}
+                                >
+                                    <Tooltip
+                                        title={(props.defaultParameters.type === 'Text-Input') // only case where this would be disabled
+                                            ? "Exercise type must be 'Multiple-Choice' or 'Random' to change this value"
+                                            : ""
+                                        }
+                                    >
+                                        <Typography
+                                            variant={'body1'}
+                                        >
+                                            Multiple-Choice difficulty:
+                                        </Typography>
+                                    </Tooltip>
+                                </Grid>
+                                <Grid
+                                    item={true}
+                                    xs={10}
+                                >
+                                    <Slider
+                                        defaultValue={difficultyMCSliderMarks[1].value}
+                                        step={null}
+                                        valueLabelDisplay={"auto"}
+                                        marks={difficultyMCSliderMarks}
+                                        valueLabelFormat={(value: number, index: number) => {
+                                            return(
+                                                (difficultyMCSliderMarks.find((mark) => {
+                                                    return (mark.value === value)
+                                                }))?.tooltipText
+                                            )
+                                        }}
+                                        onChangeCommitted={(event: React.SyntheticEvent | Event, value: number | number[]) => {
+                                            setDifficultyMC(value as number)
+                                            runOnParametersChange({difficultyMC: value as number})
+                                        }}
+                                        min={0}
+                                        max={3}
+                                        disabled={(props.defaultParameters.type === 'Text-Input')}
+                                    />
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                        <Grid
+                            container={true}
+                            item={true}
+                            xs={12}
+                            sx={{
+                                backgroundColor: '#e1e1e1',
+                                borderRadius: '25px',
+                                paddingY: globalTheme.spacing(2),
+                                marginTop: globalTheme.spacing(3)
+                            }}
+                        >
+                            <Grid
+                                container={true}
+                                item={true}
+                                xs={12}
+                                justifyContent={'center'}
+                                spacing={1}
+                            >
+                                <Grid
+                                    item={true}
+                                >
+                                    <Tooltip
+                                        title={(props.defaultParameters.type === 'Multiple-Choice') // only case where this would be disabled
+                                            ? "Exercise type must be 'Text-Input' or 'Random' to change this value"
+                                            : ""
+                                        }
+                                    >
+                                        <Typography
+                                            variant={'body1'}
+                                        >
+                                            Text-Input difficulty:
+                                        </Typography>
+                                    </Tooltip>
+                                </Grid>
+                                <Grid
+                                    item={true}
+                                    xs={10}
+                                >
+                                    <Slider
+                                        defaultValue={difficultyTISliderMarks[1].value}
+                                        step={null}
+                                        valueLabelDisplay={"auto"}
+                                        marks={difficultyTISliderMarks}
+                                        valueLabelFormat={(value: number, index: number) => {
+                                            return(
+                                                (difficultyTISliderMarks.find((mark) => {
+                                                    return (mark.value === value)
+                                                }))?.tooltipText
+                                            )
+                                        }}
+                                        onChangeCommitted={(event: React.SyntheticEvent | Event, value: number | number[]) => {
+                                            setDifficultyTI(value as number)
+                                            runOnParametersChange({difficultyTI: value as number})
+                                        }}
+                                        min={1}
+                                        max={3}
+                                        disabled={(props.defaultParameters.type === 'Multiple-Choice')}
+                                    />
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Collapse>
+                </Grid>
+
 
                 {/* ACTION BUTTONS */}
                 <Grid
@@ -279,6 +513,7 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                     >
                         Create exercises
                     </Button>
+                    {(props.isLoading!!) && <LinearIndeterminate/>}
                 </Grid>
             </Grid>
         </Grid>

@@ -18,14 +18,28 @@ import {ExerciseCard} from "../components/ExerciseCard";
 import {ExerciseResult} from "../ts/interfaces";
 
 
-export interface ExerciseParameters {
+export type ExerciseParameters = {
     languages: Lang[],
     partsOfSpeech: PartOfSpeech[],
     amountOfExercises: number,
     multiLang: CardTypeSelection, // 'Multi-Language' | 'Single-Language' | 'Random',
-    type: ExerciseTypeSelection, //  'Multiple-Choice' | 'Text-Input' | 'Random',
+    // type: ExerciseTypeSelection, //  'Multiple-Choice' | 'Text-Input' | 'Random',
     mode: 'Single-Try' | 'Multiple-Tries'
     preSelectedWords?: any[] // simple-word data
+} & (MCType | TIType | RandomType)
+
+export type MCType = {
+    type: "Multiple-Choice",
+    difficultyMC: number
+}
+export type TIType = {
+    type: "Text-Input",
+    difficultyTI: number
+}
+export type RandomType = {
+    type: 'Random',
+    difficultyTI: number,
+    difficultyMC: number
 }
 
 interface PracticeProps {
@@ -46,7 +60,10 @@ export const Practice = (props: PracticeProps) => {
         amountOfExercises: 10,
         multiLang: CardTypeSelection['Random'], // By default, exercises will include exercise cards with single and multi languages exercises
         type: ExerciseTypeSelection['Text-Input'],
-        mode: 'Single-Try'
+        mode: 'Single-Try',
+        // @ts-ignore // for testing during development, TODO: remove later
+        difficultyMC: 1,
+        difficultyTI: 2,
     }
 
     const [currentCardIndex, setCurrentCardIndex] = useState(0)
@@ -69,7 +86,6 @@ export const Practice = (props: PracticeProps) => {
     }
 
     const onAcceptParameters = () => {
-        toast.info("let me check...")
         const dispatchParameters = {
             ...parameters,
             // BE expects only id for pre-selected words
@@ -123,11 +139,11 @@ export const Practice = (props: PracticeProps) => {
             justifyContent={'center'}
             item={true}
             sx={{
-                marginTop: globalTheme.spacing(4),
-                border: '4px solid #0072CE',
+                marginTop: globalTheme.spacing(3),
+                border: (wordsSelectedForExercises.length > 0) ? '4px solid #0072CE' : "none",
                 borderRadius: '25px',
                 paddingX: globalTheme.spacing(2),
-                paddingBottom: globalTheme.spacing(2)
+                paddingY: globalTheme.spacing(2)
             }}
             xs={12}
             md={11}
@@ -145,29 +161,30 @@ export const Practice = (props: PracticeProps) => {
                     lg: 'row-reverse',
                 }}
             >
-                <Grid
-                    item={true}
-                    xs={12}
-                    sx={{
-                        marginTop: globalTheme.spacing(2)
-                    }}
-                >
-                    <Typography
+                {(exercises.length > 0) &&
+                    <Grid
+                        container={true}
+                        item={true}
+                        xs={'auto'}
                         sx={{
-                            typography: {
-                                xs: 'h3',
-                                sm: 'h3',
-                                md: 'h1',
-                            },
+                            marginTop: globalTheme.spacing(2)
                         }}
-                        align={"center"}
                     >
-                        {(exercises.length > 0)
-                            ? `Exercises ${currentCardIndex+1}/${exercises.length}`
-                            : "Create Exercises"
-                        }
-                    </Typography>
-                </Grid>
+                        <Typography
+                            sx={{
+                                typography: {
+                                    xs: 'h3',
+                                    sm: 'h2',
+                                    lg: 'h1',
+                                },
+                            }}
+                            align={"center"}
+                        >
+                            {`Exercises ${currentCardIndex+1}/${exercises.length}`}
+                        </Typography>
+                        <LinearIndeterminate progress={((currentCardIndex+1)/(exercises.length))*100}/>
+                    </Grid>
+                }
                 {(
                     (wordsSelectedForExercises.length > 0) &&
                     !(acceptedParameters)
@@ -231,50 +248,49 @@ export const Practice = (props: PracticeProps) => {
                                 }}
                                 availablePoS={relevantPoSForPreSelectedWords}
                                 disabled={isLoadingExercises}
+                                isLoading={isLoadingExercises}
+                                preSelectedWordsDisplayed={wordsSelectedForExercises.length > 0}
                             />
                         </Grid>
-                    : (isLoadingExercises && !isSuccessExercises)
-                        // TODO: this is not displayed => fix later
-                        ? <LinearIndeterminate/>
-                        :
-                            <Grid
-                                container={true}
-                                justifyContent={'center'}
-                                alignItems={'center'}
-                                item={true}
-                                xs={12}
-                                sx={{
-                                    height: 'max-content'
-                                }}
-                            >
-                                {(isLoadingExercises && !isSuccessExercises)
-                                    ?
-                                    <LinearIndeterminate/>
-                                    :
-                                    <ExerciseCard
-                                        type={exercises[currentCardIndex]?.type}
-                                        currentCardIndex={currentCardIndex}
-                                        setCurrentCardIndex={(value: number) => {
-                                            setCurrentCardIndex(value)
-                                        }}
-                                        exercises={exercises}
-                                        isLoadingExercises={isLoadingExercises}
-                                        onClickReset={() => {
-                                            onClickReset()
-                                        }}
-                                        exercisesResults={cardAnswers}
-                                        setExercisesResults={(newAnswer: ExerciseResult) => {
-                                            setCardAnswers((prevState: ExerciseResult[]) => {
-                                                // TODO: should we set newAnswer at the index specified in newAnswer.indexInList?
-                                                return([
-                                                    ...prevState,
-                                                    newAnswer
-                                                ])
-                                            })
-                                        }}
-                                    />
-                                }
-                            </Grid>
+                    :
+                        <Grid
+                            container={true}
+                            justifyContent={'center'}
+                            alignItems={'center'}
+                            item={true}
+                            xs={12}
+                            sx={{
+                                height: 'max-content'
+                            }}
+                        >
+                            {(isLoadingExercises && !isSuccessExercises)
+                                ?
+                                <LinearIndeterminate/>
+                                :
+                                <ExerciseCard
+                                    parameters={parameters}
+                                    type={exercises[currentCardIndex]?.type}
+                                    currentCardIndex={currentCardIndex}
+                                    setCurrentCardIndex={(value: number) => {
+                                        setCurrentCardIndex(value)
+                                    }}
+                                    exercises={exercises}
+                                    isLoadingExercises={isLoadingExercises}
+                                    onClickReset={() => {
+                                        onClickReset()
+                                    }}
+                                    exercisesResults={cardAnswers}
+                                    setExercisesResults={(newAnswer: ExerciseResult) => {
+                                        setCardAnswers((prevState: ExerciseResult[]) => {
+                                            return([
+                                                ...prevState,
+                                                newAnswer
+                                            ])
+                                        })
+                                    }}
+                                />
+                            }
+                        </Grid>
                     }
             </Grid>
         </Grid>

@@ -235,6 +235,7 @@ export const UserBadge = (props: UserBadgeProps) => {
                             }
                         }
                     }}
+                    alwaysDoubleRow={true}
                 />
             </Grid>
         </Grid>

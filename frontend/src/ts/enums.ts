@@ -263,6 +263,7 @@ export enum VerbCases {
     auxVerbDE = 'auxVerbDE',
     caseTypeDE = 'caseTypeDE',
     prefixDE = 'prefixDE',
+    regularityDE = 'regularityDE',
 
     // INDICATIVE: --------------
     // Present: different for almost all pronouns
@@ -330,6 +331,7 @@ export enum PrefixesVerbDE {
     zuryck = 'zurück', // NB! Careful with this one. Can cause issues.
 }
 
+// Complete list of Pronouns for German (to be used later in future features)
 export enum PronounDE {
     // SIMPLIFIED:
         // Singular (sg)
@@ -393,9 +395,30 @@ export enum VerbRegularity {
 }
 
 export enum VerbMoodDE {
-    indicativeDE = 'indicativeDE',
-    subjunctiveDE = 'subjunctiveDE',
-    imperativeDE = 'imperativeDE',
+    indicativeDE = 'indicative',
+    subjunctiveDE = 'subjunctive',
+    imperativeDE = 'imperative',
+}
+
+export enum VerbMoodEN {
+    indicativeEN = 'indicative',
+    subjunctiveEN = 'subjunctive',
+    imperativeEN = 'imperative',
+    conditionalEN = 'conditional',
+}
+
+export enum VerbMoodES {
+    indicativeES = 'indicative',
+    subjunctiveES = 'subjunctive',
+    imperativeES = 'imperative',
+    conditionalES = 'conditional',
+}
+
+export enum VerbMoodEE {
+    indicativeEE = 'indicative',
+    subjunctiveEE = 'subjunctive',
+    conditionalEE = 'conditional',
+    jussiveEE = 'jussive',
 }
 
 export enum VerbTensesIndicativeDE {
@@ -432,6 +455,11 @@ export enum AuxVerbDE {
     W = "werden"
 }
 
+export enum Plurality {
+    S = "Singular",
+    P = "Plural",
+}
+
 export enum PartOfSpeech {
     noun = "Noun",
     pronoun = "Pronoun",
@@ -444,6 +472,59 @@ export enum PartOfSpeech {
     properNoun = "Proper noun",
     numerals = "Numerals",
 }
+
+export enum DeclensionNoun {
+    nominative = "Nominative",
+    accusative = "Accusative",
+    genitive = "Genitive",
+    dative = "Dative",
+    partitive = "Partitive",
+}
+
+export enum TenseVerbEN {
+    pastSimple = "Past-Simple",
+    pastPerfect = "Past-Perfect",
+    pastContinuous = "Past-Continuous",
+    pastPerfectContinuous = "Past-Perfect-Continuous",
+
+    presentSimple = "Present-Simple",
+    presentPerfect = "Present-Perfect",
+    presentContinuous = "Present-Continuous",
+    presentPerfectContinuous = "Present-Perfect-Continuous",
+
+    futureSimple = "Future-Simple",
+    futurePerfect = "Future-Perfect",
+    futureContinuous = "Future-Continuous",
+    futurePerfectContinuous = "Future-Perfect-Continuous",
+
+    conditionalSimple = "Conditional-Simple",
+}
+
+export enum TenseVerbES {
+    present = "Present",
+    imperfectPast = "Imperfect-Past",
+    perfectSimplePast = "Perfect-Simple-Past",
+    future = "Future",
+    conditional = "Conditional",
+}
+
+export enum TenseVerbDE {
+    present = "Present",
+    perfect = "Perfect",
+    simpleFuture = "Simple-Future",
+    simplePast = "Simple-Past", // Präteritum
+}
+
+export enum TenseVerbEE {
+    present = "Present",
+    simplePast = "Simple-Past", // kindel past
+    pastPerfect = "Past-Perfect",
+    conditionalPresent = "Conditional-Present", // tingiv present
+    indirectPresent = "Indirect-Present", // kaudne present
+    indirectPast = "Indirect-Past", // kaudne past
+    imperative = "Imperative", // käskiv present
+}
+
 
 export enum MetricsType {
     WORDS,
@@ -460,4 +541,46 @@ export enum CardTypeSelection {
     'Multi-Language' = 'Multi-Language',
     'Single-Language' = 'Single-Language',
     'Random' = 'Random'
+}
+
+// ========== PRONOUNS
+
+// Spanish Pronouns
+export enum SpanishPronouns {
+    "1S" = "yo",
+    "2S" = "tú",
+    "3S" = "él/ella",
+    "1P" = "nosotros/as",
+    "2P" = "vosotros/as",
+    "3P" = "ellos/as",
+}
+
+// English Pronouns
+export enum EnglishPronouns {
+    "1S" = "I",
+    "2S" = "you",
+    "3S" = "he/she/it",
+    "1P" = "we",
+    "2P" = "you",
+    "3P" = "they",
+}
+
+// German Pronouns
+export enum GermanPronouns {
+    "1S" = "ich",
+    "2S" = "du",
+    "3S" = "er/sie/es",
+    "1P" = "wir",
+    "2P" = "ihr",
+    "3P" = "sie",
+}
+
+// Estonian Pronouns
+export enum EstonianPronouns {
+    "1S" = "ma", // "mina"
+    "2S" = "sa", // "sina"
+    "3S" = "ta", // "tema"
+    "1P" = "me", // "meie"
+    "2P" = "te", // "teie"
+    "3P" = "nad", // "nemad"
 }

@@ -437,6 +437,10 @@ export function Review(){
                         >
                             <Grid
                                 item={true}
+                                xs={12}
+                                sx={{
+                                    marginX: globalTheme.spacing(1)
+                                }}
                             >
                                 <TableFilters
                                     filterOptions={genderFilters}
@@ -447,6 +451,10 @@ export function Review(){
                             </Grid>
                             <Grid
                                 item={true}
+                                xs={12}
+                                sx={{
+                                    marginX: globalTheme.spacing(1)
+                                }}
                             >
                                 <TableFilters
                                     filterOptions={PoSFilters}
@@ -463,7 +471,10 @@ export function Review(){
                         >
                             <Grid
                                 item={true}
-                                xs={10}
+                                xs={12}
+                                sx={{
+                                    marginX: globalTheme.spacing(1)
+                                }}
                             >
                                 <AutocompleteMultiple
                                     type={'tag'}
