@@ -43,10 +43,23 @@ const saveTranslationPerformance = asyncHandler(async (req, res) => {
     // record: true/false
     // lastDate: today
 
-    const exercisePerformance = await ExercisePerformance.findById(req.body.performanceId)
+    let filtros = {}
+    if (req.body.performanceId !== undefined) {
+      filtros = {
+          _id: new mongoose.Types.ObjectId(req.body.performanceId),
+      }
+    } else {
+        filtros = {
+            // wordId no es mas necesario ya que se arregló clonado de tags. translationId es unico
+            translationId: req.body.translationId,
+            user: req.user._id,
+        }
+    }
 
-    if(!exercisePerformance){
-        //todo: check if preformance existe by wordid - translationid - userid
+    const exercisePerformanceResult = await ExercisePerformance.find(filtros)
+    const exercisePerformance = exercisePerformanceResult[0]
+
+    if(exercisePerformance === undefined){ // no performance stored for this translation => we create it
         const knowledge = calculateNewPercentageOfKnowledge(0,[req.body.record])
 
         const exercisePerformance = await ExercisePerformance.create({
@@ -58,15 +71,18 @@ const saveTranslationPerformance = asyncHandler(async (req, res) => {
                 record: [req.body.record],
                 lastDate: new Date(),
                 knowledge: knowledge
-            }]
+            }],
+            // averageTranslationKnowledge: knowledge, // only one value for now, so average translation is the same as current case
+            // lastDateModifiedTranslation: new Date() // always current date
+            // TODO: add average-translation knowledge (aging each case-knowledge) and last modified date
         })
         return res.status(200).json(exercisePerformance)
     } else {
-        //update
-        let statByCaseName = exercisePerformance.statsByCase.find(stat => stat.caseName = req.body.caseName);
+        //updating existing performance
+        let statByCaseName = exercisePerformance.statsByCase.find(stat => stat.caseName === req.body.caseName);
         if (statByCaseName) {
             if (statByCaseName.record.length === 4) {
-                statByCaseName.record.splice(0, 1)
+                statByCaseName.record.splice(0, 1) //deletes oldest record
                 statByCaseName.record.push(req.body.record)
             } else {
                 statByCaseName.record.push(req.body.record)
@@ -82,6 +98,14 @@ const saveTranslationPerformance = asyncHandler(async (req, res) => {
             }
             exercisePerformance.statsByCase.push(statByCaseName)
         }
+        // after modifying the existing case inside the translation, we must also update the translation-average knowledge
+        // let newTranslationAverage = 0
+        // exercisePerformance.statsByCase.forEach((caseStat) => {
+        //     newTranslationAverage = exercisePerformance+calculateAging(caseStat.knowledge, caseStat.lastDate)
+        // })
+        // newTranslationAverage = newTranslationAverage/(exercisePerformance.length)
+        // exercisePerformance.averageTranslationKnowledge = newTranslationAverage // we take the average-aged knowledge of each stored case
+        // exercisePerformance.lastDateModifiedTranslation =  new Date()
 
         try{
             exercisePerformance.save()
@@ -93,13 +117,11 @@ const saveTranslationPerformance = asyncHandler(async (req, res) => {
     }
 })
 
-
-
 //Function to calculate the aging of the actual percentage of knowledge.
 //percentageOfKnowledge is the current percentage and lastDate must be a Date.
 function calculateAging(percentageOfKnowledge, lastDate){
-    const actualDate = new Date();
-    const difOfDays = Math.floor((actualDate - lastDate)/ (1000 * 60 * 60 * 24));
+    const currentDate = new Date();
+    const difOfDays = Math.floor((currentDate - lastDate)/ (1000 * 60 * 60 * 24));
     return percentageOfKnowledge * Math.exp((-0.01 * difOfDays))
 }
 
@@ -107,7 +129,7 @@ function calculateAging(percentageOfKnowledge, lastDate){
 //arrayResults have the new result and previousPercentageOfKnowledge is after to aging.
 function calculateNewPercentageOfKnowledge(previousPercentageOfKnowledge, arrayResults){
     if(arrayResults.length > 0){
-        const averageOfArray = (arrayResults.filter(Boolean).length / arrayResults.length) * 100;
+        const averageOfArray = (arrayResults.filter(Boolean).length / 4) * 100;
         if(previousPercentageOfKnowledge > 0){
             return ((0.5 * previousPercentageOfKnowledge ) + (3.5 * averageOfArray))/4
         }

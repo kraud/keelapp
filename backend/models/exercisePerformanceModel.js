@@ -9,7 +9,7 @@ const exercisePerformanceSchema = mongoose.Schema({
     translationId: mongoose.Schema.Types.ObjectId,
 
     // wordId es para ayudar a identificar exactamente la palabra a la que pertenece el translationId,
-    // porque ese valor se duplica cuando la palabra se clona (junto con un Tag)
+    // para simplificar consulta de creación de ejercicios (antes translationId se mantenía al clonar tag, ahora se genera uno nuevo)
     word: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
@@ -37,7 +37,6 @@ const exercisePerformanceSchema = mongoose.Schema({
     timestamps: true
 })
 
-// Crear un índice compuesto para las propiedades 'user' y 'word'
 exercisePerformanceSchema.index({ user: 1, word: 1 });
 
 module.exports = mongoose.model('ExercisePerformance',  exercisePerformanceSchema)

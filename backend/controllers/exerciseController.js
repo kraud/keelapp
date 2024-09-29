@@ -1,13 +1,12 @@
 const mongoose = require('mongoose')
 const asyncHandler = require("express-async-handler")
 const {getWordsIdFromFollowedTagsByUserId} = require("./intermediary/userFollowingTagController")
-const {getPerformanceByWorId, findMatches, calculateAging, getPerformanceByWorIdDummy} = require("./exercisePerformanceController")
+const {findMatches} = require("./exercisePerformanceController")
 const Word = require("../models/wordModel")
 const {nounGroupedCategoriesMultiLanguage} = require("../utils/equivalentTranslations/multiLang/nouns");
 const {verbGroupedCategoriesMultiLanguage} = require("../utils/equivalentTranslations/multiLang/verbs");
 const {nounGroupedCategoriesSingleLanguage} = require("../utils/equivalentTranslations/singleLang/nouns");
 const {verbGroupedCategoriesSingleLanguage} = require("../utils/equivalentTranslations/singleLang/verbs");
-const {array} = require("yup");
 
 // Format returned by 'findEquivalentTranslations'
 // interface EquivalentTranslationValues {
@@ -56,16 +55,6 @@ async function getRequiredAmountOfExercises(
             let translationsPerformanceArray = word.exercisePerformancesByTranslation
             const allExercises = findMatches(word, translationsPerformanceArray)
             allExercises.sort((a, b) => a.knowledge - b.knowledge)
-            //allExercises.sort((a, b) => b.knowledge - a
-            // console.log('allExercises.knowledge list ', allExercises
-            //     .filter((exercise) => exercise.knowledge > 0)
-            //     .map((exercise) => {
-            //         return ({
-            //             word: exercise.word,
-            //             case: exercise.matchingTranslations.itemB.case,
-            //             knowledge: exercise.knowledge
-            //         })
-            //     }))
             const selectedExercise = allExercises[0]
             word.exercises.splice(0, 1)
             selectedExercises.push(selectedExercise)
@@ -685,7 +674,6 @@ const getExercises = asyncHandler(async (req, res) => {
             // could we check here if there is overlap of at least 1 language with the ones in parameters and filter accordingly?
         ]
     }
-    console.log("filters:", wordFiltersObject)
     const matchingWordData = await Word.aggregate([
         {
             $match: wordFiltersObject,
@@ -707,10 +695,11 @@ const getExercises = asyncHandler(async (req, res) => {
                     },
                 ],
                 as: 'exercisePerformances',
+                // TODO: review if Mongo can calculate average-word-knowledge with pre-defined internal functions, instead of server-side JS
             },
-        },
+        }
     ])
-    // console.log("PREFILTERING", matchingWordData)
+    // TODO: calculate per-word average-aged knowledge using (averageTranslationKnowledge and lastDateModifiedTranslation)
 
     let exercisesByWord = []
     matchingWordData // if words not pre-selected => this list could be too big, we should pre-filter by only candidates with real exercise-potential first(*)?

@@ -207,7 +207,7 @@ export type TextInput = {
     },
     knowledge: Number,
     performance: any,
-    word: string
+    wordId: string
 }
 
 export type MultipleChoice = {
@@ -228,7 +228,7 @@ export type MultipleChoice = {
     },
     knowledge: Number,
     performance: any,
-    word: string
+    wordId: string
 }
 
 export interface ExerciseResult {
@@ -241,9 +241,9 @@ export interface ExerciseResult {
 export interface PerformanceParameters {
     performanceId?: string,
     word?: string,
-    action?: "master"| "forget" | "acknowledge",
+    action?: "master" | "forget" | "acknowledge",
     user?: any,
-    translationId?: any,
+    translationId?: string,
     caseName?: string,
     record?: boolean
 }

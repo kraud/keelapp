@@ -83,7 +83,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
             performanceParameters = {
                 user: user._id,
                 translationId: props.exercises[props.currentCardIndex].matchingTranslations.itemB.translationId,
-                word: props.exercises[props.currentCardIndex].word,
+                word: props.exercises[props.currentCardIndex].wordId,
                 caseName: props.exercises[props.currentCardIndex].matchingTranslations.itemB.case,
             }
         }
