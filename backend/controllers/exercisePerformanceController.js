@@ -46,6 +46,7 @@ const saveTranslationPerformance = asyncHandler(async (req, res) => {
     const exercisePerformance = await ExercisePerformance.findById(req.body.performanceId)
 
     if(!exercisePerformance){
+        //todo: check if preformance existe by wordid - translationid - userid
         const knowledge = calculateNewPercentageOfKnowledge(0,[req.body.record])
 
         const exercisePerformance = await ExercisePerformance.create({
@@ -117,25 +118,34 @@ function calculateNewPercentageOfKnowledge(previousPercentageOfKnowledge, arrayR
     return previousPercentageOfKnowledge
 }
 
+/**
+ * Given an array of exercises for a Word, maps each exercise with it's exercisePerformance (matching translation and caseName) and knowledge.
+ * @param word
+ * @param translationsPerformanceArray
+ */
 const findMatches = (word, translationsPerformanceArray) => {
     // return word.map(obj => {
     return word.exercises
         .map(exercise => {
             const itemB = exercise.matchingTranslations.itemB;
-            if (itemB && itemB.translationId && Array.isArray(translationsPerformanceArray)) {
+            if (itemB && itemB.translationId && (translationsPerformanceArray !== undefined) && (translationsPerformanceArray.length > 0)) {
                 // stat is object of ExercisePerformance
-                const stat = translationsPerformanceArray.find(s => s.translationId.equals(itemB.translationId));
+                const stat = translationsPerformanceArray.find((s) => {
+                    // console.log(s.translationId, itemB.translationId)
+                    return(s.translationId.toString() === itemB.translationId.toString())
+                })
                 if (stat) {
                     // Filtrar statsByCase que coincidan con el case de itemB
                     const caseMatchingStats = stat.statsByCase.find(statCase => statCase.caseName === itemB.case);
                     if(caseMatchingStats){
                         const newKnowledge = calculateAging(caseMatchingStats.knowledge, caseMatchingStats.lastDate)
-                        return {...exercise, knowledge: newKnowledge, performance: stat, word: word._id}
+                        return {...exercise, knowledge: newKnowledge, performance: stat, wordId: word._id}
                     }
-                    return {...exercise, knowledge: 0, performance: stat, word: word._id }
+                    // There's a exercisePerformance for the given translation but not for the caseName => knowledge = 0
+                    return {...exercise, knowledge: 0, performance: stat, wordId: word._id }
                 }
             }
-            return {...exercise, knowledge:0, performance: {}, word: word._id};
+            return {...exercise, knowledge:0, performance: {}, wordId: word._id};
         })
         .filter(result => result !== null).flat();
 };

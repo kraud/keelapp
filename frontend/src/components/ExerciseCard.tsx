@@ -64,11 +64,11 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
         let answerStatus: boolean = false
         switch (props.type){
             case('Text-Input'):{
-                answerStatus = (correctValue.toLowerCase() === answer.toLowerCase())
+                answerStatus = (correctValue?.toLowerCase() === answer.toLowerCase())
                 break
             }
             case('Multiple-Choice'):{
-                answerStatus = (correctValue.toLowerCase() === answer.toLowerCase())
+                answerStatus = (correctValue?.toLowerCase() === answer.toLowerCase())
                 break
             }
             default:{
@@ -453,6 +453,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                             handleMasterClick()
                                         }}
                                     >
+                                        100 %
                                     </Button>
                                 </Grid>
                                 <Grid

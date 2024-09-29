@@ -50,13 +50,22 @@ async function getRequiredAmountOfExercises(
     let filteredExercises = []
 
     // Helper function to randomly select one exercise from each word group
-    async function randomlySelectExerciseByWord(exercisesList, userId) {
+    async function randomlySelectExerciseByWord(exercisesListByWord, userId) {
         const selectedExercises = []
-        for (const word of exercisesList) {
-            let translationsPerformanceArray = await getPerformanceByWorId(userId, word)  // 1 ExercisePerformance per translation
+        for (const word of exercisesListByWord) {
+            let translationsPerformanceArray = word.exercisePerformancesByTranslation
             const allExercises = findMatches(word, translationsPerformanceArray)
             allExercises.sort((a, b) => a.knowledge - b.knowledge)
-            //allExercises.sort((a, b) => b.knowledge - a.knowledge)
+            //allExercises.sort((a, b) => b.knowledge - a
+            // console.log('allExercises.knowledge list ', allExercises
+            //     .filter((exercise) => exercise.knowledge > 0)
+            //     .map((exercise) => {
+            //         return ({
+            //             word: exercise.word,
+            //             case: exercise.matchingTranslations.itemB.case,
+            //             knowledge: exercise.knowledge
+            //         })
+            //     }))
             const selectedExercise = allExercises[0]
             word.exercises.splice(0, 1)
             selectedExercises.push(selectedExercise)
@@ -111,6 +120,7 @@ const getMCExerciseMultiLang = (itemA, itemB, partOfSpeech) => {
                 language: itemB.language,
                 case: itemB.case,
                 value: itemB.value,
+                translationId: itemB.translationId,
                 otherValues: []
             }
         }
@@ -152,6 +162,7 @@ const getMCExerciseSingleLang = (itemA, itemB, partOfSpeech) => {
                 language: itemB.language,
                 case: itemB.case,
                 value: itemB.value,
+                translationId: itemB.translationId,
                 otherValues: itemB.otherValues // for Single-Lang these options are hardcoded
             }
         }
@@ -172,7 +183,8 @@ const getTIExerciseSingleLang = (itemA, itemB, partOfSpeech) => {
             itemB: {
                 language: itemB.language,
                 case: itemB.case,
-                value: itemB.value
+                value: itemB.value,
+                translationId: itemB.translationId,
             }
         }
     })
@@ -326,7 +338,7 @@ function calculateSingleLanguageExercises(
                             language: validLanguage,
                             case: exerciseList[exercise].correctValue,
                             value: cv.word,
-                            translationId: cv_trans.id,
+                            translationId: cv_trans._id,
                             otherValues: (typeOfExercise === 'Multiple-Choice')
                                 ? exerciseList[exercise].otherValues
                                 : []
@@ -638,21 +650,22 @@ const getExercises = asyncHandler(async (req, res) => {
     }
 
     // words related to other-users-tags, that the current user follows.
-    const followedWordsId = await getWordsIdFromFollowedTagsByUserId(req.user.id)
+    const followedWordsId = await getWordsIdFromFollowedTagsByUserId(userId)
 
 
     // If the user pre-selected words to create exercises => we'll not check for any other words
     const getWordFilterQuery = (parametersIncludePreselectWords) => {
         if(parametersIncludePreselectWords){
+            const id_list = parameters.preSelectedWords.map(preSelectedWord => {return(mongoose.Types.ObjectId(preSelectedWord))})
             return({
                 _id: {
-                    $in: parameters.preSelectedWords
+                    $in: id_list
                 }
             })
         } else {
             return({
                 $or: [
-                    {"user": mongoose.Types.ObjectId(req.user.id)},
+                    {"user": mongoose.Types.ObjectId(userId)},
                     {"_id": {$in: followedWordsId}}
                 ]
             })
@@ -661,7 +674,7 @@ const getExercises = asyncHandler(async (req, res) => {
     const preSelectedWordsIncludedInParameters = (parameters.preSelectedWords !== undefined) && (parameters.preSelectedWords.length > 0)
     // word query should also filter by those that have at last 2 translations from the required by user (*)
     // (maybe 1 is ok too, if they are from Lang+PoS combo that can create exercises from single translation?)
-    const matchingWordData = await Word.find({
+    const wordFiltersObject = {
         $and:[
             getWordFilterQuery(preSelectedWordsIncludedInParameters),
             {
@@ -671,8 +684,33 @@ const getExercises = asyncHandler(async (req, res) => {
             }
             // could we check here if there is overlap of at least 1 language with the ones in parameters and filter accordingly?
         ]
-    })
-
+    }
+    console.log("filters:", wordFiltersObject)
+    const matchingWordData = await Word.aggregate([
+        {
+            $match: wordFiltersObject,
+        },
+        {
+            $lookup: {
+                from: 'exerciseperformances', // Nombre de la colección correspondiente a ExercisePerformance
+                let: {wordId: '$_id'},
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    {$eq: ['$word', '$$wordId']},
+                                    {$eq: ['$user', mongoose.Types.ObjectId(userId)]},
+                                ],
+                            },
+                        },
+                    },
+                ],
+                as: 'exercisePerformances',
+            },
+        },
+    ])
+    // console.log("PREFILTERING", matchingWordData)
 
     let exercisesByWord = []
     matchingWordData // if words not pre-selected => this list could be too big, we should pre-filter by only candidates with real exercise-potential first(*)?
@@ -687,11 +725,13 @@ const getExercises = asyncHandler(async (req, res) => {
             if(matchingExercisesPerWord.length > 0){
                 exercisesByWord.push({
                     _id: matchingWord._id,
-                    exercises: matchingExercisesPerWord // EquivalentTranslationValues[]
+                    exercises: matchingExercisesPerWord, // EquivalentTranslationValues[]
+                    exercisePerformancesByTranslation: matchingWord.exercisePerformances
                 })
             }
         })
     let filteredExercises = await getRequiredAmountOfExercises(exercisesByWord, parameters.amountOfExercises, userId)
+    // console.log("AFTER FILTERING", filteredExercises)
     // filteredExercises -->
     if(
         (['Multiple-Choice', 'Random'].includes(parameters.type)) &&

@@ -37,4 +37,7 @@ const exercisePerformanceSchema = mongoose.Schema({
     timestamps: true
 })
 
+// Crear un índice compuesto para las propiedades 'user' y 'word'
+exercisePerformanceSchema.index({ user: 1, word: 1 });
+
 module.exports = mongoose.model('ExercisePerformance',  exercisePerformanceSchema)
