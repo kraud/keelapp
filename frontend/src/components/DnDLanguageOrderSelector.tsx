@@ -28,6 +28,7 @@ interface DnDLanguageOrderSelectorProps{
     disabled?: boolean // to avoid allowing the elements to be moved
     noItemsSelectedMessage?: string // when no items are selected, display this text in 'selected' container
     displayLeftActionButton?: { selectedItemLabel: string, onLeftActionButtonClick: (clickedItemLabel: string) => void}
+    flagSide?: 'left' | 'right',
 }
 
 export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
@@ -214,6 +215,7 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                                         </Typography>
                                     }
                                     <DnDSortableItem
+                                        flagSide={props.flagSide}
                                         invisible={true} // not be displayed - only to make SortableContext work properly
                                         id={'do-not-display'}
                                         direction={props.direction}
@@ -226,6 +228,7 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                                     props.allSelectedItems.map((item: string, index: number) => {
                                         return (
                                             <DnDSortableItem
+                                                flagSide={props.flagSide}
                                                 key={index}
                                                 id={item}
                                                 containerLabel={'selected'}
@@ -300,6 +303,7 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                                 {(props.otherItems.length === 0)
                                     ?
                                         <DnDSortableItem
+                                            flagSide={props.flagSide}
                                             invisible={true} // not be displayed - only to make SortableContext work properly
                                             id={'do-not-display'}
                                             containerLabel={'other'}
@@ -311,6 +315,7 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                                         props.otherItems.map((item: string, index: number) => {
                                             return (
                                                 <DnDSortableItem
+                                                    flagSide={props.flagSide}
                                                     disabled={props.disabled}
                                                     key={index}
                                                     containerLabel={'other'}

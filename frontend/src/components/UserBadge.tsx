@@ -222,7 +222,6 @@ export const UserBadge = (props: UserBadgeProps) => {
                     singleContainer={!props.isEditing} // we display second container only when editing, to select more languages
                     disabled={!props.isEditing!!}
                     selectedItemsTitle={""}
-                    displayItems={'flag'}
                     noItemsSelectedMessage={t('userData.errors.notEnoughLanguages', { ns: 'common' })}
                     displayLeftActionButton={{
                         selectedItemLabel: (props.userData.uiLanguage!!) ?props.userData.uiLanguage :Lang.EN,
@@ -236,6 +235,9 @@ export const UserBadge = (props: UserBadgeProps) => {
                         }
                     }}
                     alwaysDoubleRow={true}
+                    hideIndex={true}
+                    displayItems={'both'}
+                    flagSide={'left'}
                 />
             </Grid>
         </Grid>

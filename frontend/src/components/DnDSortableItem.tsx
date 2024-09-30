@@ -18,6 +18,7 @@ interface DnDSortableItemProps{
     disabled?: boolean
     sxProps?: SxProps<Theme>
     displayItems?: 'text' | 'flag' | 'both',
+    flagSide?: 'left' | 'right',
     hideIndex?: boolean,
     onActionButtonClick: (itemId: string) => void
     // for selecting UI language
@@ -97,7 +98,9 @@ export function DnDSortableItem(props: DnDSortableItemProps){
                 return(
                     <>
                         {/* NB! We still want to display the '#' symbol and index number, but with no language label */}
-                        {displayContentWithIndex("")}
+                        {((props.flagSide === undefined) || ((props.flagSide === 'right'))) &&
+                            displayContentWithIndex("")
+                        }
                         <CountryFlag
                             country={props.id as Lang}
                             border={true}
@@ -106,20 +109,30 @@ export function DnDSortableItem(props: DnDSortableItemProps){
                                 marginLeft: (props.index !== undefined) ?'10px' :'0px',
                             }}
                         />
+                        {((props.flagSide !== undefined) && ((props.flagSide === 'left'))) &&
+                            displayContentWithIndex("")
+                        }
                     </>
                 )
             }
             case('both'): {
                 return(
                     <>
-                        {displayContentWithIndex(props.id)}
+                        {((props.flagSide === undefined) || ((props.flagSide === 'right'))) &&
+                            displayContentWithIndex(props.id)
+                        }
                         <CountryFlag
                             country={props.id as Lang}
                             border={true}
                             sxProps={{
-                                marginLeft: '10px',
+                                marginLeft: ((props.flagSide === 'right') || (props.flagSide === undefined)) ?'10px' :undefined,
+                                marginRight: (props.flagSide === 'left') ?'10px' :undefined,
+                                marginTop: "-3px",
                             }}
                         />
+                        {((props.flagSide !== undefined) && ((props.flagSide === 'left'))) &&
+                            displayContentWithIndex(props.id)
+                        }
                     </>
                 )
             }

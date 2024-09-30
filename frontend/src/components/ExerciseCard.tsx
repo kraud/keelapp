@@ -674,7 +674,10 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                     sx={{
                         border: '4px solid #0072CE',
                         borderRadius: '25px',
-                        height: {xs: '40vh', md: '55vh'},
+                        height: {
+                            xs: `max(40vh, 450px)`,
+                            md: "max(55vh, 500px)",
+                        },
                         background: '#d3d3d3',
                     }}
                 >
