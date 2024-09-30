@@ -1,9 +1,9 @@
-import {Chip, Grid, InputAdornment, TextField, Typography} from "@mui/material";
+import {Chip, Divider, Grid, InputAdornment, TextField, Typography} from "@mui/material";
 import ForgetIcon from '@mui/icons-material/Block';
 import SchoolIcon from '@mui/icons-material/School';
 import IconButton from "@mui/material/IconButton";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import {CountryFlag} from "./GeneralUseComponents";
+import {CountryFlag, getIconByEnvironment} from "./GeneralUseComponents";
 import Button from "@mui/material/Button";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import React, {useEffect, useState} from "react";
@@ -40,17 +40,19 @@ interface ExerciseCardProps {
 }
 
 export const ExerciseCard = (props: ExerciseCardProps) => {
+    const {user} = useSelector((state: any) => state.auth)
     const { t } = useTranslation(['partOfSpeechCases'])
+    const wordCasesDescriptions = WordCasesData
     const lessThanSm = useMediaQuery(globalTheme.breakpoints.down("sm"))
     const dispatch = useDispatch<AppDispatch>()
-    const wordCasesDescriptions = WordCasesData
-    const correctValue = props.exercises[props.currentCardIndex].matchingTranslations.itemB.value
-    const [textInputAnswer, setTextInputAnswer] = useState<string>("")
-    const {user} = useSelector((state: any) => state.auth)
 
-    const currentExerciseData = (props.exercises[props.currentCardIndex])
     // TODO: maybe this should filter the list and the element with to 'indexInList' that matches?
+    const currentExerciseData = (props.exercises[props.currentCardIndex])
     const currentCardAnswer: ExerciseResult = props.exercisesResults[props.currentCardIndex]
+    const correctValue = currentExerciseData?.matchingTranslations.itemB.value
+
+    const [textInputAnswer, setTextInputAnswer] = useState<string>("")
+
     const disableCheckButton = (
         ((currentCardAnswer!!) && (currentCardAnswer?.answer !== ""))
         ||
@@ -127,21 +129,21 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
             }
         }
         let performanceParameters : PerformanceParameters = {
-            translationLanguage: props.exercises[props.currentCardIndex].matchingTranslations.itemB.language,
-            caseName: props.exercises[props.currentCardIndex].matchingTranslations.itemB.case,
+            translationLanguage: currentExerciseData?.matchingTranslations.itemB.language,
+            caseName: currentExerciseData?.matchingTranslations.itemB.case,
         }
-        if (currentExerciseData.performance === undefined){
+        if (currentExerciseData?.performance === undefined){
             performanceParameters = {
                 ...performanceParameters,
                 user: user._id,
-                translationId: props.exercises[props.currentCardIndex].matchingTranslations.itemB.translationId,
-                word: props.exercises[props.currentCardIndex].wordId,
+                translationId: currentExerciseData?.matchingTranslations.itemB.translationId,
+                word: currentExerciseData?.wordId,
             }
         }
         else{
             performanceParameters = {
                 ...performanceParameters,
-                performanceId: props.exercises[props.currentCardIndex].performance._id,
+                performanceId: currentExerciseData?.performance._id,
             }
         }
         // TODO: improve content in toasts
@@ -217,13 +219,12 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
         switch(type){
             case(ExerciseTypeSelection["Multiple-Choice"]): {
                 let allOptions: string[] = []
-                const currentExercise: EquivalentTranslationValues = props.exercises[props.currentCardIndex]
-                if(currentExercise.type === 'Multiple-Choice'){
+                if(currentExerciseData?.type === 'Multiple-Choice'){
                     allOptions = [
-                        currentExercise.matchingTranslations.itemB.value,
+                        currentExerciseData?.matchingTranslations.itemB.value,
                         // we filter here so in case this is a (multiLang:false) exercise, we don't display the correct option twice
-                        ...(currentExercise.matchingTranslations.itemB.otherValues).filter((otherValue: string) => {
-                            return(otherValue !== currentExercise.matchingTranslations.itemB.value)
+                        ...(currentExerciseData?.matchingTranslations.itemB.otherValues).filter((otherValue: string) => {
+                            return(otherValue !== currentExerciseData?.matchingTranslations.itemB.value)
                         })
                     ]
                 }
@@ -262,7 +263,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                                     : 'inherit' // should be gray/disabled
                                         }
                                         sx={{
-                                            borderRadius: (currentExercise.multiLang) ? '10px' :'50px'
+                                            borderRadius: (currentExerciseData?.multiLang) ? '10px' :'50px'
                                         }}
                                     >
                                         {option}
@@ -278,7 +279,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                     (questionWordDescriptionData !== undefined) &&
                     (isVerbCasesData(questionWordDescriptionData)) &&
                     !(questionWordDescriptionData.isVerbProperty) &&
-                    (currentExerciseData.partOfSpeech === 'Verb')
+                    (currentExerciseData?.partOfSpeech === 'Verb')
                 )
 
                 return(
@@ -383,31 +384,33 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
     const [displayedWordDescriptionData, setDisplayedWordDescriptionData] = useState<NounCasesData | VerbCasesData | undefined>(undefined)
     const [questionWordDescriptionData, setQuestionWordDescriptionData] = useState<NounCasesData | VerbCasesData | undefined>(undefined)
     const getDisplayedWordDescription = () => {
-        const currentRelevantPoSData: NounCasesData[] | VerbCasesData[] = wordCasesDescriptions[currentExerciseData.partOfSpeech as string]
+        const currentRelevantPoSData: NounCasesData[] | VerbCasesData[] = wordCasesDescriptions[currentExerciseData?.partOfSpeech as string]
         // @ts-ignore
         const relevantWordDetails = (currentRelevantPoSData).find((currentPoSCaseList: NounCasesData | VerbCasesData) => {
-            return(currentPoSCaseList.caseName === currentExerciseData.matchingTranslations.itemA.case)
+            return(currentPoSCaseList.caseName === currentExerciseData?.matchingTranslations.itemA.case)
         })
         setDisplayedWordDescriptionData(relevantWordDetails)
     }
     const getQuestionWordDescription = () => {
-        const currentRelevantPoSData: NounCasesData[] | VerbCasesData[] = wordCasesDescriptions[currentExerciseData.partOfSpeech as string]
+        const currentRelevantPoSData: NounCasesData[] | VerbCasesData[] = wordCasesDescriptions[currentExerciseData?.partOfSpeech as string]
         // @ts-ignore
         const relevantWordDetails = (currentRelevantPoSData).find((currentPoSCaseList: NounCasesData | VerbCasesData) => {
-            return(currentPoSCaseList.caseName === currentExerciseData.matchingTranslations.itemB.case)
+            return(currentPoSCaseList.caseName === currentExerciseData?.matchingTranslations.itemB.case)
         })
         setQuestionWordDescriptionData(relevantWordDetails)
     }
 
     useEffect(() => {
-        getDisplayedWordDescription()
-        getQuestionWordDescription()
+        if(currentExerciseData !== undefined){
+            getDisplayedWordDescription()
+            getQuestionWordDescription()
+        }
     }, [props.currentCardIndex])
 
     const getChipListOfWordDetails = (relevantWordDescription: NounCasesData | VerbCasesData, chipColor: 'primary' | 'secondary' | 'info',) => {
         let chips: InfoChipData[] = [{label: 'error', value: 'no data'}]
         if(relevantWordDescription !== undefined){
-            chips = getChipFieldsByPoS(relevantWordDescription, currentExerciseData.partOfSpeech)
+            chips = getChipFieldsByPoS(relevantWordDescription, currentExerciseData?.partOfSpeech)
         }
 
         return(
@@ -531,7 +534,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
         (displayedWordDescriptionData !== undefined) &&
         (isVerbCasesData(displayedWordDescriptionData)) &&
         !(displayedWordDescriptionData.isVerbProperty) &&
-        (currentExerciseData.partOfSpeech === 'Verb')
+        (currentExerciseData?.partOfSpeech === 'Verb')
     )
 
     return(
@@ -547,56 +550,117 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
             xl={6}
         >
             {/*BUTTON BACK*/}
-            <Grid
-                container={true}
-                item={true}
-                justifyContent={'center'}
-                alignItems={'center'}
-                xs={'auto'}
-            >
+            {
+                // If there are no exercises AND we're on a small screen => DON'T DISPLAY BUTTON BACK
+                !(
+                    (props.exercises.length === 0) &&
+                    (lessThanSm)
+                ) &&
                 <Grid
+                    container={true}
                     item={true}
-                    xs={true}
+                    justifyContent={'center'}
+                    alignItems={'center'}
+                    xs={'auto'}
                 >
-                    <IconButton
-                        color={'primary'}
-                        disabled={
-                            (props.currentCardIndex === 0)
-                        }
-                        onClick={() => {
-                            if(props.currentCardIndex > 0){
-                                props.setCurrentCardIndex((props.currentCardIndex-1))
-                            } else {
-                                // Not possible, but TS requires it. Button is disabled.
-                                props.setCurrentCardIndex((props.currentCardIndex))
-                            }
-                            resetCardState()
-                        }}
+                    <Grid
+                        item={true}
+                        xs={true}
                     >
-                        <ChevronLeftIcon
-                            sx={{
-                                fontSize: 100,
-                                marginLeft: '-35px',
-                                marginRight: '-35px'
+                        <IconButton
+                            color={'primary'}
+                            disabled={
+                                (props.currentCardIndex === 0)
+                            }
+                            onClick={() => {
+                                if(props.currentCardIndex > 0){
+                                    props.setCurrentCardIndex((props.currentCardIndex-1))
+                                } else {
+                                    // Not possible, but TS requires it. Button is disabled.
+                                    props.setCurrentCardIndex((props.currentCardIndex))
+                                }
+                                resetCardState()
                             }}
-                        />
-                    </IconButton>
+                        >
+                            <ChevronLeftIcon
+                                sx={{
+                                    fontSize: 100,
+                                    marginLeft: '-35px',
+                                    marginRight: '-35px'
+                                }}
+                            />
+                        </IconButton>
+                    </Grid>
                 </Grid>
-            </Grid>
+            }
             {!(props.exercises.length > 0)
                 ? <Grid
                     container={true}
                     justifyContent={'center'}
                     item={true}
-                    xs={6}
+                    xs={10}
+                    sx={{
+                        paddingX: globalTheme.spacing(2)
+                    }}
                 >
+                    <Grid
+                        container={true}
+                        justifyContent={"center"}
+                        item={true}
+                    >
+                        <Grid
+                            item={true}
+                        >
+                            <Typography
+                                sx={{
+                                    typography: {
+                                        xs: 'h6',
+                                        sm: 'h5',
+                                        md: 'h4',
+                                    },
+                                }}
+                            >
+                                No match
+                            </Typography>
+                        </Grid>
+                        <Grid
+                            container={true}
+                            item={true}
+                            xs={12}
+                            justifyContent={"center"}
+                        >
+                            <Grid
+                                item={true}
+                                xs={8}
+                            >
+                                <Divider
+                                    orientation="horizontal"
+                                    flexItem={true}
+                                    sx={{
+                                        "&::before, &::after": {
+                                            borderColor: "black",
+                                        },
+                                    }}
+                                >
+                                    {getIconByEnvironment({})}
+                                </Divider>
+                            </Grid>
+                        </Grid>
+                    </Grid>
                     <Grid
                         item={true}
                     >
                         <Typography
-                            variant={'h3'}
+                            align={'center'}
+                            sx={{
+                                typography: {
+                                    xs: 'body2',
+                                    sm: 'body1',
+                                    md: 'h6',
+                                },
+                            }}
                         >
-                            No results matching those parameters, please try again with different settings.
+                            Please try again with different settings.
                         </Typography>
                     </Grid>
                 </Grid>
@@ -635,7 +699,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                 xs={'auto'}
                             >
                                 <CountryFlag
-                                    country={props.exercises[props.currentCardIndex].matchingTranslations.itemA.language}
+                                    country={currentExerciseData?.matchingTranslations.itemA.language}
                                     border={true}
                                     size={lessThanSm ?2 :3}
                                 />
@@ -681,7 +745,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                         }}
                                         align={"center"}
                                     >
-                                        {props.exercises[props.currentCardIndex].matchingTranslations.itemA.value}
+                                        {currentExerciseData?.matchingTranslations.itemA.value}
                                     </Typography>
                                 </Grid>
                             </Grid>
@@ -713,7 +777,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                     xs={'auto'}
                                 >
                                     <CountryFlag
-                                        country={props.exercises[props.currentCardIndex].matchingTranslations.itemB.language}
+                                        country={currentExerciseData?.matchingTranslations.itemB.language}
                                         border={true}
                                         size={lessThanSm ?2 :3}
                                     />
@@ -722,7 +786,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                             {/* This help should only be visible for (multiLang:false)+(type:Text-Input) exercises */}
                             {(
                                 (props.type === 'Text-Input') &&
-                                !(props.exercises[props.currentCardIndex].multiLang) &&
+                                !(currentExerciseData?.multiLang) &&
                                 (questionWordDescriptionData !== undefined)
                             ) &&
                                 <Grid
@@ -767,7 +831,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                     xs={'auto'}
                                 >
                                     <Tooltip
-                                        title={(currentCardAnswer === undefined) ?"Check answer first" :"I know this, don't this translation again!"}
+                                        title={(currentCardAnswer === undefined) ?"Check answer first" :"Don't show this translation again!"}
                                     >
                                         <span>
                                             <IconButton
@@ -819,44 +883,51 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                 </Grid>
             }
             {/* BUTTON FORWARD */}
-            <Grid
-                container={true}
-                item={true}
-                justifyContent={'center'}
-                alignItems={'center'}
-                xs={'auto'}
-            >
+            {
+                // If there are no exercises AND we're on a small screen => DON'T DISPLAY BUTTON FORWARD
+                !(
+                    (props.exercises.length === 0) &&
+                    (lessThanSm)
+                ) &&
                 <Grid
+                    container={true}
                     item={true}
-                    xs={true}
+                    justifyContent={'center'}
+                    alignItems={'center'}
+                    xs={'auto'}
                 >
-                    <IconButton
-                        color={'primary'}
-                        disabled={
-                            (props.currentCardIndex === (props.exercises.length -1))
-                            ||
-                            !(currentCardAnswer!!)
-                        }
-                        onClick={() => {
-                            if(props.currentCardIndex < (props.exercises.length -1)){
-                                props.setCurrentCardIndex(props.currentCardIndex+1)
-                            } else {
-                                // Not possible, but TS requires it. Button is disabled.
-                                props.setCurrentCardIndex(props.currentCardIndex)
-                            }
-                            resetCardState()
-                        }}
+                    <Grid
+                        item={true}
+                        xs={true}
                     >
-                        <ChevronRightIcon
-                            sx={{
-                                fontSize: 100,
-                                marginLeft: '-35px',
-                                marginRight: '-35px'
+                        <IconButton
+                            color={'primary'}
+                            disabled={
+                                (props.currentCardIndex === (props.exercises.length -1))
+                                ||
+                                !(currentCardAnswer!!)
+                            }
+                            onClick={() => {
+                                if(props.currentCardIndex < (props.exercises.length -1)){
+                                    props.setCurrentCardIndex(props.currentCardIndex+1)
+                                } else {
+                                    // Not possible, but TS requires it. Button is disabled.
+                                    props.setCurrentCardIndex(props.currentCardIndex)
+                                }
+                                resetCardState()
                             }}
-                        />
-                    </IconButton>
+                        >
+                            <ChevronRightIcon
+                                sx={{
+                                    fontSize: 100,
+                                    marginLeft: '-35px',
+                                    marginRight: '-35px'
+                                }}
+                            />
+                        </IconButton>
+                    </Grid>
                 </Grid>
-            </Grid>
+            }
             {/* BOTTOM ACTION BUTTONS */}
             <Grid
                 container={true}
@@ -865,14 +936,14 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                 xs={12}
                 spacing={2}
                 sx={{
-                    // border: '4px solid red',
                     marginY: globalTheme.spacing(2)
                 }}
             >
                 <Grid
                     item={true}
                     xs={12}
-                    md={3}
+                    // When it's the only button => occupy whole line
+                    md={(!(props.exercises.length > 0)) ?10 :4}
                 >
                     <Button
                         variant={'contained'}
@@ -886,40 +957,26 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                         Reset
                     </Button>
                 </Grid>
-                <Grid
-                    item={true}
-                    xs={12}
-                    md={3}
-                >
-                    <Button
-                        variant={'contained'}
-                        color={'secondary'}
-                        fullWidth={true}
-                        disabled={props.isLoadingExercises}
-                        onClick={() => {
-
-                        }}
+                {/* If no exercises => error message and oly reset button available */}
+                {(props.exercises.length > 0) &&
+                    <Grid
+                        item={true}
+                        xs={12}
+                        md={4}
                     >
-                        Finish
-                    </Button>
-                </Grid>
-                <Grid
-                    item={true}
-                    xs={12}
-                    md={3}
-                >
-                    <Button
-                        variant={'contained'}
-                        color={'primary'}
-                        fullWidth={true}
-                        disabled={props.isLoadingExercises}
-                        onClick={() => {
+                        <Button
+                            variant={'contained'}
+                            color={'primary'}
+                            fullWidth={true}
+                            disabled={ true || props.isLoadingExercises}
+                            onClick={() => {
 
-                        }}
-                    >
-                        Clue
-                    </Button>
-                </Grid>
+                            }}
+                        >
+                            Clue
+                        </Button>
+                    </Grid>
+                }
             </Grid>
         </Grid>
     )
