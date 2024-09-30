@@ -24,10 +24,16 @@ type BorderProps = {
 type CountryFlagProps = {
     country: Lang,
     sxProps?: SxProps<Theme>,
+    size?: (1 | 2 | 3 | 4),
 } & BorderProps
 
+const defaultProps = {
+    size: 1 as unknown as 1
+}
+
 // See https://www.npmjs.com/package/country-flag-icons for more details
-export const CountryFlag = (props: CountryFlagProps) => {
+export const CountryFlag = (propsOriginal: CountryFlagProps) => {
+    const props: any = {...defaultProps, ...propsOriginal}
     function getCountryFlagURL(country: Lang){
         switch (country){
             case Lang.EN: {
@@ -46,17 +52,24 @@ export const CountryFlag = (props: CountryFlagProps) => {
                 return("../../AQ.svg")
         }
     }
+    const defaultWidth: number = (props.border!) ?27 :25
+    const defaultHeight: number = (props.border!) ?18 :17
+    const defaultBorderWidth: number = 1
+    const calculatedWidth: number = defaultWidth*(props.size)
+    const calculatedHeight: number = defaultHeight*(props.size)
+    const calculatedBorderWidth: number = defaultBorderWidth*(props.size)
+
     return(
         <Box
             component="div"
             sx={{
-                width: (props.border!) ?'27px' :'25px',
-                height: (props.border!) ?'18.6px' :'17px',
+                width: `${calculatedWidth}px`,
+                height: `${calculatedHeight}px`,
                 fontSize: 0,
                 marginTop: 0,
                 marginBottom: 0,
 
-                border: (props.border!) ? '1px solid black' : undefined,
+                border: (props.border!) ? `${calculatedBorderWidth}px solid black` : undefined,
                 borderRadius: (props.border) ?'20%' :undefined,
 
                 ...props.sxProps!,
@@ -65,7 +78,7 @@ export const CountryFlag = (props: CountryFlagProps) => {
             <img
                 src={`${process.env.PUBLIC_URL}/${getCountryFlagURL(props.country)}`}
                 style={{
-                    marginTop: 0,
+                    marginTop: (props.size === 1) ?0 :'-1px',
                     marginBottom: 0,
                     borderRadius: '17%',
                 }}

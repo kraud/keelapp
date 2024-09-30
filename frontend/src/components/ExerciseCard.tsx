@@ -1,5 +1,4 @@
 import {Chip, Grid, InputAdornment, TextField, Typography} from "@mui/material";
-import CheckIcon from '@mui/icons-material/Check';
 import ForgetIcon from '@mui/icons-material/Block';
 import SchoolIcon from '@mui/icons-material/School';
 import IconButton from "@mui/material/IconButton";
@@ -20,6 +19,7 @@ import {AppDispatch} from "../app/store";
 import {ExerciseParameters} from "../pages/Practice";
 import {NounCasesData, VerbCasesData, WordCasesData} from "../ts/wordCasesDataByPoS";
 import Tooltip from "@mui/material/Tooltip";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 interface InfoChipData {
     label: string,
@@ -41,6 +41,7 @@ interface ExerciseCardProps {
 
 export const ExerciseCard = (props: ExerciseCardProps) => {
     const { t } = useTranslation(['partOfSpeechCases'])
+    const lessThanSm = useMediaQuery(globalTheme.breakpoints.down("sm"))
     const dispatch = useDispatch<AppDispatch>()
     const wordCasesDescriptions = WordCasesData
     const correctValue = props.exercises[props.currentCardIndex].matchingTranslations.itemB.value
@@ -636,6 +637,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                 <CountryFlag
                                     country={props.exercises[props.currentCardIndex].matchingTranslations.itemA.language}
                                     border={true}
+                                    size={lessThanSm ?2 :3}
                                 />
                             </Grid>
                             <Grid
@@ -713,6 +715,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                     <CountryFlag
                                         country={props.exercises[props.currentCardIndex].matchingTranslations.itemB.language}
                                         border={true}
+                                        size={lessThanSm ?2 :3}
                                     />
                                 </Grid>
                             </Grid>
