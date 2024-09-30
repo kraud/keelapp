@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const asyncHandler = require("express-async-handler")
 const {getWordsIdFromFollowedTagsByUserId} = require("./intermediary/userFollowingTagController")
-const {findMatches} = require("./exercisePerformanceController")
+const {findMatches, calculateAging} = require("./exercisePerformanceController")
 const Word = require("../models/wordModel")
 const {nounGroupedCategoriesMultiLanguage} = require("../utils/equivalentTranslations/multiLang/nouns");
 const {verbGroupedCategoriesMultiLanguage} = require("../utils/equivalentTranslations/multiLang/verbs");
@@ -67,7 +67,7 @@ async function getRequiredAmountOfExercises(
         let selectedExercises = []
         let wordsInRandomOrder = [...availableExercisesByWord] // Clone the array
         while (selectedExercises.length < neededAmount) {
-            shuffleArray(wordsInRandomOrder) // Shuffle the array for randomness
+            // shuffleArray(wordsInRandomOrder) // Shuffle the array for randomness // TODO: this should be a parameter
             const selectedExercise = await randomlySelectExerciseByWord(wordsInRandomOrder, userId)
             selectedExercises.push(
                 ...selectedExercise.slice(0, neededAmount - selectedExercises.length) // Ensure we don't overshoot
@@ -84,7 +84,7 @@ async function getRequiredAmountOfExercises(
         filteredExercises = await randomlySelectExercisesMultipleWords(availableExercisesByWord, amountOfExercises, userId)
     } else if (requireFewerExercisesPerWord) {
         // Select random exercises from randomly picked words, stopping when the required amount is reached
-        shuffleArray(availableExercisesByWord) // Randomly shuffle word list
+        // shuffleArray(availableExercisesByWord) // Randomly shuffle word list // TODO: this should be a parameter
         filteredExercises = await randomlySelectExerciseByWord(availableExercisesByWord, userId)
         filteredExercises = filteredExercises.slice(0, amountOfExercises)// Take as many as needed
     } else {
@@ -769,6 +769,49 @@ const getMissingDataForMCExercises = (incompleteExercises, allMatchingWords, dat
     return(exercisesWithFullData)
 }
 
+// interface translationPerformance {
+    // user: req.user._id,
+    // translationId: req.body.translationId,
+    // word: req.body.word, //<= ObjectId
+    // statsByCase: [{
+    //     caseName: req.body.caseName, // string
+    //     record: [req.body.record], // boolean[]
+    //     lastDate: new Date(),
+    //     knowledge: knowledge
+    // }],
+    // translationLanguage: Lang,
+    // averageTranslationKnowledge: knowledge, // only one value for now, so average translation is the same as current case
+    // lastDateModifiedTranslation: new Date() // always current date
+// }
+
+const calculateWordAverageKnowledge = (translationPerformancesList, userLanguages) => {
+    // TODO: average is calculated by average of translation-knowledge divided by amount of languages RELEVANT to the user
+    // overlap entre translations-languages and user-selected languages
+    // console.log('userLanguages:', userLanguages)
+    const languagesInTranslations = translationPerformancesList.map((translationPerformanceItem) => {
+        return(translationPerformanceItem.translationLanguage) // TODO: add?
+    })
+    const validLanguages = languagesInTranslations.filter((lang) => {
+        return(
+            (userLanguages).includes(lang)
+        )
+    })
+
+    console.log('validLanguages:', validLanguages)
+    // sumamos aged-knowledge por translation y lo dividimos por validLanguages.length
+    let newWordAverageKnowledge = 0
+    translationPerformancesList.forEach((translationPerformance) => {
+        if(validLanguages.includes(translationPerformance.translationLanguage)){
+            newWordAverageKnowledge += calculateAging(translationPerformance.averageTranslationKnowledge, translationPerformance.lastDateModifiedTranslation)
+        }
+    })
+    if(validLanguages.length > 0){
+        return(newWordAverageKnowledge/(validLanguages.length))
+    } else {
+        return(newWordAverageKnowledge)
+    }
+}
+
 
 // @desc    Creates exercises for a user based on parameters specified by them on FE
 // @route   GET /api/exercises
@@ -821,6 +864,11 @@ const getExercises = asyncHandler(async (req, res) => {
         {
             $match: wordFiltersObject,
         },
+        ...(!preSelectedWordsIncludedInParameters)
+            ?[
+                {$sample: { size: 50 }}
+            ]
+            : [],
         {
             $lookup: {
                 from: 'exerciseperformances', // Nombre de la colección correspondiente a ExercisePerformance
@@ -858,10 +906,12 @@ const getExercises = asyncHandler(async (req, res) => {
                 exercisesByWord.push({
                     _id: matchingWord._id,
                     exercises: matchingExercisesPerWord, // EquivalentTranslationValues[]
-                    exercisePerformancesByTranslation: matchingWord.exercisePerformances
+                    exercisePerformancesByTranslation: matchingWord.exercisePerformances,
+                    exercisePerformanceAverageByWord: calculateWordAverageKnowledge(matchingWord.exercisePerformances, req.user.languages) // average translation-aged-performance (from averageTranslationKnowledge and lastDateModifiedTranslation
                 })
             }
         })
+    exercisesByWord.sort((a, b) => a.exercisePerformanceAverageByWord - b.exercisePerformanceAverageByWord)
     let filteredExercises = await getRequiredAmountOfExercises(exercisesByWord, parameters.amountOfExercises, userId)
     // console.log("AFTER FILTERING", filteredExercises)
     // filteredExercises -->

@@ -125,24 +125,25 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                 break
             }
         }
-        // TODO: improve content in toasts
         let performanceParameters : PerformanceParameters = {
+            translationLanguage: props.exercises[props.currentCardIndex].matchingTranslations.itemB.language,
+            caseName: props.exercises[props.currentCardIndex].matchingTranslations.itemB.case,
         }
-
-        if (currentExerciseData.performance !== undefined){
+        if (currentExerciseData.performance === undefined){
             performanceParameters = {
+                ...performanceParameters,
                 user: user._id,
                 translationId: props.exercises[props.currentCardIndex].matchingTranslations.itemB.translationId,
                 word: props.exercises[props.currentCardIndex].wordId,
-                caseName: props.exercises[props.currentCardIndex].matchingTranslations.itemB.case,
             }
         }
         else{
             performanceParameters = {
-                caseName: props.exercises[props.currentCardIndex].matchingTranslations.itemB.case,
+                ...performanceParameters,
                 performanceId: props.exercises[props.currentCardIndex].performance._id,
             }
         }
+        // TODO: improve content in toasts
         switch(answerStatus){
             case('correct'): {
                 toast.success('Correct! ✅', {
@@ -260,7 +261,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                                     : 'inherit' // should be gray/disabled
                                         }
                                         sx={{
-                                            borderRadius: (currentExercise.multiLang) ? 'inherit' :'50px'
+                                            borderRadius: (currentExercise.multiLang) ? '10px' :'50px'
                                         }}
                                     >
                                         {option}
@@ -464,7 +465,6 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                             },
                         ]
                     } else { // is a conjugated verb
-                        console.log('verbData', verbData.person)
                         returnList = [
                             {
                                 label: 'Type',
@@ -736,20 +736,20 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                             <Grid
                                 container={true}
                                 item={true}
-                                xs={'auto'}
-                                justifyContent={"space-between"}
+                                xs={12}
+                                justifyContent={"center"}
                             >
                                 <Grid
                                     item={true}
                                     xs={'auto'}
                                 >
                                     <Tooltip
-                                        title={(currentCardAnswer === undefined) ?"Check answer first" :""}
+                                        title={(currentCardAnswer === undefined) ?"Check answer first" :"I don't know this, show me again!"}
                                     >
                                         <span>
                                             <IconButton
                                                 disabled={currentCardAnswer === undefined}
-                                                color={'primary'}
+                                                color={'success'}
                                                 onClick={() => {
                                                     handleMasterClick()
                                                 }}
@@ -764,32 +764,12 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                     xs={'auto'}
                                 >
                                     <Tooltip
-                                        title={(currentCardAnswer === undefined) ?"Check answer first" :""}
+                                        title={(currentCardAnswer === undefined) ?"Check answer first" :"I know this, don't this translation again!"}
                                     >
                                         <span>
                                             <IconButton
                                                 disabled={currentCardAnswer === undefined}
-                                                color={'primary'}
-                                                onClick={() => {
-                                                    handleAcknowledgeClick()
-                                                }}
-                                            >
-                                                <CheckIcon />
-                                            </IconButton>
-                                        </span>
-                                    </Tooltip>
-                                </Grid>
-                                <Grid
-                                    item={true}
-                                    xs={'auto'}
-                                >
-                                    <Tooltip
-                                        title={(currentCardAnswer === undefined) ?"Check answer first" :""}
-                                    >
-                                        <span>
-                                            <IconButton
-                                                disabled={currentCardAnswer === undefined}
-                                                color={'primary'}
+                                                color={'error'}
                                                 onClick={() => {
                                                     handleForgetClick()
                                                 }}
@@ -812,7 +792,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                         xs={8}
                                     >
                                         <Tooltip
-                                            title={(disableCheckButton) ?"Input answer first" :""}
+                                            title={(disableCheckButton && (currentCardAnswer === undefined)) ?"Input answer first" :""}
                                         >
                                             <span>
                                                 <Button

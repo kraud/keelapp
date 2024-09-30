@@ -63,8 +63,9 @@ const saveTranslationPerformance = asyncHandler(async (req, res) => {
         const knowledge = calculateNewPercentageOfKnowledge(0,[req.body.record])
 
         const exercisePerformance = await ExercisePerformance.create({
-            user: req.user,
+            user: req.user._id,
             translationId: req.body.translationId,
+            translationLanguage: req.body.translationLanguage,
             word: req.body.word, //<= ObjectId
             statsByCase: [{
                 caseName: req.body.caseName,
@@ -72,9 +73,8 @@ const saveTranslationPerformance = asyncHandler(async (req, res) => {
                 lastDate: new Date(),
                 knowledge: knowledge
             }],
-            // averageTranslationKnowledge: knowledge, // only one value for now, so average translation is the same as current case
-            // lastDateModifiedTranslation: new Date() // always current date
-            // TODO: add average-translation knowledge (aging each case-knowledge) and last modified date
+            averageTranslationKnowledge: knowledge, // only one value for now, so average translation is the same as current case
+            lastDateModifiedTranslation: new Date() // always current date
         })
         return res.status(200).json(exercisePerformance)
     } else {
@@ -99,13 +99,15 @@ const saveTranslationPerformance = asyncHandler(async (req, res) => {
             exercisePerformance.statsByCase.push(statByCaseName)
         }
         // after modifying the existing case inside the translation, we must also update the translation-average knowledge
-        // let newTranslationAverage = 0
-        // exercisePerformance.statsByCase.forEach((caseStat) => {
-        //     newTranslationAverage = exercisePerformance+calculateAging(caseStat.knowledge, caseStat.lastDate)
-        // })
-        // newTranslationAverage = newTranslationAverage/(exercisePerformance.length)
-        // exercisePerformance.averageTranslationKnowledge = newTranslationAverage // we take the average-aged knowledge of each stored case
-        // exercisePerformance.lastDateModifiedTranslation =  new Date()
+        let newTranslationAverage = 0
+        exercisePerformance.statsByCase.forEach((caseStat) => {
+            // we age the values to be averaged, because we want the average to be representative of the status
+            // of the whole translation at the time of the last update/set of a translation-case
+            newTranslationAverage += calculateAging(caseStat.knowledge, caseStat.lastDate)
+        })
+        newTranslationAverage = newTranslationAverage/(exercisePerformance.statsByCase.length)
+        exercisePerformance.averageTranslationKnowledge = newTranslationAverage // we take the average-aged knowledge of each stored case
+        exercisePerformance.lastDateModifiedTranslation =  new Date()
 
         try{
             exercisePerformance.save()
@@ -119,7 +121,7 @@ const saveTranslationPerformance = asyncHandler(async (req, res) => {
 
 //Function to calculate the aging of the actual percentage of knowledge.
 //percentageOfKnowledge is the current percentage and lastDate must be a Date.
-function calculateAging(percentageOfKnowledge, lastDate){
+const calculateAging = (percentageOfKnowledge, lastDate) => {
     const currentDate = new Date();
     const difOfDays = Math.floor((currentDate - lastDate)/ (1000 * 60 * 60 * 24));
     return percentageOfKnowledge * Math.exp((-0.01 * difOfDays))
@@ -167,64 +169,14 @@ const findMatches = (word, translationsPerformanceArray) => {
                     return {...exercise, knowledge: 0, performance: stat, wordId: word._id }
                 }
             }
-            return {...exercise, knowledge:0, performance: {}, wordId: word._id};
+            return {...exercise, knowledge:0, performance: undefined, wordId: word._id};
         })
         .filter(result => result !== null).flat();
-};
-
-const getPerformanceByWorIdDummy = (userId, word) => {
-    return (
-        [
-            {
-                "user": "usuario",
-                "translationId":   new mongoose.Types.ObjectId("66b6de8a3b68472b47739673"),
-                "word": "word",
-                "statsByCase": [
-                    {
-                        "caseName": "gerundNonFiniteSimpleES",
-                        "record": [
-                            true, false
-                        ],
-                        "lastDate": new Date("2023-12-01"),
-                        "knowledge": 45
-                    },
-                    {
-                        "caseName": "participleNonFiniteSimpleES",
-                        "record": [
-                            true, false
-                        ],
-                        "lastDate": new Date("2023-11-01"),
-                        "knowledge": 22
-
-                    },
-                    {
-                        "caseName": "indicativePresent1sES",
-                        "record": [
-                            true, false
-                        ],
-                        "lastDate": new Date("2023-10-01"),
-                        "knowledge": 15
-
-                    },
-                    {
-                        "caseName": "indicativeFuture1plES",
-                        "record": [
-                            true, true
-                        ],
-                        "lastDate": new Date("2023-09-01"),
-                        "knowledge": 11
-                    }
-                ]
-            }
-        ]
-    )
-};
-
+}
 
 module.exports = {
     getPerformanceByWorId,
     saveTranslationPerformance,
     calculateAging,
     findMatches,
-    getPerformanceByWorIdDummy,
 }

@@ -239,11 +239,15 @@ export interface ExerciseResult {
 }
 
 export interface PerformanceParameters {
+    caseName: string,
+    translationLanguage: Lang
+    record?: boolean,
+
+    translationId?: string,
+
     performanceId?: string,
     word?: string,
-    action?: "master" | "forget" | "acknowledge",
     user?: any,
-    translationId?: string,
-    caseName?: string,
-    record?: boolean
+
+    action?: "master" | "forget" | "acknowledge",
 }
