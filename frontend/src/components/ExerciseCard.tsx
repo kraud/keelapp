@@ -214,6 +214,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
 
         props.setExercisesResults(newExerciseResult)
         dispatch(saveTranslationPerformance(performanceParameters))
+        // TODO: modify exercise list in Redux so the new information about this exercise is included (displayed list of thumbs up/down will be updated)
     }
 
     const getOptionsToDisplay = (type: ExerciseTypeSelection) => {
@@ -372,7 +373,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
         }
     }, [isSuccessSendingPerformance, isLoadingSendingPerformance])
 
-    //todo: isErrorSendingPerformance is not contemplated yet..
+    // TODO: isErrorSendingPerformance is not contemplated yet..
 
     function handleMasterClick() {
         // const parameters: PerformanceParameters= {
@@ -488,6 +489,19 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                 disabled: (currentExerciseData?.performance === undefined || !(currentCardAnswer!!)),
             }
         ]
+
+        const relevantCasePerformance = (currentExerciseData?.performance?.statsByCase)?.find((stat) => {
+            return(stat.caseName === currentExerciseData.matchingTranslations.itemB.case)
+        })
+        let performance = [undefined, undefined, undefined, undefined, undefined]
+        if(relevantCasePerformance !== undefined){
+            performance = [
+                undefined,
+                ...relevantCasePerformance.record, // length 4 or smaller
+                ...performance // to fill missing items in case performanceRecord is smaller than 4
+            ].slice(0,5) // we only want the first 4 items (plus initial undefined, for % counter
+        }
+
         return(
             <Grid
                 container={true}
@@ -513,36 +527,29 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                         marginY: globalTheme.spacing(0.25),
                     }}
                 >
-                    {([undefined, true, false, true, undefined]).map((response: boolean | undefined, index: number) => {
-                        const amountTrue = [true, false, true, undefined].filter(Boolean)
+                    {(performance).map((response: boolean | undefined, index: number) => {
+                        const lastModifiedDate = relevantCasePerformance?.lastDate
+                        const amountTrue = performance.filter(Boolean)
                         if(index !== 0){
                             return(
                                 <Grid
+                                    key={index}
                                     item={true}
                                     xs={'auto'}
                                 >
-                                    <Tooltip
-                                        title={(response !== undefined)
-                                            ? `${(response) ? '✅' : '❌'}: 10/02/23`
-                                            : ""
-                                        }
+                                    <IconButton
+                                        size={'small'}
+                                        disabled={response === undefined}
+                                        color={response ? 'primary' : 'error'}
+                                        onClick={() => null}
                                     >
-                                        <span>
-                                            <IconButton
-                                                size={'small'}
-                                                disabled={response === undefined}
-                                                color={response ? 'primary' : 'error'}
-                                                onClick={() => null}
-                                            >
-                                                {(response || (response === undefined))
-                                                    ?
-                                                    <ThumbUpIcon/>
-                                                    :
-                                                    <ThumbDownIcon/>
-                                                }
-                                            </IconButton>
-                                        </span>
-                                    </Tooltip>
+                                        {(response || (response === undefined))
+                                            ?
+                                            <ThumbUpIcon/>
+                                            :
+                                            <ThumbDownIcon/>
+                                        }
+                                    </IconButton>
                                 </Grid>
                             )
                         } else {
@@ -552,7 +559,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                     xs={'auto'}
                                 >
                                     <Tooltip
-                                        title={"Your performance on this word, relative to the last 4 times you practiced with it"}
+                                        title={`Your performance on this word. Last time you practiced this: ${(new Date(lastModifiedDate)).toLocaleDateString()}`}
                                         componentsProps={{
                                             tooltip: {
                                                 sx: {
@@ -591,9 +598,10 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                         marginY: globalTheme.spacing(0.25),
                     }}
                 >
-                    {(buttons).map((button) => {
+                    {(buttons).map((button, index) => {
                         return (
                             <Grid
+                                key={index}
                                 item={true}
                                 xs={'auto'}
                             >
@@ -822,9 +830,9 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                     <Typography
                                         sx={{
                                             typography: {
-                                                xs: 'h6',
-                                                sm: 'h5',
-                                                md: 'h3',
+                                                xs: 'h4',
+                                                sm: 'h3',
+                                                md: 'h2',
                                             },
                                         }}
                                         align={"center"}

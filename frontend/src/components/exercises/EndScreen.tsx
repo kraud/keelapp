@@ -104,14 +104,15 @@ export const EndScreen = (props: EndScreenProps) => {
                                                 alignItems={'center'}
                                                 item={true}
                                                 justifyContent={'center'}
-                                                xs={7}
+                                                xs={12}
+                                                sm={7}
                                                 md={'auto'}
                                                 sx={{
                                                     backgroundColor: 'white',
                                                     borderRadius: '25px',
                                                     paddingY: globalTheme.spacing(1),
                                                     paddingX: globalTheme.spacing(2),
-                                                    margin: globalTheme.spacing(0.25)
+                                                    margin: globalTheme.spacing(0.25),
                                                 }}
                                             >
                                                 <Grid
@@ -197,7 +198,8 @@ export const EndScreen = (props: EndScreenProps) => {
                                                 container={true}
                                                 justifyContent={'center'}
                                                 item={true}
-                                                xs={7}
+                                                xs={12}
+                                                sm={7}
                                                 md={'auto'}
                                                 sx={{
                                                     backgroundColor: 'white',
