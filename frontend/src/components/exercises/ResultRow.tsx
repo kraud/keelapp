@@ -32,6 +32,7 @@ export const ResultRow = (props: ResultRowProps) => {
         <Grid
             key={props.index}
             container={true}
+            justifyContent={'space-between'}
             item={true}
             xs={12}
             sx={{
@@ -128,7 +129,8 @@ export const ResultRow = (props: ResultRowProps) => {
                 container={true}
                 justifyContent={'flex-start'}
                 alignItems={'center'}
-                xs={2}
+                // xs={2}
+                xs={'auto'}
                 spacing={1}
                 sx={{
                     paddingX: globalTheme.spacing(1),
@@ -163,14 +165,17 @@ export const ResultRow = (props: ResultRowProps) => {
                 justifyContent={'flex-start'}
                 alignItems={'center'}
                 xs={true}
+                // xs={'auto'}
                 spacing={1}
                 sx={{
-                    paddingX: globalTheme.spacing(1)
+                    paddingX: globalTheme.spacing(1),
+                    marginLeft: globalTheme.spacing(1)
                 }}
             >
                 <Grid
                     item={true}
-                    xs={true}
+                    xs={12}
+                    sm={true}
                 >
                     <Typography
                         sx={{
@@ -180,13 +185,15 @@ export const ResultRow = (props: ResultRowProps) => {
                                 xl: 'h6',
                             },
                         }}
+                        // align={"left"} // END CHANGES
                     >
                         {props.originalExerciseData.matchingTranslations.itemA.value}
                     </Typography>
                 </Grid>
                 <Grid
                     item={true}
-                    xs={true}
+                    xs={12}
+                    sm={true}
                 >
                     <Typography
                         sx={{
@@ -205,10 +212,11 @@ export const ResultRow = (props: ResultRowProps) => {
             {!(lessThanMd) &&
                 <Grid
                     container={true}
-                    justifyContent={'center'}
+                    // justifyContent={'center'}
+                    justifyContent={'flex-end'}
                     alignItems={'center'}
-                    // xs={true}
-                    xs={'auto'}
+                    xs={true}
+                    // xs={'auto'}
                     sx={{
                         paddingX: globalTheme.spacing(1)
                     }}

@@ -9,11 +9,12 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import React, {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import {deterministicSort, getChipFieldsByPoS, getVerbPronoun, isVerbCasesData} from "./generalUseFunctions";
-import {ExerciseTypeSelection, PartOfSpeech} from "../ts/enums";
+import {ExerciseTypeSelection} from "../ts/enums";
 import {EquivalentTranslationValues, ExerciseResult, InfoChipData, PerformanceParameters} from "../ts/interfaces";
 import {Bounce, toast} from "react-toastify";
 import globalTheme from "../theme/theme";
-import {saveTranslationPerformance, resetExercisePerformance} from "../features/exercisePerformance/exercisePerformanceSlice";
+//@ts-ignore
+import {resetExercisePerformance, saveTranslationPerformance} from "../features/exercisePerformance/exercisePerformanceSlice";
 import {setExercises} from "../features/exercises/exerciseSlice";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../app/store";
@@ -21,6 +22,8 @@ import {ExerciseParameters} from "../pages/Practice";
 import {NounCasesData, VerbCasesData, WordCasesData} from "../ts/wordCasesDataByPoS";
 import Tooltip from "@mui/material/Tooltip";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 
 interface ExerciseCardProps {
     type: ExerciseTypeSelection,
@@ -350,7 +353,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
     }, [props.currentCardIndex])
 
     /**
-     * Whenever a dispach is fullfilled we check if the performance already exits for the current exercise,
+     * Whenever a dispatch is fulfilled we check if the performance already exits for the current exercise,
      * if it doesn't, we save the performance return by the BE
      */
     useEffect(() => {
@@ -468,6 +471,153 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
         (currentExerciseData?.partOfSpeech === 'Verb')
     )
 
+    const performanceShortcutButtons = () => {
+        const buttons = [
+            {
+                tooltipTitle: "I don't know this, show me again!",
+                onClickAction: () => handleMasterClick(),
+                icon: <SchoolIcon />,
+                iconColor: 'primary',
+                disabled: (currentExerciseData?.performance === undefined || !(currentCardAnswer!!)),
+            },
+            {
+                tooltipTitle: "Don't show this translation again!",
+                onClickAction: () => handleForgetClick(),
+                icon: <ForgetIcon />,
+                iconColor: 'error',
+                disabled: (currentExerciseData?.performance === undefined || !(currentCardAnswer!!)),
+            }
+        ]
+        return(
+            <Grid
+                container={true}
+                item={true}
+                xs={10}
+                justifyContent={"space-evenly"}
+                alignItems={'flex-start'}
+                sx={{
+                    // border: '2px solid black'
+                }}
+            >
+                <Grid
+                    container={true}
+                    item={true}
+                    justifyContent={'center'}
+                    alignItems={'flex-end'}
+                    xs={'auto'}
+                    sx={{
+                        backgroundColor: 'white',
+                        borderRadius: '25px',
+                        paddingY: globalTheme.spacing(0.25),
+                        paddingX: globalTheme.spacing(0.75),
+                        marginY: globalTheme.spacing(0.25),
+                    }}
+                >
+                    {([undefined, true, false, true, undefined]).map((response: boolean | undefined, index: number) => {
+                        const amountTrue = [true, false, true, undefined].filter(Boolean)
+                        if(index !== 0){
+                            return(
+                                <Grid
+                                    item={true}
+                                    xs={'auto'}
+                                >
+                                    <Tooltip
+                                        title={(response !== undefined)
+                                            ? `${(response) ? '✅' : '❌'}: 10/02/23`
+                                            : ""
+                                        }
+                                    >
+                                        <span>
+                                            <IconButton
+                                                size={'small'}
+                                                disabled={response === undefined}
+                                                color={response ? 'primary' : 'error'}
+                                                onClick={() => null}
+                                            >
+                                                {(response || (response === undefined))
+                                                    ?
+                                                    <ThumbUpIcon/>
+                                                    :
+                                                    <ThumbDownIcon/>
+                                                }
+                                            </IconButton>
+                                        </span>
+                                    </Tooltip>
+                                </Grid>
+                            )
+                        } else {
+                            return(
+                                <Grid
+                                    item={true}
+                                    xs={'auto'}
+                                >
+                                    <Tooltip
+                                        title={"Your performance on this word, relative to the last 4 times you practiced with it"}
+                                        componentsProps={{
+                                            tooltip: {
+                                                sx: {
+                                                    textAlign: 'center',
+                                                },
+                                            },
+                                        }}
+                                    >
+                                        <Button
+                                            variant={'text'}
+                                            color={'primary'}
+                                            sx={{
+                                                marginRight: '-15px',
+                                                marginLeft: '-5px',
+                                                marginBottom: '-3px',
+                                            }}
+                                        >
+                                            {(amountTrue.length/4)*100}%:
+                                        </Button>
+                                    </Tooltip>
+                                </Grid>
+                            )
+                        }
+                    })}
+                </Grid>
+                <Grid
+                    container={true}
+                    justifyContent={'center'}
+                    item={true}
+                    xs={'auto'}
+                    sx={{
+                        backgroundColor: 'white',
+                        borderRadius: '25px',
+                        paddingY: globalTheme.spacing(0.25),
+                        paddingX: globalTheme.spacing(0.75),
+                        marginY: globalTheme.spacing(0.25),
+                    }}
+                >
+                    {(buttons).map((button) => {
+                        return (
+                            <Grid
+                                item={true}
+                                xs={'auto'}
+                            >
+                                <Tooltip
+                                    title={(currentCardAnswer === undefined) ?"Check answer first" :button.tooltipTitle}
+                                >
+                                    <span>
+                                        <IconButton
+                                            size={'small'}
+                                            disabled={button.disabled}
+                                            color={button.iconColor as 'success' | 'error'}
+                                            onClick={() => button.onClickAction()}
+                                        >
+                                            {button.icon}
+                                        </IconButton>
+                                    </span>
+                                </Tooltip>
+                            </Grid>
+                        )
+                    })}
+                </Grid>
+            </Grid>
+        )
+    }
     return(
         <Grid
             container={true}
@@ -734,54 +884,11 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                 </Grid>
                             }
                             {getOptionsToDisplay(props.type)}
-                            <Grid
-                                container={true}
-                                item={true}
-                                xs={12}
-                                justifyContent={"center"}
-                            >
-                                <Grid
-                                    item={true}
-                                    xs={'auto'}
-                                >
-                                    <Tooltip
-                                        title={(currentCardAnswer === undefined) ?"Check answer first" :"I don't know this, show me again!"}
-                                    >
-                                        <span>
-                                            <IconButton
-                                                disabled={currentExerciseData?.performance === undefined || !(currentCardAnswer!!) }
-                                                color={'success'}
-                                                onClick={() => {
-                                                    handleMasterClick()
-                                                }}
-                                            >
-                                                <SchoolIcon />
-                                            </IconButton>
-                                        </span>
-                                    </Tooltip>
-                                </Grid>
-                                <Grid
-                                    item={true}
-                                    xs={'auto'}
-                                >
-                                    <Tooltip
-                                        title={(currentCardAnswer === undefined) ?"Check answer first" :"Don't show this translation again!"}
-                                    >
-                                        <span>
-                                            <IconButton
-                                                disabled={currentExerciseData?.performance === undefined || !(currentCardAnswer!!) }
-                                                color={'error'}
-                                                onClick={() => {
-                                                    handleForgetClick()
-                                                }}
-                                            >
-                                                <ForgetIcon />
-                                            </IconButton>
-                                        </span>
-                                    </Tooltip>
-                                </Grid>
-                            </Grid>
-                            {(props.type === 'Text-Input') &&
+                            {performanceShortcutButtons()}
+                            {(
+                                (props.type === 'Text-Input') &&
+                                (currentCardAnswer === undefined) // Once user answers => we hide button
+                            ) &&
                                 <Grid
                                     container={true}
                                     justifyContent={'center'}
@@ -793,7 +900,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                         xs={8}
                                     >
                                         <Tooltip
-                                            title={(disableCheckButton && (currentCardAnswer === undefined)) ?"Input answer first" :""}
+                                            title={(disableCheckButton) ?"Input answer first" :""}
                                         >
                                             <span>
                                                 <Button
@@ -877,7 +984,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                     item={true}
                     xs={12}
                     // When it's the only button => occupy whole line
-                    md={(!(props.exercises.length > 0)) ?10 :4}
+                    md={(!(props.exercises.length > 0)) ?10 :6}
                 >
                     <Button
                         variant={'contained'}
@@ -896,7 +1003,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                     <Grid
                         item={true}
                         xs={12}
-                        md={4}
+                        md={6}
                     >
                         <Button
                             variant={'contained'}
@@ -907,7 +1014,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                 props.setCurrentCardIndex(props.exercises.length)
                             }}
                         >
-                            Go back to results
+                            Go to results
                         </Button>
                     </Grid>
                 }

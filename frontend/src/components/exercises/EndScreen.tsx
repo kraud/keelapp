@@ -82,7 +82,8 @@ export const EndScreen = (props: EndScreenProps) => {
                                     paddingY: globalTheme.spacing(2),
                                     paddingX: globalTheme.spacing(3),
                                     marginTop: globalTheme.spacing(1),
-                                    marginRight: globalTheme.spacing(1)
+                                    marginRight: globalTheme.spacing(1),
+                                    alignContent: 'space-evenly'
                                 }}
                             >
                                 <Grid
@@ -102,12 +103,15 @@ export const EndScreen = (props: EndScreenProps) => {
                                                 container={true}
                                                 alignItems={'center'}
                                                 item={true}
-                                                xs={'auto'}
+                                                justifyContent={'center'}
+                                                xs={7}
+                                                md={'auto'}
                                                 sx={{
                                                     backgroundColor: 'white',
                                                     borderRadius: '25px',
                                                     paddingY: globalTheme.spacing(1),
                                                     paddingX: globalTheme.spacing(2),
+                                                    margin: globalTheme.spacing(0.25)
                                                 }}
                                             >
                                                 <Grid
@@ -172,7 +176,8 @@ export const EndScreen = (props: EndScreenProps) => {
                                     paddingY: globalTheme.spacing(2),
                                     paddingX: globalTheme.spacing(3),
                                     marginTop: globalTheme.spacing(1),
-                                    marginLeft: globalTheme.spacing(1)
+                                    marginLeft: globalTheme.spacing(1),
+                                    alignContent: 'space-evenly'
                                 }}
                             >
                                 <Grid
@@ -190,13 +195,16 @@ export const EndScreen = (props: EndScreenProps) => {
                                             <Grid
                                                 key={index}
                                                 container={true}
+                                                justifyContent={'center'}
                                                 item={true}
-                                                xs={'auto'}
+                                                xs={7}
+                                                md={'auto'}
                                                 sx={{
                                                     backgroundColor: 'white',
                                                     borderRadius: '25px',
                                                     paddingY: globalTheme.spacing(1),
                                                     paddingX: globalTheme.spacing(2),
+                                                    margin: globalTheme.spacing(0.25)
                                                 }}
                                             >
                                                 <Grid
@@ -314,7 +322,8 @@ export const EndScreen = (props: EndScreenProps) => {
                                     paddingY: globalTheme.spacing(1),
                                     paddingX: globalTheme.spacing(3),
                                     marginTop: globalTheme.spacing(1),
-                                    marginLeft: globalTheme.spacing(1)
+                                    marginLeft: globalTheme.spacing(1),
+                                    alignContent: 'space-evenly'
                                 }}
                             >
                                 <Grid
@@ -334,7 +343,7 @@ export const EndScreen = (props: EndScreenProps) => {
                                                     borderRadius: '25px',
                                                     paddingY: globalTheme.spacing(1),
                                                     paddingX: globalTheme.spacing(2),
-                                                    marginX: globalTheme.spacing(1),
+                                                    margin: globalTheme.spacing(0.25),
                                                     // maxHeight: 'max-content'
                                                 }}
                                             >
