@@ -8,7 +8,6 @@ import React, {useEffect, useState} from "react";
 import LinearIndeterminate from "../components/Spinner";
 import {CardTypeSelection, ExerciseTypeSelection, Lang, PartOfSpeech} from "../ts/enums";
 import {ExerciseParameterSelector} from "../components/ExerciseParameterSelector";
-import {toast} from "react-toastify";
 import {
     getExercisesForUser,
     resetExerciseList,
@@ -16,6 +15,8 @@ import {
 import {WordSimpleList} from "../components/WordSimpleList";
 import {ExerciseCard} from "../components/ExerciseCard";
 import {ExerciseResult} from "../ts/interfaces";
+import {EndScreen} from "../components/exercises/EndScreen";
+import {interpolateColor} from "../components/generalUseFunctions";
 
 
 export type ExerciseParameters = {
@@ -51,7 +52,6 @@ export const Practice = (props: PracticeProps) => {
     const {exercises, isErrorExercises, isSuccessExercises, isLoadingExercises, wordsSelectedForExercises} = useSelector((state: any) => state.exercises)
     const {user} = useSelector((state: any) => state.auth)
 
-
     const initialListOfPoS: PartOfSpeech[] = [PartOfSpeech.noun, PartOfSpeech.verb] // TODO: add missing PoS as we create BE logic to create exercises
 
     const initialParameters: ExerciseParameters = {
@@ -77,6 +77,16 @@ export const Practice = (props: PracticeProps) => {
     // This wil determine which checkboxes are displayed on ParameterSelector for Parts of Speech (so we don't display PoS options NOT included on pre-selected words).
     const [relevantPoSForPreSelectedWords, setRelevantPoSForPreSelectedWords] = useState<PartOfSpeech[]>(initialListOfPoS)
 
+    const amountCorrectExercises = (cardAnswers.filter((answer: ExerciseResult) => answer.correct)).length
+
+    const displayEndScreen = (
+        (acceptedParameters) &&
+        // if we have answered all exercises
+        (cardAnswers.length === exercises.length) &&
+        // and we're currently looking at the "slide" at (max-index +1, which is the same as length) => display finish screen
+        (currentCardIndex === (exercises.length))
+    )
+
     const getRelevantPoSFromWordSelection = (selectedWords: any[]) => {
         const allPoS = selectedWords.map((selectedWord) => {
             return(selectedWord.partOfSpeech)
@@ -98,6 +108,13 @@ export const Practice = (props: PracticeProps) => {
         dispatch(getExercisesForUser(dispatchParameters))
         setAcceptedParameters(true)
     }
+
+    // not sure if always needed. Helps clear exercise list after hot reloading during development
+    useEffect(() => {
+        if(!acceptedParameters){
+            dispatch(resetExerciseList())
+        }
+    }, [])
 
     useEffect(() => {
         if(wordsSelectedForExercises.length > 0){
@@ -177,12 +194,24 @@ export const Practice = (props: PracticeProps) => {
                                     sm: 'h2',
                                     lg: 'h1',
                                 },
+                                color: (displayEndScreen)
+                                    ? interpolateColor(amountCorrectExercises/exercises.length)
+                                    : 'black'
                             }}
                             align={"center"}
                         >
-                            {`Exercises ${currentCardIndex+1}/${exercises.length}`}
+                            {(displayEndScreen)
+                                ? `Results: ${amountCorrectExercises}/${exercises.length} ✅`
+                                : `Exercises ${currentCardIndex+1}/${exercises.length}`
+                            }
                         </Typography>
-                        <LinearIndeterminate progress={((currentCardIndex+1)/(exercises.length))*100}/>
+                        <LinearIndeterminate
+                            progress={
+                                (displayEndScreen)
+                                    ? 100
+                                    : ((currentCardIndex+1)/(exercises.length))*100
+                            }
+                        />
                     </Grid>
                 }
                 {(
@@ -200,7 +229,8 @@ export const Practice = (props: PracticeProps) => {
                             item={true}
                             xs={10}
                             sx={{
-                                display: {xs: 'none', lg: 'inherit'}
+                                display: {xs: 'none', lg: 'inherit'},
+                                marginBottom: globalTheme.spacing(2)
                             }}
                         >
                             <Typography
@@ -266,29 +296,40 @@ export const Practice = (props: PracticeProps) => {
                             {(isLoadingExercises && !isSuccessExercises)
                                 ?
                                 <LinearIndeterminate/>
-                                :
-                                <ExerciseCard
-                                    parameters={parameters}
-                                    type={exercises[currentCardIndex]?.type}
-                                    currentCardIndex={currentCardIndex}
-                                    setCurrentCardIndex={(value: number) => {
-                                        setCurrentCardIndex(value)
-                                    }}
-                                    exercises={exercises}
-                                    isLoadingExercises={isLoadingExercises}
-                                    onClickReset={() => {
-                                        onClickReset()
-                                    }}
-                                    exercisesResults={cardAnswers}
-                                    setExercisesResults={(newAnswer: ExerciseResult) => {
-                                        setCardAnswers((prevState: ExerciseResult[]) => {
-                                            return([
-                                                ...prevState,
-                                                newAnswer
-                                            ])
-                                        })
-                                    }}
-                                />
+                                : (displayEndScreen)
+                                    ? <EndScreen
+                                        exercises={exercises}
+                                        exercisesResults={cardAnswers}
+                                        parameters={parameters}
+                                        currentCardIndex={currentCardIndex}
+                                        setCurrentCardIndex={(value: number) => {
+                                            setCurrentCardIndex(value)
+                                        }}
+                                        wordsSelectedForExercises={wordsSelectedForExercises}
+                                        onClickReset={() => onClickReset()}
+                                    />
+                                    : <ExerciseCard
+                                        parameters={parameters}
+                                        type={exercises[currentCardIndex]?.type}
+                                        currentCardIndex={currentCardIndex}
+                                        setCurrentCardIndex={(value: number) => {
+                                            setCurrentCardIndex(value)
+                                        }}
+                                        exercises={exercises}
+                                        isLoadingExercises={isLoadingExercises}
+                                        onClickReset={() => {
+                                            onClickReset()
+                                        }}
+                                        exercisesResults={cardAnswers}
+                                        setExercisesResults={(newAnswer: ExerciseResult) => {
+                                            setCardAnswers((prevState: ExerciseResult[]) => {
+                                                return([
+                                                    ...prevState,
+                                                    newAnswer
+                                                ])
+                                            })
+                                        }}
+                                    />
                             }
                         </Grid>
                     }

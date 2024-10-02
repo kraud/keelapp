@@ -1,14 +1,16 @@
 import {
+    AdjectiveCases,
+    AdverbCases,
     EnglishPronouns, EstonianPronouns,
     GermanPronouns,
-    Lang,
+    Lang, NounCases,
     PartOfSpeech,
     Plurality,
-    SpanishPronouns
+    SpanishPronouns, VerbCases
 } from "../ts/enums";
 import {
     FilterItem,
-    FriendshipData,
+    FriendshipData, InfoChipData,
     NotificationData,
     SearchResult,
     TagData,
@@ -16,7 +18,7 @@ import {
     WordDataBE
 } from "../ts/interfaces";
 import {toast} from "react-toastify";
-import {useSelector} from "react-redux";
+import {NounCasesData, VerbCasesData, WordCasesData} from "../ts/wordCasesDataByPoS";
 
 export const getCurrentLangTranslated = (currentLang?: Lang) => {
     switch(currentLang) {
@@ -591,4 +593,134 @@ export const getVerbPronoun = (personNumber: 1 | 2 | 3, plurality: Plurality, la
         default:
             return('missing language for pronoun')
     }
+}
+
+// TODO: some chips could display additional info in Tooltip on hover?
+export const getChipFieldsByPoS = (
+    relevantWordDetails: NounCasesData | VerbCasesData,
+    currentPartOfSpeech: PartOfSpeech,
+    translateFunction: (access: string, count: number) => string
+) => {
+
+    let returnList: InfoChipData[] = []
+    switch(currentPartOfSpeech){
+        case (PartOfSpeech.verb): {
+            if (isVerbCasesData(relevantWordDetails)) {
+                const verbData: VerbCasesData = relevantWordDetails; // Now TypeScript knows this is VerbCasesData
+                if (verbData.isVerbProperty) { // is information about a conjugated verb
+                    returnList = [
+                        {
+                            label: '-',
+                            value: verbData.verbPropertyCategory,
+                        },
+                    ]
+                } else { // is a conjugated verb
+                    returnList = [
+                        {
+                            label: 'Type',
+                            value: PartOfSpeech.verb,
+                        },
+                        {
+                            label: 'person',
+                            value: translateFunction('verbPersonCardinal.number', verbData.person),
+                        },
+                        {
+                            label: 'plurality',
+                            value: verbData.plurality, // TODO: translate (singular/plural) for all languages
+                        },
+                        {
+                            label: 'tense',
+                            value: verbData.tense, // TODO: translate for all languages (later)
+                        },
+                        ...(verbData.mood !== undefined)
+                            ? [{ label: 'mood', value: verbData.mood}]
+                            : [],
+                    ]
+                }
+            }
+            break
+        }
+        case (PartOfSpeech.noun): {
+            if (isNounCasesData(relevantWordDetails)) {
+                const nounData: NounCasesData = relevantWordDetails; // Now TypeScript knows this is NounCasesData
+                if (nounData.isNounProperty) { // is information about a noun
+                    returnList = [
+                        {
+                            label: '-',
+                            value: nounData.nounPropertyCategory,
+                        },
+                    ]
+                } else { // is a noun
+                    returnList = [
+                        {
+                            label: 'Type',
+                            value: PartOfSpeech.noun,
+                        },
+                        {
+                            label: 'declination',
+                            value: nounData.declination,
+                        },
+                        {
+                            label: 'plurality',
+                            value: nounData.plurality, // TODO: translate (singular/plural) for all languages
+                        },
+                    ]
+                }
+            }
+            break
+        }
+        default: {
+
+        }
+    }
+    return(returnList)
+}
+
+
+// Type guard for VerbCasesData
+export const isVerbCasesData = (data: NounCasesData | VerbCasesData): data is VerbCasesData => {
+    return (data as VerbCasesData).isVerbProperty !== undefined;
+}
+
+// Type guard for NounCasesData
+export const isNounCasesData = (data: NounCasesData | VerbCasesData): data is NounCasesData => {
+    return (data as NounCasesData).isNounProperty !== undefined;
+}
+
+export const getWordDescriptionElements = (relevantPoS: PartOfSpeech, relevantCaseName: NounCases | VerbCases | AdverbCases| AdjectiveCases) => {
+    const currentRelevantPoSData: NounCasesData[] | VerbCasesData[] = WordCasesData[relevantPoS as string]
+    // @ts-ignore
+    const relevantWordDetails = (currentRelevantPoSData).find((currentPoSCaseList: NounCasesData | VerbCasesData) => {
+        return(currentPoSCaseList.caseName === relevantCaseName)
+    })
+    return(relevantWordDetails)
+}
+
+export function interpolateColor(value: number) {
+    // Ensure the value is between 0 and 1
+    value = Math.max(0, Math.min(1, value));
+
+    // Colors to interpolate between
+    const startColor = { r: 0xd4, g: 0x12, b: 0x43 }; // #d41243
+    const midColor = { r: 0xf4, g: 0x78, b: 0x35 };  // #f47835
+    const endColor = { r: 0x8e, g: 0xc1, b: 0x27 };  // #8ec127
+
+    let r, g, b;
+
+    if (value <= 0.5) {
+        // Interpolate between startColor and midColor
+        const t = value * 2;
+        r = Math.round(startColor.r + t * (midColor.r - startColor.r));
+        g = Math.round(startColor.g + t * (midColor.g - startColor.g));
+        b = Math.round(startColor.b + t * (midColor.b - startColor.b));
+    } else {
+        // Interpolate between midColor and endColor
+        const t = (value - 0.5) * 2;
+        r = Math.round(midColor.r + t * (endColor.r - midColor.r));
+        g = Math.round(midColor.g + t * (endColor.g - midColor.g));
+        b = Math.round(midColor.b + t * (endColor.b - midColor.b));
+    }
+
+    // Convert RGB to HEX format
+    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
 }

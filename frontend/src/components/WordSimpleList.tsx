@@ -91,7 +91,7 @@ export const WordSimpleList = (props: WordSimpleListProps) => {
                         container={true}
                         item={true}
                         sx={{
-                            marginTop: globalTheme.spacing(3)
+                            marginTop: (index > 0) ? globalTheme.spacing(3) : globalTheme.spacing(0)
                         }}
                     >
                         <Grid

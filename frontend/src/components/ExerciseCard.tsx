@@ -8,9 +8,9 @@ import Button from "@mui/material/Button";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import React, {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
-import {deterministicSort, getVerbPronoun} from "./generalUseFunctions";
+import {deterministicSort, getChipFieldsByPoS, getVerbPronoun, isVerbCasesData} from "./generalUseFunctions";
 import {ExerciseTypeSelection, PartOfSpeech} from "../ts/enums";
-import {EquivalentTranslationValues, ExerciseResult, PerformanceParameters} from "../ts/interfaces";
+import {EquivalentTranslationValues, ExerciseResult, InfoChipData, PerformanceParameters} from "../ts/interfaces";
 import {Bounce, toast} from "react-toastify";
 import globalTheme from "../theme/theme";
 import {saveTranslationPerformance} from "../features/exercisePerformance/exercisePerformanceSlice";
@@ -20,11 +20,6 @@ import {ExerciseParameters} from "../pages/Practice";
 import {NounCasesData, VerbCasesData, WordCasesData} from "../ts/wordCasesDataByPoS";
 import Tooltip from "@mui/material/Tooltip";
 import useMediaQuery from "@mui/material/useMediaQuery";
-
-interface InfoChipData {
-    label: string,
-    value: string
-}
 
 interface ExerciseCardProps {
     type: ExerciseTypeSelection,
@@ -351,16 +346,6 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
         }
     }, [props.currentCardIndex])
 
-    function handleAcknowledgeClick() {
-      // const parameters: PerformanceParameters= {
-      //     action: "acknowledge",
-      //     word: "word",
-      //     translation: "translation",
-      // }
-      //
-      // dispatch(saveTranslationPerformance(parameters))
-    }
-
     function handleMasterClick() {
         // const parameters: PerformanceParameters= {
         //     action: "master",
@@ -410,7 +395,15 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
     const getChipListOfWordDetails = (relevantWordDescription: NounCasesData | VerbCasesData, chipColor: 'primary' | 'secondary' | 'info',) => {
         let chips: InfoChipData[] = [{label: 'error', value: 'no data'}]
         if(relevantWordDescription !== undefined){
-            chips = getChipFieldsByPoS(relevantWordDescription, currentExerciseData?.partOfSpeech)
+            chips = getChipFieldsByPoS(
+                relevantWordDescription,
+                currentExerciseData?.partOfSpeech,
+                (access: string, count: number) => {
+                    return(
+                        t(access, {ns: 'partOfSpeechCases', count: count, ordinal: true})
+                    )
+                }
+            )
         }
 
         return(
@@ -441,93 +434,6 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                 })}
             </Grid>
         )
-    }
-
-    // Type guard for VerbCasesData
-    const isVerbCasesData = (data: NounCasesData | VerbCasesData): data is VerbCasesData => {
-        return (data as VerbCasesData).isVerbProperty !== undefined;
-    }
-
-    // Type guard for NounCasesData
-    const isNounCasesData = (data: NounCasesData | VerbCasesData): data is NounCasesData => {
-        return (data as NounCasesData).isNounProperty !== undefined;
-    }
-
-    // TODO: some chips could display additional info in Tooltip on hover?
-    const getChipFieldsByPoS = (relevantWordDetails: NounCasesData | VerbCasesData, currentPartOfSpeech: PartOfSpeech) => {
-
-        let returnList: InfoChipData[] = []
-        switch(currentPartOfSpeech){
-            case (PartOfSpeech.verb): {
-                if (isVerbCasesData(relevantWordDetails)) {
-                    const verbData: VerbCasesData = relevantWordDetails; // Now TypeScript knows this is VerbCasesData
-                    if (verbData.isVerbProperty) { // is information about a conjugated verb
-                        returnList = [
-                            {
-                                label: '-',
-                                value: verbData.verbPropertyCategory,
-                            },
-                        ]
-                    } else { // is a conjugated verb
-                        returnList = [
-                            {
-                                label: 'Type',
-                                value: PartOfSpeech.verb,
-                            },
-                            {
-                                label: 'person',
-                                value: t('verbPersonCardinal.number', {ns: 'partOfSpeechCases', count: verbData.person, ordinal: true}),
-                            },
-                            {
-                                label: 'plurality',
-                                value: verbData.plurality, // TODO: translate (singular/plural) for all languages
-                            },
-                            {
-                                label: 'tense',
-                                value: verbData.tense, // TODO: translate for all languages (later)
-                            },
-                            ...(verbData.mood !== undefined)
-                                ? [{ label: 'mood', value: verbData.mood}]
-                                : [],
-                        ]
-                    }
-                }
-                break
-            }
-            case (PartOfSpeech.noun): {
-                if (isNounCasesData(relevantWordDetails)) {
-                    const nounData: NounCasesData = relevantWordDetails; // Now TypeScript knows this is NounCasesData
-                    if (nounData.isNounProperty) { // is information about a noun
-                        returnList = [
-                            {
-                                label: '-',
-                                value: nounData.nounPropertyCategory,
-                            },
-                        ]
-                    } else { // is a noun
-                        returnList = [
-                            {
-                                label: 'Type',
-                                value: PartOfSpeech.noun,
-                            },
-                            {
-                                label: 'declination',
-                                value: nounData.declination,
-                            },
-                            {
-                                label: 'plurality',
-                                value: nounData.plurality, // TODO: translate (singular/plural) for all languages
-                            },
-                        ]
-                    }
-                }
-                break
-            }
-            default: {
-
-            }
-        }
-        return(returnList)
     }
 
     const addPronounToVerbDisplayed = (
@@ -906,12 +812,12 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                         <IconButton
                             color={'primary'}
                             disabled={
-                                (props.currentCardIndex === (props.exercises.length -1))
+                                (props.currentCardIndex === (props.exercises.length))
                                 ||
                                 !(currentCardAnswer!!)
                             }
                             onClick={() => {
-                                if(props.currentCardIndex < (props.exercises.length -1)){
+                                if(props.currentCardIndex < (props.exercises.length)){
                                     props.setCurrentCardIndex(props.currentCardIndex+1)
                                 } else {
                                     // Not possible, but TS requires it. Button is disabled.
@@ -957,11 +863,11 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                             props.onClickReset()
                         }}
                     >
-                        Reset
+                        Go back to parameters
                     </Button>
                 </Grid>
-                {/* If no exercises => error message and oly reset button available */}
-                {(props.exercises.length > 0) &&
+                {/* If all exercises have answers => display option to go see results */}
+                {(props.exercisesResults.length === props.exercises.length) &&
                     <Grid
                         item={true}
                         xs={12}
@@ -971,12 +877,12 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                             variant={'contained'}
                             color={'primary'}
                             fullWidth={true}
-                            disabled={ true || props.isLoadingExercises}
+                            disabled={ props.isLoadingExercises}
                             onClick={() => {
-
+                                props.setCurrentCardIndex(props.exercises.length)
                             }}
                         >
-                            Clue
+                            Go back to results
                         </Button>
                     </Grid>
                 }

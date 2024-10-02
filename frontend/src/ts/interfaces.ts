@@ -190,6 +190,12 @@ export type EquivalentTranslationValues = {
     type?: 'Multiple-Choice' | 'Text-Input',
 } & (TextInput | MultipleChoice)
 
+export type PerformanceStats = {
+    knowledge: Number,
+    performance: any,
+    wordId: string
+}
+
 export type TextInput = {
     type: 'Text-Input',
     matchingTranslations : {
@@ -204,11 +210,8 @@ export type TextInput = {
             value: string,
             translationId: any
         }
-    },
-    knowledge: Number,
-    performance: any,
-    wordId: string
-}
+    }
+} & (PerformanceStats)
 
 export type MultipleChoice = {
     type: 'Multiple-Choice',
@@ -225,11 +228,8 @@ export type MultipleChoice = {
             otherValues: string[],
             translationId: any
         }
-    },
-    knowledge: Number,
-    performance: any,
-    wordId: string
-}
+    }
+} & (PerformanceStats)
 
 export interface ExerciseResult {
     answer: string,
@@ -250,4 +250,9 @@ export interface PerformanceParameters {
     user?: any,
 
     action?: "master" | "forget" | "acknowledge",
+}
+
+export interface InfoChipData {
+    label: string,
+    value: string
 }

@@ -337,6 +337,7 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                         disableUnselect={true}
                     />
                 </Grid>
+                {/* TODO: add  RadioGroup to specify if words/translation should be selected by performance or at random */}
 
                 <Grid
                     item={true}
