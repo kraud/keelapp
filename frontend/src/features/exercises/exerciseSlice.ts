@@ -53,6 +53,12 @@ export const exerciseSlice = createSlice({
                 wordsSelectedForExercises: action.payload
             })
         },
+        setExercises: (state: any, action: PayloadAction) => {
+            return ({
+                ...state,
+                exercises: action.payload
+            })
+        },
         resetWordsSelectedForExercises: (state: any) => {
             return ({
                 ...state,
@@ -85,5 +91,5 @@ export const exerciseSlice = createSlice({
     }
 })
 
-export const {resetExercisesSliceState, setWordsSelectedForExercises, resetWordsSelectedForExercises, resetExerciseList} = exerciseSlice.actions
+export const {resetExercisesSliceState, setWordsSelectedForExercises, setExercises, resetWordsSelectedForExercises, resetExerciseList} = exerciseSlice.actions
 export default exerciseSlice.reducer

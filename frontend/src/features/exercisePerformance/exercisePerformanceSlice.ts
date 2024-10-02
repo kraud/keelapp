@@ -7,6 +7,7 @@ interface ExercisePerformanceSliceState {
     isSuccessSendingPerformance: boolean,
     isLoadingSendingPerformance: boolean,
     message: string,
+    exercisePerformance: any,
 }
 
 const initialState: ExercisePerformanceSliceState = {
@@ -14,6 +15,7 @@ const initialState: ExercisePerformanceSliceState = {
     isSuccessSendingPerformance: false,
     isLoadingSendingPerformance: false,
     message: "",
+    exercisePerformance: undefined
 }
 
 // Get exercises for this user
@@ -59,6 +61,12 @@ export const exercisePerformanceSlice = createSlice({
     reducers: {
         resetExercisesSliceState: (state) => {
             return(initialState)
+        },
+        resetExercisePerformance: (state) => {
+            return ({
+                ...state,
+                exercisePerformance: initialState.exercisePerformance
+            })
         }
     },
     extraReducers: (builder) => {
@@ -70,6 +78,7 @@ export const exercisePerformanceSlice = createSlice({
             .addCase(saveTranslationPerformance.fulfilled, (state, action) => {
                 state.isLoadingSendingPerformance = false
                 state.isSuccessSendingPerformance = true
+                state.exercisePerformance = action.payload
             })
             .addCase(saveTranslationPerformance.rejected, (state, action) => {
                 state.isLoadingSendingPerformance = false
@@ -79,5 +88,5 @@ export const exercisePerformanceSlice = createSlice({
     }
 })
 
-export const { resetExercisesSliceState } = exercisePerformanceSlice.actions
+export const { resetExercisesSliceState, resetExercisePerformance } = exercisePerformanceSlice.actions
 export default exercisePerformanceSlice.reducer

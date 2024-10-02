@@ -13,7 +13,8 @@ import {ExerciseTypeSelection, PartOfSpeech} from "../ts/enums";
 import {EquivalentTranslationValues, ExerciseResult, InfoChipData, PerformanceParameters} from "../ts/interfaces";
 import {Bounce, toast} from "react-toastify";
 import globalTheme from "../theme/theme";
-import {saveTranslationPerformance} from "../features/exercisePerformance/exercisePerformanceSlice";
+import {saveTranslationPerformance, resetExercisePerformance} from "../features/exercisePerformance/exercisePerformanceSlice";
+import {setExercises} from "../features/exercises/exerciseSlice";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../app/store";
 import {ExerciseParameters} from "../pages/Practice";
@@ -40,6 +41,8 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
     const wordCasesDescriptions = WordCasesData
     const lessThanSm = useMediaQuery(globalTheme.breakpoints.down("sm"))
     const dispatch = useDispatch<AppDispatch>()
+
+    const {isSuccessSendingPerformance, isLoadingSendingPerformance, exercisePerformance} = useSelector((state: any) => state.exercisesPerformance)
 
     // TODO: maybe this should filter the list and the element with to 'indexInList' that matches?
     const currentExerciseData = (props.exercises[props.currentCardIndex])
@@ -345,6 +348,28 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
             setTextInputAnswer(currentCardAnswer.answer)
         }
     }, [props.currentCardIndex])
+
+    /**
+     * Whenever a dispach is fullfilled we check if the performance already exits for the current exercise,
+     * if it doesn't, we save the performance return by the BE
+     */
+    useEffect(() => {
+        if (currentExerciseData !== undefined && isSuccessSendingPerformance && !isLoadingSendingPerformance) {
+            let exercisesCopy = [...props.exercises]
+            if (exercisesCopy[props.currentCardIndex].performance === undefined && exercisePerformance !== undefined) {
+                let tempExercise = {
+                    ...exercisesCopy[props.currentCardIndex],
+                    performance: exercisePerformance,
+                }
+                exercisesCopy.splice(props.currentCardIndex, 1, tempExercise)
+                // @ts-ignore
+                dispatch(setExercises(exercisesCopy))
+            }
+            dispatch(resetExercisePerformance())
+        }
+    }, [isSuccessSendingPerformance, isLoadingSendingPerformance])
+
+    //todo: isErrorSendingPerformance is not contemplated yet..
 
     function handleMasterClick() {
         // const parameters: PerformanceParameters= {
@@ -724,7 +749,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                     >
                                         <span>
                                             <IconButton
-                                                disabled={currentCardAnswer === undefined}
+                                                disabled={currentExerciseData?.performance === undefined || !(currentCardAnswer!!) }
                                                 color={'success'}
                                                 onClick={() => {
                                                     handleMasterClick()
@@ -744,7 +769,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                     >
                                         <span>
                                             <IconButton
-                                                disabled={currentCardAnswer === undefined}
+                                                disabled={currentExerciseData?.performance === undefined || !(currentCardAnswer!!) }
                                                 color={'error'}
                                                 onClick={() => {
                                                     handleForgetClick()
@@ -877,7 +902,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                             variant={'contained'}
                             color={'primary'}
                             fullWidth={true}
-                            disabled={ props.isLoadingExercises}
+                            disabled={props.isLoadingExercises}
                             onClick={() => {
                                 props.setCurrentCardIndex(props.exercises.length)
                             }}
