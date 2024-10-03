@@ -14,7 +14,7 @@ import {EquivalentTranslationValues, ExerciseResult, InfoChipData, PerformancePa
 import {Bounce, toast} from "react-toastify";
 import globalTheme from "../theme/theme";
 //@ts-ignore
-import {resetExercisePerformance, saveTranslationPerformance} from "../features/exercisePerformance/exercisePerformanceSlice";
+import {resetExercisesSliceState, resetExercisePerformance, saveTranslationPerformance} from "../features/exercisePerformance/exercisePerformanceSlice";
 import {setExercises} from "../features/exercises/exerciseSlice";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../app/store";
@@ -556,6 +556,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                         } else {
                             return(
                                 <Grid
+                                    key={index}
                                     item={true}
                                     xs={'auto'}
                                 >
@@ -661,6 +662,8 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                             color={'primary'}
                             disabled={
                                 (props.currentCardIndex === 0)
+                                ||
+                                (isLoadingSendingPerformance)
                             }
                             onClick={() => {
                                 if(props.currentCardIndex > 0){
@@ -956,11 +959,15 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                 (props.currentCardIndex === (props.exercises.length))
                                 ||
                                 !(currentCardAnswer!!)
+                                ||
+                                (isLoadingSendingPerformance)
                             }
                             onClick={() => {
                                 if(props.currentCardIndex < (props.exercises.length)){
+                                    dispatch(resetExercisesSliceState())
                                     props.setCurrentCardIndex(props.currentCardIndex+1)
                                 } else {
+                                    dispatch(resetExercisesSliceState())
                                     // Not possible, but TS requires it. Button is disabled.
                                     props.setCurrentCardIndex(props.currentCardIndex)
                                 }

@@ -909,9 +909,10 @@ const getExercises = asyncHandler(async (req, res) => {
                 })
             }
         })
+    console.log('PRE exercisesByWord', exercisesByWord)
     exercisesByWord.sort((a, b) => a.exercisePerformanceAverageByWord - b.exercisePerformanceAverageByWord)
+    console.log("AFTER exercisesByWord", exercisesByWord)
     let filteredExercises = await getRequiredAmountOfExercises(exercisesByWord, parameters.amountOfExercises, userId)
-    // console.log("AFTER FILTERING", filteredExercises)
     // filteredExercises -->
     if(
         (['Multiple-Choice', 'Random'].includes(parameters.type)) &&

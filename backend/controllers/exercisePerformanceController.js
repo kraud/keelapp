@@ -144,6 +144,8 @@ function calculateNewPercentageOfKnowledge(previousPercentageOfKnowledge, arrayR
 
 /**
  * Given an array of exercises for a Word, maps each exercise with it's exercisePerformance (matching translation and caseName) and knowledge.
+ *
+ * knowledge (o caseMatchingStats.knowledge) se refiere al conocimiento que se tiene espcíficamente de la traducción **Y** el caseName
  * @param word
  * @param translationsPerformanceArray
  */
@@ -162,6 +164,8 @@ const findMatches = (word, translationsPerformanceArray) => {
                     // Filtrar statsByCase que coincidan con el case de itemB
                     const caseMatchingStats = stat.statsByCase.find(statCase => statCase.caseName === itemB.case);
                     if(caseMatchingStats){
+                        // TODO: define a better name for the 'knowledge' property. It reflects the knowledge of a specific case in a translation, which is part of a word.
+                        //  We need to avoid confusing it with average-knowledge related to translations and/or words
                         const newKnowledge = calculateAging(caseMatchingStats.knowledge, caseMatchingStats.lastDate)
                         return {...exercise, knowledge: newKnowledge, performance: stat, wordId: word._id}
                     }
