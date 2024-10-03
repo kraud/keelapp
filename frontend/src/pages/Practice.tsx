@@ -6,7 +6,7 @@ import globalTheme from "../theme/theme";
 import {Grid, Typography} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import LinearIndeterminate from "../components/Spinner";
-import {CardTypeSelection, ExerciseTypeSelection, Lang, PartOfSpeech} from "../ts/enums";
+import {CardTypeSelection, ExerciseTypeSelection, Lang, PartOfSpeech, WordSortingSelection} from "../ts/enums";
 import {ExerciseParameterSelector} from "../components/ExerciseParameterSelector";
 import {
     getExercisesForUser,
@@ -27,6 +27,7 @@ export type ExerciseParameters = {
     // type: ExerciseTypeSelection, //  'Multiple-Choice' | 'Text-Input' | 'Random',
     mode: 'Single-Try' | 'Multiple-Tries'
     preSelectedWords?: any[] // simple-word data
+    wordSelection: WordSortingSelection // determines if we use exercise-performance info to sort words/translations before selecting exercises
 } & (MCType | TIType | RandomType)
 
 export type MCType = {
@@ -61,6 +62,7 @@ export const Practice = (props: PracticeProps) => {
         multiLang: CardTypeSelection['Random'], // By default, exercises will include exercise cards with single and multi languages exercises
         type: ExerciseTypeSelection['Text-Input'],
         mode: 'Single-Try',
+        wordSelection: WordSortingSelection['Exercise-Performance'],
         // @ts-ignore // for testing during development, TODO: remove later
         difficultyMC: 1,
         difficultyTI: 2,

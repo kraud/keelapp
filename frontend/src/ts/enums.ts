@@ -543,6 +543,11 @@ export enum CardTypeSelection {
     'Random' = 'Random'
 }
 
+export enum WordSortingSelection {
+    'Exercise-Performance' = 'Exercise-Performance',
+    'Random' = 'Random'
+}
+
 // ========== PRONOUNS
 
 // Spanish Pronouns

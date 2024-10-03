@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react"
 import {Collapse, Divider, Grid, Slider, Typography} from "@mui/material"
 import {DnDLanguageOrderSelector} from "./DnDLanguageOrderSelector";
-import {CardTypeSelection, ExerciseTypeSelection, Lang, PartOfSpeech} from "../ts/enums";
+import {CardTypeSelection, ExerciseTypeSelection, Lang, PartOfSpeech, WordSortingSelection} from "../ts/enums";
 import {useTranslation} from "react-i18next";
 import {CheckboxGroupWithHook, CheckboxItemData} from "./CheckboxGroupFormHook";
 import {Controller, useForm} from "react-hook-form";
@@ -490,6 +490,49 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                                         min={1}
                                         max={3}
                                         disabled={(props.defaultParameters.type === 'Multiple-Choice')}
+                                    />
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                        {/* WORD/TRANSLATION/CASE SELECTION/SORTING LOGIC */}
+                        <Grid
+                            container={true}
+                            item={true}
+                            xs={12}
+                            sx={{
+                                backgroundColor: '#e1e1e1',
+                                borderRadius: '25px',
+                                paddingY: globalTheme.spacing(2),
+                                marginTop: globalTheme.spacing(3)
+                            }}
+                        >
+                            <Grid
+                                container={true}
+                                item={true}
+                                xs={12}
+                                justifyContent={'center'}
+                                spacing={1}
+                            >
+                                <Grid
+                                    item={true}
+                                    xs={'auto'}
+                                >
+                                    <RadioGroupWithHook
+                                        control={control}
+                                        label={"Word selection sorting"}
+                                        name={"wordSelection"}
+                                        options={Object.values(WordSortingSelection)}
+                                        defaultValue={WordSortingSelection["Exercise-Performance"]}
+                                        errors={errors.wordSelection}
+                                        onChange={(value: ExerciseTypeSelection) => {
+                                            runOnParametersChange({wordSelection: value})
+                                        }}
+                                        fullWidth={false}
+                                        disabled={props.disabled!!}
+                                        labelTooltipMessage={
+                                            "This determines how we select the exercises to display. With 'Exercise-Performance' we prioritize words and translations you haven't practiced yet."
+                                        }
+                                        disableUnselect={true}
                                     />
                                 </Grid>
                             </Grid>
