@@ -277,7 +277,9 @@ const addExternalTag = asyncHandler(async (req, res) => {
                         (completeOriginalWordData).map((originalWordItem) => {
                             return({
                                 ...originalWordItem.toObject(),
-                                user: mongoose.Types.ObjectId(req.user.id)
+                                user: mongoose.Types.ObjectId(req.user.id),
+                                isCloned: true,
+                                originalCreator: originalWordItem.toObject().id
                             })
                         })
                     ).then((newClonedWordData) => {

@@ -24,6 +24,14 @@ const wordSchema = mongoose.Schema(
         },
         clue: {
             type: String,
+        },
+        isCloned: {
+            type: Boolean,
+            default: false
+        },
+        originalCreator: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
         }
     },
     {

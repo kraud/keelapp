@@ -785,9 +785,8 @@ const getMissingDataForMCExercises = (incompleteExercises, allMatchingWords, dat
 // }
 
 const calculateWordAverageKnowledge = (translationPerformancesList, userLanguages) => {
-    // TODO: average is calculated by average of translation-knowledge divided by amount of languages RELEVANT to the user
-    // overlap entre translations-languages and user-selected languages
-    // console.log('userLanguages:', userLanguages)
+    // Average is calculated by average of translation-knowledge divided by amount of languages RELEVANT to the user
+    // First, we overlap translations-languages and user-selected languages
     const languagesInTranslations = translationPerformancesList.map((translationPerformanceItem) => {
         return(translationPerformanceItem.translationLanguage) // TODO: add?
     })
@@ -797,8 +796,7 @@ const calculateWordAverageKnowledge = (translationPerformancesList, userLanguage
         )
     })
 
-    console.log('validLanguages:', validLanguages)
-    // sumamos aged-knowledge por translation y lo dividimos por validLanguages.length
+    // Then we sum all aged-knowledge per translation and we divide it by validLanguages.length
     let newWordAverageKnowledge = 0
     translationPerformancesList.forEach((translationPerformance) => {
         if(validLanguages.includes(translationPerformance.translationLanguage)){

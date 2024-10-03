@@ -214,7 +214,6 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
 
         props.setExercisesResults(newExerciseResult)
         dispatch(saveTranslationPerformance(performanceParameters))
-        // TODO: modify exercise list in Redux so the new information about this exercise is included (displayed list of thumbs up/down will be updated)
     }
 
     const getOptionsToDisplay = (type: ExerciseTypeSelection) => {
@@ -358,20 +357,22 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
      * if it doesn't, we save the performance return by the BE
      */
     useEffect(() => {
-        if (currentExerciseData !== undefined && isSuccessSendingPerformance && !isLoadingSendingPerformance) {
+        if (
+            exercisePerformance !== undefined &&
+            isSuccessSendingPerformance &&
+            !isLoadingSendingPerformance
+        ) {
             let exercisesCopy = [...props.exercises]
-            if (exercisesCopy[props.currentCardIndex].performance === undefined && exercisePerformance !== undefined) {
-                let tempExercise = {
-                    ...exercisesCopy[props.currentCardIndex],
-                    performance: exercisePerformance,
-                }
-                exercisesCopy.splice(props.currentCardIndex, 1, tempExercise)
-                // @ts-ignore
-                dispatch(setExercises(exercisesCopy))
+            let tempExercise = {
+                ...exercisesCopy[props.currentCardIndex],
+                performance: exercisePerformance,
             }
+            exercisesCopy.splice(props.currentCardIndex, 1, tempExercise)
+            // @ts-ignore
+            dispatch(setExercises(exercisesCopy))
             dispatch(resetExercisePerformance())
         }
-    }, [isSuccessSendingPerformance, isLoadingSendingPerformance])
+    }, [isSuccessSendingPerformance, isLoadingSendingPerformance, exercisePerformance])
 
     // TODO: isErrorSendingPerformance is not contemplated yet..
 
