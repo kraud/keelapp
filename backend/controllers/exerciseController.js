@@ -60,7 +60,7 @@ async function getRequiredAmountOfExercises(
                 allExercises.sort((a, b) => a.knowledge - b.knowledge)
             }
             const selectedExercise = allExercises[0]
-            word.exercises.splice(0, 1)
+            word.exercises.splice(0, 1) // TODO: this is not removing the correct exercise (it should match 'selectedExercise').
             selectedExercises.push(selectedExercise)
         }
         return selectedExercises

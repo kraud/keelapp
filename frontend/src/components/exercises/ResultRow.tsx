@@ -139,6 +139,9 @@ export const ResultRow = (props: ResultRowProps) => {
                 <Grid
                     item={true}
                     xs={'auto'}
+                    sx={{
+                        marginRight: !(props.originalExerciseData.multiLang) ?'35px' :0
+                    }}
                 >
                     <CountryFlag
                         country={props.originalExerciseData.matchingTranslations.itemA.language}
