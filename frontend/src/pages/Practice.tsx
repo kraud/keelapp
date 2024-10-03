@@ -83,6 +83,8 @@ export const Practice = (props: PracticeProps) => {
 
     const displayEndScreen = (
         (acceptedParameters) &&
+        (cardAnswers.length > 0) &&
+        (exercises?.length > 0) &&
         // if we have answered all exercises
         (cardAnswers.length === exercises.length) &&
         // and we're currently looking at the "slide" at (max-index +1, which is the same as length) => display finish screen

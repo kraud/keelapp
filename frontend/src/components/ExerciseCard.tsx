@@ -1015,7 +1015,10 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                     </Button>
                 </Grid>
                 {/* If all exercises have answers => display option to go see results */}
-                {(props.exercisesResults.length === props.exercises.length) &&
+                {(
+                    (props.exercisesResults.length > 0) &&
+                    (props.exercisesResults.length === props.exercises.length)
+                    ) &&
                     <Grid
                         item={true}
                         xs={12}
