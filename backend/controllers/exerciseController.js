@@ -296,14 +296,17 @@ function getUniqueLanguagePairs(languages) {
 function calculateSingleLanguageExercises(
     validLanguages,
     wordData,
-    exerciseType
+    exerciseType,
+    nativeLanguage
 ) {
     let calculatedExercises = []
     const groupedCategories = getGroupedCategories(wordData.partOfSpeech, false)
 
     if(groupedCategories !== undefined) { // will only be 'undefined' for PoS that have no exercise-file defined
         // Iterate over each valid language
-        validLanguages.forEach((validLanguage) => {
+        (validLanguages.filter(potentialLanguages => {
+            return(potentialLanguages !== nativeLanguage)
+        })).forEach((validLanguage) => {
             const exercisesByRequestedType = (exerciseType === 'Random')
             // if random => we must create exercises for all types and then filter at the end randomly =>
             ? groupedCategories[validLanguage]
@@ -430,6 +433,7 @@ function findExercisesByEquivalentTranslations(
     languages,
     exerciseType, //  'Multiple-Choice' | 'Text-Input' | 'Random',
     multiLang, //  'Multi-Language' | 'Single-Language' | 'Random',
+    nativeLanguage // undefined | Lang
 ) {
 
     // First, we get ALL stored languages per word
@@ -454,7 +458,8 @@ function findExercisesByEquivalentTranslations(
             calculatedExercises = calculateSingleLanguageExercises(
                 validLanguages,
                 wordData,
-                exerciseType
+                exerciseType,
+                nativeLanguage
             )
             break
         }
@@ -471,7 +476,8 @@ function findExercisesByEquivalentTranslations(
                 ...calculateSingleLanguageExercises(
                     validLanguages,
                     wordData,
-                    exerciseType
+                    exerciseType,
+                    nativeLanguage
                 )
             ]
             break
@@ -818,6 +824,32 @@ const calculateWordAverageKnowledge = (translationPerformancesList, userLanguage
     }
 }
 
+// PARAMETERS:
+// export type ExerciseParameters = {
+//     languages: Lang[],
+//     partsOfSpeech: PartOfSpeech[],
+//     amountOfExercises: number,
+//     multiLang: CardTypeSelection, // 'Multi-Language' | 'Single-Language' | 'Random',
+//     // type: ExerciseTypeSelection, //  'Multiple-Choice' | 'Text-Input' | 'Random',
+//     mode: 'Single-Try' | 'Multiple-Tries'
+//     preSelectedWords?: any[] // simple-word data
+//     wordSelection: WordSortingSelection // determines if we use exercise-performance info to sort words/translations before selecting exercises
+//     nativeLanguage?: Lang
+// } & (MCType | TIType | RandomType)
+//
+// export type MCType = {
+//     type: "Multiple-Choice",
+//     difficultyMC: number
+// }
+// export type TIType = {
+//     type: "Text-Input",
+//     difficultyTI: number
+// }
+// export type RandomType = {
+//     type: 'Random',
+//     difficultyTI: number,
+//     difficultyMC: number
+// }
 
 // @desc    Creates exercises for a user based on parameters specified by them on FE
 // @route   GET /api/exercises
@@ -829,7 +861,7 @@ const getExercises = asyncHandler(async (req, res) => {
         amountOfExercises: parseInt(req.query.parameters.amountOfExercises, 10),
         difficultyMC: (req.query.parameters.difficultyMC !== undefined) ? parseInt(req.query.parameters.difficultyMC, 10) : undefined
     }
-    const isExerciseSelectionRandom = parameters.wordSelection === 'Random'
+    const isExerciseSelectionRandom = (parameters.wordSelection === 'Random')
 
     // words related to other-users-tags, that the current user follows.
     const followedWordsId = await getWordsIdFromFollowedTagsByUserId(userId)
@@ -907,6 +939,7 @@ const getExercises = asyncHandler(async (req, res) => {
                 parameters.languages,
                 parameters.type,
                 parameters.multiLang,
+                parameters.nativeLanguage,
             )
             // If we found exercises for that word, we save them, and we'll filter them later
             if(matchingExercisesPerWord.length > 0){

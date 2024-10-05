@@ -1,10 +1,17 @@
 import React, {useEffect, useState} from "react"
 import {Collapse, Divider, Grid, Slider, Typography} from "@mui/material"
 import {DnDLanguageOrderSelector} from "./DnDLanguageOrderSelector";
-import {CardTypeSelection, ExerciseTypeSelection, Lang, PartOfSpeech, WordSortingSelection} from "../ts/enums";
+import {
+    CardTypeSelection,
+    ExerciseTypeSelection,
+    Lang,
+    NativeLanguageExerciseSelection,
+    PartOfSpeech,
+    WordSortingSelection
+} from "../ts/enums";
 import {useTranslation} from "react-i18next";
 import {CheckboxGroupWithHook, CheckboxItemData} from "./CheckboxGroupFormHook";
-import {Controller, useForm} from "react-hook-form";
+import {useForm} from "react-hook-form";
 import {TextInputFormWithHook} from "./TextInputFormHook";
 import {ExerciseParameters} from "../pages/Practice";
 import Button from "@mui/material/Button";
@@ -14,30 +21,27 @@ import {RadioGroupWithHook} from "./RadioGroupFormHook";
 import globalTheme from "../theme/theme";
 import Tooltip from "@mui/material/Tooltip";
 import LinearIndeterminate from "./Spinner";
+import {useSelector} from "react-redux";
 
 const difficultyMCSliderMarks = [
     {
         value: 0,
         label: 'Level 0',
-        // label: '0️⃣',
         tooltipText: 'Any word-type - any language'
     },
     {
         value: 1,
         label: 'Level 1',
-        // label: '1️⃣',
         tooltipText: 'Any word-type - same language'
     },
     {
         value: 2,
         label: 'Level 2',
-        // label: '2️⃣',
         tooltipText: 'Same word-type - same language'
     },
     {
         value: 3,
         label: 'Level 3',
-        // label: '3️⃣',
         tooltipText: 'Same word - same language - different cases'
     },
 ]
@@ -46,19 +50,16 @@ const difficultyTISliderMarks = [
     {
         value: 1,
         label: 'Level 1',
-        // label: '1️⃣',
         tooltipText: 'Ignores capitalization, and special characters.'
     },
     {
         value: 2,
         label: 'Level 2',
-        // label: '2️⃣',
         tooltipText: 'Only ignores capitalization.'
     },
     {
         value: 3,
         label: 'Level 3',
-        // label: '3️⃣',
         tooltipText: 'Zero tolerance - input must match exactly.'
     },
 ]
@@ -75,8 +76,8 @@ interface ExerciseParameterSelectorProps {
 }
 
 export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps) => {
-
     const { t } = useTranslation(['review', 'common'])
+    const {user} = useSelector((state: any) => state.auth)
     // Languages currently displayed as columns on the selector
     const [allSelectedLanguages, setAllSelectedLanguages] = useState<string[]>(props.availableLanguages)
     // Languages currently not displayed as columns on the table
@@ -123,6 +124,7 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
             mode: 'Single-Try',
             difficultyMC: difficultyMC,
             difficultyTI: difficultyTI,
+            nativeLanguage: user.nativeLanguage as Lang,
             ...newParameter // name must much a property from ExerciseParameters, so it only overrides that matching property
         }
         props.onParametersChange(updatedData as ExerciseParameters)
@@ -337,8 +339,6 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                         disableUnselect={true}
                     />
                 </Grid>
-                {/* TODO: add  RadioGroup to specify if words/translation should be selected by performance or at random */}
-
                 <Grid
                     item={true}
                     xs={10}
@@ -502,7 +502,7 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                             sx={{
                                 backgroundColor: '#e1e1e1',
                                 borderRadius: '25px',
-                                paddingY: globalTheme.spacing(2),
+                                paddingTop: globalTheme.spacing(2),
                                 marginTop: globalTheme.spacing(3)
                             }}
                         >
@@ -519,7 +519,7 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                                 >
                                     <RadioGroupWithHook
                                         control={control}
-                                        label={"Word selection sorting"}
+                                        label={"Word selection & sorting"}
                                         name={"wordSelection"}
                                         options={Object.values(WordSortingSelection)}
                                         defaultValue={WordSortingSelection["Exercise-Performance"]}
@@ -537,6 +537,60 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                                 </Grid>
                             </Grid>
                         </Grid>
+                        {/* IGNORE SINGLE-LANGUAGE EXERCISES IN NATIVE LANGUAGE */}
+                        {(
+                            (user.nativeLanguage!!) &&
+                            (getValues('multiLang') !== CardTypeSelection["Multi-Language"])
+                            ) &&
+                            <Grid
+                                container={true}
+                                item={true}
+                                xs={12}
+                                sx={{
+                                    backgroundColor: '#e1e1e1',
+                                    borderRadius: '25px',
+                                    paddingTop: globalTheme.spacing(2),
+                                    marginTop: globalTheme.spacing(3)
+                                }}
+                            >
+                                <Grid
+                                    container={true}
+                                    item={true}
+                                    xs={12}
+                                    justifyContent={'center'}
+                                    spacing={1}
+                                >
+                                    <Grid
+                                        item={true}
+                                        xs={'auto'}
+                                    >
+                                        <RadioGroupWithHook
+                                            control={control}
+                                            label={"Exercises in native language"}
+                                            name={"nativeLang"}
+                                            options={Object.values(NativeLanguageExerciseSelection)}
+                                            defaultValue={NativeLanguageExerciseSelection["Ignore"]}
+                                            errors={errors.nativeLang}
+                                            onChange={(value: NativeLanguageExerciseSelection) => {
+                                                if(value === NativeLanguageExerciseSelection.Ignore) {
+                                                    // if we ignore the language => must be included in the filtering-parameters
+                                                    runOnParametersChange({nativeLanguage: user.nativeLanguage})
+                                                } else {
+                                                    // if we include the language in the exercises => we simply do not add that filter
+                                                    runOnParametersChange({nativeLanguage: undefined})
+                                                }
+                                            }}
+                                            fullWidth={false}
+                                            disabled={(props.disabled!!) || (getValues('multiLang') === CardTypeSelection["Multi-Language"])}
+                                            labelTooltipMessage={
+                                                "This determines if we include exercises related to your native language in the case of single-language exercises."
+                                            }
+                                            disableUnselect={false}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        }
                     </Collapse>
                 </Grid>
 

@@ -28,6 +28,7 @@ export type ExerciseParameters = {
     mode: 'Single-Try' | 'Multiple-Tries'
     preSelectedWords?: any[] // simple-word data
     wordSelection: WordSortingSelection // determines if we use exercise-performance info to sort words/translations before selecting exercises
+    nativeLanguage?: Lang
 } & (MCType | TIType | RandomType)
 
 export type MCType = {
@@ -66,6 +67,7 @@ export const Practice = (props: PracticeProps) => {
         // @ts-ignore // for testing during development, TODO: remove later
         difficultyMC: 1,
         difficultyTI: 2,
+        nativeLanguage: user.nativeLanguage
     }
 
     const [currentCardIndex, setCurrentCardIndex] = useState(0)

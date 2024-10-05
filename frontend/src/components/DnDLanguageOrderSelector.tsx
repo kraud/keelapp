@@ -27,7 +27,7 @@ interface DnDLanguageOrderSelectorProps{
     singleContainer?: boolean // by default, we have 2 containers ('selected' and 'other'). With this prop we can display only 'selected'
     disabled?: boolean // to avoid allowing the elements to be moved
     noItemsSelectedMessage?: string // when no items are selected, display this text in 'selected' container
-    displayLeftActionButton?: { selectedItemLabel: string, onLeftActionButtonClick: (clickedItemLabel: string) => void}
+    displayLeftActionButton?: { selectedItemLabel: string | undefined, onLeftActionButtonClick: (clickedItemLabel: string) => void}
     flagSide?: 'left' | 'right',
 }
 

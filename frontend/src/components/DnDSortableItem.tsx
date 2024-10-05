@@ -8,6 +8,8 @@ import {Theme} from "@mui/material/styles";
 import {CountryFlag} from "./GeneralUseComponents";
 import {Lang} from "../ts/enums";
 import TranslateIcon from '@mui/icons-material/Translate';
+import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle';
+import Tooltip from "@mui/material/Tooltip";
 
 interface DnDSortableItemProps{
     id: string,
@@ -170,23 +172,33 @@ export function DnDSortableItem(props: DnDSortableItemProps){
             {!(props.invisible!!) &&
                 <>
                     {((props.displayLeftActionButton!) || ((props.onActionButtonLeftClick !== undefined) && (!(props.disabled!)))) &&
-                        <Button
-                            variant={"contained"}
-                            color={"success"}
-                            onClick={() => {
-                                if(props.onActionButtonLeftClick !== undefined){
-                                    props.onActionButtonLeftClick(props.id)
-                                }
-                            }}
-                            disabled={props.disabled!}
-                            sx={componentStyles.actionButtonLeft}
+                        <Tooltip
+                            title={(props.disabled!)
+                                // TODO: this messages should be configurable through props
+                                ? "This is your current native-language"
+                                :  (props.displayLeftActionButton!!)
+                                    ? "This is your current native-language"
+                                    : "Mark this as your native-language"
+                            }
                         >
-                            <TranslateIcon
-                                sx={{
-                                    width: '20px'
+                            <Button
+                                variant={"contained"}
+                                color={"success"}
+                                onClick={() => {
+                                    if((props.onActionButtonLeftClick !== undefined) && !(props.disabled!!)){
+                                        props.onActionButtonLeftClick(props.id)
+                                    }
                                 }}
-                            />
-                        </Button>
+                                // disabled={props.disabled!}
+                                sx={componentStyles.actionButtonLeft}
+                            >
+                                <PersonPinCircleIcon
+                                    sx={{
+                                        width: '20px'
+                                    }}
+                                />
+                            </Button>
+                        </Tooltip>
                     }
                     <Button
                         variant={"contained"}

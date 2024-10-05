@@ -224,12 +224,17 @@ export const UserBadge = (props: UserBadgeProps) => {
                     selectedItemsTitle={""}
                     noItemsSelectedMessage={t('userData.errors.notEnoughLanguages', { ns: 'common' })}
                     displayLeftActionButton={{
-                        selectedItemLabel: (props.userData.uiLanguage!!) ?props.userData.uiLanguage :Lang.EN,
+                        selectedItemLabel: (props.userData.nativeLanguage!!)
+                            ? props.userData.nativeLanguage
+                            : undefined,
+                            // : Lang.ES,
                         onLeftActionButtonClick: (clickedItemLabel: string) => {
                             if (props.returnFieldsData !== undefined) {
                                 props.returnFieldsData({
                                     ...props.userData,
-                                    uiLanguage: clickedItemLabel as Lang,
+                                    nativeLanguage: (props.userData.nativeLanguage === clickedItemLabel)
+                                        ? undefined // if we click on the already selected option => we unselect it
+                                        : clickedItemLabel as Lang,
                                 })
                             }
                         }

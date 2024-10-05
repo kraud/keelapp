@@ -11,7 +11,7 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import {logout, resetState} from "../features/auth/authSlice";
+import {logout, resetState, updateUser} from "../features/auth/authSlice";
 import {useLocation, useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from "react-toastify";
@@ -20,16 +20,18 @@ import globalTheme from "../theme/theme";
 import {searchWordByAnyTranslation} from "../features/words/wordSlice";
 import {NotificationData, SearchResult} from "../ts/interfaces";
 import {Badge, Grid} from "@mui/material";
-import {stringAvatar} from "./generalUseFunctions";
+import {getLangKeyByLabel, stringAvatar} from "./generalUseFunctions";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import {useState} from "react";
 import {clearSearchResultTags, searchTagsByLabel} from "../features/tags/tagSlice";
 import {MaterialUISwitch} from "./StyledSwitch";
 import {checkEnvironmentAndIterationToDisplay} from "./forms/commonFunctions";
-import {getIconByEnvironment, triggerToastMessageWithButton} from "./GeneralUseComponents";
+import {CountryFlag, getIconByEnvironment, triggerToastMessageWithButton} from "./GeneralUseComponents";
 import {useTranslation} from "react-i18next";
 import {AppDispatch} from "../app/store";
 import {resetWordsSelectedForExercises} from "../features/exercises/exerciseSlice";
+import {UserBadgeData} from "../pages/Account";
+import {Lang} from "../ts/enums";
 
 
 function ResponsiveAppBar() {
@@ -48,6 +50,12 @@ function ResponsiveAppBar() {
         t('header.settings.account', {ns: 'common'}),
         t('header.settings.dashboard', {ns: 'common'}),
         t('header.settings.logout', {ns: 'common'}),
+    ]
+    const languages = [
+        Lang.EN,
+        Lang.ES,
+        Lang.DE,
+        Lang.EE,
     ]
 
     const {user} = useSelector((state: any) => state.auth)
@@ -75,12 +83,16 @@ function ResponsiveAppBar() {
 
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+    const [anchorElLanguage, setAnchorElLanguage] = React.useState<null | HTMLElement>(null);
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
     }
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElUser(event.currentTarget);
+    }
+    const handleOpenUILanguageMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorElLanguage(event.currentTarget);
     }
 
     const isCurrentOptionSelected = (index: number) => {
@@ -141,6 +153,17 @@ function ResponsiveAppBar() {
             }
         }
         setAnchorElNav(null)
+    }
+
+    // type string when clicking on a language option and object when clicking off the menu
+    const handleCloseLanguageMenu = (option: string | object) => {
+        if(option!!){
+            dispatch(updateUser({
+                ...user,
+                uiLanguage: option
+            }))
+        }
+        setAnchorElLanguage(null)
     }
 
     // type string when clicking on option and object when clicking off the menu
@@ -302,6 +325,9 @@ function ResponsiveAppBar() {
                             color: 'inherit',
                             textDecoration: 'none',
                             cursor: 'pointer',
+                            // button on each side of header are not symmetric when on small-screen,
+                            // so we correct this to be centered (we offset the width of the UI-Language selector)
+                            marginRight: '-64px',
 
                             flexGrow: 1,
                         }}
@@ -373,6 +399,17 @@ function ResponsiveAppBar() {
                     {/* USER ICON */}
                     <Box sx={{ flexGrow: 0 }}>
                         <Tooltip
+                            title={t('header.settings.uiLanguage', {ns: 'common'})}
+                        >
+                            <Button
+                                variant={'text'}
+                                color={'inherit'}
+                                onClick={handleOpenUILanguageMenu}
+                            >
+                                {getLangKeyByLabel(user.uiLanguage)}
+                            </Button>
+                        </Tooltip>
+                        <Tooltip
                             title={t('header.settings.openSettings', {ns: 'common'})}
                         >
                             <IconButton
@@ -425,6 +462,44 @@ function ResponsiveAppBar() {
                                     }}
                                 >
                                     <Typography textAlign="center">{setting}</Typography>
+                                </MenuItem>
+                            ))}
+                        </Menu>
+                        <Menu
+                            sx={{ mt: '45px' }}
+                            id="menu-langbar"
+                            anchorEl={anchorElLanguage}
+                            anchorOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            keepMounted
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            open={Boolean(anchorElLanguage)}
+                            onClose={() => {
+                                handleCloseLanguageMenu("")
+                            }}
+                        >
+                            {languages.map((language) => (
+                                <MenuItem
+                                    key={language}
+                                    onClick={() => {
+                                        handleCloseLanguageMenu(language)
+                                    }}
+                                >
+                                    <CountryFlag
+                                        country={language}
+                                        border={true}
+                                        sxProps={{
+                                            marginRight: '5px',
+                                        }}
+                                    />
+                                    <Typography textAlign="center">
+                                        {t(`languages.${language?.toLowerCase()}`, {ns: 'common'})}
+                                    </Typography>
                                 </MenuItem>
                             ))}
                         </Menu>

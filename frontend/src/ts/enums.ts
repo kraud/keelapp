@@ -548,6 +548,11 @@ export enum WordSortingSelection {
     'Random' = 'Random'
 }
 
+export enum NativeLanguageExerciseSelection {
+    'Include' = 'Include',
+    'Ignore' = 'Ignore'
+}
+
 // ========== PRONOUNS
 
 // Spanish Pronouns
