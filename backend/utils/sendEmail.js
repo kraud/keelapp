@@ -7,7 +7,8 @@ function getHTMLAndAttachedData(emailData) {
     switch (emailData.type){
         case "resetPassword":
             return {
-                html: resetPasswordHtmlComponent(emailData.name, emailData.url),
+                text:emailData.url,
+                //html: resetPasswordHtmlComponent(emailData.name, emailData.url),
                 // attachments: getAttachmentsPasswordReset()
             }
         case "verifyEmail":
