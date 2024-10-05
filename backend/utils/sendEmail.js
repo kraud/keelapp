@@ -8,12 +8,12 @@ function getHTMLAndAttachedData(emailData) {
         case "resetPassword":
             return {
                 html: resetPasswordHtmlComponent(emailData.name, emailData.url),
-                attachments: getAttachmentsPasswordReset()
+                // attachments: getAttachmentsPasswordReset()
             }
         case "verifyEmail":
             return {
                 html: verifyEmailHtmlComponent(emailData.name, emailData.url, emailData.email),
-                attachments: getAttachmentsVerifyEmail()
+                // attachments: getAttachmentsVerifyEmail()
             }
     }
 }
@@ -70,6 +70,7 @@ module.exports = async(emailData) => {
                     console.error(err)
                     reject(err)
                 } else {
+                    console.log(info)
                     resolve(info)
                 }
             })
