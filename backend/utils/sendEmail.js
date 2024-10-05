@@ -1,7 +1,22 @@
 const nodemailer = require("nodemailer")
-const fs = require('fs');
-const path = require('path');
-const {string} = require("yup");
+const {resetPasswordHtmlComponent, getAttachmentsPasswordReset} = require("./resources/resetPassword")
+const {verifyEmailHtmlComponent, getAttachmentsVerifyEmail} = require("./resources/verifyEmail");
+
+
+function getHTMLAndAttachedData(emailData) {
+    switch (emailData.type){
+        case "resetPassword":
+            return {
+                html: resetPasswordHtmlComponent(emailData.name, emailData.url),
+                attachments: getAttachmentsPasswordReset()
+            }
+        case "verifyEmail":
+            return {
+                html: verifyEmailHtmlComponent(emailData.name, emailData.url, emailData.email),
+                attachments: getAttachmentsVerifyEmail()
+            }
+    }
+}
 
 module.exports = async(emailData) => {
     const transporter =  nodemailer.createTransport({
@@ -16,6 +31,7 @@ module.exports = async(emailData) => {
 
     })
     const mailData = {
+        ...getHTMLAndAttachedData(emailData),
         from: process.env.EMAIL_USER,
         to: emailData.email,
         subject: emailData.subject
@@ -34,30 +50,29 @@ module.exports = async(emailData) => {
     })
 
     async function generateHtmlAndSend(emailData) {
-        const filePath = path.join(__dirname, '/resources/');
-        await fs.readFile(filePath + emailData.type + '.html', 'utf8', (err, html) => {
-            if (err) {
-                console.log('Error loading template:', err)
-                return ""
-            }
+        // const filePath = path.join(__dirname, '/resources/');
+        // await fs.readFile(filePath + emailData.type + '.html', 'utf8', (err, html) => {
+        //     if (err) {
+        //         console.log('Error loading template:', err)
+        //         return ""
+        //     }
+        //
+        //     // Replace variables in the template
+        //     mailData.html = html
+        //         .replace('{{replace-url}}', emailData.url)
+        //         .replace('{{replace-name}}', emailData.name)
+        //         .replace('{{replace-resources}}', filePath)
 
-            // Replace variables in the template
-            mailData.html = html
-                .replace('{{replace-url}}', emailData.url)
-                .replace('{{replace-name}}', emailData.name)
-                .replace('{{replace-resources}}', filePath)
-
-            new Promise(async (resolve, reject) => {
-                await transporter.sendMail(mailData, (err, info) => {
-                    if (err) {
-                        console.error(err)
-                        reject(err)
-                    } else {
-                        resolve(info)
-                    }
-                })
+        console.log(mailData)
+        new Promise(async (resolve, reject) => {
+            await transporter.sendMail(mailData, (err, info) => {
+                if (err) {
+                    console.error(err)
+                    reject(err)
+                } else {
+                    resolve(info)
+                }
             })
-
         })
     }
     await generateHtmlAndSend(emailData);
