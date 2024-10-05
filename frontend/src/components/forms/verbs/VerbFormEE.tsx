@@ -125,86 +125,86 @@ export function VerbFormEE(props: VerbFormEEProps) {
         const currentCases: WordItem[] = [
             {
                 caseName: VerbCases.infinitiveMaEE,
-                word: infinitiveMa
+                word: infinitiveMa.toLowerCase()
             },
             {
                 caseName: VerbCases.infinitiveDaEE,
-                word: infinitiveDa
+                word: infinitiveDa.toLowerCase()
             },
             // Kindel: Present
             {
                 caseName: VerbCases.kindelPresent1sEE,
-                word: kindelPresent1s
+                word: kindelPresent1s.toLowerCase()
             },
             {
                 caseName: VerbCases.kindelPresent2sEE,
-                word: kindelPresent2s
+                word: kindelPresent2s.toLowerCase()
             },
             {
                 caseName: VerbCases.kindelPresent3sEE,
-                word: kindelPresent3s
+                word: kindelPresent3s.toLowerCase()
             },
             {
                 caseName: VerbCases.kindelPresent1plEE,
-                word: kindelPresent1pl
+                word: kindelPresent1pl.toLowerCase()
             },
             {
                 caseName: VerbCases.kindelPresent2plEE,
-                word: kindelPresent2pl
+                word: kindelPresent2pl.toLowerCase()
             },
             {
                 caseName: VerbCases.kindelPresent3plEE,
-                word: kindelPresent3pl
+                word: kindelPresent3pl.toLowerCase()
             },
             // Kindel: Simple past
             {
                 caseName: VerbCases.kindelSimplePast1sEE,
-                word: kindelSimplePast1s
+                word: kindelSimplePast1s.toLowerCase()
             },
             {
                 caseName: VerbCases.kindelSimplePast2sEE,
-                word: kindelSimplePast2s
+                word: kindelSimplePast2s.toLowerCase()
             },
             {
                 caseName: VerbCases.kindelSimplePast3sEE,
-                word: kindelSimplePast3s
+                word: kindelSimplePast3s.toLowerCase()
             },
             {
                 caseName: VerbCases.kindelSimplePast1plEE,
-                word: kindelSimplePast1pl
+                word: kindelSimplePast1pl.toLowerCase()
             },
             {
                 caseName: VerbCases.kindelSimplePast2plEE,
-                word: kindelSimplePast2pl
+                word: kindelSimplePast2pl.toLowerCase()
             },
             {
                 caseName: VerbCases.kindelSimplePast3plEE,
-                word: kindelSimplePast3pl
+                word: kindelSimplePast3pl.toLowerCase()
             },
             // Kindel: Past perfect
             {
                 caseName: VerbCases.kindelPastPerfect1sEE,
-                word: kindelPastPerfect1s
+                word: kindelPastPerfect1s.toLowerCase()
             },
             {
                 caseName: VerbCases.kindelPastPerfect2sEE,
-                word: kindelPastPerfect2s
+                word: kindelPastPerfect2s.toLowerCase()
             },
             {
                 caseName: VerbCases.kindelPastPerfect3sEE,
-                word: kindelPastPerfect3s
+                word: kindelPastPerfect3s.toLowerCase()
             },
             {
                 caseName: VerbCases.kindelPastPerfect1plEE,
-                word: kindelPastPerfect1pl
+                word: kindelPastPerfect1pl.toLowerCase()
             },
             {
                 caseName: VerbCases.kindelPastPerfect2plEE,
-                word: kindelPastPerfect2pl
+                word: kindelPastPerfect2pl.toLowerCase()
             },
             {
                 caseName: VerbCases.kindelPastPerfect3plEE,
-                word: kindelPastPerfect3pl
+                word: kindelPastPerfect3pl.toLowerCase()
             },
         ]
         props.updateFormData({

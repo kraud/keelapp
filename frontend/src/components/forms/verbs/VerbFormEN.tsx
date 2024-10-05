@@ -127,86 +127,86 @@ export function VerbFormEN(props: VerbFormENProps) {
             // PRESENT
             {
                 caseName: VerbCases.simplePresent1sEN,
-                word: simplePresent1s
+                word: simplePresent1s.toLowerCase()
             },
             {
                 caseName: VerbCases.simplePresent2sEN,
-                word: simplePresent2s
+                word: simplePresent2s.toLowerCase()
             },
             {
                 caseName: VerbCases.simplePresent3sEN,
-                word: simplePresent3s
+                word: simplePresent3s.toLowerCase()
             },
             {
                 caseName: VerbCases.simplePresent1plEN,
-                word: simplePresent1pl
+                word: simplePresent1pl.toLowerCase()
             },
             {
                 caseName: VerbCases.simplePresent3plEN,
-                word: simplePresent3pl
+                word: simplePresent3pl.toLowerCase()
             },
             // PAST
             {
                 caseName: VerbCases.simplePast1sEN,
-                word: simplePast1s
+                word: simplePast1s.toLowerCase()
             },
             {
                 caseName: VerbCases.simplePast2sEN,
-                word: simplePast2s
+                word: simplePast2s.toLowerCase()
             },
             {
                 caseName: VerbCases.simplePast3sEN,
-                word: simplePast3s
+                word: simplePast3s.toLowerCase()
             },
             {
                 caseName: VerbCases.simplePast1plEN,
-                word: simplePast1pl
+                word: simplePast1pl.toLowerCase()
             },
             {
                 caseName: VerbCases.simplePast3plEN,
-                word: simplePast3pl
+                word: simplePast3pl.toLowerCase()
             },
             // PAST
             {
                 caseName: VerbCases.simpleFuture1sEN,
-                word: simpleFuture1s
+                word: simpleFuture1s.toLowerCase()
             },
             {
                 caseName: VerbCases.simpleFuture2sEN,
-                word: simpleFuture2s
+                word: simpleFuture2s.toLowerCase()
             },
             {
                 caseName: VerbCases.simpleFuture3sEN,
-                word: simpleFuture3s
+                word: simpleFuture3s.toLowerCase()
             },
             {
                 caseName: VerbCases.simpleFuture1plEN,
-                word: simpleFuture1pl
+                word: simpleFuture1pl.toLowerCase()
             },
             {
                 caseName: VerbCases.simpleFuture3plEN,
-                word: simpleFuture3pl
+                word: simpleFuture3pl.toLowerCase()
             },
             // PAST
             {
                 caseName: VerbCases.simpleConditional1sEN,
-                word: simpleConditional1s
+                word: simpleConditional1s.toLowerCase()
             },
             {
                 caseName: VerbCases.simpleConditional2sEN,
-                word: simpleConditional2s
+                word: simpleConditional2s.toLowerCase()
             },
             {
                 caseName: VerbCases.simpleConditional3sEN,
-                word: simpleConditional3s
+                word: simpleConditional3s.toLowerCase()
             },
             {
                 caseName: VerbCases.simpleConditional1plEN,
-                word: simpleConditional1pl
+                word: simpleConditional1pl.toLowerCase()
             },
             {
                 caseName: VerbCases.simpleConditional3plEN,
-                word: simpleConditional3pl
+                word: simpleConditional3pl.toLowerCase()
             },
         ]
         props.updateFormData({

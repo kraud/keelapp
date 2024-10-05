@@ -61,15 +61,15 @@ export function AdverbFormEN(props: AdverbFormENProps) {
         const currentCases: WordItem[] = [
             {
                 caseName: AdverbCases.adverbEN,
-                word: adjective.adverb
+                word: adjective.adverb.toLowerCase()
             },
             {
                 caseName: AdverbCases.comparativeEN,
-                word: adjective.comparative
+                word: adjective.comparative.toLowerCase()
             },
             {
                 caseName: AdverbCases.superlativeEN,
-                word: adjective.superlative
+                word: adjective.superlative.toLowerCase()
             }
         ]
         props.updateFormData({

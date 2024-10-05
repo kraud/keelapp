@@ -56,11 +56,11 @@ export function NounFormES(props: NounFormESProps) {
         const currentCases: WordItem[] = [
             {
                 caseName: NounCases.singularES,
-                word: singularWord
+                word: singularWord.toLowerCase()
             },
             {
                 caseName: NounCases.pluralES,
-                word: pluralWord
+                word: pluralWord.toLowerCase()
             },
             {
                 caseName: NounCases.genderES,
@@ -110,7 +110,7 @@ export function NounFormES(props: NounFormESProps) {
     }
 
 
-        // This will only be run on first render
+    // This will only be run on first render
     // we use it to populate the form fields with the previously added information
     useEffect(() => {
         if(currentTranslationData.cases!){

@@ -151,140 +151,140 @@ export function VerbFormES(props: VerbFormESProps) {
             // infinitives
             {
                 caseName: VerbCases.infinitiveNonFiniteSimpleES,
-                word: infinitiveNonFiniteSimple
+                word: infinitiveNonFiniteSimple.toLowerCase()
             },
             {
                 caseName: VerbCases.gerundNonFiniteSimpleES,
-                word: gerundNonFiniteSimple
+                word: gerundNonFiniteSimple.toLowerCase()
             },
             {
                 caseName: VerbCases.participleNonFiniteSimpleES,
-                word: participleNonFiniteSimple
+                word: participleNonFiniteSimple.toLowerCase()
             },
             // INDICATIVO - TIEMPO SIMPLE - PRESENTE
             {
                 caseName: VerbCases.indicativePresent1sES,
-                word: indicativePresent1s
+                word: indicativePresent1s.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativePresent2sES,
-                word: indicativePresent2s
+                word: indicativePresent2s.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativePresent3sES,
-                word: indicativePresent3s
+                word: indicativePresent3s.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativePresent1plES,
-                word: indicativePresent1pl
+                word: indicativePresent1pl.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativePresent2plES,
-                word: indicativePresent2pl
+                word: indicativePresent2pl.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativePresent3plES,
-                word: indicativePresent3pl
+                word: indicativePresent3pl.toLowerCase()
             },
             // INDICATIVO - TIEMPO SIMPLE - PRET. IMPERFECTO
             {
                 caseName: VerbCases.indicativeImperfectPast1sES,
-                word: indicativeImperfectPast1s
+                word: indicativeImperfectPast1s.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativeImperfectPast2sES,
-                word: indicativeImperfectPast2s
+                word: indicativeImperfectPast2s.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativeImperfectPast3sES,
-                word: indicativeImperfectPast3s
+                word: indicativeImperfectPast3s.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativeImperfectPast1plES,
-                word: indicativeImperfectPast1pl
+                word: indicativeImperfectPast1pl.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativeImperfectPast2plES,
-                word: indicativeImperfectPast2pl
+                word: indicativeImperfectPast2pl.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativeImperfectPast3plES,
-                word: indicativeImperfectPast3pl
+                word: indicativeImperfectPast3pl.toLowerCase()
             },
             // INDICATIVO - TIEMPO SIMPLE - PRET. PERFECTO
             {
                 caseName: VerbCases.indicativePerfectSimplePast1sES,
-                word: indicativePerfectSimplePast1s
+                word: indicativePerfectSimplePast1s.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativePerfectSimplePast2sES,
-                word: indicativePerfectSimplePast2s
+                word: indicativePerfectSimplePast2s.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativePerfectSimplePast3sES,
-                word: indicativePerfectSimplePast3s
+                word: indicativePerfectSimplePast3s.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativePerfectSimplePast1plES,
-                word: indicativePerfectSimplePast1pl
+                word: indicativePerfectSimplePast1pl.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativePerfectSimplePast2plES,
-                word: indicativePerfectSimplePast2pl
+                word: indicativePerfectSimplePast2pl.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativePerfectSimplePast3plES,
-                word: indicativePerfectSimplePast3pl
+                word: indicativePerfectSimplePast3pl.toLowerCase()
             },
             // INDICATIVO - TIEMPO SIMPLE - PRET. PERFECTO
             {
                 caseName: VerbCases.indicativePerfectSimplePast1sES,
-                word: indicativePerfectSimplePast1s
+                word: indicativePerfectSimplePast1s.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativePerfectSimplePast2sES,
-                word: indicativePerfectSimplePast2s
+                word: indicativePerfectSimplePast2s.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativePerfectSimplePast3sES,
-                word: indicativePerfectSimplePast3s
+                word: indicativePerfectSimplePast3s.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativePerfectSimplePast1plES,
-                word: indicativePerfectSimplePast1pl
+                word: indicativePerfectSimplePast1pl.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativePerfectSimplePast2plES,
-                word: indicativePerfectSimplePast2pl
+                word: indicativePerfectSimplePast2pl.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativePerfectSimplePast3plES,
-                word: indicativePerfectSimplePast3pl
+                word: indicativePerfectSimplePast3pl.toLowerCase()
             },
             // INDICATIVO - TIEMPO SIMPLE - FUTURE
             {
                 caseName: VerbCases.indicativeFuture1sES,
-                word: indicativeFuture1s
+                word: indicativeFuture1s.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativeFuture2sES,
-                word: indicativeFuture2s
+                word: indicativeFuture2s.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativeFuture3sES,
-                word: indicativeFuture3s
+                word: indicativeFuture3s.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativeFuture1plES,
-                word: indicativeFuture1pl
+                word: indicativeFuture1pl.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativeFuture2plES,
-                word: indicativeFuture2pl
+                word: indicativeFuture2pl.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativeFuture3plES,
-                word: indicativeFuture3pl
+                word: indicativeFuture3pl.toLowerCase()
             },
         ]
         props.updateFormData({

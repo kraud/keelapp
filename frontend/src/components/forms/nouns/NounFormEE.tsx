@@ -73,31 +73,31 @@ export function NounFormEE(props: NounFormEEProps) {
         const currentCases: WordItem[] = [
             {
                 caseName: NounCases.singularNimetavEE,
-                word: singularNimetav
+                word: singularNimetav.toLowerCase()
             },
             {
                 caseName: NounCases.pluralNimetavEE,
-                word: pluralNimetav
+                word: pluralNimetav.toLowerCase()
             },
             {
                 caseName: NounCases.singularOmastavEE,
-                word: singularOmastav
+                word: singularOmastav.toLowerCase()
             },
             {
                 caseName: NounCases.pluralOmastavEE,
-                word: pluralOmastav
+                word: pluralOmastav.toLowerCase()
             },
             {
                 caseName: NounCases.singularOsastavEE,
-                word: singularOsastav
+                word: singularOsastav.toLowerCase()
             },
             {
                 caseName: NounCases.pluralOsastavEE,
-                word: pluralOsastav
+                word: pluralOsastav.toLowerCase()
             },
             {
                 caseName: NounCases.shortFormEE,
-                word: shortForm
+                word: shortForm.toLowerCase()
             },
         ]
         props.updateFormData({

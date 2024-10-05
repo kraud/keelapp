@@ -12,8 +12,7 @@ import LinearIndeterminate from "../../Spinner";
 import {useDispatch, useSelector} from "react-redux";
 import {setTimerTriggerFunction} from "../../generalUseFunctions";
 import {
-    getAutocompletedEstonianAdjectiveData,
-    getAutocompletedEstonianVerbData
+    getAutocompletedEstonianAdjectiveData
 } from "../../../features/autocompletedTranslation/autocompletedTranslationSlice";
 import {AppDispatch} from "../../../app/store";
 import {useTranslation} from "react-i18next";
@@ -102,35 +101,35 @@ export function AdjectiveFormEE(props: AdjectiveFormEEProps) {
         const currentCases: WordItem[] = [
             {
                 caseName: AdjectiveCases.algvorreEE,
-                word: adjective.algvorre
+                word: adjective.algvorre.toLowerCase()
             },
             {
                 caseName: AdjectiveCases.keskvorreEE,
-                word: adjective.keskvorre
+                word: adjective.keskvorre.toLowerCase()
             },
             {
                 caseName: AdjectiveCases.ulivorreEE,
-                word: adjective.ulivorre
+                word: adjective.ulivorre.toLowerCase()
             },
             {
                 caseName: AdjectiveCases.pluralNimetavEE,
-                word: adjective.pluralNimetav
+                word: adjective.pluralNimetav.toLowerCase()
             },
             {
                 caseName: AdjectiveCases.singularOmastavEE,
-                word: adjective.singularOmastav
+                word: adjective.singularOmastav.toLowerCase()
             },
             {
                 caseName: AdjectiveCases.pluralOmastavEE,
-                word: adjective.pluralOmastav
+                word: adjective.pluralOmastav.toLowerCase()
             },
             {
                 caseName: AdjectiveCases.singularOsastavEE,
-                word: adjective.singularOsastav
+                word: adjective.singularOsastav.toLowerCase()
             },
             {
                 caseName: AdjectiveCases.pluralOsastavEE,
-                word: adjective.pluralOsastav
+                word: adjective.pluralOsastav.toLowerCase()
             }
         ]
         props.updateFormData({

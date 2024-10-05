@@ -41,11 +41,11 @@ export function NounFormEN(props: NounFormENProps) {
         const currentCases: WordItem[] = [
             {
                 caseName: NounCases.singularEN,
-                word: singularWord
+                word: singularWord.toLowerCase()
             },
             {
                 caseName: NounCases.pluralEN,
-                word: pluralWord
+                word: pluralWord.toLowerCase()
             }
         ]
         props.updateFormData({
