@@ -7,14 +7,13 @@ function getHTMLAndAttachedData(emailData) {
     switch (emailData.type){
         case "resetPassword":
             return {
-                text:emailData.url,
-                //html: resetPasswordHtmlComponent(emailData.name, emailData.url),
-                // attachments: getAttachmentsPasswordReset()
+                html: resetPasswordHtmlComponent(emailData.name, emailData.url),
+                attachments: getAttachmentsPasswordReset()
             }
         case "verifyEmail":
             return {
                 html: verifyEmailHtmlComponent(emailData.name, emailData.url, emailData.email),
-                // attachments: getAttachmentsVerifyEmail()
+                attachments: getAttachmentsVerifyEmail()
             }
     }
 }
@@ -32,10 +31,10 @@ module.exports = async(emailData) => {
 
     })
     const mailData = {
-        ...getHTMLAndAttachedData(emailData),
         from: process.env.EMAIL_USER,
         to: emailData.email,
-        subject: emailData.subject
+        subject: emailData.subject,
+        ...getHTMLAndAttachedData(emailData),
     }
 
     await new Promise((resolve, reject) => {
@@ -68,7 +67,7 @@ module.exports = async(emailData) => {
         new Promise(async (resolve, reject) => {
             await transporter.sendMail(mailData, (err, info) => {
                 if (err) {
-                    console.error(err)
+                    console.log(err)
                     reject(err)
                 } else {
                     console.log(info)
