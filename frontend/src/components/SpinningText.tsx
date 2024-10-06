@@ -114,12 +114,13 @@ export function SpinningText(props: SpinningTextProps) {
     }
 
     const stringDisplayed = shuffledArray[reelSpins%matchingLanguagesItems.length]
-    const uiLanguageString = (user !== undefined)
-        ? Lang.EN // no language selected => ENGLISH
+    const uiLanguageString = (user!!)
+        ? matchingLanguagesItems[matchingLanguagesItems.findIndex((item: LanguageAndLabel) => {
+            return(item.language === user?.uiLanguage)
+        })]?.label
         : matchingLanguagesItems[matchingLanguagesItems.findIndex((item: LanguageAndLabel) => {
-            return(item.language === user.uiLanguage)
-        })
-    ]?.label
+            return(item.language === Lang.EN)
+        })]?.label // no language selected => ENGLISH
 
     return(
         <Tooltip

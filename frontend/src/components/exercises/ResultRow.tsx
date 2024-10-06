@@ -18,11 +18,11 @@ interface ResultRowProps {
     originalExerciseData: EquivalentTranslationValues
     exerciseResult: ExerciseResult
     index: number
-    setCurrentCardIndex: (index: number) => void // needed to go back an review exercise (can click on exercise to review)
+    setCurrentCardIndex: (index: number) => void // needed to go back to a review exercise (can click on exercise to review)
 }
 
 export const ResultRow = (props: ResultRowProps) => {
-    const { t } = useTranslation(['partOfSpeechCases'])
+    const { t } = useTranslation(['caseDescription'])
     const lessThanMd = useMediaQuery(globalTheme.breakpoints.down("md"))
 
     const relevantWordDescriptionElements = getWordDescriptionElements(props.originalExerciseData.partOfSpeech, props.originalExerciseData.matchingTranslations.itemA.case)
@@ -96,10 +96,11 @@ export const ResultRow = (props: ResultRowProps) => {
                     xs={'auto'}
                 >
                     <Tooltip
-                        title={(props.originalExerciseData.type === 'Multiple-Choice')
-                            ? "Multiple-Choice"
-                            : "Text-Input"
-                        }
+                        title={t(`categories.${(props.originalExerciseData.type === "Multiple-Choice") ?'multipleChoice' :'textInput'}`, {ns: 'practice'})}
+                        // title={(props.originalExerciseData.type === 'Multiple-Choice')
+                        //     ? "Multiple-Choice"
+                        //     : "Text-Input"
+                        // }
                     >
                         {(props.originalExerciseData.type === 'Multiple-Choice')
                             ?
@@ -235,7 +236,7 @@ export const ResultRow = (props: ResultRowProps) => {
                             translateFunction={
                             (access: string, count: number) => {
                                 return(
-                                    t(access, {ns: 'partOfSpeechCases', count: count, ordinal: true})
+                                    t(access, {ns: 'caseDescription', count: count, ordinal: true})
                                 )
                             }}
                         />
@@ -257,7 +258,8 @@ export const ResultRow = (props: ResultRowProps) => {
                     xs={'auto'}
                 >
                     <Tooltip
-                        title={'Go to exercise'}
+                        // title={'Go to exercise'}
+                        title={t("tooltips.goToExercise", {ns: 'practice'})}
                     >
                         <IconButton
                             color={'info'}

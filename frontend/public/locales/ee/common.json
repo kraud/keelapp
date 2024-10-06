@@ -29,6 +29,7 @@
     "somethingWrong": "Midagi läks valesti, proovige uuesti."
   },
   "buttons": {
+    "apply": "Rakenda",
     "delete": "Kustuta",
     "confirmDelete": "Kinnita {{elementType}} kustutamine",
     "confirm": "Kinnita",

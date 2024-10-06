@@ -10,6 +10,7 @@ import {Lang} from "../ts/enums";
 import TranslateIcon from '@mui/icons-material/Translate';
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle';
 import Tooltip from "@mui/material/Tooltip";
+import {useTranslation} from "react-i18next";
 
 interface DnDSortableItemProps{
     id: string,
@@ -29,6 +30,7 @@ interface DnDSortableItemProps{
 }
 
 export function DnDSortableItem(props: DnDSortableItemProps){
+    const { t } = useTranslation(['common'])
     const componentStyles = {
         descriptionButton: {
             borderRadius: ((props.disabled!!) && !(props.displayLeftActionButton))
@@ -87,8 +89,10 @@ export function DnDSortableItem(props: DnDSortableItemProps){
         const displayContentWithIndex = (displayItem: any) => {
             return(
                 ((props.index !== undefined) && !(props.hideIndex!!))
-                    ? `#${props.index + 1}: ${displayItem}`
-                    : displayItem
+                    // ? `#${props.index + 1}: ${displayItem}`
+                    // : displayItem
+                    ? `#${props.index + 1}: ${t(`languages.${displayItem.toLowerCase()}`, {ns: 'common'})}`
+                    : t(`languages.${displayItem.toLowerCase()}`, {ns: 'common'})
             )
         }
 

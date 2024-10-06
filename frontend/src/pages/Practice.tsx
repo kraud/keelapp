@@ -17,6 +17,7 @@ import {ExerciseCard} from "../components/ExerciseCard";
 import {ExerciseResult} from "../ts/interfaces";
 import {EndScreen} from "../components/exercises/EndScreen";
 import {interpolateColor} from "../components/generalUseFunctions";
+import {useTranslation} from "react-i18next";
 
 
 export type ExerciseParameters = {
@@ -50,6 +51,7 @@ interface PracticeProps {
 }
 
 export const Practice = (props: PracticeProps) => {
+    const { t } = useTranslation(['practice'])
     const dispatch = useDispatch<AppDispatch>()
     const {exercises, isErrorExercises, isSuccessExercises, isLoadingExercises, wordsSelectedForExercises} = useSelector((state: any) => state.exercises)
     const {user} = useSelector((state: any) => state.auth)
@@ -207,8 +209,10 @@ export const Practice = (props: PracticeProps) => {
                             align={"center"}
                         >
                             {(displayEndScreen)
-                                ? `Results: ${amountCorrectExercises}/${exercises.length} ✅`
-                                : `Exercises ${currentCardIndex+1}/${exercises.length}`
+                                // ? `Results: ${amountCorrectExercises}/${exercises.length} ✅`
+                                ? t("titles.exerciseResultsScore", {ns: 'practice', scoreCorrect: (amountCorrectExercises), total: (exercises.length)})
+                                // : `Exercises ${currentCardIndex+1}/${exercises.length}`
+                                : t("titles.exerciseResultsProcess", {ns: 'practice', index: (currentCardIndex+1), total: (exercises.length)})
                             }
                         </Typography>
                         <LinearIndeterminate
@@ -250,7 +254,8 @@ export const Practice = (props: PracticeProps) => {
                                 }}
                                 align={"center"}
                             >
-                                {`Parameters will apply to exercises created from these ${wordsSelectedForExercises.length} words:`}
+                                {t("titles.wordSelection", {ns: 'practice', amountWordsSelectedForExercises: wordsSelectedForExercises.length})}
+                                {/*{`Parameters will apply to exercises created from these ${wordsSelectedForExercises.length} words:`}*/}
                             </Typography>
                         </Grid>
                         <WordSimpleList

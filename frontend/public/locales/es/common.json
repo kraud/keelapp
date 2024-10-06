@@ -29,6 +29,7 @@
     "somethingWrong": "Algo salió mal. Intentalo de nuevo."
   },
   "buttons": {
+    "apply": "Aplicar",
     "delete": "Eliminar",
     "confirmDelete": "Confirmar eliminación de {{elementType}}",
     "confirm": "Confirmar",
@@ -58,7 +59,7 @@
     "confirmCancelRequest": "Confirmar cancelar solicitud",
     "confirmDeleteFriendship": "Confirmar eliminar amigo",
     "cloneTagAndWords": "Clonar Tag y palabras",
-    "goToDashboard": "Haga clic aquí y vaya al Panel",
+    "goToDashboard": "Haga click aquí para ir al Panel de Inicio",
     "goToLogin": "Haga clic aquí para iniciar sesión",
     "deleteAllWords": "Borrar todas las palabras",
     "hideFilters": "Esconder filtros",

@@ -11,6 +11,7 @@ import {ResultRow} from "./ResultRow";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import FlagIcon from '@mui/icons-material/Flag';
+import {useTranslation} from "react-i18next";
 
 interface EndScreenProps {
     currentCardIndex: number,
@@ -23,6 +24,7 @@ interface EndScreenProps {
 }
 
 export const EndScreen = (props: EndScreenProps) => {
+    const { t } = useTranslation(['common', 'practice'])
     const [displayWords, setDisplayWords] = useState<boolean>(false)
     const [displayParameters, setDisplayParameters] = useState<boolean>(false)
 
@@ -60,7 +62,12 @@ export const EndScreen = (props: EndScreenProps) => {
                                 setDisplayParameters((prevValue: boolean) => !prevValue)
                             }}
                         >
-                            {(displayParameters) ? "Hide parameters" : "Display parameters"}
+                            {(displayParameters)
+                                // ? "Hide parameters"
+                                ? t("buttons.hideParams", {ns: 'practice'})
+                                // : "Display parameters"
+                                : t("buttons.showParams", {ns: 'practice'})
+                            }
                         </Button>
                     </Divider>
                     <Collapse
@@ -159,7 +166,8 @@ export const EndScreen = (props: EndScreenProps) => {
                                                         }}
                                                         align={"center"}
                                                     >
-                                                        {cardType}
+                                                        {t(`categories.${(cardType === "Multiple-Choice") ?'multipleChoice' :'textInput'}`, {ns: 'practice'})}
+                                                        {/*{cardType}*/}
                                                     </Typography>
                                                 </Grid>
                                             </Grid>
@@ -265,7 +273,8 @@ export const EndScreen = (props: EndScreenProps) => {
                                                         }}
                                                         align={"center"}
                                                     >
-                                                        {languageType}
+                                                        {t(`categories.${(languageType === "Multi-Language") ?'multiLanguage' :'singleLanguage'}`, {ns: 'practice'})}
+                                                        {/*{languageType}*/}
                                                     </Typography>
                                                 </Grid>
                                             </Grid>
@@ -362,7 +371,9 @@ export const EndScreen = (props: EndScreenProps) => {
                                                     }}
                                                     align={"center"}
                                                 >
-                                                    {partOfSpeech}
+
+                                                    {t(`partOfSpeech.${(partOfSpeech as string).toLowerCase()}`, {ns: 'common'})}
+                                                    {/*{partOfSpeech}*/}
                                                 </Typography>
                                             </Grid>
                                         )
@@ -443,7 +454,12 @@ export const EndScreen = (props: EndScreenProps) => {
                                     setDisplayWords((prevValue: boolean) => !prevValue)
                                 }}
                             >
-                                {(displayWords) ? "Hide words" : "Display words"}
+                                {(displayWords)
+                                    // ? "Hide words"
+                                    ? t("buttons.hideWords", {ns: 'practice'})
+                                    // : "Display words"
+                                    : t("buttons.showWords", {ns: 'practice'})
+                                }
                             </Button>
                         </Divider>
                         <Collapse
@@ -485,7 +501,8 @@ export const EndScreen = (props: EndScreenProps) => {
                             props.onClickReset()
                         }}
                     >
-                        Go back to parameters
+                        {/*Go back to parameters*/}
+                        {t("buttons.goParams", {ns: 'practice'})}
                     </Button>
                 </Grid>
             </Grid>

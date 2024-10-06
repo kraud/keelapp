@@ -23,46 +23,6 @@ import Tooltip from "@mui/material/Tooltip";
 import LinearIndeterminate from "./Spinner";
 import {useSelector} from "react-redux";
 
-const difficultyMCSliderMarks = [
-    {
-        value: 0,
-        label: 'Level 0',
-        tooltipText: 'Any word-type - any language'
-    },
-    {
-        value: 1,
-        label: 'Level 1',
-        tooltipText: 'Any word-type - same language'
-    },
-    {
-        value: 2,
-        label: 'Level 2',
-        tooltipText: 'Same word-type - same language'
-    },
-    {
-        value: 3,
-        label: 'Level 3',
-        tooltipText: 'Same word - same language - different cases'
-    },
-]
-
-const difficultyTISliderMarks = [
-    {
-        value: 1,
-        label: 'Level 1',
-        tooltipText: 'Ignores capitalization, and special characters.'
-    },
-    {
-        value: 2,
-        label: 'Level 2',
-        tooltipText: 'Only ignores capitalization.'
-    },
-    {
-        value: 3,
-        label: 'Level 3',
-        tooltipText: 'Zero tolerance - input must match exactly.'
-    },
-]
 
 interface ExerciseParameterSelectorProps {
     defaultParameters: ExerciseParameters,
@@ -76,39 +36,93 @@ interface ExerciseParameterSelectorProps {
 }
 
 export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps) => {
-    const { t } = useTranslation(['review', 'common'])
+    const { t } = useTranslation(['review', 'common', 'practice'])
     const {user} = useSelector((state: any) => state.auth)
     // Languages currently displayed as columns on the selector
     const [allSelectedLanguages, setAllSelectedLanguages] = useState<string[]>(props.availableLanguages)
     // Languages currently not displayed as columns on the table
     const [otherLanguages, setOtherLanguages] = useState<string[]>([])
     const [displayAdvancedOptions, setDisplayAdvancedOptions] = useState<boolean>(false)
+    const difficultyMCSliderMarks = [
+        {
+            value: 0,
+            label: 'Level 0',
+            // tooltipText: 'Any word-type - any language'
+            tooltipText: t("parameterSelector.sliderOptionDescriptions.difficultyMC.textLevel0", {ns: 'practice'})
+        },
+        {
+            value: 1,
+            label: 'Level 1',
+            // tooltipText: 'Any word-type - same language'
+            tooltipText: t("parameterSelector.sliderOptionDescriptions.difficultyMC.textLevel1", {ns: 'practice'})
+        },
+        {
+            value: 2,
+            label: 'Level 2',
+            // tooltipText: 'Same word-type - same language'
+            tooltipText: t("parameterSelector.sliderOptionDescriptions.difficultyMC.textLevel2", {ns: 'practice'})
+        },
+        {
+            value: 3,
+            label: 'Level 3',
+            // tooltipText: 'Same word - same language - different cases'
+            tooltipText: t("parameterSelector.sliderOptionDescriptions.difficultyMC.textLevel3", {ns: 'practice'})
+        },
+    ]
+
+    const difficultyTISliderMarks = [
+        {
+            value: 1,
+            label: 'Level 1',
+            // tooltipText: 'Ignores capitalization, and special characters.'
+            tooltipText: t("parameterSelector.sliderOptionDescriptions.difficultyTI.textLevel1", {ns: 'practice'})
+        },
+        {
+            value: 2,
+            label: 'Level 2',
+            // tooltipText: 'Only ignores capitalization.'
+            tooltipText: t("parameterSelector.sliderOptionDescriptions.difficultyTI.textLevel2", {ns: 'practice'})
+        },
+        {
+            value: 3,
+            label: 'Level 3',
+            // tooltipText: 'Zero tolerance - input must match exactly.'
+            tooltipText: t("parameterSelector.sliderOptionDescriptions.difficultyTI.textLevel3", {ns: 'practice'})
+        },
+    ]
     const [difficultyMC, setDifficultyMC] = useState<number>(difficultyMCSliderMarks[1].value)
     const [difficultyTI, setDifficultyTI] = useState<number>(difficultyTISliderMarks[1].value)
+
 
     const validationSchema = Yup.object().shape({
         partsOfSpeech: Yup
             .array()
             .test({
-                message: 'You must select at least one item',
+                // message: 'You must select at least one item',
+                message: t("parameterSelector.validation.minAmountSelection", {ns: 'practice'}),
                 test: arr => {
                     return((arr !== undefined) && (arr.length > 0))
                 },
             }),
         amountOfExercises: Yup
             .number()
-            .required('Amount is required value')
-            .typeError("Please enter a valid number")
-            .integer('Only whole numbers are valid')
+            // .required('Amount is a required value')
+            .required(t("parameterSelector.validation.amountRequired", {ns: 'practice'}))
+            // .typeError("Please enter a valid number")
+            .typeError(t("parameterSelector.validation.validNumber", {ns: 'practice'}))
+            // .integer('Only whole numbers are valid')
+            .integer(t("parameterSelector.validation.integerRequired", {ns: 'practice'}))
             // TODO: fix this test (+1 is still accepted)
             .test(
                 "is-number-only",
-                "Only numbers are allowed",
+                // "Only numbers are allowed",
+                t("parameterSelector.validation.numberRequired", {ns: 'practice'}),
                 (value) => (new RegExp(/^[0-9]+$/)).test(value.toString()) // Regex to allow only numbers
             )
             .test(
                 "is-positive",
-                "Please enter a positive number",
+                // "Please enter a positive number",
+                t("parameterSelector.validation.positiveRequired", {ns: 'practice'}),
                 (value) => value > 0 && 1 / value !== -Infinity
             ),
     })
@@ -218,7 +232,8 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                             },
                         }}
                     >
-                        Exercise parameters:
+                        {/*Exercise parameters:*/}
+                        {t("titles.parametersTitle", {ns: 'practice'})}
                     </Typography>
                 </Grid>
             </Grid>
@@ -257,14 +272,15 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                 >
                     <CheckboxGroupWithHook
                         control={control}
-                        groupLabel={"Parts of speech"}
+                        // groupLabel={"Parts of speech"}
+                        groupLabel={t("parameterSelector.labels.partsOfSpeech", {ns: 'practice'})}
                         name={"partsOfSpeech"}
                         options={getPartsOfSpeechOptionElements(props.availablePoS)}
                         defaultValue={[]} // add default items if pre-selected words?
                         // defaultValue={getPartsOfSpeechOptionElements(props.defaultParameters.partsOfSpeech)}
                         errors={errors.partsOfSpeech}
                         onChange={(selectionPoS: CheckboxItemData[]) => {
-                            runOnParametersChange()
+                            runOnParametersChange() // no parameter, because the PoS value are extracted directly from the form state
                         }}
                         fullWidth={false}
                         disabled={props.disabled!!}
@@ -277,7 +293,8 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                 >
                     <TextInputFormWithHook
                         control={control}
-                        label={'Amount of exercises'}
+                        // label={'Amount of exercises'}
+                        label={t("parameterSelector.labels.amountExercises", {ns: 'practice'})}
                         name={"amountOfExercises"}
                         defaultValue={(props.defaultParameters.amountOfExercises)}
                         disabled={props.disabled!!}
@@ -300,7 +317,8 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                 >
                     <RadioGroupWithHook
                         control={control}
-                        label={"Exercise type"}
+                        // label={"Exercise type"}
+                        label={t("parameterSelector.labels.typeExercise", {ns: 'practice'})}
                         name={"type"}
                         options={Object.values(ExerciseTypeSelection)}
                         defaultValue={ExerciseTypeSelection["Text-Input"]}
@@ -311,7 +329,8 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                         fullWidth={false}
                         disabled={props.disabled!!}
                         labelTooltipMessage={
-                            'This will determine the type of card to be displayed'
+                            // 'This will determine the type of card to be displayed'
+                            t("tooltips.typeExerciseExplain", {ns: 'practice'})
                         }
                         disableUnselect={true}
                     />
@@ -323,7 +342,8 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                 >
                     <RadioGroupWithHook
                         control={control}
-                        label={"Languages per card"}
+                        // label={"Languages per card"}
+                        label={t("parameterSelector.labels.languagesPerCard", {ns: 'practice'})}
                         name={"multiLang"}
                         options={Object.values(CardTypeSelection)}
                         defaultValue={CardTypeSelection["Random"]}
@@ -334,7 +354,8 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                         fullWidth={false}
                         disabled={props.disabled!!}
                         labelTooltipMessage={
-                            'This will determine the amount of languages that will be part of the exercises displayed in an exercise card'
+                            // 'This will determine the amount of languages that will be part of the exercises displayed in an exercise card'
+                            t("tooltips.typeCardExplain", {ns: 'practice'})
                         }
                         disableUnselect={true}
                     />
@@ -358,7 +379,12 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                                 setDisplayAdvancedOptions((prevValue: boolean) => !prevValue)
                             }}
                         >
-                            {(displayAdvancedOptions) ? "Hide advanced settings" : "Display advanced settings"}
+                            {(displayAdvancedOptions)
+                                // ? "Hide advanced settings"
+                                ? t("buttons.hideAdvSettings", {ns: 'practice'})
+                                // : "Display advanced settings"
+                                : t("buttons.showAdvSettings", {ns: 'practice'})
+                            }
                         </Button>
                     </Divider>
                 </Grid>
@@ -395,14 +421,16 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                                 >
                                     <Tooltip
                                         title={(props.defaultParameters.type === 'Text-Input') // only case where this would be disabled
-                                            ? "Exercise type must be 'Multiple-Choice' or 'Random' to change this value"
+                                            // ? "Exercise type must be 'Multiple-Choice' or 'Random' to change this value"
+                                            ? t("tooltips.requireMultipleChoice", {ns: 'practice'})
                                             : ""
                                         }
                                     >
                                         <Typography
                                             variant={'body1'}
                                         >
-                                            Multiple-Choice difficulty:
+                                            {/*Multiple-Choice difficulty:*/}
+                                            {t("titles.difficultyMC", {ns: 'practice'})}
                                         </Typography>
                                     </Tooltip>
                                 </Grid>
@@ -456,14 +484,16 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                                 >
                                     <Tooltip
                                         title={(props.defaultParameters.type === 'Multiple-Choice') // only case where this would be disabled
-                                            ? "Exercise type must be 'Text-Input' or 'Random' to change this value"
+                                            // ? "Exercise type must be 'Text-Input' or 'Random' to change this value"
+                                            ? t("tooltips.requireTextInput", {ns: 'practice'})
                                             : ""
                                         }
                                     >
                                         <Typography
                                             variant={'body1'}
                                         >
-                                            Text-Input difficulty:
+                                            {/*Text-Input difficulty:*/}
+                                            {t("titles.difficultyTI", {ns: 'practice'})}
                                         </Typography>
                                     </Tooltip>
                                 </Grid>
@@ -530,7 +560,8 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                                         fullWidth={false}
                                         disabled={props.disabled!!}
                                         labelTooltipMessage={
-                                            "This determines how we select the exercises to display. With 'Exercise-Performance' we prioritize words and translations you haven't practiced yet."
+                                            // "This determines how we select the exercises to display. With 'Exercise-Performance' we prioritize words and translations you haven't practiced yet."
+                                            t("tooltips.sortingAndSelectionExplain", {ns: 'practice'})
                                         }
                                         disableUnselect={true}
                                     />
@@ -583,8 +614,9 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                                             fullWidth={false}
                                             disabled={(props.disabled!!) || (getValues('multiLang') === CardTypeSelection["Multi-Language"])}
                                             labelTooltipMessage={
-                                                "This determines if we include exercises related to your native language in the case of single-language exercises."
-                                            }
+                                                // "This determines if we include exercises related to your native language in the case of single-language exercises."
+                                                t("tooltips.nativeLanguageParameterExplain", {ns: 'practice'})
+                                        }
                                             disableUnselect={false}
                                         />
                                     </Grid>
@@ -609,7 +641,8 @@ export const ExerciseParameterSelector = (props: ExerciseParameterSelectorProps)
                             props.onAccept()
                         }}
                     >
-                        Create exercises
+                        {/*Create exercises*/}
+                        {t("buttons.createExercises", {ns: 'practice'})}
                     </Button>
                     {(props.isLoading!!) && <LinearIndeterminate/>}
                 </Grid>

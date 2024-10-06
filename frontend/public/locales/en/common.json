@@ -29,6 +29,7 @@
     "somethingWrong": "Something went wrong, try again."
   },
   "buttons": {
+    "apply": "Apply",
     "delete": "Delete",
     "confirmDelete": "Confirm delete {{elementType}}",
     "confirm": "Confirm",

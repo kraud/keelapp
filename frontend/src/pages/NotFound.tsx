@@ -131,7 +131,7 @@ export function NotFound(props: NotFoundProps) {
                         fontWeight={"bold"}
                     >
                         {(user!!)
-                            ? t('buttons.gotToDashboard', { ns: 'common' })
+                            ? t('buttons.goToDashboard', { ns: 'common' })
                             : t('buttons.goToLogin', { ns: 'common' })
                         }
                     </Typography>

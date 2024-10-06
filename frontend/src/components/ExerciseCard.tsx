@@ -40,7 +40,7 @@ interface ExerciseCardProps {
 
 export const ExerciseCard = (props: ExerciseCardProps) => {
     const {user} = useSelector((state: any) => state.auth)
-    const { t } = useTranslation(['partOfSpeechCases'])
+    const { t } = useTranslation(['caseDescription'])
     const wordCasesDescriptions = WordCasesData
     const lessThanSm = useMediaQuery(globalTheme.breakpoints.down("sm"))
     const dispatch = useDispatch<AppDispatch>()
@@ -430,7 +430,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                 currentExerciseData?.partOfSpeech,
                 (access: string, count: number) => {
                     return(
-                        t(access, {ns: 'partOfSpeechCases', count: count, ordinal: true})
+                        t(access, {ns: 'caseDescription', count: count, ordinal: true})
                     )
                 }
             )
@@ -476,14 +476,16 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
     const performanceShortcutButtons = () => {
         const buttons = [
             {
-                tooltipTitle: "I don't know this, show me again!",
+                // tooltipTitle: "I don't know this, show me again!",
+                tooltipTitle: t("tooltips.needMorePractice", {ns: 'practice'}),
                 onClickAction: () => handleMasterClick(),
                 icon: <SchoolIcon />,
                 iconColor: 'primary',
                 disabled: (currentExerciseData?.performance === undefined || !(currentCardAnswer!!)),
             },
             {
-                tooltipTitle: "Don't show this translation again!",
+                // tooltipTitle: "Don't show this translation again!",
+                tooltipTitle: t("tooltips.noMorePractice", {ns: 'practice'}),
                 onClickAction: () => handleForgetClick(),
                 icon: <ForgetIcon />,
                 iconColor: 'error',
@@ -561,7 +563,8 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                     xs={'auto'}
                                 >
                                     <Tooltip
-                                        title={`Your performance on this word. Last time you practiced this: ${(new Date(lastModifiedDate)).toLocaleDateString()}`}
+                                        // title={`Your performance on this word. Last time you practiced this: ${(new Date(lastModifiedDate)).toLocaleDateString()}`}
+                                        title={t("tooltips.performanceExplain", {ns: 'practice', lastDate: ((new Date(lastModifiedDate)).toLocaleDateString())})}
                                         componentsProps={{
                                             tooltip: {
                                                 sx: {
@@ -608,7 +611,10 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                 xs={'auto'}
                             >
                                 <Tooltip
-                                    title={(currentCardAnswer === undefined) ?"Check answer first" :button.tooltipTitle}
+                                    title={(currentCardAnswer === undefined)
+                                        ? t("tooltips.checkAnswer", {ns: 'practice'})
+                                        : button.tooltipTitle
+                                    }
                                 >
                                     <span>
                                         <IconButton
@@ -713,7 +719,8 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                     },
                                 }}
                             >
-                                No match
+                                {t("titles.noExercisesMatch", {ns: 'practice'})}
+                                {/*No match*/}
                             </Typography>
                         </Grid>
                         <Grid
@@ -753,7 +760,8 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                 },
                             }}
                         >
-                            Please try again with different settings.
+                            {t("titles.tryDifferentSettings", {ns: 'practice'})}
+                            {/*Please try again with different settings.*/}
                         </Typography>
                     </Grid>
                 </Grid>
@@ -924,7 +932,8 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                                     }}
                                                     disabled={disableCheckButton}
                                                 >
-                                                    Check
+                                                    {t("buttons.check", {ns: 'practice'})}
+                                                    {/*Check*/}
                                                 </Button>
                                             </span>
                                         </Tooltip>
@@ -1011,7 +1020,8 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                             props.onClickReset()
                         }}
                     >
-                        Go back to parameters
+                        {/*Go back to parameters*/}
+                        {t("buttons.goParams", {ns: 'practice'})}
                     </Button>
                 </Grid>
                 {/* If all exercises have answers => display option to go see results */}
@@ -1033,7 +1043,8 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                 props.setCurrentCardIndex(props.exercises.length)
                             }}
                         >
-                            Go to results
+                            {/*Go to results*/}
+                            {t("buttons.goResults", {ns: 'practice'})}
                         </Button>
                     </Grid>
                 }

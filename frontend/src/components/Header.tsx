@@ -32,6 +32,7 @@ import {AppDispatch} from "../app/store";
 import {resetWordsSelectedForExercises} from "../features/exercises/exerciseSlice";
 import {UserBadgeData} from "../pages/Account";
 import {Lang} from "../ts/enums";
+import LinearIndeterminate from "./Spinner";
 
 
 function ResponsiveAppBar() {
@@ -58,7 +59,7 @@ function ResponsiveAppBar() {
         Lang.EE,
     ]
 
-    const {user} = useSelector((state: any) => state.auth)
+    const {user, isLoadingAuth} = useSelector((state: any) => state.auth)
     const {searchResults, isSearchLoading} = useSelector((state: any) => state.words)
     const {notifications, isLoadingNotifications, isSuccessNotifications} = useSelector((state: any) => state.notifications)
     const {searchResultTags, isLoadingTagSearch} = useSelector((state: any) => state.tags)
@@ -406,7 +407,10 @@ function ResponsiveAppBar() {
                                 color={'inherit'}
                                 onClick={handleOpenUILanguageMenu}
                             >
-                                {getLangKeyByLabel(user.uiLanguage)}
+                                <>
+                                    {(!isLoadingAuth) && getLangKeyByLabel(user.uiLanguage)}
+                                    {(isLoadingAuth) && <LinearIndeterminate sxProps={{paddingX: '10px'}}/>}
+                                </>
                             </Button>
                         </Tooltip>
                         <Tooltip

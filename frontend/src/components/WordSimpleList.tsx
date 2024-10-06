@@ -6,6 +6,7 @@ import {ExerciseParameters} from "../pages/Practice";
 import {CountryFlag} from "./GeneralUseComponents";
 import globalTheme from "../theme/theme";
 import Tooltip from "@mui/material/Tooltip";
+import {useTranslation} from "react-i18next";
 
 interface WordSimpleListProps {
     wordsSelectedForExercises: any[] // simple-word
@@ -13,6 +14,7 @@ interface WordSimpleListProps {
 }
 
 export const WordSimpleList = (props: WordSimpleListProps) => {
+    const { t } = useTranslation(['common'])
 
     const getExistingTranslations = (selectedWord: any, fieldsByActiveLanguage: string[]) => {
         return(
@@ -116,7 +118,8 @@ export const WordSimpleList = (props: WordSimpleListProps) => {
                                     }}
                                     align={"center"}
                                 >
-                                    {groupedCategory.partOfSpeech} ({getAmountOfActiveWords(groupedCategory)})
+                                    {/*{groupedCategory.partOfSpeech} ({getAmountOfActiveWords(groupedCategory)})*/}
+                                    {t(`partOfSpeech.${(groupedCategory.partOfSpeech as string).toLowerCase()}`, {ns: 'common'})} ({getAmountOfActiveWords(groupedCategory)})
                                 </Typography>
                             </Grid>
                         </Grid>
@@ -170,7 +173,8 @@ export const WordSimpleList = (props: WordSimpleListProps) => {
                                                 {(translationsToBeDisplayed.map((activeLanguageField: string, index: number) => {
                                                     return(
                                                         <Tooltip
-                                                            title={`Registered cases (${activeLanguageField.slice(-2)}): ${selectedWord[`registeredCases${activeLanguageField.slice(-2)}`]}`}
+                                                            // title={`Registered cases (${activeLanguageField.slice(-2)}): ${selectedWord[`registeredCases${activeLanguageField.slice(-2)}`]}`}
+                                                            title={t("tooltips.registeredCases", {ns: 'practice', language: activeLanguageField.slice(-2), amount: selectedWord[`registeredCases${activeLanguageField.slice(-2)}`]})}
                                                             key={index}
                                                         >
                                                             <Grid

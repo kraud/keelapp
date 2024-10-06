@@ -563,6 +563,7 @@ export function Review(){
                                 setSelectedRowsForBulkTagAssign(getWordsIdFromRowSelection(rowSelection))
                             },
                             displayBySelectionAmount: (amountSelected: number) => {
+                                // TODO: check if row selected-words are all owned by the current user (can't assign Tag to a followed word)
                                 return (amountSelected > 0)
                             },
                         },
@@ -648,6 +649,7 @@ export function Review(){
                                     <Button
                                         variant={"outlined"}
                                         color={"success"}
+                                        disabled={selectedTagsData.length < 1}
                                         onClick={() => {
                                             // selectedRows state is defined when opening the modal
                                             onRowSelectionApplyNewTags(selectedRowsForBulkTagAssign)

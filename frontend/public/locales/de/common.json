@@ -29,6 +29,7 @@
     "somethingWrong": "Etwas ist schiefgelaufen. Versuchen Sie es erneut."
   },
   "buttons": {
+    "apply": "Anwenden",
     "delete": "Löschen",
     "confirmDelete": "{{elementType}} löschen bestätigen",
     "confirm": "Bestätigen",
