@@ -5,7 +5,7 @@ import {Button, Collapse, Grid, InputAdornment} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {TextInputFormWithHook} from "../../TextInputFormHook";
 import {TranslationItem, WordItem} from "../../../ts/interfaces";
-import {AuxVerbDE, Lang, PrefixesVerbDE, VerbCases, VerbCaseTypeDE} from "../../../ts/enums";
+import {AuxVerbDE, Lang, PrefixesVerbDE, VerbCases, VerbCaseTypeDE, VerbRegularity} from "../../../ts/enums";
 import {
     getAcronymFromVerbCaseTypes, getVerbCaseTypesFromAcronym,
     getDisabledInputFieldDisplayLogic,
@@ -46,6 +46,9 @@ export function VerbFormDE(props: VerbFormDEProps) {
         auxiliaryVerb: Yup.string(), // TODO: should this be mandatory?
         verbCases: Yup.array(),
         prefix: Yup.string(), // TODO: should this be mandatory?
+        regularity: Yup.string()
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' }))
+            .matches(/^(regular|irregular)?$/, t('wordForm.verb.errors.formEN.regularityRequired', { ns: 'wordRelated' })),
         indicativePresent1s: Yup.string().nullable()
             .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         indicativePresent2s: Yup.string().nullable()
@@ -111,6 +114,7 @@ export function VerbFormDE(props: VerbFormDEProps) {
     const [auxiliaryVerb, setAuxiliaryVerb] = useState<"haben"|"sein"|"">("")
     const [prefix, setPrefix] = useState<PrefixesVerbDE | "">("")
     const [verbCases, setVerbCases] = useState<CheckboxItemData[]>([])
+    const [regularity, setRegularity] = useState<"regular"|"irregular"|"">("")
     // Optional fields: can be filled with autocomplete
     // Indicative Mode - present
     const [indicativePresent1s, setIndicativePresent1s] = useState("")
@@ -160,6 +164,10 @@ export function VerbFormDE(props: VerbFormDEProps) {
             {
                 caseName: VerbCases.prefixDE,
                 word: prefix
+            },
+            {
+                caseName: VerbCases.regularityDE,
+                word: regularity
             },
             // Indicative: present
             {
@@ -269,7 +277,7 @@ export function VerbFormDE(props: VerbFormDEProps) {
             isDirty: isDirty
         })
     }, [
-        isValid, auxiliaryVerb, verbCases, prefix,
+        isValid, auxiliaryVerb, verbCases, prefix, regularity,
 
         infinitive, indicativePresent1s, indicativePresent2s, indicativePresent3s,
         indicativePresent1pl, indicativePresent2pl, indicativePresent3pl,
@@ -286,6 +294,7 @@ export function VerbFormDE(props: VerbFormDEProps) {
         const auxiliaryVerbValue: string = getWordByCase(VerbCases.auxVerbDE, translationDataToInsert)
         const verbCasesValue = getVerbCaseTypesFromAcronym(getWordByCase(VerbCases.caseTypeDE, translationDataToInsert))
         const prefixValue: string = getWordByCase(VerbCases.prefixDE, translationDataToInsert)
+        const regularityValue: string = getWordByCase(VerbCases.regularityDE, translationDataToInsert)
         // Indicative: present
         const indicativePresent1sValue: string = getWordByCase(VerbCases.indicativePresent1sDE, translationDataToInsert)
         const indicativePresent2sValue: string = getWordByCase(VerbCases.indicativePresent2sDE, translationDataToInsert)
@@ -351,6 +360,15 @@ export function VerbFormDE(props: VerbFormDEProps) {
             }
         )
         setPrefix(prefixValue as PrefixesVerbDE)
+        setValue(
+            'regularity',
+            regularityValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setRegularity(regularityValue as "regular"|"irregular")
 
         // Indicative: present
         setValue(
@@ -608,6 +626,10 @@ export function VerbFormDE(props: VerbFormDEProps) {
                     caseName: VerbCases.prefixDE,
                     word: prefix
                 },
+                {
+                    caseName: VerbCases.regularityDE,
+                    word: regularity
+                },
             ]
         }
         setValuesInForm(completeFormWithAutocomplete)
@@ -718,11 +740,37 @@ export function VerbFormDE(props: VerbFormDEProps) {
                             />
                         </Grid>
                     }
-                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, (auxiliaryVerb))) &&
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, regularity)) &&
                         <Grid
                             container={true}
                             item={true}
                             xs={'auto'}
+                        >
+                            <Grid
+                                item={true}
+                            >
+                                {/* TODO: auto-detect regularity? (and suggest it with tooltip. */}
+                                <RadioGroupWithHook
+                                    control={control}
+                                    label={"Regularity"}
+                                    name={"regularity"}
+                                    options={[VerbRegularity.regular, VerbRegularity.irregular]}
+                                    defaultValue={""}
+                                    errors={errors.regularity}
+                                    onChange={(value: any) => {
+                                        setRegularity(value)
+                                    }}
+                                    fullWidth={false}
+                                    disabled={props.displayOnly}
+                                />
+                            </Grid>
+                        </Grid>
+                    }
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, (auxiliaryVerb))) &&
+                        <Grid
+                            container={true}
+                            item={true}
+                            xs={12}
                         >
                             <Grid
                                 item={true}

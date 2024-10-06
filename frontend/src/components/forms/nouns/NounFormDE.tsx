@@ -5,7 +5,7 @@ import {Grid} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {TextInputFormWithHook} from "../../TextInputFormHook";
 import {WordItem, TranslationItem} from "../../../ts/interfaces";
-import {GenderDE, Lang, NounCases} from "../../../ts/enums";
+import {GenderDE, Lang, NounCases, VerbCases, VerbRegularity} from "../../../ts/enums";
 import {getDisabledInputFieldDisplayLogic, getWordByCase} from "../commonFunctions";
 import {RadioGroupWithHook} from "../../RadioGroupFormHook";
 import {AutocompleteButtonWithStatus} from "../AutocompleteButtonWithStatus";
@@ -32,6 +32,10 @@ export function NounFormDE(props: NounFormDEProps) {
     const { currentTranslationData } = props
 
     const validationSchema = Yup.object().shape({
+        //  Properties
+        regularity: Yup.string()
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' }))
+            .matches(/^(regular|irregular)?$/, t('wordForm.verb.errors.formEN.regularityRequired', { ns: 'wordRelated' })),
         gender: Yup.string().required(t('wordForm.noun.errors.formDE.genderRequired', { ns: 'wordRelated' }))
             .oneOf(
                 [GenderDE.M as string, GenderDE.F as string, GenderDE.N as string],
@@ -63,6 +67,7 @@ export function NounFormDE(props: NounFormDEProps) {
         mode: "all", // Triggers validation/errors without having to submit
     })
 
+    const [regularity, setRegularity] = useState<"regular"|"irregular"|"">("")
     const [genderWord, setGenderWord] = useState<"der"|"die"|"das"|"">("")
 
     const [singularNominativ, setSingularNominativ] = useState("")
@@ -77,6 +82,10 @@ export function NounFormDE(props: NounFormDEProps) {
 
     useEffect(() => {
         const currentCases: WordItem[] = [
+            {
+                caseName: NounCases.regularityDE,
+                word: regularity
+            },
             {
                 caseName: NounCases.genderDE,
                 word: genderWord
@@ -121,11 +130,12 @@ export function NounFormDE(props: NounFormDEProps) {
             isDirty: isDirty
         })
     }, [
-        genderWord, singularNominativ, pluralNominativ, singularAkkusativ, pluralAkkusativ, singularGenitiv,
+        regularity, genderWord, singularNominativ, pluralNominativ, singularAkkusativ, pluralAkkusativ, singularGenitiv,
         pluralGenitiv, singularDativ, pluralDativ, isValid
     ])
 
     const setValuesInForm = (translationDataToInsert: TranslationItem) => {
+        const regularityValue: string = getWordByCase(NounCases.regularityDE, translationDataToInsert)
         const genderValue: string = getWordByCase(NounCases.genderDE, translationDataToInsert)
         const singularNominativValue: string = getWordByCase(NounCases.singularNominativDE, translationDataToInsert)
         const pluralNominativValue: string = getWordByCase(NounCases.pluralNominativDE, translationDataToInsert)
@@ -135,6 +145,15 @@ export function NounFormDE(props: NounFormDEProps) {
         const pluralGenitivValue: string = getWordByCase(NounCases.pluralGenitivDE, translationDataToInsert)
         const singularDativValue: string = getWordByCase(NounCases.singularDativDE, translationDataToInsert)
         const pluralDativValue: string = getWordByCase(NounCases.pluralDativDE, translationDataToInsert)
+        setValue(
+            'regularity',
+            regularityValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setRegularity(regularityValue as "regular"|"irregular")
         setValue(
             'gender',
             genderValue,
@@ -229,7 +248,18 @@ export function NounFormDE(props: NounFormDEProps) {
 
     // ------------------ AUTOCOMPLETE LOGIC ------------------
     const onAutocompleteClick = async () => {
-        setValuesInForm(autocompletedTranslationNounDE)
+        const completeFormWithAutocomplete = {
+            ...autocompletedTranslationNounDE,
+            // NB! These fields are not included in BE autocomplete response, so we must manually include
+            cases: [
+                ...autocompletedTranslationNounDE.cases,
+                {
+                    caseName: VerbCases.regularityDE,
+                    word: regularity
+                },
+            ]
+        }
+        setValuesInForm(completeFormWithAutocomplete)
     }
 
     useEffect(() => {
@@ -293,22 +323,50 @@ export function NounFormDE(props: NounFormDEProps) {
                         </Grid>
                     }
                     <Grid
+                        container={true}
+                        spacing={2}
                         item={true}
                         xs={12}
                     >
-                        <RadioGroupWithHook
-                            control={control}
-                            label={"Gender"}
-                            name={"gender"}
-                            options={[GenderDE.M, GenderDE.F, GenderDE.N]}
-                            defaultValue={""}
-                            errors={errors.gender}
-                            onChange={(value: any) => {
-                                setGenderWord(value)
-                            }}
-                            fullWidth={false}
-                            disabled={props.displayOnly}
-                        />
+                        <Grid
+                            item={true}
+                            xs={'auto'}
+                        >
+                            <RadioGroupWithHook
+                                control={control}
+                                label={"Gender"}
+                                name={"gender"}
+                                options={[GenderDE.M, GenderDE.F, GenderDE.N]}
+                                defaultValue={""}
+                                errors={errors.gender}
+                                onChange={(value: any) => {
+                                    setGenderWord(value)
+                                }}
+                                fullWidth={false}
+                                disabled={props.displayOnly}
+                            />
+                        </Grid>
+                        {(getDisabledInputFieldDisplayLogic(props.displayOnly!, regularity)) &&
+                            <Grid
+                                item={true}
+                                xs={'auto'}
+                            >
+                                {/* TODO: auto-detect regularity? (and suggest it with tooltip. */}
+                                <RadioGroupWithHook
+                                    control={control}
+                                    label={"Regularity"}
+                                    name={"regularity"}
+                                    options={[VerbRegularity.regular, VerbRegularity.irregular]}
+                                    defaultValue={""}
+                                    errors={errors.regularity}
+                                    onChange={(value: any) => {
+                                        setRegularity(value)
+                                    }}
+                                    fullWidth={false}
+                                    disabled={props.displayOnly}
+                                />
+                            </Grid>
+                        }
                     </Grid>
                     <Grid
                         item={true}

@@ -552,7 +552,7 @@ export function VerbFormEN(props: VerbFormENProps) {
                                     name={"regularity"}
                                     options={[VerbRegularity.regular, VerbRegularity.irregular]}
                                     defaultValue={""}
-                                    errors={errors.auxiliaryVerb}
+                                    errors={errors.regularity}
                                     onChange={(value: any) => {
                                         setRegularity(value)
                                     }}

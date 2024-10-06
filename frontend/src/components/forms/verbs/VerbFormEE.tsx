@@ -5,7 +5,7 @@ import {Checkbox, Grid, InputAdornment} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {TextInputFormWithHook} from "../../TextInputFormHook";
 import {TranslationItem, WordItem} from "../../../ts/interfaces";
-import {Lang, VerbCases} from "../../../ts/enums";
+import {Lang, VerbCases, VerbRegularity} from "../../../ts/enums";
 import {getDisabledInputFieldDisplayLogic, getWordByCase} from "../commonFunctions";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../../../app/store";
@@ -20,6 +20,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import globalTheme from "../../../theme/theme";
 import Tooltip from "@mui/material/Tooltip";
 import {useTranslation} from "react-i18next";
+import {RadioGroupWithHook} from "../../RadioGroupFormHook";
 
 interface VerbFormEEProps {
     currentTranslationData: TranslationItem,
@@ -36,6 +37,9 @@ export function VerbFormEE(props: VerbFormEEProps) {
     const { currentTranslationData } = props
 
     const validationSchema = Yup.object().shape({
+        regularity: Yup.string()
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' }))
+            .matches(/^(regular|irregular)?$/, t('wordForm.verb.errors.formEN.regularityRequired', { ns: 'wordRelated' })),
         infinitiveMa: (searchInEnglish)
             ? Yup.string()
                 .required(t('wordForm.verb.errors.formEE.infinitiveMaRequired', { ns: 'wordRelated' }))
@@ -95,6 +99,7 @@ export function VerbFormEE(props: VerbFormEEProps) {
         mode: "all", // Triggers validation/errors without having to submit
     })
 
+    const [regularity, setRegularity] = useState<"regular"|"irregular"|"">("")
     // Mandatory fields: can't be autocompleted
     const [infinitiveMa, setInfinitiveMa] = useState("")
     const [infinitiveDa, setInfinitiveDa] = useState("")
@@ -123,6 +128,10 @@ export function VerbFormEE(props: VerbFormEEProps) {
 
     useEffect(() => {
         const currentCases: WordItem[] = [
+            {
+                caseName: VerbCases.regularityEE,
+                word: regularity
+            },
             {
                 caseName: VerbCases.infinitiveMaEE,
                 word: infinitiveMa.toLowerCase()
@@ -214,7 +223,7 @@ export function VerbFormEE(props: VerbFormEEProps) {
             isDirty: isDirty
         })
     }, [
-        infinitiveMa, infinitiveDa,
+        regularity, infinitiveMa, infinitiveDa,
         kindelPresent1s, kindelPresent2s, kindelPresent3s, kindelPresent1pl, kindelPresent2pl, kindelPresent3pl,
         kindelSimplePast1s, kindelSimplePast2s, kindelSimplePast3s, kindelSimplePast1pl, kindelSimplePast2pl, kindelSimplePast3pl,
         kindelPastPerfect1s, kindelPastPerfect2s, kindelPastPerfect3s, kindelPastPerfect1pl, kindelPastPerfect2pl, kindelPastPerfect3pl,
@@ -222,6 +231,7 @@ export function VerbFormEE(props: VerbFormEEProps) {
     ])
 
     const setValuesInForm = (translationDataToInsert: TranslationItem) => {
+        const regularityValue: string = getWordByCase(VerbCases.regularityEE, translationDataToInsert)
         const infinitiveMaValue: string = getWordByCase(VerbCases.infinitiveMaEE, translationDataToInsert)
         const infinitiveDaValue: string = getWordByCase(VerbCases.infinitiveDaEE, translationDataToInsert)
         // Kindel: Present
@@ -246,6 +256,15 @@ export function VerbFormEE(props: VerbFormEEProps) {
         const kindelPastPerfect2plValue: string = getWordByCase(VerbCases.kindelPastPerfect2plEE, translationDataToInsert)
         const kindelPastPerfect3plValue: string = getWordByCase(VerbCases.kindelPastPerfect3plEE, translationDataToInsert)
 
+        setValue(
+            'regularity',
+            regularityValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setRegularity(regularityValue as "regular"|"irregular")
         setValue(
             'infinitiveMa',
             infinitiveMaValue,
@@ -443,7 +462,18 @@ export function VerbFormEE(props: VerbFormEEProps) {
     // ------------------ AUTOCOMPLETE LOGIC ------------------
 
     const onAutocompleteClick = async () => {
-        setValuesInForm(autocompletedTranslationVerbEE)
+        const completeFormWithAutocomplete = {
+            ...autocompletedTranslationVerbEE,
+            // NB! These fields are not included in BE autocomplete response, so we must manually include them
+            cases: [
+                ...autocompletedTranslationVerbEE.cases,
+                {
+                    caseName: VerbCases.regularityEE,
+                    word: regularity
+                },
+            ]
+        }
+        setValuesInForm(completeFormWithAutocomplete)
         setSearchInEnglish(false)
     }
 
@@ -568,6 +598,33 @@ export function VerbFormEE(props: VerbFormEEProps) {
                                 fullWidth={true}
                                 disabled={props.displayOnly}
                             />
+                        </Grid>
+                    }
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, regularity)) &&
+                        <Grid
+                            container={true}
+                            item={true}
+                            xs={'auto'}
+                            alignItems={'flex-start'}
+                        >
+                            <Grid
+                                item={true}
+                            >
+                                {/* TODO: auto-detect regularity? (and suggest it with tooltip. */}
+                                <RadioGroupWithHook
+                                    control={control}
+                                    label={"Regularity"}
+                                    name={"regularity"}
+                                    options={[VerbRegularity.regular, VerbRegularity.irregular]}
+                                    defaultValue={""}
+                                    errors={errors.regularity}
+                                    onChange={(value: any) => {
+                                        setRegularity(value)
+                                    }}
+                                    fullWidth={false}
+                                    disabled={props.displayOnly}
+                                />
+                            </Grid>
                         </Grid>
                     }
                     {

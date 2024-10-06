@@ -1,15 +1,18 @@
 
 export enum NounCases {
     // ENGLISH
+    regularityEN = "regularityEN",
     singularEN = "singularEN" ,
     pluralEN = "pluralEN",
 
     // SPANISH
+    regularityES = "regularityES",
     genderES = "genderES",
     singularES = "singularES",
     pluralES = "pluralES",
 
     // GERMAN
+    regularityDE = "regularityDE",
     genderDE = "genderDE",
     singularNominativDE = "singularNominativDE",
     pluralNominativDE = "pluralNominativDE",
@@ -24,6 +27,8 @@ export enum NounCases {
     pluralDativDE = "pluralDativDE",
 
     // ESTONIAN
+
+    regularityEE = "regularityEE",
     singularNimetavEE = "singularNimetavEE",
     pluralNimetavEE = "pluralNimetavEE",
 
@@ -220,6 +225,7 @@ export enum VerbCases {
         // Teie  (Te): 2nd person plural (2pl)
         // Nad (nad): 3rd person plural (3pl)
 
+    regularityEE = 'regularityEE',
     // KINDEL: --------------
     infinitiveMaEE = 'infinitiveMaEE',
     infinitiveDaEE = 'infinitiveDaEE',
