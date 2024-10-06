@@ -1,6 +1,6 @@
 const path = require('path');
 
-const resetPasswordHtmlComponent = (name, url) =>
+const getHtmlComponent = (name, url) =>
 {
     const myHtl = `
      <div>
@@ -14,7 +14,7 @@ const resetPasswordHtmlComponent = (name, url) =>
     return myHtl;
 };
 
-const getAttachmentsPasswordReset = () => {
+const getAttachments = () => {
     return [
         {
             filename: 'logo.png',
@@ -25,7 +25,7 @@ const getAttachmentsPasswordReset = () => {
 }
 
 module.exports = {
-    resetPasswordHtmlComponent,
-    getAttachmentsPasswordReset
+    getHtmlComponent,
+    getAttachments
 }
 

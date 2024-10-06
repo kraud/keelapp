@@ -1,6 +1,6 @@
 const path = require('path');
 
-const verifyEmailHtmlComponent = (name, url, email) =>
+const getHtmlComponent = (name, url, email) =>
 {
     return `<div>
         <img src="cid:logo" alt="Logo" style="max-width: 180px;"/>
@@ -11,7 +11,7 @@ const verifyEmailHtmlComponent = (name, url, email) =>
     </div>`;
 };
 
-const getAttachmentsVerifyEmail = () => {
+const getAttachments = () => {
     return [
         {
             filename: 'logo.png',
@@ -22,7 +22,7 @@ const getAttachmentsVerifyEmail = () => {
 }
 
 module.exports = {
-    verifyEmailHtmlComponent,
-    getAttachmentsVerifyEmail
+    getHtmlComponent,
+    getAttachments
 }
 

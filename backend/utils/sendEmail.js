@@ -1,19 +1,19 @@
 const nodemailer = require("nodemailer")
-const {resetPasswordHtmlComponent, getAttachmentsPasswordReset} = require("./resources/resetPassword")
-const {verifyEmailHtmlComponent, getAttachmentsVerifyEmail} = require("./resources/verifyEmail");
+const resetPassword = require("./resources/resetPassword")
+const verifyEmail = require("./resources/verifyEmail");
 
 
 function getHTMLAndAttachedData(emailData) {
     switch (emailData.type){
         case "resetPassword":
             return {
-                html: resetPasswordHtmlComponent(emailData.name, emailData.url),
-                attachments: getAttachmentsPasswordReset()
+                html: resetPassword.getHtmlComponent(emailData.name, emailData.url),
+                attachments: resetPassword.getAttachments()
             }
         case "verifyEmail":
             return {
-                html: verifyEmailHtmlComponent(emailData.name, emailData.url, emailData.email),
-                attachments: getAttachmentsVerifyEmail()
+                html: verifyEmail.getHtmlComponent(emailData.name, emailData.url, emailData.email),
+                attachments: verifyEmail.getAttachments()
             }
     }
 }
