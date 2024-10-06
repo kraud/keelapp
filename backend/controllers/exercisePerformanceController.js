@@ -17,15 +17,6 @@ const getPerformanceByWorId = async (userId, word) => {
         });
 }
 
-const getPerformanceByWordIdAndTranslationId =  asyncHandler(async (userId, wordId, ) => {
-    // Array de ExercisePerformance
-    let wordObjectId = word._id
-    let userObjectId =  mongoose.Types.ObjectId(userId)
-    const result = await ExercisePerformance.find({ user: userObjectId, word: wordObjectId })
-        .then(performances => {
-            return performances; // Procesar el resultado aquí si se necesita
-        });
-})
 
 // @desc    Set Word
 // @route   POST /api/saveExerciseResult
@@ -119,6 +110,32 @@ const saveTranslationPerformance = asyncHandler(async (req, res) => {
     }
 })
 
+
+const savePerformanceAction = asyncHandler(async (req, res) => {
+    // Body del servicio:
+    // performanceId: req.performanceId
+    // action: "forget" | "master"  => acción a realizar sobre la performance.
+
+    if (req.body.performanceId === undefined) {
+        return res.status(500).json("Performance not found")
+    }
+
+    const exercisePerformance = await ExercisePerformance.findOne({_id: new mongoose.Types.ObjectId(req.body.performanceId)})
+
+    if (exercisePerformance === undefined){
+        return res.status(500).json("Performance not found")
+    }
+
+    try {
+        exercisePerformance.performanceModifier = req.body.action === "master" ? "Mastered" : "Revise"
+        exercisePerformance.save()
+        return res.status(200).json(exercisePerformance)
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error)
+    }
+})
+
 //Function to calculate the aging of the actual percentage of knowledge.
 //percentageOfKnowledge is the current percentage and lastDate must be a Date.
 const calculateAging = (percentageOfKnowledge, lastDate) => {
@@ -154,12 +171,21 @@ const findMatches = (word, translationsPerformanceArray) => {
         .map(exercise => {
             const itemB = exercise.matchingTranslations.itemB;
             if (itemB && itemB.translationId && (translationsPerformanceArray !== undefined) && (translationsPerformanceArray.length > 0)) {
+                let isMastered = false
+                let isRevise = false
                 // stat is object of ExercisePerformance
-                const stat = translationsPerformanceArray.find((s) => {
-                    // console.log(s.translationId, itemB.translationId)
-                    return(s.translationId.toString() === itemB.translationId.toString())
+                const stat = translationsPerformanceArray.find((translationPerformanceCandidate) => {
+                    if (translationPerformanceCandidate.translationId.toString() === itemB.translationId.toString()) {
+                        if (translationPerformanceCandidate.performanceModifier !== undefined) {
+                            isMastered = (translationPerformanceCandidate.performanceModifier === 'Mastered')
+                            isRevise = (translationPerformanceCandidate.performanceModifier === 'Revise')
+                        }
+                        // this is the relevant translationPerformance data for this exercise
+                        return true;
+                    }
+                    return false;
                 })
-                if (stat) {
+                if (stat && !isMastered && !isRevise) {
                     // Filter statsByCase, to find one that matches with the one in itemB
                     const caseMatchingStats = stat.statsByCase.find(statCase => statCase.caseName === itemB.case);
                     if(caseMatchingStats){
@@ -171,6 +197,16 @@ const findMatches = (word, translationsPerformanceArray) => {
                     // There's an exercisePerformance for the given translation but not for the caseName => knowledge = 0
                     return {...exercise, knowledge: 0, performance: stat, wordId: word._id }
                 }
+                else {
+                    // translation has a modifier
+                    if(isMastered || isRevise) {
+                        if(isMastered){
+                            return {...exercise, knowledge: 100, performance: stat, wordId: word._id}
+                        } else if(isRevise) {
+                            return {...exercise, knowledge: 0, performance: stat, wordId: word._id}
+                        }
+                    }
+                }
             }
             return {...exercise, knowledge:0, performance: undefined, wordId: word._id};
         })
@@ -180,6 +216,7 @@ const findMatches = (word, translationsPerformanceArray) => {
 module.exports = {
     getPerformanceByWorId,
     saveTranslationPerformance,
+    savePerformanceAction,
     calculateAging,
     findMatches,
 }

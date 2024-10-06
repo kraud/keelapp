@@ -23,6 +23,16 @@
     "goToExercise": "Go to exercise",
     "registeredCases": "Registered cases ({{language}}): {{amount}}"
   },
+  "dialogs": {
+    "titles": {
+      "masterTranslation": "Oh you've already mastered this translation?",
+      "forgetTranslation": "Are you struggling with this word?"
+    },
+    "messages": {
+      "masterTranslation": "Are you sure you want to set the knowledge of this translation to 100%? This mean you will not see exercises about this translation in the future.",
+      "forgetTranslation": "We are going to show you this translation more often. Are you sure you want to continue? "
+    }
+  },
   "buttons": {
     "check": "Check",
     "goParams": "Go back to parameters",

@@ -1,6 +1,6 @@
 import {createSlice, createAsyncThunk} from "@reduxjs/toolkit"
 import exercisePerformanceService from "./exercisePerformanceService"
-import {PerformanceParameters} from "../../ts/interfaces";
+import {PerformanceActionParameters, PerformanceParameters} from "../../ts/interfaces";
 
 interface ExercisePerformanceSliceState {
     isErrorSendingPerformance: boolean,
@@ -8,6 +8,9 @@ interface ExercisePerformanceSliceState {
     isLoadingSendingPerformance: boolean,
     message: string,
     exercisePerformance: any,
+    isLoadingSavingAction: boolean,
+    isErrorSavingAction: boolean,
+    isSuccessSavingAction: boolean,
 }
 
 const initialState: ExercisePerformanceSliceState = {
@@ -15,10 +18,13 @@ const initialState: ExercisePerformanceSliceState = {
     isSuccessSendingPerformance: false,
     isLoadingSendingPerformance: false,
     message: "",
-    exercisePerformance: undefined
+    exercisePerformance: undefined,
+    isErrorSavingAction: false,
+    isLoadingSavingAction: false,
+    isSuccessSavingAction: false,
 }
 
-// Get exercises for this user
+//
 export const saveTranslationPerformance = createAsyncThunk('exercises/saveTranslationPerformance', async (performanceParameters: PerformanceParameters, thunkAPI) => {
     try {
         // @ts-ignore
@@ -36,12 +42,12 @@ export const saveTranslationPerformance = createAsyncThunk('exercises/saveTransl
     }
 })
 
-// Get exercises for this user
-export const saveExerciseResult = createAsyncThunk('exercises/saveExerciseResult', async (performanceParameters: PerformanceParameters, thunkAPI) => {
+//
+export const savePerformanceAction = createAsyncThunk('exercises/savePerformanceAction', async (performanceActionParameters: PerformanceActionParameters, thunkAPI) => {
     try {
         // @ts-ignore
         const token = thunkAPI.getState().auth.user.token
-        return await exercisePerformanceService.saveExerciseResult(performanceParameters, token)
+        return await exercisePerformanceService.savePerformanceAction(performanceActionParameters, token)
     } catch(error: any) {
         const message = (
                 error.response &&
@@ -59,7 +65,7 @@ export const exercisePerformanceSlice = createSlice({
     name: 'exercisePerformance',
     initialState,
     reducers: {
-        resetExercisesSliceState: (state) => {
+        resetExercisesPerformanceSliceState: (state) => {
             return(initialState)
         },
         resetExercisePerformance: (state) => {
@@ -85,8 +91,21 @@ export const exercisePerformanceSlice = createSlice({
                 state.isErrorSendingPerformance = true
                 state.message = action.payload as string
             })
+            .addCase(savePerformanceAction.pending, (state) => {
+                state.isLoadingSavingAction = true
+                state.isSuccessSavingAction = false
+            })
+            .addCase(savePerformanceAction.fulfilled, (state, action) => {
+                state.isLoadingSavingAction = false
+                state.isSuccessSavingAction = true
+            })
+            .addCase(savePerformanceAction.rejected, (state, action) => {
+                state.isLoadingSavingAction = false
+                state.isErrorSavingAction = true
+                state.message = action.payload as string
+            })
     }
 })
 
-export const { resetExercisesSliceState, resetExercisePerformance } = exercisePerformanceSlice.actions
+export const { resetExercisesPerformanceSliceState, resetExercisePerformance } = exercisePerformanceSlice.actions
 export default exercisePerformanceSlice.reducer

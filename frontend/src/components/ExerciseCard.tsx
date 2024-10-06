@@ -10,11 +10,22 @@ import React, {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import {deterministicSort, getChipFieldsByPoS, getVerbPronoun, isVerbCasesData} from "./generalUseFunctions";
 import {ExerciseTypeSelection} from "../ts/enums";
-import {EquivalentTranslationValues, ExerciseResult, InfoChipData, PerformanceParameters} from "../ts/interfaces";
+import {
+    EquivalentTranslationValues,
+    ExerciseResult,
+    InfoChipData,
+    PerformanceActionParameters,
+    PerformanceParameters
+} from "../ts/interfaces";
 import {Bounce, toast} from "react-toastify";
 import globalTheme from "../theme/theme";
 //@ts-ignore
-import {resetExercisesSliceState, resetExercisePerformance, saveTranslationPerformance} from "../features/exercisePerformance/exercisePerformanceSlice";
+import {
+    resetExercisesPerformanceSliceState,
+    resetExercisePerformance,
+    saveTranslationPerformance,
+    savePerformanceAction
+} from "../features/exercisePerformance/exercisePerformanceSlice";
 import {setExercises} from "../features/exercises/exerciseSlice";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../app/store";
@@ -24,6 +35,7 @@ import Tooltip from "@mui/material/Tooltip";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import {ConfirmationModal} from "./ConfirmationModal";
 
 interface ExerciseCardProps {
     type: ExerciseTypeSelection,
@@ -45,7 +57,10 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
     const lessThanSm = useMediaQuery(globalTheme.breakpoints.down("sm"))
     const dispatch = useDispatch<AppDispatch>()
 
-    const {isSuccessSendingPerformance, isLoadingSendingPerformance, exercisePerformance} = useSelector((state: any) => state.exercisesPerformance)
+    const {
+        isSuccessSendingPerformance, isLoadingSendingPerformance, exercisePerformance,
+        isLoadingSavingAction, isErrorSavingAction, isSuccessSavingAction
+    } = useSelector((state: any) => state.exercisesPerformance)
 
     // TODO: maybe this should filter the list and the element with to 'indexInList' that matches?
     const currentExerciseData = (props.exercises[props.currentCardIndex])
@@ -376,25 +391,39 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
 
     // TODO: isErrorSendingPerformance is not contemplated yet..
 
+    const [openModal, setOpenModal] = useState<string | null>(null);
+
+    const handleCloseModal = () => {
+        setOpenModal(null);
+    };
+
     function handleMasterClick() {
-        // const parameters: PerformanceParameters= {
-        //     action: "master",
-        //     word: ,
-        //     translation: ,
-        // }
-        //
-        // dispatch(saveTranslationPerformance(parameters))
+        const parameters: PerformanceActionParameters = {
+            action: "master",
+            performanceId: currentExerciseData.performance._id,
+        }
+        dispatch(savePerformanceAction(parameters))
     }
 
     function handleForgetClick() {
-        // const parameters: PerformanceParameters= {
-        //     action: "forget",
-        //     word: "a",
-        //     translation: "b",
-        // }
-        //
-        // dispatch(saveTranslationPerformance(parameters))
+        const parameters: PerformanceActionParameters = {
+            action: "forget",
+            performanceId: currentExerciseData.performance._id,
+        }
+        dispatch(savePerformanceAction(parameters))
     }
+
+    useEffect(() => {
+        if (!isLoadingSavingAction) {
+            if ( isErrorSavingAction ) {
+                toast.error("Error saving action!")
+            }
+            if ( isSuccessSavingAction ) {
+                toast.success("Action saved successfully!")
+            }
+        }
+    }, [isLoadingSavingAction, isErrorSavingAction, isSuccessSavingAction]);
+
 
     const [displayedWordDescriptionData, setDisplayedWordDescriptionData] = useState<NounCasesData | VerbCasesData | undefined>(undefined)
     const [questionWordDescriptionData, setQuestionWordDescriptionData] = useState<NounCasesData | VerbCasesData | undefined>(undefined)
@@ -478,7 +507,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
             {
                 // tooltipTitle: "I don't know this, show me again!",
                 tooltipTitle: t("tooltips.needMorePractice", {ns: 'practice'}),
-                onClickAction: () => handleMasterClick(),
+                onClickAction: () => setOpenModal("master"),
                 icon: <SchoolIcon />,
                 iconColor: 'primary',
                 disabled: (currentExerciseData?.performance === undefined || !(currentCardAnswer!!)),
@@ -486,7 +515,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
             {
                 // tooltipTitle: "Don't show this translation again!",
                 tooltipTitle: t("tooltips.noMorePractice", {ns: 'practice'}),
-                onClickAction: () => handleForgetClick(),
+                onClickAction: () => setOpenModal("forget"),
                 icon: <ForgetIcon />,
                 iconColor: 'error',
                 disabled: (currentExerciseData?.performance === undefined || !(currentCardAnswer!!)),
@@ -905,6 +934,27 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                             }
                             {getOptionsToDisplay(props.type)}
                             {performanceShortcutButtons()}
+                            <ConfirmationModal
+                                open={openModal === 'master'}
+                                title={ t("dialogs.titles.masterTranslation", {ns: 'practice'}) }
+                                message={ t("dialogs.messages.masterTranslation", {ns: 'practice'}) }
+                                onConfirm={() => {
+                                    handleMasterClick()
+                                    handleCloseModal()
+                                }}
+                                onClose={handleCloseModal}
+                            />
+
+                            <ConfirmationModal
+                                open={openModal === 'forget'}
+                                title={ t("dialogs.titles.forgetTranslation", {ns: 'practice'}) }
+                                message={ t("dialogs.messages.forgetTranslation", {ns: 'practice'}) }
+                                onConfirm={() => {
+                                    handleForgetClick()
+                                    handleCloseModal()
+                                }}
+                                onClose={handleCloseModal}
+                            />
                             {(
                                 (props.type === 'Text-Input') &&
                                 (currentCardAnswer === undefined) // Once user answers => we hide button
@@ -973,10 +1023,10 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                             }
                             onClick={() => {
                                 if(props.currentCardIndex < (props.exercises.length)){
-                                    dispatch(resetExercisesSliceState())
+                                    dispatch(resetExercisesPerformanceSliceState())
                                     props.setCurrentCardIndex(props.currentCardIndex+1)
                                 } else {
-                                    dispatch(resetExercisesSliceState())
+                                    dispatch(resetExercisesPerformanceSliceState())
                                     // Not possible, but TS requires it. Button is disabled.
                                     props.setCurrentCardIndex(props.currentCardIndex)
                                 }

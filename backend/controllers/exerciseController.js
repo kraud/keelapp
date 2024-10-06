@@ -38,7 +38,7 @@ function shuffleArray(array) {
 }
 
 async function getRequiredAmountOfExercises(
-    exercisesByWord, // exercises are grouped by word []
+    exercisesByWord, // exercises are grouped by word [] and include exercisePerformance data, related to all the included translations
     amountOfExercises,
     userId,
     isExerciseSelectionRandom
@@ -55,7 +55,7 @@ async function getRequiredAmountOfExercises(
         for (const word of exercisesListByWord) {
             let translationsPerformanceArray = word.exercisePerformancesByTranslation
             // We match each exercise with its corresponding exercisePerformance data, so we can sort it by their average-translation-knowledge
-            const allExercises = findMatches(word, translationsPerformanceArray)
+            const allExercises = findMatches(word, translationsPerformanceArray) // TODO: podríamos solo enviar "word", porque translationsPerformanceArray ya está incluido en "word"?
             if(!isExerciseSelectionRandom){
                 allExercises.sort((a, b) => a.knowledge - b.knowledge)
             }
@@ -793,6 +793,7 @@ const getMissingDataForMCExercises = (incompleteExercises, allMatchingWords, dat
     //     lastDate: new Date(),
     //     knowledge: knowledge
     // }],
+    // performanceModifier: String // 'Mastered' | 'Revise',
     // translationLanguage: Lang,
     // averageTranslationKnowledge: knowledge, // only one value for now, so average translation is the same as current case
     // lastDateModifiedTranslation: new Date() // always current date
@@ -814,6 +815,15 @@ const calculateWordAverageKnowledge = (translationPerformancesList, userLanguage
     let newWordAverageKnowledge = 0
     translationPerformancesList.forEach((translationPerformance) => {
         if(validLanguages.includes(translationPerformance.translationLanguage)){
+            // NB! if (performanceModifier !== undefined) => we ignore the real translationKnowledge and we don't age it either
+            if (translationPerformance.performanceModifier === 'Mastered') {
+                newWordAverageKnowledge += 100
+                return // continue
+            } else if (translationPerformance.performanceModifier === 'Revise') {
+                newWordAverageKnowledge += 0
+                return // continue
+            }
+            // NB! if (performanceModifier === undefined) => we proceed normally
             newWordAverageKnowledge += calculateAging(translationPerformance.averageTranslationKnowledge, translationPerformance.lastDateModifiedTranslation)
         }
     })
@@ -865,7 +875,6 @@ const getExercises = asyncHandler(async (req, res) => {
 
     // words related to other-users-tags, that the current user follows.
     const followedWordsId = await getWordsIdFromFollowedTagsByUserId(userId)
-
 
     // If the user pre-selected words to create exercises => we'll not check for any other words
     const getWordFilterQuery = (parametersIncludePreselectWords) => {

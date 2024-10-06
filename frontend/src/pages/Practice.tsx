@@ -12,6 +12,8 @@ import {
     getExercisesForUser,
     resetExerciseList,
 } from "../features/exercises/exerciseSlice";
+import { resetExercisesPerformanceSliceState } from "../features/exercisePerformance/exercisePerformanceSlice";
+
 import {WordSimpleList} from "../components/WordSimpleList";
 import {ExerciseCard} from "../components/ExerciseCard";
 import {ExerciseResult} from "../ts/interfaces";
@@ -116,6 +118,9 @@ export const Practice = (props: PracticeProps) => {
         dispatch(getExercisesForUser(dispatchParameters))
         setAcceptedParameters(true)
     }
+
+    //fixme: check if needed
+    dispatch(resetExercisesPerformanceSliceState())
 
     // not sure if always needed. Helps clear exercise list after hot reloading during development
     useEffect(() => {

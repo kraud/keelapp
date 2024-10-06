@@ -23,6 +23,16 @@
     "goToExercise": "Mine harjutuse juurde",
     "registeredCases": "Registreeritud juhtumid ({{language}}): {{amount}}"
   },
+  "dialogs": {
+    "titles": {
+      "masterTranslation": "Oh, kas sa oled selle tõlke juba selgeks saanud?",
+      "forgetTranslation": "Kas sul on selle sõnaga raskusi?"
+    },
+    "messages": {
+      "masterTranslation": "Kas oled kindel, et soovid määrata selle tõlke teadmised 100%-le? See tähendab, et tulevikus ei näe sa selle tõlke harjutusi.",
+      "forgetTranslation": "Me hakkame seda tõlget sagedamini näitama. Kas oled kindel, et soovid jätkata?"
+    }
+  },
   "buttons": {
     "check": "Kontrolli",
     "goParams": "Mine tagasi parameetrite juurde",

@@ -28,6 +28,10 @@ const exercisePerformanceSchema = mongoose.Schema({
             }
         }]
     },
+    performanceModifier: {
+        type: String, // 'Mastered' | 'Revise'
+        enum: ['Mastered', 'Revise']
+    },
     // average-aged-knowledge of the cases stored in this translation
     // (they are already aged, to reflect the status of the translation at the time of last update to it)
     averageTranslationKnowledge:{

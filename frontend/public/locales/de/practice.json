@@ -23,6 +23,16 @@
     "goToExercise": "Zur Übung gehen",
     "registeredCases": "Registrierte Fälle ({{language}}): {{amount}}"
   },
+  "dialogs": {
+    "titles": {
+      "masterTranslation": "Oh, hast du diese Übersetzung schon gemeistert?",
+      "forgetTranslation": "Hast du Schwierigkeiten mit diesem Wort?"
+    },
+    "messages": {
+      "masterTranslation": "Bist du sicher, dass du das Wissen dieser Übersetzung auf 100 % setzen möchtest? Das bedeutet, dass du in Zukunft keine Übungen zu dieser Übersetzung sehen wirst.",
+      "forgetTranslation": "Wir werden dir diese Übersetzung häufiger zeigen. Bist du sicher, dass du fortfahren möchtest?"
+    }
+  },
   "buttons": {
     "check": "Überprüfen",
     "goParams": "Zurück zu den Parametern",
