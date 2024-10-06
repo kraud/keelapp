@@ -15,7 +15,7 @@ const getAttachmentsVerifyEmail = () => {
     return [
         {
             filename: 'logo.png',
-            path: path.join(__dirname) + '/logo.png',
+            path: path.join(__dirname) + '/images/logo.png',
             cid: 'logo',
         }
     ]
