@@ -37,28 +37,14 @@ module.exports = async(emailData) => {
         ...getHTMLAndAttachedData(emailData),
     }
 
-    await new Promise((resolve, reject) => {
-        // verify connection configuration
-        transporter.verify(function (error, success) {
-            if (error) {
-                console.log(error)
-                reject(error)
-            } else {
-                resolve(success)
-            }
-        })
-    })
-
-    async function generateHtmlAndSend() {
-        console.log("data", mailData)
-        console.log("options", transporter.options)
+    async function generateHtmlAndSend(emailData) {
         await transporter.sendMail(mailData)
             .then(info => {
-                console.log("info", info)
+                // console.log("info", info)
             })
             .catch(err => {
                 console.log("error", err)
             })
     }
-    await generateHtmlAndSend();
+    await generateHtmlAndSend(emailData);
 }
