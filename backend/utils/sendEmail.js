@@ -63,14 +63,15 @@ module.exports = async(emailData) => {
         //         .replace('{{replace-name}}', emailData.name)
         //         .replace('{{replace-resources}}', filePath)
 
-        console.log(mailData)
+        console.log("data", mailData)
+        console.log("options", transporter.options)
         new Promise(async (resolve, reject) => {
             await transporter.sendMail(mailData, (err, info) => {
                 if (err) {
-                    console.log(err)
+                    console.log("error", err)
                     reject(err)
                 } else {
-                    console.log(info)
+                    console.log("info", info)
                     resolve(info)
                 }
             })
