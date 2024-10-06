@@ -49,33 +49,16 @@ module.exports = async(emailData) => {
         })
     })
 
-    async function generateHtmlAndSend(emailData) {
-        // const filePath = path.join(__dirname, '/resources/');
-        // await fs.readFile(filePath + emailData.type + '.html', 'utf8', (err, html) => {
-        //     if (err) {
-        //         console.log('Error loading template:', err)
-        //         return ""
-        //     }
-        //
-        //     // Replace variables in the template
-        //     mailData.html = html
-        //         .replace('{{replace-url}}', emailData.url)
-        //         .replace('{{replace-name}}', emailData.name)
-        //         .replace('{{replace-resources}}', filePath)
-
+    async function generateHtmlAndSend() {
         console.log("data", mailData)
         console.log("options", transporter.options)
-        new Promise(async (resolve, reject) => {
-            await transporter.sendMail(mailData, (err, info) => {
-                if (err) {
-                    console.log("error", err)
-                    reject(err)
-                } else {
-                    console.log("info", info)
-                    resolve(info)
-                }
+        await transporter.sendMail(mailData)
+            .then(info => {
+                console.log("info", info)
             })
-        })
+            .catch(err => {
+                console.log("error", err)
+            })
     }
-    await generateHtmlAndSend(emailData);
+    await generateHtmlAndSend();
 }
