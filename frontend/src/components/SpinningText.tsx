@@ -29,13 +29,12 @@ export function SpinningText(props: SpinningTextProps) {
     let animatedValue = useSpring(value, { stiffness: 66, damping: 4 })
 
     // we only display translations for languages that the user has selected (always at least 2)
-    const matchingLanguagesItems = ((user!!) && (user?.languages!!) && (user.languages.length > 1))
-        // TODO: this should put UI-selected language first on the list
+    const matchingLanguagesItems = ((user!!) && (user?.languages!!) && (user.languages.length > 1)) // check in case of new user with no languages yet selected
         ? props.translations.filter((languageItem: LanguageAndLabel) => {
             return(user.languages.includes(languageItem.language))
         })
-        // TODO: this should default to UI-selected language (english for now)
         : props.translations.filter((languageItem: LanguageAndLabel) => {
+            // TODO: Should be 'user.uiLanguage' instead of 'Lang.EN'? What would happen with new users with browser languages NOT included in our supported-languages list?
             return(Lang.EN === (languageItem.language))
         })
 
@@ -114,11 +113,22 @@ export function SpinningText(props: SpinningTextProps) {
         return(`${(longestString * fontSize)+20}px`) // +20 for extra margin
     }
 
+    const stringDisplayed = shuffledArray[reelSpins%matchingLanguagesItems.length]
+    const uiLanguageString = (user!!)
+        ? matchingLanguagesItems[matchingLanguagesItems.findIndex((item: LanguageAndLabel) => {
+            return(item.language === user?.uiLanguage)
+        })]?.label
+        : matchingLanguagesItems[matchingLanguagesItems.findIndex((item: LanguageAndLabel) => {
+            return(item.language === Lang.EN)
+        })]?.label // no language selected => ENGLISH
 
     return(
         <Tooltip
-            // to avoid displaying the tooltip when the displayed translation is the first one on the array - already displayed
-            title={(shuffledArray[reelSpins%matchingLanguagesItems.length] !== matchingLanguagesItems[0].label) ? matchingLanguagesItems[0].label :""}
+            // to avoid displaying the tooltip when the displayed translation is in the UI-language
+            title={(stringDisplayed !== uiLanguageString)
+                ? uiLanguageString
+                : ""
+            }
         >
             <Grid
                 container={true}

@@ -20,7 +20,7 @@ interface RadioGroupHookProps {
     onChange: (value: any) => void // Needed to inform parent component about the Radio Group current value
     disabled?: boolean
     displayTooltip?: string
-    allowUnselect?: boolean
+    disableUnselect?: boolean
     suffix?: string
     hideLabel?: boolean
     labelTooltipMessage?: string
@@ -185,7 +185,7 @@ export const RadioGroupWithHook = (props: RadioGroupHookProps) => {
                                                     color={'allWhite'}
                                                     sx={componentStyles.optionCircle}
                                                     onChange={() => {
-                                                        if(option === field.value) {
+                                                        if((option === field.value) && !(props.disableUnselect!!)) {
                                                             props.onChange!("")
                                                         } else {
                                                             props.onChange!(option)
@@ -193,8 +193,8 @@ export const RadioGroupWithHook = (props: RadioGroupHookProps) => {
 
                                                     }}
                                                     onClick={() => {
-                                                        if(option === field.value) {
-                                                           props.onChange!("")
+                                                        if((option === field.value) && !(props.disableUnselect!!)) {
+                                                            props.onChange!("")
                                                             field.onChange!("")
                                                         }
                                                     }}

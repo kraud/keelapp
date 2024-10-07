@@ -83,6 +83,11 @@ const getShortFormEENounIfExist = (wordFormsList: WordFormStructure[]): string =
 
 // from the API we receive too much data, so we take only what we're currently expecting to use
 export const sanitizeDataStructureEENoun = (request: WordSearchResultStructureEE): sanitizeDataStructureNounResponse => {
+    const shortFormExists = (getShortFormEENounIfExist(request.searchResult[0].wordForms) !== "-")
+    const shortFormData = {
+        word: getShortFormEENounIfExist(request.searchResult[0].wordForms),
+        caseName: NounCases.shortFormEE
+    }
     if((request.searchResult.length > 0) && (request.searchResult[0].wordClasses[0] === 'noomen')){
         const formattedEENoun: TranslationItem = {
             language: Lang.EE,
@@ -111,10 +116,7 @@ export const sanitizeDataStructureEENoun = (request: WordSearchResultStructureEE
                     word: getWordFromWordFormsList(request.searchResult[0].wordForms,'PlP'),
                     caseName: NounCases.pluralOsastavEE
                 },
-                {
-                    word: getShortFormEENounIfExist(request.searchResult[0].wordForms),
-                    caseName: NounCases.shortFormEE
-                }
+                ...(shortFormExists) ?[shortFormData] :[]
             ]
         }
         return({

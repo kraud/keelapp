@@ -79,7 +79,8 @@
     "missingImplementationPoS": "Esta categoría gramatical aún no está implementada, ¡lo sentimos!"
   },
   "translationFormGeneric": {
-    "selectLanguage": "Elige un idioma para la nueva palabra"
+    "selectLanguage": "Elige un idioma para la nueva palabra",
+    "switchLanguage": "Cambiar idioma:"
   },
   "wordFormSelector": {
     "languageNotAvailable": "Ese idioma aún no está disponible",

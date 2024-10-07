@@ -222,19 +222,27 @@ export const UserBadge = (props: UserBadgeProps) => {
                     singleContainer={!props.isEditing} // we display second container only when editing, to select more languages
                     disabled={!props.isEditing!!}
                     selectedItemsTitle={""}
-                    displayItems={'flag'}
                     noItemsSelectedMessage={t('userData.errors.notEnoughLanguages', { ns: 'common' })}
                     displayLeftActionButton={{
-                        selectedItemLabel: (props.userData.uiLanguage!!) ?props.userData.uiLanguage :Lang.EN,
+                        selectedItemLabel: (props.userData.nativeLanguage!!)
+                            ? props.userData.nativeLanguage
+                            : undefined,
+                            // : Lang.ES,
                         onLeftActionButtonClick: (clickedItemLabel: string) => {
                             if (props.returnFieldsData !== undefined) {
                                 props.returnFieldsData({
                                     ...props.userData,
-                                    uiLanguage: clickedItemLabel as Lang,
+                                    nativeLanguage: (props.userData.nativeLanguage === clickedItemLabel)
+                                        ? undefined // if we click on the already selected option => we unselect it
+                                        : clickedItemLabel as Lang,
                                 })
                             }
                         }
                     }}
+                    alwaysDoubleRow={true}
+                    hideIndex={true}
+                    displayItems={'both'}
+                    flagSide={'left'}
                 />
             </Grid>
         </Grid>

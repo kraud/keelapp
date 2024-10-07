@@ -92,7 +92,7 @@ export function TranslationFormGeneric(props: WordFormGenericProps) {
                             display: {xs: 'none', sm: 'initial'},
                         }}
                     >
-                        switch language:
+                        {t('translationFormGeneric.switchLanguage', {ns: 'wordRelated'})}
                     </Typography>
                 </Grid>}
                 {props.availableLanguages.map((lang: Lang, index: number) => {
@@ -137,7 +137,7 @@ export function TranslationFormGeneric(props: WordFormGenericProps) {
                                         marginRight: '10px',
                                     }}
                                 />
-                                {lang}
+                                {t(`languages.${lang.toLowerCase()}`, {ns: 'common'})}
                             </Button>
                         </Grid>
                     )
@@ -243,7 +243,7 @@ export function TranslationFormGeneric(props: WordFormGenericProps) {
                                         }}
                                         sx={componentStyles.removeButton}
                                     >
-                                        REMOVE
+                                    {t("buttons.remove", {ns: 'common'})}
                                     </Button>
                                 </span>
                             </Tooltip>
@@ -259,7 +259,7 @@ export function TranslationFormGeneric(props: WordFormGenericProps) {
                                         setCurrentLang(null)
                                     }}
                                 >
-                                    CLEAR
+                                    {t("buttons.clear", {ns: 'common'})}
                                 </Button>
                             </Grid>
                         }

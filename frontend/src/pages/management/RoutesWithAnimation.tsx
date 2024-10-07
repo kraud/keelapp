@@ -13,6 +13,7 @@ import {checkEnvironmentAndIterationToDisplay} from "../../components/forms/comm
 import NotFound from "../NotFound";
 import {VerificationUser} from "../VerificationUser";
 import {ResetPassword} from "../ResetPassword";
+import {Practice} from "../Practice";
 
 export const routeVariantsAnimation = {
     initial: {
@@ -84,20 +85,24 @@ export function RoutesWithAnimation(props: RoutesWithAnimationProps) {
                 }
             />
             <Route
+                path='/practice'
+                element={
+                    <Practice/>
+                }
+            />
+            <Route
                 path='/resetPassword/:userId?/:tokenId?'
                 element={
                     <ResetPassword/>
                 }
             />
-            {(checkEnvironmentAndIterationToDisplay(3)) &&
-                <Route
-                     // TODO: should we reverse this to: '/user/notifications/:userId' ?
-                    path='/user/:userId?/notifications'
-                    element={
-                        <NotificationHub/>
-                    }
-                />
-            }
+            <Route
+                 // TODO: should we reverse this to: '/user/notifications/:userId' ?
+                path='/user/:userId?/notifications'
+                element={
+                    <NotificationHub/>
+                }
+            />
             <Route
                 path='/user'
                 element={

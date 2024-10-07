@@ -13,6 +13,7 @@
     "settings": {
       "openSettings": "Abrir ajustes",
       "notifications": "Notificaciones",
+      "uiLanguage": "Idioma de la interfaz",
       "account": "Cuenta",
       "dashboard": "Panel de inicio",
       "logout": "Cerrar sesión"
@@ -28,6 +29,7 @@
     "somethingWrong": "Algo salió mal. Intentalo de nuevo."
   },
   "buttons": {
+    "apply": "Aplicar",
     "delete": "Eliminar",
     "confirmDelete": "Confirmar eliminación de {{elementType}}",
     "confirm": "Confirmar",
@@ -36,6 +38,8 @@
     "cancel": "Cancelar",
     "return": "Volver",
     "close": "Cerrar",
+    "clear": "Borrar",
+    "remove": "Remover",
     "reset": "Restablecer",
     "submit": "Enviar",
     "addAnotherTranslation": "Agregar otra traducción",
@@ -55,7 +59,7 @@
     "confirmCancelRequest": "Confirmar cancelar solicitud",
     "confirmDeleteFriendship": "Confirmar eliminar amigo",
     "cloneTagAndWords": "Clonar Tag y palabras",
-    "goToDashboard": "Haga clic aquí y vaya al Panel",
+    "goToDashboard": "Haga click aquí para ir al Panel de Inicio",
     "goToLogin": "Haga clic aquí para iniciar sesión",
     "deleteAllWords": "Borrar todas las palabras",
     "hideFilters": "Esconder filtros",
@@ -70,6 +74,12 @@
     "distributionByLanguage": "Idioma",
     "byMonth": "Mes",
     "byLanguage": "Idioma"
+  },
+  "languages": {
+    "english": "Inglés",
+    "estonian": "Estonio",
+    "german": "Alemán",
+    "spanish": "Español"
   },
   "partOfSpeech": {
     "noun": "Sustantivo",

@@ -13,6 +13,7 @@
     "settings": {
       "openSettings": "Open settings",
       "notifications": "Notifications",
+      "uiLanguage": "Interface language",
       "account": "Account",
       "dashboard": "Dashboard",
       "logout": "Logout"
@@ -28,6 +29,7 @@
     "somethingWrong": "Something went wrong, try again."
   },
   "buttons": {
+    "apply": "Apply",
     "delete": "Delete",
     "confirmDelete": "Confirm delete {{elementType}}",
     "confirm": "Confirm",
@@ -36,6 +38,8 @@
     "cancel": "Cancel",
     "return": "Return",
     "close": "Close",
+    "clear": "Clear",
+    "remove": "Remove",
     "reset": "Reset",
     "submit": "Submit",
     "addAnotherTranslation": "Add another translation",
@@ -70,6 +74,12 @@
     "distributionByLanguage": "Language",
     "byMonth": "Month",
     "byLanguage": "Language"
+  },
+  "languages": {
+    "english": "English",
+    "estonian": "Estonian",
+    "german": "German",
+    "spanish": "Spanish"
   },
   "partOfSpeech": {
     "noun": "Noun",

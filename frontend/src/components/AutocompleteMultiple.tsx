@@ -9,6 +9,7 @@ import {Theme} from "@mui/material/styles";
 import {FilterItem, SearchResult, TagData} from "../ts/interfaces";
 import {searchTagsByLabel} from "../features/tags/tagSlice";
 import LinearIndeterminate from "./Spinner";
+import {useTranslation} from "react-i18next";
 
 interface AutocompleteMultipleProps {
     values: TagData[], // TODO: this will be changed to SearchResult, so we can change component behaviour depending on type
@@ -26,6 +27,7 @@ interface AutocompleteMultipleProps {
 }
 
 export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
+    const { t } = useTranslation(['tags'])
     const [inputValue, setInputValue] = useState<string>('')
     const [options, setOptions] = useState<TagData[]>([])
     const [open, setOpen] = useState(false)
@@ -139,6 +141,7 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
             sx={{
                 minWidth: "300px",
                 background: 'white',
+                borderRadius: '10px',
                 ...props.sxProps
             }}
             // @ts-ignore
@@ -251,12 +254,15 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
                                 </InputAdornment>
                             )
                         }}
-                        placeholder={"Search tags..."}
+                        placeholder={t('searchTags', {ns: 'tags'})}
                         fullWidth
                         sx={{
+                            '& .MuiAutocomplete-root': {
+                                borderRadius: '10px',
+                            },
                             '& .MuiAutocomplete-inputRoot': {
                                 border: '1px black solid',
-                                borderRadius: '3px',
+                                borderRadius: '10px',
                                 paddingLeft: globalTheme.spacing(1),
                                 "& ::placeholder": {
                                     color: "black",

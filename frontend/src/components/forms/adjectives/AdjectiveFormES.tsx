@@ -97,27 +97,27 @@ export function AdjectiveFormES(props: AdjectiveFormESProps) {
         const currentCases: WordItem[] = [
             {
                 caseName: AdjectiveCases.maleSingularES,
-                word: adjective.maleSingular
+                word: adjective.maleSingular.toLowerCase()
             },
             {
                 caseName: AdjectiveCases.femaleSingularES,
-                word: adjective.femaleSingular
+                word: adjective.femaleSingular.toLowerCase()
             },
             {
                 caseName: AdjectiveCases.malePluralES,
-                word: adjective.malePlural
+                word: adjective.malePlural.toLowerCase()
             },
             {
                 caseName: AdjectiveCases.femalePluralES,
-                word: adjective.femalePlural
+                word: adjective.femalePlural.toLowerCase()
             },
             {
                 caseName: AdjectiveCases.neutralSingularES,
-                word: adjective.neutralSingular
+                word: adjective.neutralSingular.toLowerCase()
             },
             {
                 caseName: AdjectiveCases.neutralPluralES,
-                word: adjective.neutralPlural
+                word: adjective.neutralPlural.toLowerCase()
             }
         ]
         props.updateFormData({

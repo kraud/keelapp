@@ -1,13 +1,13 @@
-import {Lang} from "../ts/enums";
+import {Lang, PartOfSpeech} from "../ts/enums";
 import React, {ReactNode} from "react";
 import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
 import Box from "@mui/material/Box";
-import {FriendshipData, SearchResult, TagData} from "../ts/interfaces";
+import {FriendshipData, InfoChipData, SearchResult, TagData} from "../ts/interfaces";
 import {Chip, Grid, Typography} from "@mui/material";
 import globalTheme from "../theme/theme";
 import Avatar from "@mui/material/Avatar";
-import {getOtherUserDataFromFriendship, stringAvatar} from "./generalUseFunctions";
+import {getChipFieldsByPoS, getOtherUserDataFromFriendship, stringAvatar} from "./generalUseFunctions";
 import IconButton from "@mui/material/IconButton";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import {useSelector} from "react-redux";
@@ -17,6 +17,7 @@ import HelpIcon from "@mui/icons-material/Help";
 import {Flip, toast} from "react-toastify";
 import Button from "@mui/material/Button";
 import {ToastOptions} from "react-toastify/dist/types";
+import {NounCasesData, VerbCasesData} from "../ts/wordCasesDataByPoS";
 
 type BorderProps = {
     border?: boolean
@@ -24,10 +25,16 @@ type BorderProps = {
 type CountryFlagProps = {
     country: Lang,
     sxProps?: SxProps<Theme>,
+    size?: (1 | 2 | 3 | 4),
 } & BorderProps
 
+const defaultProps = {
+    size: 1 as unknown as 1
+}
+
 // See https://www.npmjs.com/package/country-flag-icons for more details
-export const CountryFlag = (props: CountryFlagProps) => {
+export const CountryFlag = (propsOriginal: CountryFlagProps) => {
+    const props: any = {...defaultProps, ...propsOriginal}
     function getCountryFlagURL(country: Lang){
         switch (country){
             case Lang.EN: {
@@ -46,17 +53,24 @@ export const CountryFlag = (props: CountryFlagProps) => {
                 return("../../AQ.svg")
         }
     }
+    const defaultWidth: number = (props.border!) ?27 :25
+    const defaultHeight: number = (props.border!) ?18 :17
+    const defaultBorderWidth: number = 1
+    const calculatedWidth: number = defaultWidth*(props.size)
+    const calculatedHeight: number = defaultHeight*(props.size)
+    const calculatedBorderWidth: number = defaultBorderWidth*(props.size)
+
     return(
         <Box
             component="div"
             sx={{
-                width: (props.border!) ?'27px' :'25px',
-                height: (props.border!) ?'18.6px' :'17px',
+                width: `${calculatedWidth}px`,
+                height: `${calculatedHeight}px`,
                 fontSize: 0,
                 marginTop: 0,
                 marginBottom: 0,
 
-                border: (props.border!) ? '1px solid black' : undefined,
+                border: (props.border!) ? `${calculatedBorderWidth}px solid black` : undefined,
                 borderRadius: (props.border) ?'20%' :undefined,
 
                 ...props.sxProps!,
@@ -65,7 +79,7 @@ export const CountryFlag = (props: CountryFlagProps) => {
             <img
                 src={`${process.env.PUBLIC_URL}/${getCountryFlagURL(props.country)}`}
                 style={{
-                    marginTop: 0,
+                    marginTop: (props.size === 1) ?0 :'-1px',
                     marginBottom: 0,
                     borderRadius: '17%',
                 }}
@@ -393,5 +407,56 @@ export const triggerToastMessageWithButton = (toastDetails: ToastDetailsContent)
             delay: 500,
             ...toastDetails.toastOptions
         }
+    )
+}
+
+interface ChipListOfWordDetailsElementsProps {
+    relevantWordDescription: NounCasesData | VerbCasesData,
+    relevantPoS: PartOfSpeech,
+    chipColor: 'primary' | 'secondary' | 'info',
+    translateFunction: (access: string, count: number) => string
+}
+
+export const ChipListOfWordDetailsElements = (props: ChipListOfWordDetailsElementsProps) => {
+    let chips: InfoChipData[] = [{label: 'error', value: 'no data'}]
+    if(props.relevantWordDescription !== undefined){
+        chips = getChipFieldsByPoS(
+            props.relevantWordDescription,
+            props.relevantPoS,
+            (access: string, count: number) => {
+                return(
+                    props.translateFunction(access,  count)
+                )
+            }
+        )
+    }
+
+    return(
+        <Grid
+            item={true}
+            container={true}
+            justifyContent={'center'}
+            spacing={1}
+        >
+            {chips.map((chip: InfoChipData, index: number) => {
+                return(
+                    <Grid
+                        item={true}
+                        key={index}
+                    >
+                        <Chip
+                            variant={"filled"}
+                            color={props.chipColor}
+                            label={chip.value}
+                            size={"small"}
+                            sx={{
+                                paddingX: globalTheme.spacing(1),
+                                borderRadius: '10px',
+                            }}
+                        />
+                    </Grid>
+                )
+            })}
+        </Grid>
     )
 }

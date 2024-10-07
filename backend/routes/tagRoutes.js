@@ -16,7 +16,7 @@ router.get('/getFollowedTagsIdByUserId', protect, getTagsFollowedByUser)
 router.get('/searchTags', protect, searchTags)
 router.get('/filterTags', protect, getTagDataByRequest) // TODO: this should be removed? Double check
 router.get('/:id', protect, getTagById)
-router.post('/addExternalTag', protect, addExternalTag)
+router.post('/addExternalTag', protect, addExternalTag )//Clones a tag and it's words
 router.post('/followTag', protect, followTag)
 router.post('/addTagInBulkToWords', protect, addTagsInBulkToWords)
 router.post('/checkIfTagLabelAvailable', protect, checkIfTagLabelAvailable)

@@ -5,7 +5,7 @@ import {Button, Collapse, Grid, InputAdornment} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {TextInputFormWithHook} from "../../TextInputFormHook";
 import {TranslationItem, WordItem} from "../../../ts/interfaces";
-import {AuxVerbDE, Lang, PrefixesVerbDE, VerbCases, VerbCaseTypeDE} from "../../../ts/enums";
+import {AuxVerbDE, Lang, PrefixesVerbDE, VerbCases, VerbCaseTypeDE, VerbRegularity} from "../../../ts/enums";
 import {
     getAcronymFromVerbCaseTypes, getVerbCaseTypesFromAcronym,
     getDisabledInputFieldDisplayLogic,
@@ -46,6 +46,9 @@ export function VerbFormDE(props: VerbFormDEProps) {
         auxiliaryVerb: Yup.string(), // TODO: should this be mandatory?
         verbCases: Yup.array(),
         prefix: Yup.string(), // TODO: should this be mandatory?
+        regularity: Yup.string()
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' }))
+            .matches(/^(regular|irregular)?$/, t('wordForm.verb.errors.formEN.regularityRequired', { ns: 'wordRelated' })),
         indicativePresent1s: Yup.string().nullable()
             .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
         indicativePresent2s: Yup.string().nullable()
@@ -111,6 +114,7 @@ export function VerbFormDE(props: VerbFormDEProps) {
     const [auxiliaryVerb, setAuxiliaryVerb] = useState<"haben"|"sein"|"">("")
     const [prefix, setPrefix] = useState<PrefixesVerbDE | "">("")
     const [verbCases, setVerbCases] = useState<CheckboxItemData[]>([])
+    const [regularity, setRegularity] = useState<"regular"|"irregular"|"">("")
     // Optional fields: can be filled with autocomplete
     // Indicative Mode - present
     const [indicativePresent1s, setIndicativePresent1s] = useState("")
@@ -161,105 +165,109 @@ export function VerbFormDE(props: VerbFormDEProps) {
                 caseName: VerbCases.prefixDE,
                 word: prefix
             },
+            {
+                caseName: VerbCases.regularityDE,
+                word: regularity
+            },
             // Indicative: present
             {
                 caseName: VerbCases.indicativePresent1sDE,
-                word: indicativePresent1s
+                word: indicativePresent1s.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativePresent2sDE,
-                word: indicativePresent2s
+                word: indicativePresent2s.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativePresent3sDE,
-                word: indicativePresent3s
+                word: indicativePresent3s.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativePresent1plDE,
-                word: indicativePresent1pl
+                word: indicativePresent1pl.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativePresent2plDE,
-                word: indicativePresent2pl
+                word: indicativePresent2pl.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativePresent3plDE,
-                word: indicativePresent3pl
+                word: indicativePresent3pl.toLowerCase()
             },
             // Indicative: present perfect (Perfekt)
             {
                 caseName: VerbCases.indicativePerfect1sDE,
-                word: indicativePerfect1s
+                word: indicativePerfect1s.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativePerfect2sDE,
-                word: indicativePerfect2s
+                word: indicativePerfect2s.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativePerfect3sDE,
-                word: indicativePerfect3s
+                word: indicativePerfect3s.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativePerfect1plDE,
-                word: indicativePerfect1pl
+                word: indicativePerfect1pl.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativePerfect2plDE,
-                word: indicativePerfect2pl
+                word: indicativePerfect2pl.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativePerfect3plDE,
-                word: indicativePerfect3pl
+                word: indicativePerfect3pl.toLowerCase()
             },
             // Indicative: simple future (Futur 1)
             {
                 caseName: VerbCases.indicativeSimpleFuture1sDE,
-                word: indicativeSimpleFuture1s
+                word: indicativeSimpleFuture1s.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativeSimpleFuture2sDE,
-                word: indicativeSimpleFuture2s
+                word: indicativeSimpleFuture2s.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativeSimpleFuture3sDE,
-                word: indicativeSimpleFuture3s
+                word: indicativeSimpleFuture3s.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativeSimpleFuture1plDE,
-                word: indicativeSimpleFuture1pl
+                word: indicativeSimpleFuture1pl.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativeSimpleFuture2plDE,
-                word: indicativeSimpleFuture2pl
+                word: indicativeSimpleFuture2pl.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativeSimpleFuture3plDE,
-                word: indicativeSimpleFuture3pl
+                word: indicativeSimpleFuture3pl.toLowerCase()
             },
             // Indicative: simple past (präteritum)
             {
                 caseName: VerbCases.indicativeSimplePast1sDE,
-                word: indicativeSimplePast1s
+                word: indicativeSimplePast1s.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativeSimplePast2sDE,
-                word: indicativeSimplePast2s
+                word: indicativeSimplePast2s.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativeSimplePast3sDE,
-                word: indicativeSimplePast3s
+                word: indicativeSimplePast3s.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativeSimplePast1plDE,
-                word: indicativeSimplePast1pl
+                word: indicativeSimplePast1pl.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativeSimplePast2plDE,
-                word: indicativeSimplePast2pl
+                word: indicativeSimplePast2pl.toLowerCase()
             },
             {
                 caseName: VerbCases.indicativeSimplePast3plDE,
-                word: indicativeSimplePast3pl
+                word: indicativeSimplePast3pl.toLowerCase()
             },
         ]
         props.updateFormData({
@@ -269,7 +277,7 @@ export function VerbFormDE(props: VerbFormDEProps) {
             isDirty: isDirty
         })
     }, [
-        isValid, auxiliaryVerb, verbCases, prefix,
+        isValid, auxiliaryVerb, verbCases, prefix, regularity,
 
         infinitive, indicativePresent1s, indicativePresent2s, indicativePresent3s,
         indicativePresent1pl, indicativePresent2pl, indicativePresent3pl,
@@ -286,6 +294,7 @@ export function VerbFormDE(props: VerbFormDEProps) {
         const auxiliaryVerbValue: string = getWordByCase(VerbCases.auxVerbDE, translationDataToInsert)
         const verbCasesValue = getVerbCaseTypesFromAcronym(getWordByCase(VerbCases.caseTypeDE, translationDataToInsert))
         const prefixValue: string = getWordByCase(VerbCases.prefixDE, translationDataToInsert)
+        const regularityValue: string = getWordByCase(VerbCases.regularityDE, translationDataToInsert)
         // Indicative: present
         const indicativePresent1sValue: string = getWordByCase(VerbCases.indicativePresent1sDE, translationDataToInsert)
         const indicativePresent2sValue: string = getWordByCase(VerbCases.indicativePresent2sDE, translationDataToInsert)
@@ -351,6 +360,15 @@ export function VerbFormDE(props: VerbFormDEProps) {
             }
         )
         setPrefix(prefixValue as PrefixesVerbDE)
+        setValue(
+            'regularity',
+            regularityValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setRegularity(regularityValue as "regular"|"irregular")
 
         // Indicative: present
         setValue(
@@ -608,6 +626,10 @@ export function VerbFormDE(props: VerbFormDEProps) {
                     caseName: VerbCases.prefixDE,
                     word: prefix
                 },
+                {
+                    caseName: VerbCases.regularityDE,
+                    word: regularity
+                },
             ]
         }
         setValuesInForm(completeFormWithAutocomplete)
@@ -718,11 +740,37 @@ export function VerbFormDE(props: VerbFormDEProps) {
                             />
                         </Grid>
                     }
-                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, (auxiliaryVerb))) &&
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, regularity)) &&
                         <Grid
                             container={true}
                             item={true}
                             xs={'auto'}
+                        >
+                            <Grid
+                                item={true}
+                            >
+                                {/* TODO: auto-detect regularity? (and suggest it with tooltip. */}
+                                <RadioGroupWithHook
+                                    control={control}
+                                    label={"Regularity"}
+                                    name={"regularity"}
+                                    options={[VerbRegularity.regular, VerbRegularity.irregular]}
+                                    defaultValue={""}
+                                    errors={errors.regularity}
+                                    onChange={(value: any) => {
+                                        setRegularity(value)
+                                    }}
+                                    fullWidth={false}
+                                    disabled={props.displayOnly}
+                                />
+                            </Grid>
+                        </Grid>
+                    }
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, (auxiliaryVerb))) &&
+                        <Grid
+                            container={true}
+                            item={true}
+                            xs={12}
                         >
                             <Grid
                                 item={true}

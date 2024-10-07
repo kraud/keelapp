@@ -13,6 +13,7 @@
     "settings": {
       "openSettings": "Einstellungen öffnen",
       "notifications": "Benachrichtigungen",
+      "uiLanguage": "Schnittstellensprache",
       "account": "Konto",
       "dashboard": "Dashboard",
       "logout": "Abmelden"
@@ -28,6 +29,7 @@
     "somethingWrong": "Etwas ist schiefgelaufen. Versuchen Sie es erneut."
   },
   "buttons": {
+    "apply": "Anwenden",
     "delete": "Löschen",
     "confirmDelete": "{{elementType}} löschen bestätigen",
     "confirm": "Bestätigen",
@@ -36,6 +38,8 @@
     "cancel": "Abbrechen",
     "return": "Zurück",
     "close": "Schließen",
+    "clear": "Löschen",
+    "remove": "Entfernen",
     "reset": "Zurücksetzen",
     "submit": "Absenden",
     "addAnotherTranslation": "Weitere Übersetzung hinzufügen",
@@ -70,6 +74,12 @@
     "distributionByLanguage": "Sprache",
     "byMonth": "Monat",
     "byLanguage": "Sprache"
+  },
+  "languages": {
+    "english": "Englisch",
+    "estonian": "Estnisch",
+    "german": "Deutsch",
+    "spanish": "Spanisch"
   },
   "partOfSpeech": {
     "noun": "Substantiv",

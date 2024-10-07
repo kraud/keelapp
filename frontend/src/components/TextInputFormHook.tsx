@@ -5,20 +5,30 @@ import {InputProps as StandardInputProps} from "@mui/material/Input/Input";
 import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
 
-interface TextInputFormWithHookProps {
+type numberInput = {
+    defaultValue: number
+    type: 'number'
+}
+
+type stringInput = {
+    defaultValue: string
+    type?: "password"|"text"|"email"
+}
+
+type TextInputFormWithHookProps = {
     control: Control<any, any>, // Comes from the useForm() hook in React-Hook-Form
     name: string // Necessary to identify component from a form in React-Hook-Form
     label: string
-    defaultValue: string
+    defaultValue: string | number
     errors?: any
-    type?: "password"|"text"|"email"
+    type?: "password"|"text"|"email"|'number'
     fullWidth?: boolean
     onChange?: (value: any) => void // Needed to inform parent component about the Textfield current value
     disabled?: boolean
     triggerOnEnterKeyPress?: () => void
     inputProps?: Partial<StandardInputProps>
     sxProps?: SxProps<Theme>
-}
+} & (numberInput | stringInput)
 
 export const TextInputFormWithHook = (props: TextInputFormWithHookProps) => {
     const componentStyles = {

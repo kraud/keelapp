@@ -20,12 +20,15 @@ interface DnDLanguageOrderSelectorProps{
     setAllSelectedItems: (items: string[]) => void
     setOtherItems: (items: string[]) => void
     direction: "vertical" | "horizontal"
+    alwaysDoubleRow?: boolean, // in case we always have 2 rows (one for each container) => we don't need marginX to separate them
     displayItems?: 'text' | 'flag' | 'both'
+    hideIndex?: boolean,
     justifyContent?: "center" | "flex-end" | "flex-start"
     singleContainer?: boolean // by default, we have 2 containers ('selected' and 'other'). With this prop we can display only 'selected'
     disabled?: boolean // to avoid allowing the elements to be moved
     noItemsSelectedMessage?: string // when no items are selected, display this text in 'selected' container
-    displayLeftActionButton?: { selectedItemLabel: string, onLeftActionButtonClick: (clickedItemLabel: string) => void}
+    displayLeftActionButton?: { selectedItemLabel: string | undefined, onLeftActionButtonClick: (clickedItemLabel: string) => void}
+    flagSide?: 'left' | 'right',
 }
 
 export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
@@ -35,9 +38,7 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
             padding: globalTheme.spacing(1),
             border: '2px solid black',
             borderRadius: '10px',
-            marginX: globalTheme.spacing(2),
             marginTop: '0',
-            marginLeft: '0',
             minWidth: '150px',
             minHeight: '56.5px',
         },
@@ -163,7 +164,8 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                     direction={"column"}
                     // xs // NB! This makes both columns be displayed side by side
                     sx={{
-                        // width: 'max-content'
+                        marginX: (props.alwaysDoubleRow) ?undefined :globalTheme.spacing(1),
+                        marginY: globalTheme.spacing(1)
                     }}
                 >
                     {(props.selectedItemsTitle !== "") &&
@@ -213,6 +215,7 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                                         </Typography>
                                     }
                                     <DnDSortableItem
+                                        flagSide={props.flagSide}
                                         invisible={true} // not be displayed - only to make SortableContext work properly
                                         id={'do-not-display'}
                                         direction={props.direction}
@@ -225,6 +228,7 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                                     props.allSelectedItems.map((item: string, index: number) => {
                                         return (
                                             <DnDSortableItem
+                                                flagSide={props.flagSide}
                                                 key={index}
                                                 id={item}
                                                 containerLabel={'selected'}
@@ -232,6 +236,7 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                                                 displayItems={props.displayItems}
                                                 disabled={props.disabled}
                                                 index={index}
+                                                hideIndex={props.hideIndex}
                                                 sxProps={(index === (props.allSelectedItems.length -1))
                                                     ?
                                                         {
@@ -263,6 +268,10 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                         // xs={'auto'}
                         xs
                         direction={"column"}
+                        sx={{
+                            marginX: (props.alwaysDoubleRow) ?undefined :globalTheme.spacing(1),
+                            marginY: globalTheme.spacing(1)
+                        }}
                     >
                         {(props.otherItemsTitle!!) &&
                             <Grid
@@ -294,6 +303,7 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                                 {(props.otherItems.length === 0)
                                     ?
                                         <DnDSortableItem
+                                            flagSide={props.flagSide}
                                             invisible={true} // not be displayed - only to make SortableContext work properly
                                             id={'do-not-display'}
                                             containerLabel={'other'}
@@ -305,6 +315,7 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                                         props.otherItems.map((item: string, index: number) => {
                                             return (
                                                 <DnDSortableItem
+                                                    flagSide={props.flagSide}
                                                     disabled={props.disabled}
                                                     key={index}
                                                     containerLabel={'other'}

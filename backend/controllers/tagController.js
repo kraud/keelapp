@@ -269,7 +269,7 @@ const addExternalTag = asyncHandler(async (req, res) => {
                 // once the cloned tag has been created, we get all the word data by filtering through their ids.
                 return await Word.find(
                     {_id: {$in: wordIdList}},
-                    {_id: 0, createdAt: 0, updatedAt: 0, __v: 0}
+                    {_id: 0, 'translations._id': 0, createdAt: 0, updatedAt: 0, __v: 0}
                 ).then(async (completeOriginalWordData) => {
                     // we then create the new cloned words, from the original's data
                     return await Word.insertMany(
@@ -277,7 +277,9 @@ const addExternalTag = asyncHandler(async (req, res) => {
                         (completeOriginalWordData).map((originalWordItem) => {
                             return({
                                 ...originalWordItem.toObject(),
-                                user: mongoose.Types.ObjectId(req.user.id)
+                                user: mongoose.Types.ObjectId(req.user.id),
+                                isCloned: true,
+                                originalCreator: originalWordItem.toObject().id
                             })
                         })
                     ).then((newClonedWordData) => {

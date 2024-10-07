@@ -6,6 +6,7 @@ import {Theme} from "@mui/material/styles";
 
 interface LinearIndeterminateProps {
     sxProps?: SxProps<Theme>,
+    progress?: number,
 }
 
 export default function LinearIndeterminate(props: LinearIndeterminateProps) {
@@ -14,7 +15,10 @@ export default function LinearIndeterminate(props: LinearIndeterminateProps) {
             width: '100%',
             ...props.sxProps
         }}>
-            <LinearProgress />
+            <LinearProgress
+                variant={(props.progress !== undefined) ?"determinate" :"indeterminate"}
+                value={props.progress}
+            />
         </Box>
     );
 }

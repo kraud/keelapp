@@ -79,7 +79,8 @@
     "missingImplementationPoS": "This part of speech is not implemented yet, we're sorry!"
   },
   "translationFormGeneric": {
-    "selectLanguage": "Pick a language for the new word"
+    "selectLanguage": "Pick a language for the new word",
+    "switchLanguage": "Switch language:"
   },
   "wordFormSelector": {
     "languageNotAvailable": "That language is not available yet",

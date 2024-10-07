@@ -1,19 +1,19 @@
 import * as React from 'react';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import {Control, Controller} from "react-hook-form";
-import {Checkbox, FormGroup, FormHelperText} from "@mui/material";
+import {Checkbox, FormGroup, FormHelperText, Grid, Typography} from "@mui/material";
 
 export interface CheckboxItemData {
     label: string,
     value: any
-
 }
+
 interface CheckboxGroupWithHookProps {
     control: Control<any, any>, // Comes from the useForm() hook in React-Hook-Form
     name: string // Necessary to identify component from a form in React-Hook-Form
     groupLabel: string,
     options: CheckboxItemData[]
-    defaultValue: [],
+    defaultValue: any[],
     errors?: any,
     fullWidth?: boolean
     currentValues?: CheckboxItemData[]
@@ -56,67 +56,91 @@ export const CheckboxGroupWithHook = (props: CheckboxGroupWithHookProps) => {
     }
 
     return (
-        <FormGroup
-            sx={{}}
-            row
-            // name={props.name}
+        <Grid
+            container={true}
+            item={true}
+            justifyContent={'flex-start'}
         >
-            <Controller
-                name={props.name}
-                control={props.control}
-                defaultValue={props.defaultValue}
-                render={({ field, fieldState  }) => (
-                    <>
-                        {
-                            (props.disabled!)
-                            ?
-                            getSelectedItems(field.value)
-                            :
-                            (props.options).map((option: CheckboxItemData, index: number) => {
-                                return(
-                                    <FormControlLabel
-                                        checked={
-                                            (field.value).map((item: CheckboxItemData) => {
-                                                return(item.value)
-                                            }).includes(option.value)
-                                        }
-                                        sx={{}}
-                                        key={index}
-                                        value={option.value}
-                                        label={option.label}
-                                        control={
-                                            <Checkbox
-                                                sx={componentStyles.optionCheckbox}
-                                                onChange={() =>  {
-                                                    const listOfSelectedValues = (field.value).map((item: CheckboxItemData) => {
-                                                        return(item.value)
-                                                    })
-                                                    if (!(listOfSelectedValues).includes(option.value)) {
-                                                        field.onChange([...field.value, option])
-                                                        props.onChange([...field.value, option])
-                                                        return
+            <Grid
+                container={true}
+                item={true}
+                justifyContent={'flex-start'}
+            >
+                <Grid
+                    item={true}
+                >
+                    <Typography
+                        variant={'body1'}
+                    >
+                        {props.groupLabel}
+                    </Typography>
+                </Grid>
+            </Grid>
+            <Grid
+                container={true}
+            >
+                <FormGroup
+                    sx={{}}
+                    row
+                >
+                    <Controller
+                        name={props.name}
+                        control={props.control}
+                        defaultValue={props.defaultValue}
+                        render={({ field, fieldState  }) => (
+                            <>
+                                {
+                                    (props.disabled!)
+                                        ?
+                                        getSelectedItems(field.value)
+                                        :
+                                        (props.options).map((option: CheckboxItemData, index: number) => {
+                                            return(
+                                                <FormControlLabel
+                                                    checked={
+                                                        (field.value).map((item: CheckboxItemData) => {
+                                                            return(item.value)
+                                                        }).includes(option.value)
                                                     }
-                                                    const newTopics = field.value.filter((selectedValue: any) => {
-                                                        return((selectedValue.value) !== option.value)
-                                                    })
-                                                    field.onChange(newTopics)
-                                                    props.onChange(newTopics)
-                                                }}
-                                                disabled={props.disabled}
-                                            />
-                                        }
-                                    />
-                                )
-                            })
-                        }
-                        <FormHelperText
-                            error={!!props.errors}
-                        >
-                        {fieldState.error?.message}
-                        </FormHelperText>
-                    </>
-                )}
-            />
-        </FormGroup>
-    );
-};
+                                                    sx={{}}
+                                                    key={index}
+                                                    value={option.value}
+                                                    label={option.label}
+                                                    control={
+                                                        <Checkbox
+                                                            sx={componentStyles.optionCheckbox}
+                                                            onChange={() =>  {
+                                                                const listOfSelectedValues = (field.value).map((item: CheckboxItemData) => {
+                                                                    return(item.value)
+                                                                })
+                                                                if (!(listOfSelectedValues).includes(option.value)) {
+                                                                    field.onChange([...field.value, option])
+                                                                    props.onChange([...field.value, option])
+                                                                    return
+                                                                }
+                                                                const newTopics = field.value.filter((selectedValue: any) => {
+                                                                    return((selectedValue.value) !== option.value)
+                                                                })
+                                                                field.onChange(newTopics)
+                                                                props.onChange(newTopics)
+                                                            }}
+                                                            disabled={props.disabled}
+                                                        />
+                                                    }
+                                                />
+                                            )
+                                        })
+                                }
+                                <FormHelperText
+                                    error={!!props.errors}
+                                >
+                                    {fieldState.error?.message}
+                                </FormHelperText>
+                            </>
+                        )}
+                    />
+                </FormGroup>
+            </Grid>
+        </Grid>
+    )
+}

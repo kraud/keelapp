@@ -13,6 +13,7 @@
     "settings": {
       "openSettings": "Ava seaded",
       "notifications": "Teavitused",
+      "uiLanguage": "Liidese keel",
       "account": "Konto",
       "dashboard": "Armatuurlaud",
       "logout": "Logi välja"
@@ -28,6 +29,7 @@
     "somethingWrong": "Midagi läks valesti, proovige uuesti."
   },
   "buttons": {
+    "apply": "Rakenda",
     "delete": "Kustuta",
     "confirmDelete": "Kinnita {{elementType}} kustutamine",
     "confirm": "Kinnita",
@@ -36,6 +38,8 @@
     "cancel": "Tühista",
     "return": "Tagasi",
     "close": "Sulgeda",
+    "clear": "Tühjenda",
+    "remove": "Eemalda",
     "reset": "Lähtesta",
     "submit": "Esita",
     "addAnotherTranslation": "Lisa veel üks tõlge",
@@ -70,6 +74,12 @@
     "distributionByLanguage": "Keel",
     "byMonth": "Kuu",
     "byLanguage": "Keel"
+  },
+  "languages": {
+    "english": "Inglise",
+    "estonian": "Eesti",
+    "german": "Saksa",
+    "spanish": "Hispaania"
   },
   "partOfSpeech": {
     "noun": "Nimisõna",

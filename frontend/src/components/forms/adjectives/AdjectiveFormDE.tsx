@@ -62,15 +62,15 @@ export function AdjectiveFormDE(props: AdjectiveFormDEProps) {
         const currentCases: WordItem[] = [
             {
                 caseName: AdjectiveCases.positiveDE,
-                word: adjective.positive
+                word: adjective.positive.toLowerCase()
             },
             {
                 caseName: AdjectiveCases.komparativDE,
-                word: adjective.komparativ
+                word: adjective.komparativ.toLowerCase()
             },
             {
                 caseName: AdjectiveCases.superlativDE,
-                word: adjective.superlativ
+                word: adjective.superlativ.toLowerCase()
             }
         ]
         props.updateFormData({

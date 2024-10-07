@@ -31,6 +31,7 @@
     "toastTagDeletedSuccess": "Tag {{tagLabel}} on kustutatud!",
     "toastTagCloneSuccess": "Tag ja sõnad on edukalt sinu kontole lisatud!"
   },
+  "searchTags": "Otsi Tags...",
   "noWordsAssigned": "- sõnu pole veel määratud -",
   "createdByYou": "Loodud sinu poolt",
   "createdByUser": "Loodud {{username}} poolt",

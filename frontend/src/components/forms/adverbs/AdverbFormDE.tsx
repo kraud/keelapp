@@ -70,17 +70,17 @@ export function AdverbFormDE(props: AdverbFormDEProps) {
             },
             {
                 caseName: AdverbCases.adverbDE,
-                word: adjective.adverb
+                word: adjective.adverb.toLowerCase()
             },
             {
                 caseName: AdverbCases.comparativeDE,
                 // to avoid sending potentially saved info that is not relevant anymore
-                word: (adjective.gradable !== "Non-gradable") ? adjective.comparative : ""
+                word: (adjective.gradable !== "Non-gradable") ? adjective.comparative.toLowerCase() : ""
             },
             {
                 caseName: AdverbCases.superlativeDE,
                 // to avoid sending potentially saved info that is not relevant anymore
-                word: (adjective.gradable !== "Non-gradable") ? adjective.superlative : ""
+                word: (adjective.gradable !== "Non-gradable") ? adjective.superlative.toLowerCase() : ""
             }
         ]
         props.updateFormData({
