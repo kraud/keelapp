@@ -20,6 +20,12 @@ const calculateBasicUserMetrics = async (user) => {
                             _id: "$translations.language",
                             count: { $sum: 1 }
                         }
+                    },
+                    {
+                        $addFields: {
+                            language:"$_id",
+                            type:"language"
+                        }
                     }
                 ],
                 translationsByLanguageAndPOS: [
@@ -36,6 +42,7 @@ const calculateBasicUserMetrics = async (user) => {
                     {
                         $addFields: {
                             label:"$_id.language",
+                            type:"language", //determines that in 'label' comes the language. So it can be translated accordingly
                             partOfSpeech: "$_id.partOfSpeech"
                         }
                     }
@@ -51,6 +58,12 @@ const calculateBasicUserMetrics = async (user) => {
                                  }
                             }, */
                             count: { $sum: 1 }
+                        }
+                    },
+                    {
+                        $addFields: {
+                            partOfSpeech: "$_id",
+                            type:"partOfSpeech"
                         }
                     }
                 ],

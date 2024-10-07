@@ -19,6 +19,7 @@ import {
 } from "../ts/interfaces";
 import {toast} from "react-toastify";
 import {NounCasesData, VerbCasesData, WordCasesData} from "../ts/wordCasesDataByPoS";
+import type {TFunction} from "i18next";
 
 export const getCurrentLangTranslated = (currentLang?: Lang) => {
     switch(currentLang) {
@@ -723,4 +724,24 @@ export function interpolateColor(value: number) {
 
     // Convert RGB to HEX format
     return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+}
+
+export function partOfSpeechTranslator(t: TFunction) {
+    return (
+        (partOfSpeech: string) => {
+            return(
+                t(`partOfSpeech.${getPoSKeyByLabel(partOfSpeech as PartOfSpeech)}`, { ns: 'common' })
+            )
+        }
+    )
+}
+
+export function languageTranslator(t: TFunction) {
+    return (
+        (language: string) => {
+            return(
+                t(`languages.${language.toLowerCase()}`, { ns: 'common' })
+            )
+        }
+    )
 }

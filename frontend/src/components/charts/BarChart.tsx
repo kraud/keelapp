@@ -6,6 +6,7 @@ import globalTheme from "../../theme/theme";
 import {Data} from "c3";
 import {MetricsType} from "../../ts/enums";
 import {useTranslation} from "react-i18next";
+import {languageTranslator, partOfSpeechTranslator} from "../generalUseFunctions";
 
 interface BarChartProps {
     data: any,
@@ -26,38 +27,50 @@ const defaultOptions = (xType: string): any => {
     }
 }
 
-type WordsPerMonth = {_id: any, label: string,  partOfSpeech: string, count: number}
+type BarCharData = {
+    _id: any,
+    label: string,
+    partOfSpeech: string,
+    type: "date" | "language",
+    count: number
+}
 
 const BarChart = (props: BarChartProps) => {
     const { t } = useTranslation(['dashboard', 'common'])
     const {data, xType, title} = props
     const [groupsChecked, setGroupsChecked] = useState<boolean>(true)
 
-    const parseData = (dataArray: WordsPerMonth []): any => {
+    const lanTranslator = languageTranslator(t)
+    const posTranslator = partOfSpeechTranslator(t)
+
+    const parseData = (dataArray: BarCharData []): any => {
         const arrayData : any [] = []
         const arrayKeys : any [] = []
         if(dataArray.length > 0) {
-            dataArray.forEach((element: WordsPerMonth) => {
+            dataArray.forEach((element: BarCharData) => {
                 //We get the index where the label being processed is.
-                const index = arrayData.findIndex((timeSlap) => timeSlap.name.includes(element.label))
-                if (index >0) {
+                const labelTranlated = (element.type === "language") ? lanTranslator(element.label) : element.label
+                const index = arrayData.findIndex((timeSlap) => timeSlap.name.includes(labelTranlated))
+                const posTranslated = posTranslator(element.partOfSpeech)
+                if (index > 0) {
                     // If the array has the label being processed, it will only add the new partOfSpeech data.
                     arrayData[index] = {
                         ...arrayData[index],
-                        [element.partOfSpeech]: element.count
+                        [posTranslated]: element.count
                     }
                 } else {
+
                     // If the array doesn't have the label being processed, it will add it.
                     arrayData.push({
-                        "name": element.label,
-                        [element.partOfSpeech]: element.count
+                        "name": labelTranlated,
+                        [posTranslated]: element.count
                     })
                 }
                 // We verify if the label had been processed.
-                const keys = arrayKeys.find((key) => key.includes(element.partOfSpeech))
-                if(keys === undefined){
+                const keys = arrayKeys.find((key) => key.includes(posTranslated))
+                if (keys === undefined) {
                     // If the label doesn't exist in array, we will add the label to the array.
-                    arrayKeys.push(element.partOfSpeech)
+                    arrayKeys.push(posTranslated)
                 }
             })
         }
@@ -87,6 +100,7 @@ const BarChart = (props: BarChartProps) => {
     const [options, setOptions] = useState<any>(defaultOptions(xType))
 
     useEffect(() => {
+        //
         setBarData(parseData(data))
         setOptions(defaultOptions(xType))
     }, [data, xType, groupsChecked])
