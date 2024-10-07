@@ -56,20 +56,30 @@ export function TableFilters(props: TableFilterProps) {
             item={true}
             justifyContent={"center"}
             xs={12}
+            sx={{
+                // minWidth: '100%',
+                // maxWidth: '100%',
+                // width: '100%',
+            }}
         >
             <Grid
                 container={true}
                 item={true}
+                xs={12}
                 sx={{
                     border: '2px solid black',
-                    borderRadius: '25px',
+                    borderRadius: '10px',
                     background: '#e1e1e1',
-                    paddingLeft: globalTheme.spacing(2),
-                    paddingRight: globalTheme.spacing(2),
+                    paddingLeft: globalTheme.spacing(1),
+                    paddingRight: globalTheme.spacing(1),
                     paddingTop: globalTheme.spacing(1),
                     paddingBottom: globalTheme.spacing(1),
+                    // minWidth: '100%',
+                    // maxWidth: '100%',
+                    // width: '100%',
                 }}
                 alignItems={"center"}
+                justifyContent={"space-between"}
             >
                 {(props.filterOptions).map((filter, index) => {
                     return(
@@ -79,6 +89,7 @@ export function TableFilters(props: TableFilterProps) {
                             sx={{
                                 margin: '5px',
                             }}
+                            xs={'auto'}
                         >
                             <Chip
                                 variant={(isChipSelected(filter._id)) ?'filled' :"outlined"}

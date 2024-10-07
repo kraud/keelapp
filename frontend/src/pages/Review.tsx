@@ -25,6 +25,7 @@ import Box from "@mui/material/Box";
 import LinearIndeterminate from "../components/Spinner";
 import {AppDispatch} from "../app/store";
 import {useTranslation} from "react-i18next";
+import {setWordsSelectedForExercises} from "../features/exercises/exerciseSlice";
 
 export function Review(){
     const componentStyles = {
@@ -235,12 +236,21 @@ export function Review(){
     }
     // TODO: should we change it to saving the row info instead?
     const getWordsIdFromRowSelection = (rowSelection: unknown) => {
-        let wordIdsToDelete: string[] = []
+        let wordIds: string[] = []
         // @ts-ignore
         Object.keys(rowSelection).forEach((selectionDataIndex: string) => {
-            wordIdsToDelete.push(wordsSimple.words[parseInt(selectionDataIndex)].id)
+            wordIds.push(wordsSimple.words[parseInt(selectionDataIndex)].id)
         })
-        return(wordIdsToDelete)
+        return(wordIds)
+    }
+    // TODO: should we change it to saving the row info instead?
+    const getWordsDataFromRowSelection = (rowSelection: unknown) => {
+        let selectedWordsData: any[] = [] // simple-word
+        // @ts-ignore
+        Object.keys(rowSelection).forEach((selectionDataIndex: string) => {
+            selectedWordsData.push(wordsSimple.words[parseInt(selectionDataIndex)])
+        })
+        return(selectedWordsData)
     }
 
     const deleteSelectedRows = (rowSelection: unknown) => {
@@ -427,6 +437,10 @@ export function Review(){
                         >
                             <Grid
                                 item={true}
+                                xs={12}
+                                sx={{
+                                    marginX: globalTheme.spacing(1)
+                                }}
                             >
                                 <TableFilters
                                     filterOptions={genderFilters}
@@ -437,6 +451,10 @@ export function Review(){
                             </Grid>
                             <Grid
                                 item={true}
+                                xs={12}
+                                sx={{
+                                    marginX: globalTheme.spacing(1)
+                                }}
                             >
                                 <TableFilters
                                     filterOptions={PoSFilters}
@@ -453,7 +471,10 @@ export function Review(){
                         >
                             <Grid
                                 item={true}
-                                xs={10}
+                                xs={12}
+                                sx={{
+                                    marginX: globalTheme.spacing(1)
+                                }}
                             >
                                 <AutocompleteMultiple
                                     type={'tag'}
@@ -509,11 +530,15 @@ export function Review(){
                             id: "create-exercises",
                             variant: "outlined",
                             color: "secondary",
-                            disabled: true, // TODO: to be implemented eventually, will redirect to a version of the Practice screen
+                            disabled: false,
                             label: t('buttons.createExercises', { ns: 'common' }),
-                            onClick: () => null,
+                            onClick: (rowSelection: any) => {
+                                //@ts-ignore
+                                dispatch(setWordsSelectedForExercises(getWordsDataFromRowSelection(rowSelection)))
+                                navigate('/practice')
+                            },
                             displayBySelectionAmount: (amountSelected: number) => {
-                                return (amountSelected > 1)
+                                return (amountSelected > 2)
                             },
                         },
                         {
@@ -538,6 +563,7 @@ export function Review(){
                                 setSelectedRowsForBulkTagAssign(getWordsIdFromRowSelection(rowSelection))
                             },
                             displayBySelectionAmount: (amountSelected: number) => {
+                                // TODO: check if row selected-words are all owned by the current user (can't assign Tag to a followed word)
                                 return (amountSelected > 0)
                             },
                         },
@@ -623,6 +649,7 @@ export function Review(){
                                     <Button
                                         variant={"outlined"}
                                         color={"success"}
+                                        disabled={selectedTagsData.length < 1}
                                         onClick={() => {
                                             // selectedRows state is defined when opening the modal
                                             onRowSelectionApplyNewTags(selectedRowsForBulkTagAssign)

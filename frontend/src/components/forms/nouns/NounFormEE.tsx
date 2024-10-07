@@ -5,7 +5,7 @@ import {Checkbox, Grid} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {TextInputFormWithHook} from "../../TextInputFormHook";
 import {TranslationItem, WordItem} from "../../../ts/interfaces";
-import {Lang, NounCases} from "../../../ts/enums";
+import {Lang, NounCases, VerbCases, VerbRegularity} from "../../../ts/enums";
 import {getDisabledInputFieldDisplayLogic, getWordByCase} from "../commonFunctions";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../../../app/store";
@@ -19,6 +19,7 @@ import globalTheme from "../../../theme/theme";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import {useTranslation} from "react-i18next";
 import Tooltip from "@mui/material/Tooltip";
+import {RadioGroupWithHook} from "../../RadioGroupFormHook";
 
 interface NounFormEEProps {
     currentTranslationData: TranslationItem,
@@ -36,6 +37,10 @@ export function NounFormEE(props: NounFormEEProps) {
     const { currentTranslationData } = props
 
     const validationSchema = Yup.object().shape({
+        //  Properties
+        regularity: Yup.string()
+            .matches(/^[^0-9]+$|^$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' }))
+            .matches(/^(regular|irregular)?$/, t('wordForm.verb.errors.formEN.regularityRequired', { ns: 'wordRelated' })),
         singularNimetav: Yup.string()
             .required(t('wordForm.noun.errors.formEE.singularFormRequired', { ns: 'wordRelated' }))
             .matches(/^[^0-9]+$/, t('wordForm.errors.noNumbers', { ns: 'wordRelated' })),
@@ -60,6 +65,7 @@ export function NounFormEE(props: NounFormEEProps) {
         mode: "all", // Triggers validation/errors without having to submit
     })
 
+    const [regularity, setRegularity] = useState<"regular"|"irregular"|"">("")
     const [singularNimetav, setSingularNimetav] = useState("")
     const [singularOmastav, setSingularOmastav] = useState("")
     const [singularOsastav, setSingularOsastav] = useState("")
@@ -72,32 +78,36 @@ export function NounFormEE(props: NounFormEEProps) {
     useEffect(() => {
         const currentCases: WordItem[] = [
             {
+                caseName: NounCases.regularityEE,
+                word: regularity
+            },
+            {
                 caseName: NounCases.singularNimetavEE,
-                word: singularNimetav
+                word: singularNimetav.toLowerCase()
             },
             {
                 caseName: NounCases.pluralNimetavEE,
-                word: pluralNimetav
+                word: pluralNimetav.toLowerCase()
             },
             {
                 caseName: NounCases.singularOmastavEE,
-                word: singularOmastav
+                word: singularOmastav.toLowerCase()
             },
             {
                 caseName: NounCases.pluralOmastavEE,
-                word: pluralOmastav
+                word: pluralOmastav.toLowerCase()
             },
             {
                 caseName: NounCases.singularOsastavEE,
-                word: singularOsastav
+                word: singularOsastav.toLowerCase()
             },
             {
                 caseName: NounCases.pluralOsastavEE,
-                word: pluralOsastav
+                word: pluralOsastav.toLowerCase()
             },
             {
                 caseName: NounCases.shortFormEE,
-                word: shortForm
+                word: shortForm.toLowerCase()
             },
         ]
         props.updateFormData({
@@ -107,11 +117,12 @@ export function NounFormEE(props: NounFormEEProps) {
             isDirty: isDirty
         })
     }, [
-        singularNimetav, pluralNimetav, singularOmastav, pluralOmastav, singularOsastav,
+        regularity, singularNimetav, pluralNimetav, singularOmastav, pluralOmastav, singularOsastav,
         pluralOsastav, shortForm, isValid,
     ])
 
     const setValuesInForm = (translationDataToInsert: TranslationItem) => {
+        const regularityValue: string = getWordByCase(NounCases.regularityEE, translationDataToInsert)
         const singularNimetavValue: string = getWordByCase(NounCases.singularNimetavEE, translationDataToInsert)
         const pluralNimetavValue: string = getWordByCase(NounCases.pluralNimetavEE, translationDataToInsert)
         const singularOmastavValue: string = getWordByCase(NounCases.singularOmastavEE, translationDataToInsert)
@@ -119,6 +130,15 @@ export function NounFormEE(props: NounFormEEProps) {
         const singularOsastavValue: string = getWordByCase(NounCases.singularOsastavEE, translationDataToInsert)
         const pluralOsastavValue: string = getWordByCase(NounCases.pluralOsastavEE, translationDataToInsert)
         const shortFormValue: string = getWordByCase(NounCases.shortFormEE, translationDataToInsert)
+        setValue(
+            'regularity',
+            regularityValue,
+            {
+                shouldValidate: true,
+                shouldTouch: true
+            }
+        )
+        setRegularity(regularityValue as "regular"|"irregular")
         setValue(
             'singularNimetav',
             singularNimetavValue,
@@ -196,7 +216,18 @@ export function NounFormEE(props: NounFormEEProps) {
     // ------------------ AUTOCOMPLETE LOGIC ------------------
 
     const onAutocompleteClick = async () => {
-        setValuesInForm(autocompletedTranslationNounEE)
+        const completeFormWithAutocomplete = {
+            ...autocompletedTranslationNounEE,
+            // NB! These fields are not included in BE autocomplete response, so we must manually include
+            cases: [
+                ...autocompletedTranslationNounEE.cases,
+                {
+                    caseName: VerbCases.regularityEE,
+                    word: regularity
+                },
+            ]
+        }
+        setValuesInForm(completeFormWithAutocomplete)
         setSearchInEnglish(false)
     }
 
@@ -280,6 +311,33 @@ export function NounFormEE(props: NounFormEEProps) {
                                 }}
                             >
                                 {(isLoadingAT) && <LinearIndeterminate/>}
+                            </Grid>
+                        </Grid>
+                    }
+                    {(getDisabledInputFieldDisplayLogic(props.displayOnly!, regularity)) &&
+                        <Grid
+                            container={true}
+                            item={true}
+                            xs={12}
+                        >
+                            <Grid
+                                item={true}
+                                xs={'auto'}
+                            >
+                                {/* TODO: auto-detect regularity? (and suggest it with tooltip. */}
+                                <RadioGroupWithHook
+                                    control={control}
+                                    label={"Regularity"}
+                                    name={"regularity"}
+                                    options={[VerbRegularity.regular, VerbRegularity.irregular]}
+                                    defaultValue={""}
+                                    errors={errors.regularity}
+                                    onChange={(value: any) => {
+                                        setRegularity(value)
+                                    }}
+                                    fullWidth={false}
+                                    disabled={props.displayOnly}
+                                />
                             </Grid>
                         </Grid>
                     }

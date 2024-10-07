@@ -201,10 +201,9 @@ export const wordSlice = createSlice({
                 wordsSimple: initialState.wordsSimple
             })
         },
-        setSelectedPoS: (state: any, action: unknown) => {
+        setSelectedPoS: (state: any, action: PayloadAction) => {
             return ({
                 ...state,
-                // @ts-ignore
                 currentlySelectedPoS: action.payload
             })
         },

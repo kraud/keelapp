@@ -13,6 +13,7 @@
     "settings": {
       "openSettings": "Open settings",
       "notifications": "Notifications",
+      "uiLanguage": "Interface language",
       "account": "Account",
       "dashboard": "Dashboard",
       "logout": "Logout"
@@ -28,6 +29,7 @@
     "somethingWrong": "Something went wrong, try again."
   },
   "buttons": {
+    "apply": "Apply",
     "delete": "Delete",
     "confirmDelete": "Confirm delete {{elementType}}",
     "confirm": "Confirm",

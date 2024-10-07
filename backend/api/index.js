@@ -29,6 +29,7 @@ app.use('/api/notifications', require('../routes/notificationRoutes'))
 app.use('/api/friendships', require('../routes/friendshipRoutes'))
 app.use('/api/tags', require('../routes/tagRoutes'))
 app.use('/api/autocompleteTranslations', require('../routes/autocompleteTranslationRoutes'))
+app.use('/api/exercises', require('../routes/exerciseRoutes'))
 
 app.use(errorHandler)
 

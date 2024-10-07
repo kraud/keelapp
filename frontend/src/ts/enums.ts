@@ -1,15 +1,18 @@
 
 export enum NounCases {
     // ENGLISH
+    regularityEN = "regularityEN",
     singularEN = "singularEN" ,
     pluralEN = "pluralEN",
 
     // SPANISH
+    regularityES = "regularityES",
     genderES = "genderES",
     singularES = "singularES",
     pluralES = "pluralES",
 
     // GERMAN
+    regularityDE = "regularityDE",
     genderDE = "genderDE",
     singularNominativDE = "singularNominativDE",
     pluralNominativDE = "pluralNominativDE",
@@ -24,6 +27,8 @@ export enum NounCases {
     pluralDativDE = "pluralDativDE",
 
     // ESTONIAN
+
+    regularityEE = "regularityEE",
     singularNimetavEE = "singularNimetavEE",
     pluralNimetavEE = "pluralNimetavEE",
 
@@ -103,7 +108,7 @@ export enum VerbCases {
     regularityEN = "regularityEN",
     // SIMPLE: --------------
     // Same for every pronoun except 3s m/f/n
-    simplePresent1sEN = "simplePresent1sEN",
+    simplePresent1sEN = "simplePresent1sEN", // DEFAULT CASE
     simplePresent2sEN = "simplePresent2sEN",
     simplePresent3sEN = "simplePresent3sEN", // ONLY VARIANT
     simplePresent1plEN = "simplePresent1plEN",
@@ -220,6 +225,7 @@ export enum VerbCases {
         // Teie  (Te): 2nd person plural (2pl)
         // Nad (nad): 3rd person plural (3pl)
 
+    regularityEE = 'regularityEE',
     // KINDEL: --------------
     infinitiveMaEE = 'infinitiveMaEE',
     infinitiveDaEE = 'infinitiveDaEE',
@@ -263,6 +269,7 @@ export enum VerbCases {
     auxVerbDE = 'auxVerbDE',
     caseTypeDE = 'caseTypeDE',
     prefixDE = 'prefixDE',
+    regularityDE = 'regularityDE',
 
     // INDICATIVE: --------------
     // Present: different for almost all pronouns
@@ -330,7 +337,8 @@ export enum PrefixesVerbDE {
     zuryck = 'zurück', // NB! Careful with this one. Can cause issues.
 }
 
-export enum pronounDE {
+// Complete list of Pronouns for German (to be used later in future features)
+export enum PronounDE {
     // SIMPLIFIED:
         // Singular (sg)
     Sg1 = 'ich',
@@ -387,18 +395,39 @@ export enum pronounDE {
     DatPl3DE = 'ihnen',
 }
 
-export enum verbRegularity {
+export enum VerbRegularity {
     regular = 'regular',
     irregular = 'irregular'
 }
 
-export enum verbMoodDE {
-    indicativeDE = 'indicativeDE',
-    subjunctiveDE = 'subjunctiveDE',
-    imperativeDE = 'imperativeDE',
+export enum VerbMoodDE {
+    indicativeDE = 'indicative',
+    subjunctiveDE = 'subjunctive',
+    imperativeDE = 'imperative',
 }
 
-export enum verbTensesIndicativeDE {
+export enum VerbMoodEN {
+    indicativeEN = 'indicative',
+    subjunctiveEN = 'subjunctive',
+    imperativeEN = 'imperative',
+    conditionalEN = 'conditional',
+}
+
+export enum VerbMoodES {
+    indicativeES = 'indicative',
+    subjunctiveES = 'subjunctive',
+    imperativeES = 'imperative',
+    conditionalES = 'conditional',
+}
+
+export enum VerbMoodEE {
+    indicativeEE = 'indicative',
+    subjunctiveEE = 'subjunctive',
+    conditionalEE = 'conditional',
+    jussiveEE = 'jussive',
+}
+
+export enum VerbTensesIndicativeDE {
     presentDE = 'presentDE', // Präsens
     simplePastDE = 'simplePastDE', // Präteritum
     presentPerfectDE = 'presentPerfectDE', // Perfekt
@@ -420,10 +449,21 @@ export enum GenderDE {
     N = "das" // NEUTRAL
 }
 
+export enum GenderES {
+    M = "el", // MALE
+    F = "la", // FEMALE
+    N = "el/la" // NEUTRAL
+}
+
 export enum AuxVerbDE {
-    H = "haben", // MALE
-    S = "sein", // FEMALE
-    W = "werden" // NEUTRAL
+    H = "haben",
+    S = "sein",
+    W = "werden"
+}
+
+export enum Plurality {
+    S = "Singular",
+    P = "Plural",
 }
 
 export enum PartOfSpeech {
@@ -439,7 +479,124 @@ export enum PartOfSpeech {
     numerals = "Numerals",
 }
 
+export enum DeclensionNoun {
+    nominative = "Nominative",
+    accusative = "Accusative",
+    genitive = "Genitive",
+    dative = "Dative",
+    partitive = "Partitive",
+}
+
+export enum TenseVerbEN {
+    pastSimple = "Past-Simple",
+    pastPerfect = "Past-Perfect",
+    pastContinuous = "Past-Continuous",
+    pastPerfectContinuous = "Past-Perfect-Continuous",
+
+    presentSimple = "Present-Simple",
+    presentPerfect = "Present-Perfect",
+    presentContinuous = "Present-Continuous",
+    presentPerfectContinuous = "Present-Perfect-Continuous",
+
+    futureSimple = "Future-Simple",
+    futurePerfect = "Future-Perfect",
+    futureContinuous = "Future-Continuous",
+    futurePerfectContinuous = "Future-Perfect-Continuous",
+
+    conditionalSimple = "Conditional-Simple",
+}
+
+export enum TenseVerbES {
+    present = "Present",
+    imperfectPast = "Imperfect-Past",
+    perfectSimplePast = "Perfect-Simple-Past",
+    future = "Future",
+    conditional = "Conditional",
+}
+
+export enum TenseVerbDE {
+    present = "Present",
+    perfect = "Perfect",
+    simpleFuture = "Simple-Future",
+    simplePast = "Simple-Past", // Präteritum
+}
+
+export enum TenseVerbEE {
+    present = "Present",
+    simplePast = "Simple-Past", // kindel past
+    pastPerfect = "Past-Perfect",
+    conditionalPresent = "Conditional-Present", // tingiv present
+    indirectPresent = "Indirect-Present", // kaudne present
+    indirectPast = "Indirect-Past", // kaudne past
+    imperative = "Imperative", // käskiv present
+}
+
+
 export enum MetricsType {
     WORDS,
     TRANSLATIONS
+}
+
+export enum ExerciseTypeSelection {
+    'Multiple-Choice' = 'Multiple-Choice',
+    'Text-Input' = 'Text-Input',
+    'Random' = 'Random'
+}
+
+export enum CardTypeSelection {
+    'Multi-Language' = 'Multi-Language',
+    'Single-Language' = 'Single-Language',
+    'Random' = 'Random'
+}
+
+export enum WordSortingSelection {
+    'Exercise-Performance' = 'Exercise-Performance',
+    'Random' = 'Random'
+}
+
+export enum NativeLanguageExerciseSelection {
+    'Include' = 'Include',
+    'Ignore' = 'Ignore'
+}
+
+// ========== PRONOUNS
+
+// Spanish Pronouns
+export enum SpanishPronouns {
+    "1S" = "yo",
+    "2S" = "tú",
+    "3S" = "él/ella",
+    "1P" = "nosotros/as",
+    "2P" = "vosotros/as",
+    "3P" = "ellos/as",
+}
+
+// English Pronouns
+export enum EnglishPronouns {
+    "1S" = "I",
+    "2S" = "you",
+    "3S" = "he/she/it",
+    "1P" = "we",
+    "2P" = "you",
+    "3P" = "they",
+}
+
+// German Pronouns
+export enum GermanPronouns {
+    "1S" = "ich",
+    "2S" = "du",
+    "3S" = "er/sie/es",
+    "1P" = "wir",
+    "2P" = "ihr",
+    "3P" = "sie",
+}
+
+// Estonian Pronouns
+export enum EstonianPronouns {
+    "1S" = "ma", // "mina"
+    "2S" = "sa", // "sina"
+    "3S" = "ta", // "tema"
+    "1P" = "me", // "meie"
+    "2P" = "te", // "teie"
+    "3P" = "nad", // "nemad"
 }

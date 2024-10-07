@@ -141,6 +141,7 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
             sx={{
                 minWidth: "300px",
                 background: 'white',
+                borderRadius: '10px',
                 ...props.sxProps
             }}
             // @ts-ignore
@@ -256,9 +257,12 @@ export const AutocompleteMultiple = (props: AutocompleteMultipleProps) => {
                         placeholder={t('searchTags', {ns: 'tags'})}
                         fullWidth
                         sx={{
+                            '& .MuiAutocomplete-root': {
+                                borderRadius: '10px',
+                            },
                             '& .MuiAutocomplete-inputRoot': {
                                 border: '1px black solid',
-                                borderRadius: '3px',
+                                borderRadius: '10px',
                                 paddingLeft: globalTheme.spacing(1),
                                 "& ::placeholder": {
                                     color: "black",

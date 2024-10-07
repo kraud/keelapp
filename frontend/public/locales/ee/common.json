@@ -13,6 +13,7 @@
     "settings": {
       "openSettings": "Ava seaded",
       "notifications": "Teavitused",
+      "uiLanguage": "Liidese keel",
       "account": "Konto",
       "dashboard": "Armatuurlaud",
       "logout": "Logi välja"
@@ -28,6 +29,7 @@
     "somethingWrong": "Midagi läks valesti, proovige uuesti."
   },
   "buttons": {
+    "apply": "Rakenda",
     "delete": "Kustuta",
     "confirmDelete": "Kinnita {{elementType}} kustutamine",
     "confirm": "Kinnita",

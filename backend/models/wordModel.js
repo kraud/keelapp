@@ -25,10 +25,14 @@ const wordSchema = mongoose.Schema(
         clue: {
             type: String,
         },
-        // TODO: remove, since we have new real Tag and TagWord implementation
-        tags: [{
-            type: String
-        }]
+        isCloned: {
+            type: Boolean,
+            default: false
+        },
+        originalCreator: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+        }
     },
     {
         timestamps: true,

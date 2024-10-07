@@ -25,6 +25,9 @@ const userSchema = mongoose.Schema({
     uiLanguage: {
         type: String, // FE type: Lang
     },
+    nativeLanguage: {
+        type: String, // FE type: Lang
+    },
     verified: {
         type: Boolean
     }, 

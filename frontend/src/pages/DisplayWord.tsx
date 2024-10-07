@@ -12,6 +12,8 @@ import {toast} from "react-toastify";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {AppDispatch} from "../app/store";
 import {useTranslation} from "react-i18next";
+import {getPoSKeyByLabel} from "../components/generalUseFunctions";
+import {PartOfSpeech} from "../ts/enums";
 
 interface RouterWordProps{
     wordId: string
@@ -99,10 +101,9 @@ export function DisplayWord(props: DisplayWordProps){
                 </Button>
             </Grid>
             <WordForm
-
                 title={
                     (currentlySelectedPoS !== undefined)
-                        ? t('displayWord.titlePos', { currentPos: currentlySelectedPoS.toLowerCase(), ns: 'wordRelated' })
+                        ? t('displayWord.titlePos', { currentPoS: t(`partOfSpeech.${getPoSKeyByLabel(currentlySelectedPoS as PartOfSpeech)}`, {ns: "common"}), ns: 'wordRelated' })
                         : t('displayWord.titleSimple', { ns: 'wordRelated' })
             }
                 subTitle={t('displayWord.subtitle', { ns: 'wordRelated' })}

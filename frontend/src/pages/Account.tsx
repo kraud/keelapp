@@ -35,6 +35,7 @@ export interface UserBadgeData {
     email: string,
     languages: Lang[],
     uiLanguage?: Lang
+    nativeLanguage?: Lang
 }
 
 export const Account = () => {
@@ -234,7 +235,7 @@ export const Account = () => {
             spacing={4}
             xs={12}
             md={8}
-            lg={10}
+            lg={12}
         >
             {/* FIRST COLUMN */}
             <Grid
@@ -243,7 +244,7 @@ export const Account = () => {
                 rowSpacing={2}
                 item={true}
                 xs={12}
-                lg={6}
+                lg={5}
                 sx={{
                     height: 'fit-content'
                 }}
@@ -256,17 +257,17 @@ export const Account = () => {
                         email: "",
                         username: "",
                         languages: [],
-                        uiLanguage: Lang.EN // TODO: defaults to value from i18n auto detect?
+                        nativeLanguage: Lang.ES // TODO: defaults to value from i18n auto detect?
                     }}
                     isEditing={isEditing}
-                    returnFieldsData={(updatedData) => {
+                    returnFieldsData={(updatedData: UserBadgeData) => {
                         if(localUserData !== null){
                             setLocalUserData({
                                 ...localUserData,
                                 username: updatedData.username!,
                                 name: updatedData.name,
                                 languages: updatedData.languages,
-                                uiLanguage: updatedData.uiLanguage
+                                nativeLanguage: updatedData.nativeLanguage
                             })
                         }
                     }}
@@ -407,145 +408,158 @@ export const Account = () => {
                         }
                     </Grid>
                 </Grid>
-                {/* TAGS */}
-                {(checkEnvironmentAndIterationToDisplay(2)) &&
-                    <Grid
-                        container={true}
-                        justifyContent={"center"}
-                        item={true}
-                        xs={12}
-                    >
-                        <Grid
-                            item={true}
-                        >
-                            <Typography
-                                sx={{
-                                    typography: {
-                                        xs: 'h3',
-                                        sm: 'h2',
-                                        md: 'h1',
-                                    },
-                                    textTransform: "uppercase",
-                                    textDecoration: "underline",
-                                }}
-                            >
-                                {t('sections.tags', { ns: 'common' })}:
-                            </Typography>
-                        </Grid>
-                        <Grid
-                            item={true}
-                            container={true}
-                            justifyContent={"center"}
-                            sx={{
-                                borderRadius: '25px',
-                                border: '2px solid black',
-                                padding: globalTheme.spacing(2),
-                                marginTop: globalTheme.spacing(2)
-                            }}
-                            xs={12}
-                        >
-                            {((isLoadingTags) && (!openFriendsModal))
-                                ?
-                                <LinearIndeterminate/>
-                                :
-                                <>
-                                    {(allTags.length > 0)
-                                        ?
-                                        <ChipList
-                                            itemList={allTags}
-                                            onClickAction={(tagId: string) => {
-                                                setSelectedTag(tagId)
-                                            }}
-                                        />
-                                        :
-                                        <>
-                                            <Typography
-                                                sx={{
-                                                    typography: {
-                                                        xs: 'body2',
-                                                        sm: 'h6',
-                                                        md: 'h5',
-                                                    },
-                                                }}
-                                            >
-                                                {t('noTagsCreated', { ns: 'tags' })}
-                                            </Typography>
-                                            <Button
-                                                variant="text"
-                                                size="small"
-                                                color={"primary"}
-                                                onClick={() => navigate('/review')}
-                                                disabled={!(checkEnvironmentAndIterationToDisplay(3))}
-                                            >
-                                                {t('goToAddTags', { ns: 'tags' })}
-                                            </Button>
-                                        </>
-                                    }
-                                    {/* FOLLOWED TAGS */}
-                                    {(checkEnvironmentAndIterationToDisplay(3)) &&
-                                        <Grid
-                                            container={true}
-                                            justifyContent={'center'}
-                                            sx={{
-                                                marginTop: globalTheme.spacing(2),
-                                                marginBottom: globalTheme.spacing(1)
-                                            }}
-                                        >
-                                            <Grid
-                                                item={true}
-                                                xs={12}
-                                            >
-                                                <Divider
-                                                    orientation="horizontal"
-                                                    flexItem={true}
-                                                    sx={{
-                                                        "&::before, &::after": {
-                                                            borderColor: "black",
-                                                        },
-                                                    }}
-                                                >
-                                                    {t('followedTags', { ns: 'tags' })}
-                                                </Divider>
-                                            </Grid>
-                                        </Grid>
-                                    }
-                                    {((followedTags!!) && (followedTags.length > 0))
-                                        ?
-                                        <ChipList
-                                            itemList={followedTags}
-                                            onClickAction={(tagId: string) => {
-                                                setSelectedTag(tagId)
-                                            }}
-                                        />
-                                        :
-                                        <>
-                                            <Typography
-                                                sx={{
-                                                    typography: {
-                                                        xs: 'body2',
-                                                        sm: 'h6',
-                                                        md: 'h5',
-                                                    },
-                                                }}
-                                            >
-                                                {t('noTagsFollowed', { ns: 'tags' })}
-                                            </Typography>
-                                        </>
-                                    }
-                                </>
-                            }
-                        </Grid>
-                    </Grid>
-                }
             </Grid>
             {/* SECOND COLUMN */}
+            {/* TAGS */}
+            {(checkEnvironmentAndIterationToDisplay(2)) &&
+            <Grid
+                container={true}
+                justifyContent={"space-around"}
+                rowSpacing={2}
+                item={true}
+                xs={12}
+                lg={4}
+                sx={{
+                    height: 'fit-content'
+                }}
+            >
+                <Grid
+                    container={true}
+                    justifyContent={"center"}
+                    item={true}
+                    xs={12}
+                >
+                    <Grid
+                        item={true}
+                    >
+                        <Typography
+                            sx={{
+                                typography: {
+                                    xs: 'h3',
+                                    sm: 'h2',
+                                    md: 'h1',
+                                },
+                                textTransform: "uppercase",
+                                textDecoration: "underline",
+                            }}
+                        >
+                            {t('sections.tags', { ns: 'common' })}:
+                        </Typography>
+                    </Grid>
+                    <Grid
+                        item={true}
+                        container={true}
+                        justifyContent={"center"}
+                        sx={{
+                            borderRadius: '25px',
+                            border: '2px solid black',
+                            padding: globalTheme.spacing(2),
+                            // marginTop: globalTheme.spacing(2)
+                        }}
+                        xs={12}
+                    >
+                        {((isLoadingTags) && (!openFriendsModal))
+                            ?
+                            <LinearIndeterminate/>
+                            :
+                            <>
+                                {(allTags.length > 0)
+                                    ?
+                                    <ChipList
+                                        itemList={allTags}
+                                        onClickAction={(tagId: string) => {
+                                            setSelectedTag(tagId)
+                                        }}
+                                    />
+                                    :
+                                    <>
+                                        <Typography
+                                            sx={{
+                                                typography: {
+                                                    xs: 'body2',
+                                                    sm: 'h6',
+                                                    md: 'h5',
+                                                },
+                                            }}
+                                        >
+                                            {t('noTagsCreated', { ns: 'tags' })}
+                                        </Typography>
+                                        <Button
+                                            variant="text"
+                                            size="small"
+                                            color={"primary"}
+                                            onClick={() => navigate('/review')}
+                                            disabled={!(checkEnvironmentAndIterationToDisplay(3))}
+                                        >
+                                            {t('goToAddTags', { ns: 'tags' })}
+                                        </Button>
+                                    </>
+                                }
+                                {/* FOLLOWED TAGS */}
+                                {(checkEnvironmentAndIterationToDisplay(3)) &&
+                                    <Grid
+                                        container={true}
+                                        justifyContent={'center'}
+                                        sx={{
+                                            marginTop: globalTheme.spacing(2),
+                                            marginBottom: globalTheme.spacing(1)
+                                        }}
+                                    >
+                                        <Grid
+                                            item={true}
+                                            xs={12}
+                                        >
+                                            <Divider
+                                                orientation="horizontal"
+                                                flexItem={true}
+                                                sx={{
+                                                    "&::before, &::after": {
+                                                        borderColor: "black",
+                                                    },
+                                                }}
+                                            >
+                                                {t('followedTags', { ns: 'tags' })}
+                                            </Divider>
+                                        </Grid>
+                                    </Grid>
+                                }
+                                {((followedTags!!) && (followedTags.length > 0))
+                                    ?
+                                    <ChipList
+                                        itemList={followedTags}
+                                        onClickAction={(tagId: string) => {
+                                            setSelectedTag(tagId)
+                                        }}
+                                    />
+                                    :
+                                    <>
+                                        <Typography
+                                            sx={{
+                                                typography: {
+                                                    xs: 'body2',
+                                                    sm: 'h6',
+                                                    md: 'h5',
+                                                },
+                                            }}
+                                        >
+                                            {t('noTagsFollowed', { ns: 'tags' })}
+                                        </Typography>
+                                    </>
+                                }
+                            </>
+                        }
+                    </Grid>
+                </Grid>
+            </Grid>
+            }
+            {/* THIRD COLUMN */}
             {(checkEnvironmentAndIterationToDisplay(4)) &&
                 <Grid
                     container={true}
                     justifyContent={"space-around"}
                     item={true}
                     xs={12}
-                    lg={6}
+                    lg={3}
                     rowSpacing={2}
                     sx={{
                         paddingTop: '0px !important',
@@ -557,7 +571,6 @@ export const Account = () => {
                         justifyContent={"center"}
                         item={true}
                         xs={12}
-                        rowSpacing={2}
                         sx={{
                             height: 'fit-content'
                         }}

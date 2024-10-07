@@ -183,3 +183,80 @@ export interface EstonianAPIRequest {
     query: string,
     searchInEnglish?: boolean
 }
+
+export type EquivalentTranslationValues = {
+    partOfSpeech: PartOfSpeech, // should match the one on WordData
+    multiLang?: boolean,
+    type?: 'Multiple-Choice' | 'Text-Input',
+} & (TextInput | MultipleChoice)
+
+export type PerformanceStats = {
+    knowledge: Number,
+    performance: any,
+    wordId: string
+}
+
+export type TextInput = {
+    type: 'Text-Input',
+    matchingTranslations : {
+        itemA: {
+            language: Lang,
+            case: NounCases | VerbCases | AdverbCases| AdjectiveCases,
+            value: string,
+        },
+        itemB: {
+            language: Lang,
+            case: NounCases | VerbCases | AdverbCases | AdjectiveCases,
+            value: string,
+            translationId: any
+        }
+    }
+} & (PerformanceStats)
+
+export type MultipleChoice = {
+    type: 'Multiple-Choice',
+    matchingTranslations : {
+        itemA: {
+            language: Lang,
+            case: NounCases | VerbCases | AdverbCases| AdjectiveCases,
+            value: string,
+        },
+        itemB: {
+            language: Lang,
+            case: NounCases | VerbCases | AdverbCases | AdjectiveCases,
+            value: string,
+            otherValues: string[],
+            translationId: any
+        }
+    }
+} & (PerformanceStats)
+
+export interface ExerciseResult {
+    answer: string,
+    correct: boolean,
+    indexInList: number,
+    time: number, // Date => will be used for statistics about this translation
+}
+
+export interface PerformanceParameters {
+    caseName: string,
+    translationLanguage: Lang
+    record?: boolean,
+
+    translationId?: string,
+
+    performanceId?: string,
+    word?: string,
+    user?: any,
+}
+
+// Parameters for saving "actions" in a exercise card
+export interface PerformanceActionParameters {
+    performanceId: string,
+    action?: "master" | "forget" ,
+}
+
+export interface InfoChipData {
+    label: string,
+    value: string
+}

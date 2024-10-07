@@ -1,6 +1,24 @@
 const nodemailer = require("nodemailer")
+const resetPassword = require("./resources/resetPassword")
+const verifyEmail = require("./resources/verifyEmail");
 
-module.exports = async(email, subject, text) => {
+
+function getHTMLAndAttachedData(emailData) {
+    switch (emailData.type){
+        case "resetPassword":
+            return {
+                html: resetPassword.getHtmlComponent(emailData.name, emailData.url),
+                attachments: resetPassword.getAttachments()
+            }
+        case "verifyEmail":
+            return {
+                html: verifyEmail.getHtmlComponent(emailData.name, emailData.url, emailData.email),
+                attachments: verifyEmail.getAttachments()
+            }
+    }
+}
+
+module.exports = async(emailData) => {
     const transporter =  nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
         service: process.env.EMAIL_SERVICE,
@@ -12,34 +30,21 @@ module.exports = async(email, subject, text) => {
         }
 
     })
-    await new Promise((resolve, reject) => {
-        // verify connection configuration
-        transporter.verify(function (error, success) {
-            if (error) {
-                console.log(error)
-                reject(error)
-            } else {
-                resolve(success)
-            }
-        })
-    })
-
     const mailData = {
         from: process.env.EMAIL_USER,
-        to: email,
-        subject: subject,
-        text: text
+        to: emailData.email,
+        subject: emailData.subject,
+        ...getHTMLAndAttachedData(emailData),
     }
 
-    await new Promise((resolve, reject) => {
-        // send mail
-        transporter.sendMail(mailData, (err, info) => {
-            if (err) {
-                console.error(err)
-                reject(err)
-            } else {
-                resolve(info)
-            }
-        })
-    })
+    async function generateHtmlAndSend(emailData) {
+        await transporter.sendMail(mailData)
+            .then(info => {
+                // console.log("info", info)
+            })
+            .catch(err => {
+                console.log("error", err)
+            })
+    }
+    await generateHtmlAndSend(emailData);
 }

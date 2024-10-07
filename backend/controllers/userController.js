@@ -72,7 +72,7 @@ const registerUser = asyncHandler(async(req, res) => {
 
     }).save()
     const url = `${process.env.BASE_URL}/user/${user._id}/verify/${token.token}`
-    await sendMail(user.email, "Verify Email", url) // TODO: improve confirmation email design
+    await sendMail({email: user.email, subject:"Verify Email", url:url, name:user.name, type:"verifyEmail"}) // TODO: improve confirmation email design
 
     if(user){
         res.status(201).json({
@@ -81,6 +81,8 @@ const registerUser = asyncHandler(async(req, res) => {
             email: user.email,
             username: user.username,
             languages: [], // user will select them once they log in
+            uiLanguage: 'English', // TODO: this should default to browser-language
+            nativeLanguage: null, // TODO: this could be added as an item on register form?
             verified: user.verified
         })
     } else {
@@ -111,6 +113,10 @@ const loginUser = asyncHandler(async(req, res) => {
             email: user.email,
             username: user.username,
             languages: user.languages,
+            uiLanguage: user.uiLanguage,
+            nativeLanguage: (user.nativeLanguage === null)
+                ? undefined // FE expects undefined, but we can't 'findByIdAndUpdate' values into undefined if they had a value originally
+                : user.nativeLanguage,
             token: generateToken(user._id),
             verified: user.verified
         })
@@ -124,7 +130,7 @@ const loginUser = asyncHandler(async(req, res) => {
 // @route   PUT /api/users/updateUser
 // @access  Public
 const updateUser = asyncHandler(async(req, res) => {
-    const {email, name, username, languages, uiLanguage} = req.body
+    const {email, name, username, languages, uiLanguage, nativeLanguage} = req.body
 
     const usernameExists = await User.findOne({username: username})
     // NB! ._id returns the 'new ObjectId("idString") object. Instead, we use .id to access the "idString" value directly.
@@ -142,6 +148,9 @@ const updateUser = asyncHandler(async(req, res) => {
             // NB! email can't be changed
             languages: languages,
             uiLanguage: uiLanguage,
+            nativeLanguage: (nativeLanguage === undefined)
+                ? null // we can't 'findByIdAndUpdate' values into undefined if they had a value originally, so we set 'null'
+                : nativeLanguage,
             // if more fields are added to user, add them to the update here
         },{new: true}).select({ password: 0, createdAt: 0 , updatedAt: 0, __v: 0 })
         res.status(200).json(updatedUser)
@@ -347,7 +356,7 @@ const requestPasswordReset = asyncHandler(async (req, res) => {
     try {
         // Send email with token
         const url = `${process.env.BASE_URL}/resetPassword/${user.id}/${newPasswordToken}`;
-        await sendMail(user.email, "Password reset link", url) // TODO: improve confirmation email design
+        await sendMail({email: user.email, subject:"Password reset link", url:url, name: user.name, type:"resetPassword"}) // TODO: improve confirmation email design
 
         res.status(200).json({})
     } catch (error) {

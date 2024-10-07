@@ -8,6 +8,9 @@ import {Theme} from "@mui/material/styles";
 import {CountryFlag} from "./GeneralUseComponents";
 import {Lang} from "../ts/enums";
 import TranslateIcon from '@mui/icons-material/Translate';
+import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle';
+import Tooltip from "@mui/material/Tooltip";
+import {useTranslation} from "react-i18next";
 
 interface DnDSortableItemProps{
     id: string,
@@ -18,6 +21,8 @@ interface DnDSortableItemProps{
     disabled?: boolean
     sxProps?: SxProps<Theme>
     displayItems?: 'text' | 'flag' | 'both',
+    flagSide?: 'left' | 'right',
+    hideIndex?: boolean,
     onActionButtonClick: (itemId: string) => void
     // for selecting UI language
     displayLeftActionButton?: boolean
@@ -25,6 +30,7 @@ interface DnDSortableItemProps{
 }
 
 export function DnDSortableItem(props: DnDSortableItemProps){
+    const { t } = useTranslation(['common'])
     const componentStyles = {
         descriptionButton: {
             borderRadius: ((props.disabled!!) && !(props.displayLeftActionButton))
@@ -82,9 +88,11 @@ export function DnDSortableItem(props: DnDSortableItemProps){
     const getDisplayElements = () => {
         const displayContentWithIndex = (displayItem: any) => {
             return(
-                (props.index !== undefined)
-                    ? `#${props.index + 1}: ${displayItem}`
-                    : displayItem
+                ((props.index !== undefined) && !(props.hideIndex!!))
+                    // ? `#${props.index + 1}: ${displayItem}`
+                    // : displayItem
+                    ? `#${props.index + 1}: ${t(`languages.${displayItem.toLowerCase()}`, {ns: 'common'})}`
+                    : t(`languages.${displayItem.toLowerCase()}`, {ns: 'common'})
             )
         }
 
@@ -96,7 +104,9 @@ export function DnDSortableItem(props: DnDSortableItemProps){
                 return(
                     <>
                         {/* NB! We still want to display the '#' symbol and index number, but with no language label */}
-                        {displayContentWithIndex("")}
+                        {((props.flagSide === undefined) || ((props.flagSide === 'right'))) &&
+                            displayContentWithIndex("")
+                        }
                         <CountryFlag
                             country={props.id as Lang}
                             border={true}
@@ -105,20 +115,30 @@ export function DnDSortableItem(props: DnDSortableItemProps){
                                 marginLeft: (props.index !== undefined) ?'10px' :'0px',
                             }}
                         />
+                        {((props.flagSide !== undefined) && ((props.flagSide === 'left'))) &&
+                            displayContentWithIndex("")
+                        }
                     </>
                 )
             }
             case('both'): {
                 return(
                     <>
-                        {displayContentWithIndex(props.id)}
+                        {((props.flagSide === undefined) || ((props.flagSide === 'right'))) &&
+                            displayContentWithIndex(props.id)
+                        }
                         <CountryFlag
                             country={props.id as Lang}
                             border={true}
                             sxProps={{
-                                marginLeft: '10px',
+                                marginLeft: ((props.flagSide === 'right') || (props.flagSide === undefined)) ?'10px' :undefined,
+                                marginRight: (props.flagSide === 'left') ?'10px' :undefined,
+                                marginTop: "-3px",
                             }}
                         />
+                        {((props.flagSide !== undefined) && ((props.flagSide === 'left'))) &&
+                            displayContentWithIndex(props.id)
+                        }
                     </>
                 )
             }
@@ -156,23 +176,33 @@ export function DnDSortableItem(props: DnDSortableItemProps){
             {!(props.invisible!!) &&
                 <>
                     {((props.displayLeftActionButton!) || ((props.onActionButtonLeftClick !== undefined) && (!(props.disabled!)))) &&
-                        <Button
-                            variant={"contained"}
-                            color={"success"}
-                            onClick={() => {
-                                if(props.onActionButtonLeftClick !== undefined){
-                                    props.onActionButtonLeftClick(props.id)
-                                }
-                            }}
-                            disabled={props.disabled!}
-                            sx={componentStyles.actionButtonLeft}
+                        <Tooltip
+                            title={(props.disabled!)
+                                // TODO: this messages should be configurable through props
+                                ? "This is your current native-language"
+                                :  (props.displayLeftActionButton!!)
+                                    ? "This is your current native-language"
+                                    : "Mark this as your native-language"
+                            }
                         >
-                            <TranslateIcon
-                                sx={{
-                                    width: '20px'
+                            <Button
+                                variant={"contained"}
+                                color={"success"}
+                                onClick={() => {
+                                    if((props.onActionButtonLeftClick !== undefined) && !(props.disabled!!)){
+                                        props.onActionButtonLeftClick(props.id)
+                                    }
                                 }}
-                            />
-                        </Button>
+                                // disabled={props.disabled!}
+                                sx={componentStyles.actionButtonLeft}
+                            >
+                                <PersonPinCircleIcon
+                                    sx={{
+                                        width: '20px'
+                                    }}
+                                />
+                            </Button>
+                        </Tooltip>
                     }
                     <Button
                         variant={"contained"}
