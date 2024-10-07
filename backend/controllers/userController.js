@@ -72,7 +72,7 @@ const registerUser = asyncHandler(async(req, res) => {
 
     }).save()
     const url = `${process.env.BASE_URL}/user/${user._id}/verify/${token.token}`
-    await sendMail(user.email, "Verify Email", url) // TODO: improve confirmation email design
+    await sendMail({email: user.email, subject:"Verify Email", url:url, name:user.name, type:"verifyEmail"}) // TODO: improve confirmation email design
 
     if(user){
         res.status(201).json({
@@ -356,7 +356,7 @@ const requestPasswordReset = asyncHandler(async (req, res) => {
     try {
         // Send email with token
         const url = `${process.env.BASE_URL}/resetPassword/${user.id}/${newPasswordToken}`;
-        await sendMail(user.email, "Password reset link", url) // TODO: improve confirmation email design
+        await sendMail({email: user.email, subject:"Password reset link", url:url, name: user.name, type:"resetPassword"}) // TODO: improve confirmation email design
 
         res.status(200).json({})
     } catch (error) {
