@@ -21,7 +21,9 @@
     "sortingAndSelectionExplain": "This determines how we select the exercises to display. With 'Exercise-Performance' we prioritize words and translations you haven't practiced yet.",
     "nativeLanguageParameterExplain": "This determines if we include exercises related to your native language in the case of single-language exercises.",
     "goToExercise": "Go to exercise",
-    "registeredCases": "Registered cases ({{language}}): {{amount}}"
+    "registeredCases": "Registered cases ({{language}}): {{amount}}",
+    "alreadySetMastered": "This setting is already active.",
+    "alreadySetRevise": "This setting is already active. You've answered right {{count}} times. When your reach 5, this configuration will be removed automatically."
   },
   "dialogs": {
     "titles": {
@@ -29,8 +31,9 @@
       "forgetTranslation": "Are you struggling with this word?"
     },
     "messages": {
-      "masterTranslation": "Are you sure you want to set the knowledge of this translation to 100%? This mean you will not see exercises about this translation in the future.",
-      "forgetTranslation": "We are going to show you this translation more often. Are you sure you want to continue? "
+      "masterTranslation": "Are you sure you want to set the knowledge of this translation to 100%? This means you will not see exercises about this translation in the future.",
+      "forgetTranslation": "We are going to show you this translation more often. After 5 correct answers this setting willbe removed automatically. Are you sure you want to continue?",
+      "revertStatus": "Do you wish to undo this setting?"
     }
   },
   "buttons": {

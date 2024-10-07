@@ -21,7 +21,9 @@
     "sortingAndSelectionExplain": "See määrab, kuidas me valime kuvatavad harjutused. 'Harjutuse sooritus' korral eelistame sõnu ja tõlkeid, mida sa pole veel harjutanud.",
     "nativeLanguageParameterExplain": "See määrab, kas me lisame harjutusi, mis on seotud sinu emakeelega ühe keele harjutuste puhul.",
     "goToExercise": "Mine harjutuse juurde",
-    "registeredCases": "Registreeritud juhtumid ({{language}}): {{amount}}"
+    "registeredCases": "Registreeritud juhtumid ({{language}}): {{amount}}",
+    "alreadySetMastered": "See seade on juba aktiivne.",
+    "alreadySetRevise": "See seade on juba aktiivne. Olete õigesti vastanud {{count}} korda. Kui jõuate 5-ni, eemaldatakse see konfiguratsioon automaatselt."
   },
   "dialogs": {
     "titles": {
@@ -30,7 +32,8 @@
     },
     "messages": {
       "masterTranslation": "Kas oled kindel, et soovid määrata selle tõlke teadmised 100%-le? See tähendab, et tulevikus ei näe sa selle tõlke harjutusi.",
-      "forgetTranslation": "Me hakkame seda tõlget sagedamini näitama. Kas oled kindel, et soovid jätkata?"
+      "forgetTranslation": "Me hakkame seda tõlget sagedamini näitama. Pärast viit õiget vastust eemaldatakse see seadistus automaatselt. Kas oled kindel, et soovid jätkata?",
+      "revertStatus": "Kas soovite selle seadistuse tagasi võtta?"
     }
   },
   "buttons": {

@@ -100,6 +100,19 @@ const saveTranslationPerformance = asyncHandler(async (req, res) => {
         exercisePerformance.averageTranslationKnowledge = newTranslationAverage // we take the average-aged knowledge of each stored case
         exercisePerformance.lastDateModifiedTranslation =  new Date()
 
+        const reviseCounterThreshold = 5
+
+        // When aswering correctly we check if modifier is Revise. If value reaches threshold modifier is removed
+        if (req.body.record && exercisePerformance.performanceModifier === "Revise") {
+            const newReviseCounter = exercisePerformance.reviseCounter + 1
+            if (newReviseCounter >= reviseCounterThreshold) {
+                exercisePerformance.performanceModifier = undefined
+                exercisePerformance.reviseCounter = 0
+            } else {
+                exercisePerformance.reviseCounter = newReviseCounter
+            }
+        }
+
         try{
             exercisePerformance.save()
             return res.status(200).json(exercisePerformance)
@@ -126,8 +139,15 @@ const savePerformanceAction = asyncHandler(async (req, res) => {
         return res.status(500).json("Performance not found")
     }
 
+    let modifier = undefined
+
+    if (req.body.action !== undefined) {
+        modifier = (req.body.action === "master") ? "Mastered" : "Revise"
+    }
+
     try {
-        exercisePerformance.performanceModifier = req.body.action === "master" ? "Mastered" : "Revise"
+        exercisePerformance.performanceModifier = modifier
+        exercisePerformance.reviseCounter = 0
         exercisePerformance.save()
         return res.status(200).json(exercisePerformance)
     } catch (error) {

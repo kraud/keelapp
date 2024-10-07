@@ -21,7 +21,9 @@
     "sortingAndSelectionExplain": "Esto determina cómo seleccionamos los ejercicios a mostrar. Con 'Rendimiento en ejercicios' priorizamos las palabras y traducciones que no has practicado aún.",
     "nativeLanguageParameterExplain": "Esto determina si incluimos ejercicios relacionados con tu idioma nativo en el caso de ejercicios de un solo idioma.",
     "goToExercise": "Ir al ejercicio",
-    "registeredCases": "Casos registrados ({{language}}): {{amount}}"
+    "registeredCases": "Casos registrados ({{language}}): {{amount}}",
+    "alreadySetMastered": "Esta configuración ya está activa.",
+    "alreadySetRevise": "Esta configuración ya está activa. Has respondido correctamente {{count}} veces. Cuando llegues a 5, esta configuración se eliminará automáticamente"
   },
   "dialogs": {
     "titles": {
@@ -30,7 +32,8 @@
     },
     "messages": {
       "masterTranslation": "¿Estás seguro de que quieres establecer el conocimiento de esta traducción al 100%? Esto significa que no verás ejercicios sobre esta traducción en el futuro.",
-      "forgetTranslation": "Vamos a mostrarte esta traducción con más frecuencia. ¿Estás seguro de que quieres continuar?"
+      "forgetTranslation": "Vamos a mostrarte esta traducción con más frecuencia. Luego de 5 respuestas correctas esta configuración será eliminada automáticamente. ¿Estás seguro de que quieres continuar?",
+      "revertStatus": "¿Deseas revertir esta configuración?"
     }
   },
   "buttons": {

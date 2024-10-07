@@ -250,10 +250,10 @@ export interface PerformanceParameters {
     user?: any,
 }
 
-// Paremeters for saving "actions" in a exercise card
+// Parameters for saving "actions" in a exercise card
 export interface PerformanceActionParameters {
     performanceId: string,
-    action: "master" | "forget" | "acknowledge",
+    action?: "master" | "forget" ,
 }
 
 export interface InfoChipData {

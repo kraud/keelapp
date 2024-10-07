@@ -66,6 +66,9 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
     const currentExerciseData = (props.exercises[props.currentCardIndex])
     const currentCardAnswer: ExerciseResult = props.exercisesResults[props.currentCardIndex]
     const correctValue = currentExerciseData?.matchingTranslations.itemB.value
+    const isPerformanceMastered = (currentExerciseData?.performance?.performanceModifier === 'Mastered')
+    const isPerformanceRevise = (currentExerciseData?.performance?.performanceModifier === 'Revise')
+    const reviseCounter = (currentExerciseData?.performance?.reviseCounter) ?? 0
 
     const [textInputAnswer, setTextInputAnswer] = useState<string>("")
 
@@ -394,12 +397,12 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
     const [openModal, setOpenModal] = useState<string | null>(null);
 
     const handleCloseModal = () => {
-        setOpenModal(null);
-    };
+        setOpenModal(null)
+    }
 
     function handleMasterClick() {
         const parameters: PerformanceActionParameters = {
-            action: "master",
+            action: (isPerformanceMastered) ? undefined :"master",
             performanceId: currentExerciseData.performance._id,
         }
         dispatch(savePerformanceAction(parameters))
@@ -407,7 +410,7 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
 
     function handleForgetClick() {
         const parameters: PerformanceActionParameters = {
-            action: "forget",
+            action: (isPerformanceRevise) ?undefined :"forget",
             performanceId: currentExerciseData.performance._id,
         }
         dispatch(savePerformanceAction(parameters))
@@ -503,21 +506,22 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
     )
 
     const performanceShortcutButtons = () => {
+
         const buttons = [
             {
-                // tooltipTitle: "I don't know this, show me again!",
-                tooltipTitle: t("tooltips.needMorePractice", {ns: 'practice'}),
+                // tooltipTitle: "Don't show this translation again!",
+                tooltipTitle: isPerformanceMastered ?t("tooltips.alreadySetMastered", {ns: 'practice'}) :t("tooltips.noMorePractice", {ns: 'practice'}),
                 onClickAction: () => setOpenModal("master"),
                 icon: <SchoolIcon />,
-                iconColor: 'primary',
+                iconColor: (isPerformanceMastered) ?'inherit' :'primary',
                 disabled: (currentExerciseData?.performance === undefined || !(currentCardAnswer!!)),
             },
             {
-                // tooltipTitle: "Don't show this translation again!",
-                tooltipTitle: t("tooltips.noMorePractice", {ns: 'practice'}),
+                // tooltipTitle: "I don't know this, show me again!",
+                tooltipTitle: isPerformanceRevise ?t("tooltips.alreadySetRevise", {ns: 'practice', count: reviseCounter}) :t("tooltips.needMorePractice", {ns: 'practice'}),
                 onClickAction: () => setOpenModal("forget"),
                 icon: <ForgetIcon />,
-                iconColor: 'error',
+                iconColor: (isPerformanceRevise) ?'inherit' :'error',
                 disabled: (currentExerciseData?.performance === undefined || !(currentCardAnswer!!)),
             }
         ]
@@ -936,8 +940,14 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                             {performanceShortcutButtons()}
                             <ConfirmationModal
                                 open={openModal === 'master'}
-                                title={ t("dialogs.titles.masterTranslation", {ns: 'practice'}) }
-                                message={ t("dialogs.messages.masterTranslation", {ns: 'practice'}) }
+                                title={ (isPerformanceMastered)
+                                    ? t("tooltips.alreadySetMastered", {ns: 'practice'})
+                                    : t("dialogs.titles.masterTranslation", {ns: 'practice'})
+                                }
+                                message={ (isPerformanceMastered)
+                                    ? t("dialogs.messages.revertStatus", {ns: 'practice'})
+                                    : t("dialogs.messages.masterTranslation", {ns: 'practice'})
+                                }
                                 onConfirm={() => {
                                     handleMasterClick()
                                     handleCloseModal()
@@ -947,8 +957,14 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
 
                             <ConfirmationModal
                                 open={openModal === 'forget'}
-                                title={ t("dialogs.titles.forgetTranslation", {ns: 'practice'}) }
-                                message={ t("dialogs.messages.forgetTranslation", {ns: 'practice'}) }
+                                title={ (isPerformanceRevise)
+                                    ? t("tooltips.alreadySetMastered", {ns: 'practice'}) // NB! Same title as in Mastered is ok
+                                    : t("dialogs.titles.forgetTranslation", {ns: 'practice'})
+                                }
+                                message={ (isPerformanceRevise)
+                                    ? t("dialogs.messages.revertStatus", {ns: 'practice'})
+                                    : t("dialogs.messages.forgetTranslation", {ns: 'practice'})
+                                }
                                 onConfirm={() => {
                                     handleForgetClick()
                                     handleCloseModal()

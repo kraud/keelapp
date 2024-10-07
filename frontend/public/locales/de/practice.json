@@ -21,7 +21,9 @@
     "sortingAndSelectionExplain": "Dies bestimmt, wie wir die angezeigten Übungen auswählen. Mit 'Übungsleistung' priorisieren wir Wörter und Übersetzungen, die du noch nicht geübt hast.",
     "nativeLanguageParameterExplain": "Dies bestimmt, ob wir Übungen in Bezug auf deine Muttersprache im Fall von einsprachigen Übungen einbeziehen.",
     "goToExercise": "Zur Übung gehen",
-    "registeredCases": "Registrierte Fälle ({{language}}): {{amount}}"
+    "registeredCases": "Registrierte Fälle ({{language}}): {{amount}}",
+    "alreadySetMastered": "Diese Einstellung ist bereits aktiv.",
+    "alreadySetRevise": "Diese Einstellung ist bereits aktiv. Sie haben {{count}} Mal richtig geantwortet. Wenn Sie 5 erreichen, wird diese Konfiguration automatisch entfernt."
   },
   "dialogs": {
     "titles": {
@@ -30,7 +32,8 @@
     },
     "messages": {
       "masterTranslation": "Bist du sicher, dass du das Wissen dieser Übersetzung auf 100 % setzen möchtest? Das bedeutet, dass du in Zukunft keine Übungen zu dieser Übersetzung sehen wirst.",
-      "forgetTranslation": "Wir werden dir diese Übersetzung häufiger zeigen. Bist du sicher, dass du fortfahren möchtest?"
+      "forgetTranslation": "Wir werden dir diese Übersetzung häufiger zeigen. Nach fünf richtigen Antworten wird diese Einstellung automatisch entfernt. Bist du sicher, dass du fortfahren möchtest?",
+      "revertStatus": "Möchten Sie diese Einstellung rückgängig machen?"
     }
   },
   "buttons": {

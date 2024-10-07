@@ -119,9 +119,6 @@ export const Practice = (props: PracticeProps) => {
         setAcceptedParameters(true)
     }
 
-    //fixme: check if needed
-    dispatch(resetExercisesPerformanceSliceState())
-
     // not sure if always needed. Helps clear exercise list after hot reloading during development
     useEffect(() => {
         if(!acceptedParameters){
@@ -156,6 +153,7 @@ export const Practice = (props: PracticeProps) => {
         setAcceptedParameters(false)
         setCurrentCardIndex(0)
         setCardAnswers([])
+        dispatch(resetExercisesPerformanceSliceState())
         dispatch(resetExerciseList())
     }
 
@@ -214,9 +212,7 @@ export const Practice = (props: PracticeProps) => {
                             align={"center"}
                         >
                             {(displayEndScreen)
-                                // ? `Results: ${amountCorrectExercises}/${exercises.length} ✅`
                                 ? t("titles.exerciseResultsScore", {ns: 'practice', scoreCorrect: (amountCorrectExercises), total: (exercises.length)})
-                                // : `Exercises ${currentCardIndex+1}/${exercises.length}`
                                 : t("titles.exerciseResultsProcess", {ns: 'practice', index: (currentCardIndex+1), total: (exercises.length)})
                             }
                         </Typography>

@@ -32,6 +32,10 @@ const exercisePerformanceSchema = mongoose.Schema({
         type: String, // 'Mastered' | 'Revise'
         enum: ['Mastered', 'Revise']
     },
+    // Keeps track of correct answers since user marked as revised
+    reviseCounter:{
+        type: Number
+    },
     // average-aged-knowledge of the cases stored in this translation
     // (they are already aged, to reflect the status of the translation at the time of last update to it)
     averageTranslationKnowledge:{
