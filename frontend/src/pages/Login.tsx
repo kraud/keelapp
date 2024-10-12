@@ -205,6 +205,7 @@ export function Login() {
                                             textTransform: 'none',
                                         }}
                                         disabled={isLoadingAuth}
+                                        name={"buttonRegister"}
                                     >
                                         {t('switchSectionButtons.notRegistered', { ns: 'loginRegister' })}
                                     </Button>
@@ -225,6 +226,7 @@ export function Login() {
                                             textTransform: 'none',
                                         }}
                                         disabled={isLoadingAuth}
+                                        name={"buttonReset"}
                                     >
                                         {t('switchSectionButtons.forgotPassword', { ns: 'loginRegister' })}
                                     </Button>

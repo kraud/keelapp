@@ -230,6 +230,8 @@ function ResponsiveAppBar() {
         }
     }
 
+    // @ts-ignore
+    // @ts-ignore
     return (
         <AppBar
             position="static"
@@ -340,6 +342,7 @@ function ResponsiveAppBar() {
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                         {pages.map((page, index) => (
                             <Button
+                                name={"button_" + page.replace(/ /g, '_')}
                                 key={page}
                                 onClick={() => handleCloseNavMenu(page)}
                                 sx={{

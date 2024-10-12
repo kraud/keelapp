@@ -195,6 +195,7 @@ export function DnDSortableItem(props: DnDSortableItemProps){
                                 }}
                                 // disabled={props.disabled!}
                                 sx={componentStyles.actionButtonLeft}
+
                             >
                                 <PersonPinCircleIcon
                                     sx={{
@@ -210,6 +211,7 @@ export function DnDSortableItem(props: DnDSortableItemProps){
                         onClick={(e: any) => null}
                         disabled={props.disabled!}
                         sx={componentStyles.descriptionButton}
+
                     >
                         {getDisplayElements()}
                     </Button>
@@ -222,6 +224,7 @@ export function DnDSortableItem(props: DnDSortableItemProps){
                             }}
                             disabled={props.disabled!}
                             sx={componentStyles.actionButtonRight}
+                            name={"down_language_" + props.id}
                         >
                             {(props.containerLabel === 'selected') ?'-' :'+'}
                         </Button>

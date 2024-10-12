@@ -364,7 +364,7 @@ export function Review(){
                         borderRadius: '0 0 15px 0',
                         borderBottom: '1px solid black',
                         borderRight: '1px solid black',
-                        height: 'max-content',
+                        height: 'max-content'
                     }}
                 >
                     <Grid
