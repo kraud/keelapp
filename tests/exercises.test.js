@@ -5,12 +5,6 @@ const { app , server } = require("../backend/api/index.js");
 
 require("dotenv").config();
 
-const BE_URL = process.env.REACT_APP_VERCEL_BE_URL
-const API_URL = (BE_URL !== undefined) ? `${BE_URL}/api/exercises` : '/api/exercises'
-
-console.log("logging in with", process.env.TEST_EMAIL, process.env.TEST_PASSWORD)
-
-
 function getRandomOfArray(arr) {
     const randomIndex = Math.floor(Math.random() * arr.length);
     return arr[randomIndex];
