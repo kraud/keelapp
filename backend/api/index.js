@@ -34,6 +34,8 @@ app.use('/api/exercises', require('../routes/exerciseRoutes'))
 app.use(errorHandler)
 
 
-app.listen(port, () => {
+let server= app.listen(port, () => {
     console.log(`Server started on port ${port}`)
 })
+
+module.exports = { app, server }

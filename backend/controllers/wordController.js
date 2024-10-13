@@ -693,6 +693,14 @@ const updateWord = asyncHandler(async (req, res) => {
 // @route   DELETE /api/words/:id
 // @access  Private
 const deleteWord = asyncHandler(async (req, res) => {
+
+    try {
+        let id = mongoose.Types.ObjectId(req.params.id)
+    } catch (e) {
+        res.status(400)
+        throw new Error("Incorrect id format")
+    }
+
     const word = await Word.findById(req.params.id)
 
     if(!word){

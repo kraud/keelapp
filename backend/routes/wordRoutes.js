@@ -9,7 +9,7 @@ const {getWordsByFollowedTag} = require("../controllers/wordController");
 
 router.get('/', protect, getWords)
 
-router.get('/getWordsRelatedToFollowedTag', protect, getWordsByFollowedTag)
+router.get('/getWordsRelatedToFollowedTag', protect, getWordsByFollowedTag) // Todo: this should be removed ? It's never called from FE
 
 router.get('/simple', protect, getWordsSimplified)
 

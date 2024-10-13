@@ -163,6 +163,7 @@ export const deleteManyWordsById = createAsyncThunk(`words/deleteManyWordsById`,
 // Gets all words that match (partially or fully) a string query
 export const searchWordByAnyTranslation = createAsyncThunk(`words/searchWord`, async (query: string, thunkAPI) => {
     try {
+        console.log(query)
         // @ts-ignore
         const token = thunkAPI.getState().auth.user.token
         return await wordService.searchWord(token, query)
