@@ -1,264 +1,170 @@
-const mongoose = require("mongoose");
 const request = require("supertest");
-
+const mongoose = require("mongoose");
+const Word = require("../backend/models/wordModel")
 const { app , server } = require("../backend/api/index.js");
+const { generateRandomId, getRandomOfArray, exampleWords } = require("../tests/testUtils.js");
 
 require("dotenv").config();
 
-function getRandomOfArray(arr) {
-    const randomIndex = Math.floor(Math.random() * arr.length);
-    return arr[randomIndex];
-}
-
-function generateRandomId() {
-    const chars = '0123456789abcdef';
-    let randomId = '';
-    for (let i = 0; i < 24; i++) {
-        randomId += chars[Math.floor(Math.random() * chars.length)];
+let testingWords = [] // words used for this tests
+let testingWordsIds = []
+beforeAll(async () => {
+    try {
+        testingWords = await Word.insertMany(exampleWords);
+        testingWordsIds = testingWords.map(word => word.id);
+    } catch (e) {
+        console.log(e);
     }
-    return randomId;
-}
-
-const newWordData =
-{
-    "clue": "Persons in the cars movies are.. ",
-    "partOfSpeech": "Noun",
-    "translations": [
-        {
-            "cases": [
-                {
-                    "caseName": "regularityES",
-                    "word": "regular"
-                },
-                {
-                    "caseName": "singularES",
-                    "word": "auto"
-                },
-                {
-                    "caseName": "pluralES",
-                    "word": "autos"
-                },
-                {
-                    "caseName": "genderES",
-                    "word": "el"
-                }
-            ],
-            "language": "Spanish"
-        },
-        {
-            "cases": [
-                {
-                    "caseName": "regularityEN",
-                    "word": "regular"
-                },
-                {
-                    "caseName": "singularEN",
-                    "word": "car"
-                },
-                {
-                    "caseName": "pluralEN",
-                    "word": "cars"
-                }
-            ],
-            "language": "English"
-        }
-    ]
-}
-
-const newWordIncompleteData =
-{
-    "clue": "Persons in the cars movies are.. ",
-    "partOfSpeech": "Noun",
-}
+});
 
 /* Closing database connection after all tests are completed. */
 afterAll(async () => {
-    // await Word.deleteMany(); //todo: When working on a test db this should run. To delete words created by tests
+    if (testingWordsIds.length > 0) {
+        await Word.deleteMany({ _id: { $in: testingWordsIds } })
+    }
     await mongoose.connection.close();
     server.close();
 });
 
-describe("API Words test's", () => {
-
+/**
+ * Test every endpoint/route related to exercises
+ * Endpoints
+ *  GET  /getUserExercises   (ExerciseController.js::getExercises)
+ *  POST /saveTranslationPerformance (saveTranslationPerformance)
+ *  POST /savePerformanceAction ==>  (EsavePerformanceAction)
+ */
+describe("Exercise's API tests", () => {
     let token // jwt login token
-    let words // array of words saved on BE
 
-    it("GET /api/words/simple - Should failed because of unauthorized request", async () => {
-        const response = await request(app).get("/api/words/simple");
+    // Checks every endpoint is protected
+    it("GET /getUserExercises - Should failed because of unauthorized request", async () => {
+        const response = await request(app).get("/api/exercises/getUserExercises");
         expect(response.statusCode).toBe(401);
     });
 
-    // FE calls this endpoint but never with params/filters
-    it("GET /api/words/simple - Should get all the words of user with simplified data", async () => {
+    it("POST /saveTranslationPerformance - Should failed because of unauthorized request", async () => {
+        const response = await request(app)
+            .post("/api/exercises/saveTranslationPerformance")
+            .send({});
+        expect(response.statusCode).toBe(401);
+    });
+
+    it("POST /savePerformanceAction - Should failed because of unauthorized request", async () => {
+        const response = await request(app)
+            .post("/api/exercises/savePerformanceAction")
+            .send({});
+        expect(response.statusCode).toBe(401);
+    });
+
+    // languages: Lang[],
+    // partsOfSpeech: PartOfSpeech[],
+    // amountOfExercises: number,
+    // multiLang: CardTypeSelection, // 'Multi-Language' | 'Single-Language' | 'Random',
+    // type: ExerciseTypeSelection, //  'Multiple-Choice' | 'Text-Input' | 'Random',
+    // mode: 'Single-Try' | 'Multiple-Tries'
+    // preSelectedWords?: any[] // simple-word data
+    // wordSelection: WordSortingSelection // determines if we use exercise-performance info to sort words/translations before selecting exercises
+    // nativeLanguage?: Lang
+
+    it("GET /api/exercises/getUserExercises - Should failed without params data", async () => {
         const loginResponse = await request(app).post("/api/users/login").send({
             email: process.env.TEST_EMAIL,
             password: process.env.TEST_PASSWORD,
         });
 
-        // saving token for next tests
-        token = loginResponse.body.token
+        token = loginResponse.body.token // saving token for next tests
+        expect(token).toBeDefined()
 
         const response = await request(app)
-            .get("/api/words/simple")
+            .get("/api/exercises/getUserExercises")
             .set({
                 Authorization: "Bearer " + token
-            });
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body.amount).toBeGreaterThan(0);
-        expect(response.body.words.length).toBeGreaterThan(0);
-
-        //setting an array of words for future tests
-        words = response.body.words;
-    });
-    
-    it("GET /api/words/ - Should get all the words of user", async () => {
-        expect(token).toBeDefined();
-
-        const response = await request(app)
-            .get("/api/words/")
-            .set({
-                Authorization: "Bearer " + token
-            });
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body.length).toBeGreaterThan(0);
-    });
-
-
-    it("GET /api/words/:id - Should get a specific word by searching by id", async () => {
-        expect(token).toBeDefined();
-        expect(words).toBeDefined();
-
-        const word = getRandomOfArray(words)
-
-        const response = await request(app)
-            .get(`/api/words/${word.id}`)
-            .set({
-                Authorization: "Bearer " + token
-            });
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body).toHaveProperty('_id', word.id); //check is same owrd
-        expect(response.body).toHaveProperty('partOfSpeech', word.partOfSpeech); //check is same POF
-    });
-    
-    it("GET /api/words/:id - Should throw error if word id does not exist", async () => {
-        expect(token).toBeDefined();
-        expect(words).toBeDefined();
-
-        const id = generateRandomId()
-
-        const response = await request(app)
-            .get(`/api/words/${id}`)
-            .set({
-                Authorization: "Bearer " + token
-            });
-        expect(response.statusCode).toBe(400);
-        expect(response.body).toHaveProperty('message', 'Word not found');
-    });
-    
-    it("GET /api/words/searchWord - Should search words that match with a string", async () => {
-        expect(token).toBeDefined();
-        let query = "tra";
-        const response = await request(app)
-            .get(`/api/words/searchWord`)
-            .set({
-                Authorization: "Bearer " + token,
-            }).query({
-                query: query
-            });
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body.length).toBeGreaterThan(0); //
-    });
-
-    it("GET /api/words/searchWord - Should return empty array but not fail when searching empty query string", async () => {
-        expect(token).toBeDefined();
-        let query
-        const response = await request(app)
-            .get(`/api/words/searchWord`)
-            .set({
-                Authorization: "Bearer " + token,
-            }).query({
-                query: query
-            });
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body.length).toBe(0);
-    });
-
-    it("POST /api/words/ - Should failed because is trying to create empty word", async () => {
-        expect(token).toBeDefined();
-
-        const response = await request(app)
-            .post(`/api/words/`)
-            .set({
-                Authorization: "Bearer " + token,
-            }).send({});
-
-        expect(response.statusCode).toBe(400);
-        expect(response.body).toHaveProperty("message", "Please add part of speech");
-    });
-
-
-    it("POST /api/words/ - Should failed because is trying to create incomplete word", async () => {
-        expect(token).toBeDefined();
-
-        const response = await request(app)
-            .post(`/api/words/`)
-            .set({
-                Authorization: "Bearer " + token,
-            }).send(newWordIncompleteData);
-
-        expect(response.statusCode).toBe(400);
-        expect(response.body).toHaveProperty("message", "Please add 2 or more translations");
-    });
-
-
-    let createdWord
-    it("POST /api/words/ - Should create a new word", async () => {
-        expect(token).toBeDefined();
-
-        const response = await request(app)
-            .post(`/api/words/`)
-            .set({
-                Authorization: "Bearer " + token,
-            }).send(newWordData);
-
-        createdWord = response.body
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body).toHaveProperty("partOfSpeech", newWordData.partOfSpeech);
-        expect(response.body).toHaveProperty("clue", newWordData.clue);
-        expect(response.body.translations.length).toBe(2);
-    });
-
-
-    it("DELETE /api/words/:id - Should failed trying to delete undefined id ", async () => {
-        expect(token).toBeDefined();
-
-        const response = await request(app)
-            .delete(`/api/words/1`)
-            .set({
-                Authorization: "Bearer " + token,
             })
+            .query({});
 
         expect(response.statusCode).toBe(400);
-        expect(response.body).toHaveProperty("message", "Incorrect id format");
+        expect(response.body).toHaveProperty("message")
     });
 
-    it("DELETE /api/words/:id - Should delete recently created word", async () => {
+    const params1 = {
+        languages: ["Spanish","English","German"],
+        partsOfSpeech: ["Verb", "Noun"],
+        amountOfExercises: 5,
+        multiLang: "Random",
+        type: "Multiple-Choice",
+        mode: "Single-Try",
+        wordSelection: "Exercise-Performance",
+        difficultyTI: 2
+    }
+
+    it("GET /api/exercises/getUserExercises - Should get exercises based on all saved words", async () => {
         expect(token).toBeDefined();
-        expect(createdWord).toBeDefined();
 
         const response = await request(app)
-            .delete(`/api/words/${createdWord._id}`)
+            .get("/api/exercises/getUserExercises")
             .set({
-                Authorization: "Bearer " + token,
+                Authorization: "Bearer " + token
             })
+            .query({parameters: params1});
 
-        console.log(response.body)
+        expect(response.statusCode).toBe(200)
+        expect(response.body.length).toBe(5)
+
+        response.body.forEach(exercise => {
+            expect(exercise.wordId).toBeDefined()
+            expect(exercise).toHaveProperty('type', "Multiple-Choice") // match params
+            expect(exercise).toHaveProperty('knowledge', 0) // because all selected words are new
+        });
+    });
+
+    const params = {
+        languages: ["Spanish","English","German"],
+        partsOfSpeech: ["Verb", "Noun"],
+        amountOfExercises: 3,
+        multiLang: "Random",
+        type: "Text-Input",
+        mode: "Single-Try",
+        preSelectedWords: testingWordsIds,
+        wordSelection: "Exercise-Performance",
+        difficultyTI: 2
+    }
+
+    let exercises
+    it("GET /api/exercises/getUserExercises - Should get exercises based on pre selected words", async () => {
+        expect(testingWords.length).toBe(3); // amount of examples words
+        expect(token).toBeDefined();
+
+        const response = await request(app)
+            .get("/api/exercises/getUserExercises")
+            .set({
+                Authorization: "Bearer " + token
+            })
+            .query({parameters: params});
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body.length).toBe(params.amountOfExercises); // amount of exercises set in params
+
+        exercises = response.body;
+
+        response.body.forEach(exercise => {
+            expect(testingWordsIds).toContain(exercise.wordId) //check every exercise is based on preSelectedWords
+            expect(exercise).toHaveProperty('type', params.type) // match params
+            expect(exercise).toHaveProperty('knowledge', 0) // because all selected words are new
+        });
+    });
+
+
+    it("POST /api/exercises/saveTranslationPerformance - Should failed with empty parameters", async () => {
+        expect(exercises).toBeDefined();
+
+        const response = await request(app)
+            .post("/api/exercises/saveTranslationPerformance")
+            .set({
+                Authorization: "Bearer " + token
+            })
+            .send({});
+
         expect(response.statusCode).toBe(200);
     });
+
 });

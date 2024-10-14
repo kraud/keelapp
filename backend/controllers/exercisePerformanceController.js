@@ -22,7 +22,7 @@ const getPerformanceByWorId = async (userId, word) => {
 // @route   POST /api/saveExerciseResult
 // @access  Private
 const saveTranslationPerformance = asyncHandler(async (req, res) => {
-
+    console.log("---->> saveTranslationPerformance")
     // Body del servicio:
     // performanceId: req.performanceId
     // Si tenemos performanceId => buscamos y actualizamos de acuerdo al resultado actual.

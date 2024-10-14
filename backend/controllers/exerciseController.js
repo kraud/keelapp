@@ -866,6 +866,12 @@ const calculateWordAverageKnowledge = (translationPerformancesList, userLanguage
 // @access  Private
 const getExercises = asyncHandler(async (req, res) => {
     let userId = req.user.id
+
+    if (!req.query.parameters) {
+        res.status(400)
+        throw new Error("Empty parameters")
+    }
+
     const parameters = {
         ...req.query.parameters,
         amountOfExercises: parseInt(req.query.parameters.amountOfExercises, 10),

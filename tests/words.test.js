@@ -2,28 +2,9 @@ const mongoose = require("mongoose");
 const request = require("supertest");
 
 const { app , server } = require("../backend/api/index.js");
+const { generateRandomId, getRandomOfArray} = require("../tests/testUtils.js");
 
 require("dotenv").config();
-
-const BE_URL = process.env.REACT_APP_VERCEL_BE_URL
-const API_URL = (BE_URL !== undefined) ? `${BE_URL}/api/exercises` : '/api/exercises'
-
-console.log("logging in with", process.env.TEST_EMAIL, process.env.TEST_PASSWORD)
-
-
-function getRandomOfArray(arr) {
-    const randomIndex = Math.floor(Math.random() * arr.length);
-    return arr[randomIndex];
-}
-
-function generateRandomId() {
-    const chars = '0123456789abcdef';
-    let randomId = '';
-    for (let i = 0; i < 24; i++) {
-        randomId += chars[Math.floor(Math.random() * chars.length)];
-    }
-    return randomId;
-}
 
 const newWordData =
 {
@@ -84,7 +65,7 @@ afterAll(async () => {
     server.close();
 });
 
-describe("API Words test's", () => {
+describe("Word's API tests", () => {
 
     let token // jwt login token
     let words // array of words saved on BE
