@@ -55,12 +55,27 @@ async function getRequiredAmountOfExercises(
         for (const word of exercisesListByWord) {
             let translationsPerformanceArray = word.exercisePerformancesByTranslation
             // We match each exercise with its corresponding exercisePerformance data, so we can sort it by their average-translation-knowledge
-            const allExercises = findMatches(word, translationsPerformanceArray) // TODO: podríamos solo enviar "word", porque translationsPerformanceArray ya está incluido en "word"?
+            // TODO: podríamos solo enviar "word", porque translationsPerformanceArray ya está incluido en "word"?
+            const allExercises = findMatches(word, translationsPerformanceArray)
             if(!isExerciseSelectionRandom){
                 allExercises.sort((a, b) => a.knowledge - b.knowledge)
+            } else {
+                // if NOT sorted by knowledge, we must shuffle all possible exercises and select one
+                shuffleArray(allExercises)
             }
             const selectedExercise = allExercises[0]
-            word.exercises.splice(0, 1) // TODO: this is not removing the correct exercise (it should match 'selectedExercise').
+            // We retain all exercises that do NOT match the one we just selected
+            word.exercises = word.exercises.filter((rawExercise) => {
+                return(
+                    !(
+                        (rawExercise.partOfSpeech === allExercises[0].partOfSpeech) &&
+                        (rawExercise.type === allExercises[0].type) &&
+                        (rawExercise.multiLang === allExercises[0].multiLang) &&
+                        (rawExercise.matchingTranslations.itemA.case === allExercises[0].matchingTranslations.itemA.case) &&
+                        (rawExercise.matchingTranslations.itemB.case === allExercises[0].matchingTranslations.itemB.case)
+                    )
+                )
+            })
             selectedExercises.push(selectedExercise)
         }
         return selectedExercises
@@ -72,7 +87,7 @@ async function getRequiredAmountOfExercises(
         let wordsInRandomOrder = [...availableExercisesByWord] // Clone the array
         while (selectedExercises.length < neededAmount) {
             if(isExerciseSelectionRandom){
-                shuffleArray(wordsInRandomOrder) // Shuffle the array for randomness
+                shuffleArray(wordsInRandomOrder) // Shuffle the array of exercises for randomness
             }
             const listSelectedExerciseByWord = await randomlySelectExerciseByWord(wordsInRandomOrder, userId)
             selectedExercises.push(
@@ -548,7 +563,7 @@ const isCorrectOptionValueFromThisTranslation = (fullListOfCases, originalCase, 
 
 // Depending on the selected difficulty, the exercises will be more or less complex. The logic is very similar between them,
 // and the exact variations are still not completely defined, so (for now) each difficulty includes the whole logic-process,
-// but this will might get simplified in the future if/once the logic is settled and we can check if there's overlap and room to reduce duplicated code
+// but this (will) might get simplified in the future if/once the logic is settled, and we can check if there's overlap and room to reduce duplicated code
 const getValuesForMultiLangAndMultipleChoiceExerciseByDifficulty = (
     exerciseDifficulty, // difficulty of the Multiple-Choice options
     matchingWord, // current word (from filtered-by-parameters list)
@@ -874,6 +889,7 @@ const getExercises = asyncHandler(async (req, res) => {
     const isExerciseSelectionRandom = (parameters.wordSelection === 'Random')
 
     // words related to other-users-tags, that the current user follows.
+    // IF preselected words => DO NOT MAKE REQUEST
     const followedWordsId = await getWordsIdFromFollowedTagsByUserId(userId)
 
     // If the user pre-selected words to create exercises => we'll not check for any other words
@@ -956,8 +972,9 @@ const getExercises = asyncHandler(async (req, res) => {
                     _id: matchingWord._id,
                     exercises: matchingExercisesPerWord, // EquivalentTranslationValues[]
                     exercisePerformancesByTranslation: matchingWord.exercisePerformances,
-                    // TODO: this can be ignored if isExerciseSelectionRandom? Would it affect other logic?
-                    exercisePerformanceAverageByWord: calculateWordAverageKnowledge(matchingWord.exercisePerformances, req.user.languages) // average translation-aged-performance (from averageTranslationKnowledge and lastDateModifiedTranslation
+                    exercisePerformanceAverageByWord: (!isExerciseSelectionRandom)
+                        ? calculateWordAverageKnowledge(matchingWord.exercisePerformances, req.user.languages) // average translation-aged-performance (from averageTranslationKnowledge and lastDateModifiedTranslation
+                        : 0
                 })
             }
         })

@@ -232,7 +232,6 @@ const findMatches = (word, translationsPerformanceArray) => {
         })
         .filter(result => result !== null).flat();
 }
-
 module.exports = {
     getPerformanceByWorId,
     saveTranslationPerformance,
