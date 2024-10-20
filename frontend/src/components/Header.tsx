@@ -253,6 +253,7 @@ function ResponsiveAppBar() {
                             display: { xs: 'none', md: 'flex' },
                             marginRight: globalTheme.spacing(2)
                         }}
+                        onClick={ () => navigate(`/`) }
                     />
 
                     {/* MENU ICON (SMALL) */}

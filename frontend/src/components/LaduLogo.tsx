@@ -12,6 +12,7 @@ interface LadoLogoProps {
     direction: 'horizontal' | 'vertical'
     type: 'icon' | 'logo',
     sxProps?: SxProps<Theme>,
+    onClick?: () => void
 }
 
 export const LaduLogo = (props: LadoLogoProps) => {
@@ -75,7 +76,7 @@ export const LaduLogo = (props: LadoLogoProps) => {
                 <Button
                     variant={'text'}
                     // size={'small'}
-                    onClick={() => null}
+                    onClick={() => props.onClick && props.onClick()}
                 >
                     <img
                         // src={"/LOGO-hor-white-border.png"}
