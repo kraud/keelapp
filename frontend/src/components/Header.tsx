@@ -324,6 +324,7 @@ function ResponsiveAppBar() {
                                 // so we correct this to be centered (we offset the width of the UI-Language selector)*/}
                                 marginRight: '-64px',
                             }}
+                            onClick={ () => navigate(`/`) }
                         />
                     </Grid>
 
