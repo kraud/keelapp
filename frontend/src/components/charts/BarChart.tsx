@@ -49,10 +49,10 @@ const BarChart = (props: BarChartProps) => {
         if(dataArray.length > 0) {
             dataArray.forEach((element: BarCharData) => {
                 //We get the index where the label being processed is.
-                const labelTranlated = (element.type === "language") ? lanTranslator(element.label) : element.label
-                const index = arrayData.findIndex((timeSlap) => timeSlap.name.includes(labelTranlated))
+                const labelTranslated = (element.type === "language") ? lanTranslator(element.label) : element.label
+                const index = arrayData.findIndex((timeSlap) => timeSlap.name.includes(labelTranslated))
                 const posTranslated = posTranslator(element.partOfSpeech)
-                if (index > 0) {
+                if (index !== -1) {
                     // If the array has the label being processed, it will only add the new partOfSpeech data.
                     arrayData[index] = {
                         ...arrayData[index],
@@ -62,7 +62,7 @@ const BarChart = (props: BarChartProps) => {
 
                     // If the array doesn't have the label being processed, it will add it.
                     arrayData.push({
-                        "name": labelTranlated,
+                        "name": labelTranslated,
                         [posTranslated]: element.count
                     })
                 }
