@@ -4,7 +4,7 @@ import {Button, Grid, Typography} from "@mui/material";
 import {Data, Primitive} from "c3";
 import globalTheme from "../../theme/theme";
 import {useNavigate} from "react-router-dom";
-import {partOfSpeechChartColors} from "../../theme/chartsColors";
+import {chartColors} from "../../theme/chartsColors";
 import Tooltip from "@mui/material/Tooltip";
 import {MetricsType} from "../../ts/enums";
 import {useTranslation} from "react-i18next";
@@ -59,7 +59,7 @@ const parseData = (dataArray: {}): Data => {
             value: Object.keys(dataArray),
         },
         type: 'pie',
-        colors: partOfSpeechChartColors
+        colors: chartColors
     })
 }
 
