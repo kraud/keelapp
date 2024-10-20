@@ -468,12 +468,12 @@ export enum Plurality {
 
 export enum PartOfSpeech {
     noun = "Noun",
-    pronoun = "Pronoun",
     verb = "Verb",
     adjective = "Adjective",
     adverb = "Adverb",
     preposition = "Preposition",
     conjunction = "Conjunction",
+    pronoun = "Pronoun",
     interjection = "Interjection",
     properNoun = "Proper noun",
     numerals = "Numerals",

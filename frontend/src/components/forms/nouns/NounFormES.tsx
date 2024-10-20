@@ -174,6 +174,16 @@ export function NounFormES(props: NounFormESProps) {
         }
     },[singularWord])
 
+    // if search query is the same as the stored response => hide loading bar
+    const hideAutocompleteLoadingState = (
+        (singularWord?.toLowerCase()) ===
+        (
+            autocompletedTranslationNounES?.cases?.find((potentialCase: WordItem) => {
+                return(potentialCase.caseName === NounCases.singularES)
+            })
+        )?.word?.toLowerCase()
+    )
+
     return(
         <Grid
             container={true}
@@ -208,7 +218,7 @@ export function NounFormES(props: NounFormESProps) {
                                 }}
                                 queryValue={singularWord}
                                 autocompleteResponse={autocompletedTranslationNounES}
-                                loadingState={isLoadingAT}
+                                loadingState={isLoadingAT && !hideAutocompleteLoadingState}
                                 onAutocompleteClick={() => onAutocompleteClick()}
                                 actionButtonLabel={t('wordForm.autocompleteTranslationButton.label', { ns: 'wordRelated', wordType: translatedGenderLabel })}
                             />
@@ -219,7 +229,7 @@ export function NounFormES(props: NounFormESProps) {
                                     maxHeight: 'max-content'
                                 }}
                             >
-                                {(isLoadingAT) && <LinearIndeterminate/>}
+                                {(isLoadingAT && !hideAutocompleteLoadingState) && <LinearIndeterminate/>}
                             </Grid>
                         </Grid>
                     }

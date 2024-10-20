@@ -7,10 +7,10 @@ import {routeVariantsAnimation} from "./management/RoutesWithAnimation";
 import {motion} from "framer-motion";
 import globalTheme from "../theme/theme";
 import Typography from "@mui/material/Typography";
-import {getIconByEnvironment} from "../components/GeneralUseComponents";
 import {Lang} from "../ts/enums";
 import {useSelector} from "react-redux";
 import {useTranslation} from "react-i18next";
+import {LaduLogo} from "../components/LaduLogo";
 
 interface NotFoundProps {
     onHideHeader: (userExist: boolean) => void
@@ -81,7 +81,13 @@ export function NotFound(props: NotFoundProps) {
                                 },
                             }}
                         >
-                            {getIconByEnvironment({})}
+                            <LaduLogo
+                                width={45}
+                                variant={"filled"}
+                                color={"primary"}
+                                direction={"horizontal"}
+                                type={'icon'}
+                            />
                         </Divider>
                     </Grid>
                 </Grid>

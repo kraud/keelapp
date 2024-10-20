@@ -20,6 +20,7 @@ import {ExerciseResult} from "../ts/interfaces";
 import {EndScreen} from "../components/exercises/EndScreen";
 import {interpolateColor} from "../components/generalUseFunctions";
 import {useTranslation} from "react-i18next";
+import ImageCarousel from "../components/ImageCarousel";
 
 
 export type ExerciseParameters = {
@@ -156,6 +157,16 @@ export const Practice = (props: PracticeProps) => {
         dispatch(resetExercisesPerformanceSliceState())
         dispatch(resetExerciseList())
     }
+
+    const imageUrls = [
+        // "https://picsum.photos/500",
+        // "https://picsum.photos/500",
+        // "https://picsum.photos/500",
+        "/LOGO-hor-blue-filled.png",
+        "/LOGO-hor-white-filled.png",
+        "/LOGO-vert-blue-border.png",
+        "/LOGO-vert-blue-filled.png",
+    ];
 
     return(
         <Grid

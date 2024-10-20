@@ -485,6 +485,16 @@ export function VerbFormEN(props: VerbFormENProps) {
         }
     },[simplePresent1s, validAutocompleteRequest])
 
+    // if search query is the same as the stored response => hide loading bar
+    const hideAutocompleteLoadingState = (
+        (simplePresent1s?.toLowerCase()) ===
+        (
+            autocompletedTranslationVerbEN?.cases?.find((potentialCase: WordItem) => {
+                return(potentialCase.caseName === VerbCases.simplePresent1sEN)
+            })
+        )?.word?.toLowerCase()
+    )
+
     return(
         <Grid
             container={true}
@@ -520,7 +530,7 @@ export function VerbFormEN(props: VerbFormENProps) {
                                 }}
                                 queryValue={simplePresent1s}
                                 autocompleteResponse={autocompletedTranslationVerbEN}
-                                loadingState={isLoadingAT}
+                                loadingState={isLoadingAT && !hideAutocompleteLoadingState}
                                 forceDisabled={!validAutocompleteRequest}
                                 onAutocompleteClick={() => onAutocompleteClick()}
                                 actionButtonLabel={t('wordForm.autocompleteTranslationButton.label', { ns: 'wordRelated', wordType: "" })}
@@ -532,7 +542,7 @@ export function VerbFormEN(props: VerbFormENProps) {
                                     maxHeight: 'max-content'
                                 }}
                             >
-                                {(isLoadingAT) && <LinearIndeterminate/>}
+                                {(isLoadingAT && !hideAutocompleteLoadingState) && <LinearIndeterminate/>}
                             </Grid>
                         </Grid>
                     }

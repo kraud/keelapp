@@ -14,8 +14,8 @@ import {toast} from "react-toastify";
 import {motion} from "framer-motion";
 import {childVariantsAnimation, routeVariantsAnimation} from "./management/RoutesWithAnimation";
 import {AppDispatch} from "../app/store";
-import {getIconByEnvironment} from "../components/GeneralUseComponents";
 import {useTranslation} from "react-i18next";
+import {LaduLogo} from "../components/LaduLogo";
 
 interface UserLoginData {
     email: string;
@@ -283,36 +283,16 @@ export const getAppTitle = () => {
             alignItems={"center"}
             xs={12}
         >
-            <Grid
-                item={true}
-                xs={'auto'}
-                sx={componentStyles.iconContainer}
-                component={motion.div}
-                variants={childVariantsAnimation}
-                initial="initial"
-                animate="final"
-            >
-                {getIconByEnvironment(componentStyles.adbIcon)}
-            </Grid>
-            <Grid
-                item={true}
-                xs={'auto'}
-                sx={componentStyles.titleContainer}
-                component={motion.div}
-                variants={childVariantsAnimation}
-                initial="initial"
-                animate="final"
-            >
-                <Typography
-                    variant={"h2"}
-                    sx={{
-                        letterSpacing: '.5rem',
-                        marginRight: '-.5rem',
-                    }}
-                >
-                    KEELAPP
-                </Typography>
-            </Grid>
+            <LaduLogo
+                width={150}
+                variant={"filled"}
+                color={"primary"}
+                direction={"vertical"}
+                type={'logo'}
+                sxProps={{
+                    marginTop: globalTheme.spacing(3),
+                }}
+            />
         </Grid>
     )
 }

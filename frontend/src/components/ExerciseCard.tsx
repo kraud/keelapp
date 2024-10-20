@@ -3,7 +3,7 @@ import ForgetIcon from '@mui/icons-material/Block';
 import SchoolIcon from '@mui/icons-material/School';
 import IconButton from "@mui/material/IconButton";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import {CountryFlag, getIconByEnvironment} from "./GeneralUseComponents";
+import {CountryFlag} from "./GeneralUseComponents";
 import Button from "@mui/material/Button";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import React, {useEffect, useState} from "react";
@@ -36,6 +36,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import {ConfirmationModal} from "./ConfirmationModal";
+import {LaduLogo} from "./LaduLogo";
 
 interface ExerciseCardProps {
     type: ExerciseTypeSelection,
@@ -775,7 +776,13 @@ export const ExerciseCard = (props: ExerciseCardProps) => {
                                         },
                                     }}
                                 >
-                                    {getIconByEnvironment({})}
+                                    <LaduLogo
+                                        width={45}
+                                        variant={"filled"}
+                                        color={"primary"}
+                                        direction={"horizontal"}
+                                        type={'icon'}
+                                    />
                                 </Divider>
                             </Grid>
                         </Grid>
