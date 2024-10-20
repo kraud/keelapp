@@ -236,7 +236,7 @@ export function NounFormEE(props: NounFormEEProps) {
             setTimerTriggerFunction(
                 () => {
                     dispatch(getAutocompletedEstonianNounData({
-                        query: singularNimetav,
+                        query: singularNimetav.toLowerCase(),
                         searchInEnglish: searchInEnglish
                     }))
                 },

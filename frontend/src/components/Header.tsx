@@ -26,13 +26,13 @@ import {useState} from "react";
 import {clearSearchResultTags, searchTagsByLabel} from "../features/tags/tagSlice";
 import {MaterialUISwitch} from "./StyledSwitch";
 import {checkEnvironmentAndIterationToDisplay} from "./forms/commonFunctions";
-import {CountryFlag, getIconByEnvironment, triggerToastMessageWithButton} from "./GeneralUseComponents";
+import {CountryFlag, triggerToastMessageWithButton} from "./GeneralUseComponents";
 import {useTranslation} from "react-i18next";
 import {AppDispatch} from "../app/store";
 import {resetWordsSelectedForExercises} from "../features/exercises/exerciseSlice";
-import {UserBadgeData} from "../pages/Account";
 import {Lang} from "../ts/enums";
 import LinearIndeterminate from "./Spinner";
+import {LaduLogo} from "./LaduLogo";
 
 
 function ResponsiveAppBar() {
@@ -243,30 +243,22 @@ function ResponsiveAppBar() {
                     sx={componentStyles.toolBar}
                 >
                     {/* LOGO BIG */}
-                    {getIconByEnvironment(componentStyles.adbIcon)}
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="a"
-                        onClick={() => navigate('/')}
-                        sx={{
-                            mr: 2,
+                    <LaduLogo
+                        width={95}
+                        variant={"filled"}
+                        color={"white"}
+                        direction={"horizontal"}
+                        type={'logo'}
+                        sxProps={{
                             display: { xs: 'none', md: 'flex' },
-                            fontFamily: 'monospace',
-                            fontWeight: 700,
-                            letterSpacing: '.3rem',
-                            color: 'inherit',
-                            textDecoration: 'none',
-                            cursor: 'pointer',
+                            marginRight: globalTheme.spacing(2)
                         }}
-                    >
-                        KEELAPP |
-                    </Typography>
+                    />
 
                     {/* MENU ICON (SMALL) */}
                     <Box
                         sx={{
-                            flexGrow: 1,
+                            flexGrow: {xs: 1, md: 0},
                             display: {
                                 xs: 'flex',
                                 md: 'none'
@@ -308,33 +300,31 @@ function ResponsiveAppBar() {
                             ))}
                         </Menu>
                     </Box>
-
                     {/* LOGO SMALL */}
-                    {getIconByEnvironment({ display: { xs: 'flex', md: 'none' }, mr: 1 })}
-                    <Typography
-                        variant="h5"
-                        noWrap
-                        component="a"
-                        onClick={() => navigate('/')}
+                    <Grid
+                        container={true}
+                        justifyContent={'center'}
+                        item={true}
+                        xs={true}
                         sx={{
-                            mr: 2,
-                            // NB! 'inline-block' needed for nowrap ellipsis and 'none' is to avoid double text while on bigger screen
-                            display: { xs: 'inline-block', md: 'none' },
-                            fontFamily: 'monospace',
-                            fontWeight: 700,
-                            letterSpacing: '.3rem',
-                            color: 'inherit',
-                            textDecoration: 'none',
-                            cursor: 'pointer',
-                            // button on each side of header are not symmetric when on small-screen,
-                            // so we correct this to be centered (we offset the width of the UI-Language selector)
-                            marginRight: '-64px',
-
-                            flexGrow: 1,
+                            display: { xs: 'flex', md: 'none' },
                         }}
                     >
-                        KEELAPP
-                    </Typography>
+                        <LaduLogo
+                            width={95}
+                            variant={"filled"}
+                            color={"white"}
+                            direction={"horizontal"}
+                            type={'logo'}
+                            sxProps={{
+                                display: { xs: 'flex', md: 'none' },
+                                flexGrow: 1,
+                                // button on each side of header are not symmetric when on small-screen,*/}
+                                // so we correct this to be centered (we offset the width of the UI-Language selector)*/}
+                                marginRight: '-64px',
+                            }}
+                        />
+                    </Grid>
 
                     {/* OPTIONS LIST */}
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
@@ -359,7 +349,10 @@ function ResponsiveAppBar() {
                                 flexGrow: 1,
                                 display: { xs: 'none', md: 'flex' },
                                 justifyContent: 'end',
-                                marginRight: globalTheme.spacing(6)
+                                marginRight: {
+                                    xs: globalTheme.spacing(0),
+                                    xl: globalTheme.spacing(1),
+                                }
                             }}
                         >
                             <Grid
@@ -394,11 +387,22 @@ function ResponsiveAppBar() {
                                         ? t('header.search.words', {ns: 'common'})
                                         : t('header.search.tags', {ns: 'common'})
                                 }
+                                sxPropsAutocomplete={{
+                                    maxWidth: {md: '175px', lg: "250px"},
+                                    minWidth: {md: '175px', lg: "250px"}
+                                }}
                             />
                         </Box>
                     }
                     {/* USER ICON */}
-                    <Box sx={{ flexGrow: 0 }}>
+                    <Box
+                        sx={{
+                            flexGrow: {
+                                xs: 1,
+                                md: 0
+                            },
+                            textAlign: "end"
+                    }}>
                         <Tooltip
                             title={t('header.settings.uiLanguage', {ns: 'common'})}
                         >
@@ -408,7 +412,7 @@ function ResponsiveAppBar() {
                                 onClick={handleOpenUILanguageMenu}
                             >
                                 <>
-                                    {(!isLoadingAuth) && getLangKeyByLabel(user.uiLanguage)}
+                                    {(!isLoadingAuth) && getLangKeyByLabel(user?.uiLanguage)}
                                     {(isLoadingAuth) && <LinearIndeterminate sxProps={{paddingX: '10px'}}/>}
                                 </>
                             </Button>
@@ -421,7 +425,6 @@ function ResponsiveAppBar() {
                                 sx={{ p: 0 }}
                             >
                                 <Badge
-                                    // variant="dot"
                                     overlap="circular"
                                     color="error"
                                     invisible={(getUnreadNotifications().length === 0)}

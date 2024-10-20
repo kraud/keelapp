@@ -19,7 +19,7 @@ import {getFriendshipsByUserId} from "../features/friendships/friendshipSlice";
 import {FriendshipData, NotificationData, SearchResult, TagData} from "../ts/interfaces";
 import {clearUserResultData} from "../features/users/userSlice";
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
-import {getTagsForCurrentUser, getFollowedTagsByUser} from "../features/tags/tagSlice";
+import {getTagsForCurrentUser, getFollowedTagsByUser, clearFullTagData} from "../features/tags/tagSlice";
 import {FriendList, ChipList} from "../components/GeneralUseComponents";
 import {clearRequesterNotifications, createNotification} from "../features/notifications/notificationSlice";
 import {Lang} from "../ts/enums";
@@ -180,6 +180,9 @@ export const Account = () => {
             setTagIdToShare("")
             setOpenFriendsModal(false)
             toast.success(t('toastMessages.tagShared', { ns: 'tags' }))
+            // reset local tag
+            dispatch(clearFullTagData())
+            setSelectedTag("")
         }
     }, [notificationResponse, isLoadingNotifications, isSuccessNotifications, sendingNotification])
 
@@ -418,7 +421,7 @@ export const Account = () => {
                 rowSpacing={2}
                 item={true}
                 xs={12}
-                lg={4}
+                lg={true}
                 sx={{
                     height: 'fit-content'
                 }}
@@ -559,7 +562,7 @@ export const Account = () => {
                     justifyContent={"space-around"}
                     item={true}
                     xs={12}
-                    lg={3}
+                    lg={true}
                     rowSpacing={2}
                     sx={{
                         paddingTop: '0px !important',
@@ -703,7 +706,7 @@ export const Account = () => {
                     title={(selectedTag !== "")
                         ?undefined
                         : t('buttons.createTag', { ns: 'common' })
-                }
+                    }
                 />
             }
         </Grid>
