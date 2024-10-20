@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import C3Chart from "./C3Chart";
 import {Button, Grid, Typography} from "@mui/material";
-import {partOfSpeechChartColors} from "../../theme/chartsColors";
+import {chartColors} from "../../theme/chartsColors";
 import globalTheme from "../../theme/theme";
 import {Data} from "c3";
 import {MetricsType} from "../../ts/enums";
@@ -92,7 +92,7 @@ const BarChart = (props: BarChartProps) => {
             },
             type: 'bar',
             groups: groupsChecked ? [arrayKeys] : [],
-            colors: partOfSpeechChartColors
+            colors: chartColors
         })
     }
 

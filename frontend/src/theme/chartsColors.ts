@@ -1,4 +1,4 @@
-export const partOfSpeechChartColors = {
+export const chartColors = {
     "Noun": "#1f77b4",        // Blue
     "Pronoun": "#ff7f0e",      // Orange
     "Verb": "#2ca02c",         // Green
@@ -8,5 +8,10 @@ export const partOfSpeechChartColors = {
     "Conjunction": "#e377c2",  // Pink
     "Interjection": "#7f7f7f", // Gray
     "Proper noun": "#bcbd22",  // Yellow-green
-    "Numerals": "#17becf"      // Teal
+    "Numerals": "#17becf",      // Teal
+
+    "Spanish": "#1f77b4",    // Blue
+    "German": "#ff7f0e",     // Orange
+    "Estonian": "#2ca02c",   // Green
+    "English": "#d62728",    // Red
 }
