@@ -245,6 +245,16 @@ export function NounFormEE(props: NounFormEEProps) {
         }
     },[singularNimetav])
 
+    // if search query is the same as the stored response => hide loading bar
+    const hideAutocompleteLoadingState = (
+        (singularNimetav?.toLowerCase()) ===
+        (
+            autocompletedTranslationNounEE?.cases?.find((potentialCase: WordItem) => {
+                return(potentialCase.caseName === NounCases.singularNimetavEE)
+            })
+        )?.word?.toLowerCase()
+    )
+
     return(
         <Grid
             container={true}
@@ -279,7 +289,7 @@ export function NounFormEE(props: NounFormEEProps) {
                                 actionButtonLabel={t('wordForm.autocompleteTranslationButton.label', { ns: 'wordRelated', wordType: "" })}
                                 queryValue={singularNimetav}
                                 autocompleteResponse={autocompletedTranslationNounEE}
-                                loadingState={isLoadingAT}
+                                loadingState={isLoadingAT && !hideAutocompleteLoadingState}
                                 onAutocompleteClick={() => onAutocompleteClick()}
                                 sxProps={{
                                     marginRight: globalTheme.spacing(2)
@@ -310,7 +320,7 @@ export function NounFormEE(props: NounFormEEProps) {
                                     maxHeight: 'max-content'
                                 }}
                             >
-                                {(isLoadingAT) && <LinearIndeterminate/>}
+                                {(isLoadingAT && !hideAutocompleteLoadingState) && <LinearIndeterminate/>}
                             </Grid>
                         </Grid>
                     }

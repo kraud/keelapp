@@ -492,6 +492,16 @@ export function VerbFormEE(props: VerbFormEEProps) {
         }
     },[infinitiveMa, validAutocompleteRequest])
 
+    // if search query is the same as the stored response => hide loading bar
+    const hideAutocompleteLoadingState = (
+        (infinitiveMa?.toLowerCase()) ===
+        (
+            autocompletedTranslationVerbEE?.cases?.find((potentialCase: WordItem) => {
+                return(potentialCase.caseName === VerbCases.infinitiveMaEE)
+            })
+        )?.word?.toLowerCase()
+    )
+
     return(
         <Grid
             container={true}
@@ -526,7 +536,7 @@ export function VerbFormEE(props: VerbFormEEProps) {
                                 actionButtonLabel={t('wordForm.autocompleteTranslationButton.label', { ns: 'wordRelated', wordType: "" })}
                                 queryValue={infinitiveMa}
                                 autocompleteResponse={autocompletedTranslationVerbEE}
-                                loadingState={isLoadingAT}
+                                loadingState={isLoadingAT && !hideAutocompleteLoadingState}
                                 forceDisabled={!validAutocompleteRequest}
                                 onAutocompleteClick={() => onAutocompleteClick()}
                                 sxProps={{
@@ -558,7 +568,7 @@ export function VerbFormEE(props: VerbFormEEProps) {
                                     maxHeight: 'max-content'
                                 }}
                             >
-                                {(isLoadingAT) && <LinearIndeterminate/>}
+                                {(isLoadingAT && !hideAutocompleteLoadingState) && <LinearIndeterminate/>}
                             </Grid>
                         </Grid>
                     }

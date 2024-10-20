@@ -5,7 +5,7 @@ import {Grid} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {TextInputFormWithHook} from "../../TextInputFormHook";
 import {TranslationItem, WordItem} from "../../../ts/interfaces";
-import {Lang, VerbCases, VerbRegularity} from "../../../ts/enums";
+import {Lang, NounCases, VerbCases, VerbRegularity} from "../../../ts/enums";
 import {getDisabledInputFieldDisplayLogic, getWordByCase} from "../commonFunctions";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../../../app/store";
@@ -646,6 +646,16 @@ export function VerbFormES(props: VerbFormESProps) {
         }
     },[infinitiveNonFiniteSimple, validAutocompleteRequest])
 
+    // if search query is the same as the stored response => hide loading bar
+    const hideAutocompleteLoadingState = (
+        (infinitiveNonFiniteSimple?.toLowerCase()) ===
+        (
+            autocompletedTranslationVerbES?.cases?.find((potentialCase: WordItem) => {
+                return(potentialCase.caseName === VerbCases.infinitiveNonFiniteSimpleES)
+            })
+        )?.word?.toLowerCase()
+    )
+
     return(
         <Grid
             container={true}
@@ -679,7 +689,7 @@ export function VerbFormES(props: VerbFormESProps) {
                                 }}
                                 queryValue={infinitiveNonFiniteSimple}
                                 autocompleteResponse={autocompletedTranslationVerbES}
-                                loadingState={isLoadingAT}
+                                loadingState={isLoadingAT && !hideAutocompleteLoadingState}
                                 forceDisabled={!validAutocompleteRequest}
                                 onAutocompleteClick={() => onAutocompleteClick()}
                                 actionButtonLabel={t('wordForm.autocompleteTranslationButton.label', { ns: 'wordRelated', wordType: "" })}
@@ -691,7 +701,7 @@ export function VerbFormES(props: VerbFormESProps) {
                                     maxHeight: 'max-content'
                                 }}
                             >
-                                {(isLoadingAT) && <LinearIndeterminate/>}
+                                {(isLoadingAT && !hideAutocompleteLoadingState) && <LinearIndeterminate/>}
                             </Grid>
                         </Grid>
                     }

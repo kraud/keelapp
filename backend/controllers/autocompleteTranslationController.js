@@ -47,6 +47,10 @@ const getNounGenderES = asyncHandler(async (req, res) => {
             {
                 caseName: "genderES",
                 word: getFullArticleES(SpanishGender(req.params.singularNominativeNoun))
+            },
+            {
+                caseName: "singularES",
+                word: req.params.singularNominativeNoun
             }
         ]
     }
@@ -420,6 +424,10 @@ const getVerbDE = asyncHandler(async (req, res) => {
         const verbResponse = {
             language: 'German',
             cases: [
+                {
+                    caseName: "infinitiveDE",
+                    word: req.params.infinitiveVerb
+                },
                 // TODO: add optional field to request to specify auxiliary verb: haben/sein
                 //  (small list of verbs use 'sein', we could filter/determine them in FE?).
                 //  We need aux verb for Perfekt (present perfect) and other forms.

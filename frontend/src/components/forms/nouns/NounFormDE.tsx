@@ -80,6 +80,16 @@ export function NounFormDE(props: NounFormDEProps) {
     const [pluralGenitiv, setPluralGenitiv] = useState("")
     const [pluralDativ, setPluralDativ] = useState("")
 
+    // if search query is the same as the stored response => hide loading bar
+    const hideAutocompleteLoadingState = (
+        (singularNominativ?.toLowerCase()) ===
+        (
+            autocompletedTranslationNounDE?.cases?.find((potentialCase: WordItem) => {
+                return(potentialCase.caseName === NounCases.singularNominativDE)
+            })
+        )?.word?.toLowerCase()
+    )
+
     useEffect(() => {
         const currentCases: WordItem[] = [
             {
@@ -307,7 +317,7 @@ export function NounFormDE(props: NounFormDEProps) {
                                 }}
                                 queryValue={singularNominativ}
                                 autocompleteResponse={autocompletedTranslationNounDE}
-                                loadingState={isLoadingAT}
+                                loadingState={isLoadingAT && !hideAutocompleteLoadingState}
                                 onAutocompleteClick={() => onAutocompleteClick()}
                                 actionButtonLabel={t('wordForm.autocompleteTranslationButton.label', { ns: 'wordRelated', wordType: "" })}
                             />
@@ -318,7 +328,7 @@ export function NounFormDE(props: NounFormDEProps) {
                                     maxHeight: 'max-content'
                                 }}
                             >
-                                {(isLoadingAT) && <LinearIndeterminate/>}
+                                {(isLoadingAT && !hideAutocompleteLoadingState) && <LinearIndeterminate/>}
                             </Grid>
                         </Grid>
                     }
