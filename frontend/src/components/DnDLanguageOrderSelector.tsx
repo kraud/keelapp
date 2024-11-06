@@ -199,7 +199,7 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                                 componentStyles.sortableContextInnerContainer
                             }
                         >
-                            {(props.allSelectedItems.length === 0)
+                            {(props.allSelectedItems?.length === 0)
                                 ?
                                 <>
                                     {((props.disabled) && (props.noItemsSelectedMessage!!)) &&
@@ -225,7 +225,7 @@ export function DnDLanguageOrderSelector(props: DnDLanguageOrderSelectorProps) {
                                 </>
                                 :
                                 (
-                                    props.allSelectedItems.map((item: string, index: number) => {
+                                    props.allSelectedItems?.map((item: string, index: number) => {
                                         return (
                                             <DnDSortableItem
                                                 flagSide={props.flagSide}

@@ -26,8 +26,11 @@ import LinearIndeterminate from "../components/Spinner";
 import {AppDispatch} from "../app/store";
 import {useTranslation} from "react-i18next";
 import {setWordsSelectedForExercises} from "../features/exercises/exerciseSlice";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import theme from "../theme/theme";
 
 export function Review(){
+    const lessThanMd = useMediaQuery(theme.breakpoints.down("md"))
     const componentStyles = {
         mainContainer: {
             position: 'absolute',
@@ -50,7 +53,7 @@ export function Review(){
     const { t } = useTranslation(['review', 'common'])
     const {user} = useSelector((state: any) => state.auth)
     // Languages currently displayed as columns on the table
-    const [allSelectedLanguages, setAllSelectedLanguages] = useState<string[]>(user.languages)
+    const [allSelectedLanguages, setAllSelectedLanguages] = useState<string[]>(user?.languages)
     // Languages currently not displayed as columns on the table
     const [otherLanguages, setOtherLanguages] = useState<string[]>([])
     const [displayFilers, setDisplayFilers] = useState(true)
@@ -520,7 +523,8 @@ export function Review(){
                                 return(
                                     t(`partOfSpeech.${getPoSKeyByLabel(partOfSpeech as PartOfSpeech)}`, { ns: 'common' })
                                 )
-                            }
+                            },
+                            lessThanMd
                         ))
                     }}
                     partsOfSpeech={wordsSimple.partsOfSpeechIncluded}

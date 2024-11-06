@@ -60,6 +60,7 @@ export type UserData = {
     username: string,
     email: string,
     languages: Lang[]
+    uiLanguage?: Lang,
 }
 
 export type NotificationData = {

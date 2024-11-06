@@ -158,7 +158,7 @@ export const AutocompleteSearch = (props: AutocompleteSearchProps) => {
                             marginRight: globalTheme.spacing(2),
                         }}
                     >
-                        {getPartOfSpeechAbbreviated(option.completeWordInfo.partOfSpeech)}
+                        {getPartOfSpeechAbbreviated(option.completeWordInfo.partOfSpeech, user?.uiLanguage)}
                     </Typography>
                 )
             }

@@ -1,6 +1,6 @@
 import {
     AdjectiveCases,
-    AdverbCases,
+    AdverbCases, Lang,
     NounCases,
     PartOfSpeech, PrefixesVerbDE,
     VerbCases, VerbCaseTypeDE,
@@ -30,30 +30,66 @@ export function getDisabledInputFieldDisplayLogic(disabled: boolean, fieldValue:
     )
 }
 
-export function getPartOfSpeechAbbreviated(partOfSpeech: PartOfSpeech){
-    switch (partOfSpeech){
-        case("Noun"):{
-            return("n.")
-        }
-        case("Pronoun"):{
-            return("pron.")
-        }
-        case("Verb"):{
-            return("v.")
-        }
-        case("Adjective"):{
-            return("adj.")
-        }
-        case("Adverb"):{
-            return("adv.")
-        }
-        case("Preposition"):{
-            return("prep.")
-        }
-        case("Conjunction"):{
-            return("conj.")
-        }
-        default: return("-")
+export function getPartOfSpeechAbbreviated(partOfSpeech: PartOfSpeech, language: Lang): string {
+    switch (language) {
+        case Lang.EN:
+            switch (partOfSpeech) {
+                case PartOfSpeech.noun: return "n.";
+                case PartOfSpeech.pronoun: return "pron.";
+                case PartOfSpeech.verb: return "v.";
+                case PartOfSpeech.adjective: return "adj.";
+                case PartOfSpeech.adverb: return "adv.";
+                case PartOfSpeech.preposition: return "prep.";
+                case PartOfSpeech.conjunction: return "conj.";
+                case PartOfSpeech.interjection: return "intj.";
+                case PartOfSpeech.properNoun: return "prop. n.";
+                case PartOfSpeech.numerals: return "num.";
+                default: return "-";
+            }
+        case Lang.ES:
+            switch (partOfSpeech) {
+                case PartOfSpeech.noun: return "sust.";
+                case PartOfSpeech.pronoun: return "pron.";
+                case PartOfSpeech.verb: return "v.";
+                case PartOfSpeech.adjective: return "adj.";
+                case PartOfSpeech.adverb: return "adv.";
+                case PartOfSpeech.preposition: return "prep.";
+                case PartOfSpeech.conjunction: return "conj.";
+                case PartOfSpeech.interjection: return "interj.";
+                case PartOfSpeech.properNoun: return "n. prop.";
+                case PartOfSpeech.numerals: return "num.";
+                default: return "-";
+            }
+        case Lang.DE:
+            switch (partOfSpeech) {
+                case PartOfSpeech.noun: return "S.";
+                case PartOfSpeech.pronoun: return "Pron.";
+                case PartOfSpeech.verb: return "V.";
+                case PartOfSpeech.adjective: return "Adj.";
+                case PartOfSpeech.adverb: return "Adv.";
+                case PartOfSpeech.preposition: return "Präp.";
+                case PartOfSpeech.conjunction: return "Konj.";
+                case PartOfSpeech.interjection: return "Intj.";
+                case PartOfSpeech.properNoun: return "Eigenn.";
+                case PartOfSpeech.numerals: return "Zahl.";
+                default: return "-";
+            }
+        case Lang.EE:
+            switch (partOfSpeech) {
+                case PartOfSpeech.noun: return "s.";
+                case PartOfSpeech.pronoun: return "pr.";
+                case PartOfSpeech.verb: return "v.";
+                case PartOfSpeech.adjective: return "omad.";
+                case PartOfSpeech.adverb: return "määrs.";
+                case PartOfSpeech.preposition: return "eess.";
+                case PartOfSpeech.conjunction: return "sides.";
+                case PartOfSpeech.interjection: return "hüüds.";
+                case PartOfSpeech.properNoun: return "eris.";
+                case PartOfSpeech.numerals: return "arv.";
+                default: return "-";
+            }
+        default:
+            return "-";
     }
 }
 

@@ -14,7 +14,7 @@ import GroupIcon from '@mui/icons-material/Group';
 import {UserData} from "../../../ts/interfaces";
 import globalTheme from "../../../theme/theme";
 import {Grid} from "@mui/material";
-import {useTranslation} from "react-i18next";
+import {getPartOfSpeechAbbreviated} from "../../forms/commonFunctions";
 
 export type TableWordData = {
     id: string,
@@ -40,7 +40,13 @@ export type TableWordData = {
 }
 
 // As the order of selected languages changes, so should the order they are displayed on the table
-export const createColumnsReviewTable = (selectedLanguagesList: string[], displayGender: boolean, user: UserData, translateFunction: (access: string) => string) => {
+export const createColumnsReviewTable = (
+    selectedLanguagesList: string[],
+    displayGender: boolean,
+    user: UserData,
+    translateFunction: (access: string) => string,
+    lessThanMd: boolean
+) => {
     const newColumnHelper = createColumnHelper<TableWordData>()
 
     const newlySortedColumns = selectedLanguagesList.map((language: string) => {
@@ -68,7 +74,11 @@ export const createColumnsReviewTable = (selectedLanguagesList: string[], displa
                     onlyDisplayAmountOnHover: true,
                     type: "text",
                     sxProps: {
-                        width: '200px',
+                        // width: '200px',
+                        // maxWidth: 'max-content',
+                        width: lessThanMd ?'100px' :'200px',
+                        // textOverflow: 'ellipsis',
+                        // minWidth: '100px'
                     },
                     enableColumnFilter: false,
                 }
@@ -82,7 +92,11 @@ export const createColumnsReviewTable = (selectedLanguagesList: string[], displa
                     onlyDisplayAmountOnHover: true,
                     type: "text",
                     sxProps: {
-                        width: '200px',
+                        // width: '200px',
+                        // maxWidth: 'max-content',
+                        width: lessThanMd ?'100px' :'200px',
+                        // textOverflow: 'ellipsis',
+                        // minWidth: '100px'
                     },
                     enableColumnFilter: false,
                 }
@@ -97,7 +111,12 @@ export const createColumnsReviewTable = (selectedLanguagesList: string[], displa
                     onlyDisplayAmountOnHover: true,
                     type: "text",
                     sxProps: {
-                        width: '200px',
+                        // width: '200px',
+                        // maxWidth: 'max-content',
+                        // maxWidth: lessThanMd ?'100px' :'250px',
+                        width: lessThanMd ?'100px' :'200px',
+                        // textOverflow: 'ellipsis',
+                        // minWidth: '100px'
                     },
                     enableColumnFilter: false,
                 }
@@ -114,7 +133,11 @@ export const createColumnsReviewTable = (selectedLanguagesList: string[], displa
                     onlyDisplayAmountOnHover: true,
                     type: "text",
                     sxProps: {
-                        width: '200px',
+                        // width: '200px',
+                        // maxWidth: 'max-content',
+                        width: lessThanMd ?'100px' :'200px',
+                        // textOverflow: 'ellipsis',
+                        // minWidth: '100px'
                     },
                     enableColumnFilter: false,
                 }
@@ -160,7 +183,8 @@ export const createColumnsReviewTable = (selectedLanguagesList: string[], displa
                         displayWordGender={currentLanguageData.displayWordGender!}
                         //@ts-ignore
                         amount={(currentLanguageData.amount !== undefined) ?info.row.original[currentLanguageData.amount] :undefined}
-                        onlyDisplayAmountOnHover={currentLanguageData.onlyDisplayAmountOnHover!}
+                        // NB! Amount of content display is not part of the mobile UI (so we hide it if less than Medium-sized screen)
+                        onlyDisplayAmountOnHover={currentLanguageData.onlyDisplayAmountOnHover! && !(lessThanMd)}
                         type={currentLanguageData.type}
                         sxProps={currentLanguageData.sxProps}
                     />
@@ -190,21 +214,28 @@ export const createColumnsReviewTable = (selectedLanguagesList: string[], displa
                         textAlign={"center"}
                         onlyForDisplay={true}
                         sxProps={{
-                            paddingLeft: globalTheme.spacing(  6),
-                            paddingRight: globalTheme.spacing(  2),
+                            paddingLeft: lessThanMd ?globalTheme.spacing(0.5) :globalTheme.spacing(6),
+                            paddingRight: lessThanMd ?globalTheme.spacing(0.5) :globalTheme.spacing(  2),
+                            marginRight: lessThanMd ?'-25px' :undefined,
+                            marginLeft: lessThanMd ?undefined :'-18px'
                         }}
                     />
                 ),
+                // TODO: refactor this so it takes less room in mobile
                 // @ts-ignore
                 cell: ({ row, getValue }) => (
                     <TableDataCell
                         content={
                             <Grid
                                 container={true}
+                                // sx={{
+                                //     maxWidth: 'max-content',
+                                // }}
                             >
                                 <Grid
                                     item={true}
-                                    xs
+                                    // xs
+                                    xs={lessThanMd ?'auto' :true}
                                     sx={{
                                         alignContent: 'center'
                                     }}
@@ -232,7 +263,8 @@ export const createColumnsReviewTable = (selectedLanguagesList: string[], displa
                                 </Grid>
                                 <Grid
                                     item={true}
-                                    xs
+                                    // xs
+                                    xs={lessThanMd ?'auto' :true}
                                 >
                                     <IndeterminateCheckbox
                                         {...{
@@ -250,7 +282,10 @@ export const createColumnsReviewTable = (selectedLanguagesList: string[], displa
                         onlyForDisplay={true}
                         sxProps={{
                             paddingLeft: '6px',
-                            paddingRight: globalTheme.spacing(2),
+                            paddingRight: lessThanMd ?globalTheme.spacing(0.5) :globalTheme.spacing(2),
+                            // maxWidth: 'max-content',
+                            maxWidth: lessThanMd ?'80px' :'max-content',
+                            // border: '1px solid red'
                         }}
                     />
                 ),
@@ -273,7 +308,13 @@ export const createColumnsReviewTable = (selectedLanguagesList: string[], displa
                     (info.getValue() !== undefined)
                         ?
                         <TableDataCell
-                            content={translateFunction(info.getValue())}
+                            content={lessThanMd
+                                ? getPartOfSpeechAbbreviated(
+                                    info.getValue(),
+                                    user.uiLanguage ?? 'English' as Lang // NB! In case user not correctly loaded, we revert to English
+                                )
+                                : translateFunction(info.getValue())
+                        }
                             type={"text"}
                             textAlign={"center"}
                             onlyForDisplay={true}

@@ -31,6 +31,7 @@ import {CountryFlag} from "../GeneralUseComponents";
 import Tooltip from "@mui/material/Tooltip";
 import {SortDirection} from "@tanstack/react-table";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import theme from "../../theme/theme";
 
 interface TableHeaderCellProps {
     content: any
@@ -39,25 +40,29 @@ interface TableHeaderCellProps {
 }
 
 export function TableHeaderCell(props: TableHeaderCellProps){
+    const lessThanMd = useMediaQuery(theme.breakpoints.down("md"))
 
     return(
         <Grid
             sx={{
-                padding: '10px 25px',
-                margin: '10px',
+                padding: lessThanMd ?'2px 5px' :'10px 25px',
+                margin: lessThanMd ?'5px' :'10px',
                 marginBottom: 0,
                 marginTop: 0,
-                border: "4px solid black",
-                borderRadius: "25px",
+                border: lessThanMd ?"3px solid black" :"4px solid black",
+                borderRadius: lessThanMd ?"15px" :"25px",
                 cursor: 'pointer',
                 ...props.sxProps
             }}
         >
             <Typography
-                variant={'h6'}
+                // variant={'h6'}
                 fontWeight={"bold"}
                 color={"primary"}
                 display={"inline"}
+                sx={{
+                    typography: {xs: 'subtitle2', md: 'h6'}
+                }}
             >
                 {(props.column !== undefined) &&
                     {asc: '⬆ ', desc: '⬇ '}[
@@ -66,11 +71,12 @@ export function TableHeaderCell(props: TableHeaderCellProps){
                 }
             </Typography>
             <Typography
-                variant={'h6'}
+                // variant={{xs: 'subtitle2', md: 'h6'}}
                 fontWeight={"bold"}
                 display={"inline"}
                 sx={{
                     userSelect: 'none',
+                    typography: {xs: 'subtitle2', md: 'h6'}
                 }}
             >
                 {props.content}
@@ -119,6 +125,15 @@ export function TableDataCell(props: TableDataCellProps){
         },
         text: {
             cursor: (! props.onlyForDisplay!) ?"pointer" : "default",
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            marginTop: '-4px', // NB! For some reason, overflow: 'hidden' moves lines 4px down. This is here to counter that.
+            // typography: {
+            //     xs: "body1",
+            //     md: "subtitle1",
+            // },
+            // fontWeight: 'bold',
         }
     }
     type TagsData = {
@@ -468,13 +483,13 @@ export function TableDataCell(props: TableDataCellProps){
                                 openModal()
                             }
                         }}
-                        variant={'subtitle1'}
                         textAlign={
                             (props.textAlign !== undefined)
                                 ? props.textAlign
                                 : "left"
                         }
-                        fontWeight={500}
+                        fontWeight={lessThanMedium ?undefined :500}
+                        variant={lessThanMedium ?'body1' :'subtitle1'}
                         sx={componentStyles.text}
                     >
                         {/* GENDER */}
@@ -708,8 +723,8 @@ export function TableDataCell(props: TableDataCellProps){
         <>
             <Grid
                 sx={{
-                    paddingX: globalTheme.spacing(3),
-                    paddingY: globalTheme.spacing(1),
+                    paddingX: lessThanMedium ?globalTheme.spacing(1) :globalTheme.spacing(3),
+                    paddingY: lessThanMedium ?globalTheme.spacing(0.5) :globalTheme.spacing(1),
                     height: '100%',
                     marginTop: 'auto',
                     marginBottom: 'auto',

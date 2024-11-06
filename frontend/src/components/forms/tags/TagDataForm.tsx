@@ -424,7 +424,7 @@ export const TagDataForm = (props: TagDataFormProps) => {
                                                 paddingLeft: globalTheme.spacing(1),
                                             }}
                                         >
-                                             ({getPartOfSpeechAbbreviated(selectedWordItem.partOfSpeech)})
+                                             ({getPartOfSpeechAbbreviated(selectedWordItem.partOfSpeech, user?.uiLanguage)})
                                         </Typography>
                                     </>
                                 }

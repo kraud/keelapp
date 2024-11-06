@@ -16,6 +16,8 @@ import {PropsButtonData} from "../../ts/interfaces";
 import {TableWordData} from "./columns/ReviewTableColumns";
 import LinearProgress from "@mui/material/LinearProgress";
 import {ConfirmationButton} from "../ConfirmationButton";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import theme from "../../theme/theme";
 
 interface TranslationsTableProps {
     sortedAndSelectedLanguages: string[]
@@ -31,7 +33,84 @@ interface TranslationsTableProps {
 }
 
 export function TranslationsTable(props: TranslationsTableProps) {
-    const componentStyles = {
+    const componentStylesMobile = {
+        mainGridContainer: {
+            padding: '0',
+            overflowY: 'hidden',
+
+            "& table": {
+                borderCollapse: 'collapse',
+                fontFamily: 'Roboto',
+
+                "& thead": {
+                    "& tr": {
+                        "& th": {
+                            border: "none",
+                        }
+                  },
+                },
+                "& tbody": {
+                    "& tr": {
+                        "& td": {
+                            padding: 0,
+                            "&:nth-of-type(even)": {
+                                "& .tdContainer": {
+                                    background: '#c7c7c7',
+                                },
+                            },
+                            "&:first-of-type": { // "first-child caused a warning
+                                "& .tdContainer": {
+                                    borderLeft: "2px solid black",
+                                    borderRadius: '25px 0px 0px 25px',
+                                },
+                            },
+                            "&:last-child": {
+                                "& .tdContainer": {
+                                    borderRight: "2px solid black",
+                                    borderRadius: '0px 25px 25px 0px',
+                                },
+                            },
+                            "& .tdContainer": {
+                                height: '40px',
+                                minWidth: 'max-content',
+                                color: 'black',
+                                borderTop: "2px solid black",
+                                borderBottom: "2px solid black",
+                                "& .completePercentageCircle": {
+                                    "& svg": {
+                                        height: '30px',
+                                        width: '30px',
+                                    },
+                                },
+                                "& .smallerIconCompletePercentage": {
+                                    "& svg": {
+                                        height: '25px',
+                                        width: '25px',
+                                    },
+                                },
+                            },
+                        },
+                    }
+                },
+                "& th": {
+                    padding: `${globalTheme.spacing(1)} 0 ${globalTheme.spacing(1)} 0`, // 0 padding on the sides to allow full-width for component inside?
+                },
+                "& td": {
+                    fontSize: globalTheme.typography.fontSize,
+                    fontFamily: 'Roboto',
+                    overflow: 'hidden',
+                    flexWrap: 'nowrap',
+                    textOverflow: 'ellipsis',
+                    height: '40px',
+                    maxHeight: '40px',
+                    minHeight: '40px',
+                    // maxWidth: 'max-content'
+                },
+            }
+        },
+    }
+
+    const componentStylesDesktop = {
         mainGridContainer: {
             padding: '0',
             overflowY: 'hidden',
@@ -106,6 +185,9 @@ export function TranslationsTable(props: TranslationsTableProps) {
             }
         },
     }
+
+    const lessThanMd = useMediaQuery(theme.breakpoints.down("md"))
+    const componentStyles = lessThanMd ? componentStylesMobile : componentStylesDesktop
     const [rowData, setRowData] = useState<TableWordData[]>(() => [])
     const [globalFilter, setGlobalFilter] = useState("")
     const [rowSelection, setRowSelection] = React.useState({})
