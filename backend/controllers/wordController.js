@@ -814,7 +814,8 @@ const filterWordByAnyTranslation = asyncHandler(async (req, res) => {
                             "word": {$regex: `${req.query.query}`, $options: "i"},
                             "caseName": {
                                 $not: {$regex: "^gender", $options: "i"},
-                                $not: {$regex: "^gradable", $options: "i"}
+                                $not: {$regex: "^gradable", $options: "i"},
+                                $not: {$regex: "^regularity", $options: "i"}
                             }, // To avoid filtering by fields that don't represent translation-data
                         }
                     }
@@ -828,7 +829,8 @@ const filterWordByAnyTranslation = asyncHandler(async (req, res) => {
         }
     )
     // this will return an array of options, representing one or more translation PER word,
-    // in case that more than one translation in a word matches the search query
+    // in case that more than one translation in a word matches the search query, we go over every item and return all matching cases
+    // To avoid including aux-info to be listed, we filter again by the same cases as before
     .then((data) => {
         if (data) {
             let simpleResults = []
@@ -844,6 +846,8 @@ const filterWordByAnyTranslation = asyncHandler(async (req, res) => {
                             !(wordCase.caseName.match(/^gender/i))
                             &&
                             !(wordCase.caseName.match(/^gradable/i))
+                            &&
+                            !(wordCase.caseName.match(/^regularity/i))
                             &&
                             (!found) // TODO: change this to a specific case? to always display the "easiest" case if multiple do match
                         ){
