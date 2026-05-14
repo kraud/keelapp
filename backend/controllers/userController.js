@@ -94,10 +94,11 @@ const registerUser = asyncHandler(async(req, res) => {
 // @desc    Authenticate a user
 // @route   POST /api/users/login
 // @access  Public
-const loginUser = asyncHandler(async(req, res) => {
-    const {email, password} = req.body
+const loginUser = asyncHandler(async (req, res) => {
+  const { email, password } = req.body
 
   {/* TODO: should this also allow login in with username? */ }
+  const allUsers = await User.find({})
     const user = await User.findOne(
         {
             email: {
@@ -106,9 +107,8 @@ const loginUser = asyncHandler(async(req, res) => {
             }
         }
     )
-      // console.log('USER', User)
-      // console.log('allUsers', allUsers)
-      // console.log('user', user)
+      console.log('allUsers', allUsers)
+      console.log('user', user)
     if(user && (await bcrypt.compare(password, user.password))){
         res.json({
             _id: user.id,

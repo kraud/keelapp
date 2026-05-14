@@ -8,7 +8,10 @@
     "start": "node backend/api/index.js",
     "server": "nodemon backend/api/index.js",
     "client": "npm start --prefix frontend",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "test": "jest --forceExit --detectOpenHandles",
+    "test:watch": "jest --watch --forceExit --detectOpenHandles",
+    "test:coverage": "jest --coverage --forceExit --detectOpenHandles"
   },
   "author": "Kevin Raud",
   "license": "MIT",
@@ -59,6 +62,9 @@
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "concurrently": "^7.6.0",
-    "nodemon": "^2.0.19"
+    "jest": "^27.5.1",
+    "mongodb-memory-server": "^11.1.0",
+    "nodemon": "^2.0.19",
+    "supertest": "^7.2.2"
   }
 }
