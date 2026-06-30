@@ -1,15 +1,19 @@
+const crypto = require('crypto');
 const request = require('supertest');
-const mongoose = require('mongoose');
+const { eq } = require('drizzle-orm/index.cjs');
 const app = require('../app');
-const db = require('./db');
-const User = require('../models/userModel');
-const Token = require('../models/tokenModel');
+const testDb = require('./db');
+const { db, pool } = require('../src/db');
+const { users, tokens } = require('../src/db/schema');
 
 jest.mock('../utils/sendEmail', () => jest.fn().mockResolvedValue());
 
-beforeAll(() => db.connectDB());
-beforeEach(() => db.clearDB());
-afterAll(() => db.closeDB());
+beforeAll(() => testDb.connectDB());
+beforeEach(() => testDb.clearDB());
+afterAll(async () => {
+    await testDb.closeDB();
+    await pool.end();
+});
 
 const validUser = {
     name: 'Test User',
@@ -18,13 +22,27 @@ const validUser = {
     password: 'password123',
 };
 
+// Send a registration request with optional field overrides for duplicate and validation cases.
 const registerUser = (overrides = {}) =>
     request(app).post('/api/users').send({ ...validUser, ...overrides });
+
+// Read a user row by email so tests can verify persisted data independently of the API response.
+const findUserByEmail = async (email) => {
+    const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
+    return user;
+};
+
+// Read the verification token row by user id to assert token creation and deletion behavior.
+const findTokenByUserId = async (userId) => {
+    const [token] = await db.select().from(tokens).where(eq(tokens.userId, userId)).limit(1);
+    return token || null;
+};
 
 describe('POST /api/users - Registration', () => {
     it('registers a new user and returns user data without password', async () => {
         const res = await registerUser();
 
+        // The public registration response mirrors the legacy contract and hides sensitive fields.
         expect(res.statusCode).toBe(201);
         expect(res.body).toMatchObject({
             email: 'test@example.com',
@@ -43,8 +61,9 @@ describe('POST /api/users - Registration', () => {
     it('creates a Token document for email verification', async () => {
         await registerUser();
 
-        const user = await User.findOne({ email: 'test@example.com' });
-        const token = await Token.findOne({ userId: user._id });
+        // Registration persists a separate one-time token used by the email verification route.
+        const user = await findUserByEmail('test@example.com');
+        const token = await findTokenByUserId(user.id);
         expect(token).toBeDefined();
         expect(token.token).toBeDefined();
     });
@@ -52,7 +71,8 @@ describe('POST /api/users - Registration', () => {
     it('hashes the password', async () => {
         await registerUser();
 
-        const user = await User.findOne({ email: 'test@example.com' });
+        // Password hashes are stored in PostgreSQL; plaintext input must never be persisted.
+        const user = await findUserByEmail('test@example.com');
         expect(user.password).not.toBe('password123');
     });
 
@@ -76,21 +96,6 @@ describe('POST /api/users - Registration', () => {
         expect(res.statusCode).toBe(400);
     });
 
-  // Native language is not yet specified on login but we send empty list [] - not undefined
-  //   it('fails with 400 when languages is missing', async () => {
-  //       const res = await registerUser({ languages: undefined });
-  //       expect(res.statusCode).toBe(400);
-  //   });
-  // // Native language is not yet specified on login but we send null - not undefined
-  //   it('fails with 400 when nativeLanguage is missing', async () => {
-  //       const res = await registerUser({ nativeLanguage: undefined });
-  //       expect(res.statusCode).toBe(400);
-  //   });
-  //   it('fails with 400 when uiLanguage is missing', async () => {
-  //       const res = await registerUser({ uiLanguage: undefined });
-  //       expect(res.statusCode).toBe(400);
-  //   });
-
     it('fails with 400 for duplicate email (case-insensitive)', async () => {
         await registerUser();
         const res = await registerUser({
@@ -113,26 +118,28 @@ describe('POST /api/users - Registration', () => {
 describe('GET /api/users/:id/verify/:token - Email Verification', () => {
     it('verifies the user and returns a JWT', async () => {
         await registerUser();
-        const user = await User.findOne({ email: 'test@example.com' });
-        const tokenDoc = await Token.findOne({ userId: user._id });
+        const user = await findUserByEmail('test@example.com');
+        const tokenDoc = await findTokenByUserId(user.id);
 
+        // The verification URL consumes the stored token and returns an authenticated user payload.
         const res = await request(app).get(
-            `/api/users/${user._id}/verify/${tokenDoc.token}`
+            `/api/users/${user.id}/verify/${tokenDoc.token}`
         );
 
         expect(res.statusCode).toBe(200);
         expect(res.body.user.token).toBeDefined();
 
-        const updated = await User.findById(user._id);
+        const updated = await findUserByEmail('test@example.com');
         expect(updated.verified).toBe(true);
     });
 
     it('fails with invalid token', async () => {
         await registerUser();
-        const user = await User.findOne({ email: 'test@example.com' });
+        const user = await findUserByEmail('test@example.com');
 
+        // A valid user id alone is insufficient; the token must match the tokens table.
         const res = await request(app).get(
-            `/api/users/${user._id}/verify/invalidtoken123`
+            `/api/users/${user.id}/verify/invalidtoken123`
         );
 
         expect(res.statusCode).toBe(400);
@@ -141,14 +148,15 @@ describe('GET /api/users/:id/verify/:token - Email Verification', () => {
 
     it('deletes the Token document after successful verification', async () => {
         await registerUser();
-        const user = await User.findOne({ email: 'test@example.com' });
-        const tokenDoc = await Token.findOne({ userId: user._id });
+        const user = await findUserByEmail('test@example.com');
+        const tokenDoc = await findTokenByUserId(user.id);
 
         await request(app).get(
-            `/api/users/${user._id}/verify/${tokenDoc.token}`
+            `/api/users/${user.id}/verify/${tokenDoc.token}`
         );
 
-        const remaining = await Token.findOne({ userId: user._id });
+        // Consumed verification tokens are removed so the same URL cannot be reused.
+        const remaining = await findTokenByUserId(user.id);
         expect(remaining).toBeNull();
     });
 });
@@ -163,6 +171,7 @@ describe('POST /api/users/login - Login', () => {
             .post('/api/users/login')
             .send({ email: 'test@example.com', password: 'password123' });
 
+        // A successful login returns profile data plus the JWT used by protected routes.
         expect(res.statusCode).toBe(200);
         expect(res.body).toHaveProperty('token');
         expect(res.body).toHaveProperty('name', 'Test User');
@@ -212,6 +221,7 @@ describe('GET /api/users/me - Profile', () => {
             .get('/api/users/me')
             .set('Authorization', `Bearer ${token}`);
 
+        // The auth middleware attaches the database user without exposing the password hash.
         expect(res.statusCode).toBe(200);
         expect(res.body).toHaveProperty('email', 'test@example.com');
         expect(res.body).toHaveProperty('name', 'Test User');
@@ -264,8 +274,10 @@ describe('PUT /api/users/updateUser - Update Profile', () => {
                 username: 'testuser',
             });
 
+        // The endpoint edits only the authenticated user's profile row.
         expect(res.statusCode).toBe(200);
         expect(res.body).toHaveProperty('name', 'Updated Name');
+        expect(res.body).toHaveProperty('_id', userId);
     });
 
     it('fails when username is taken by another user', async () => {
@@ -319,7 +331,8 @@ describe('Password Reset Flow', () => {
             .post('/api/users/requestPasswordReset')
             .send({ email: 'test@example.com' });
 
-        const user = await User.findOne({ email: 'test@example.com' });
+        // Password reset tokens are stored on the user row and consumed by updatePassword.
+        const user = await findUserByEmail('test@example.com');
         expect(user.passwordTokens.length).toBe(1);
     });
 
@@ -338,7 +351,7 @@ describe('Password Reset Flow', () => {
             await request(app)
                 .post('/api/users/requestPasswordReset')
                 .send({ email: 'test@example.com' });
-            user = await User.findOne({ email: 'test@example.com' });
+            user = await findUserByEmail('test@example.com');
         });
 
         it('updates the password with valid token', async () => {
@@ -347,13 +360,14 @@ describe('Password Reset Flow', () => {
             const res = await request(app)
                 .put('/api/users/updatePassword')
                 .send({
-                    userId: user._id.toString(),
+                    userId: user.id,
                     password: 'newpassword456',
                     token,
                 });
 
             expect(res.statusCode).toBe(200);
 
+            // Verify the new hash by logging in with the replacement password.
             const loginRes = await request(app)
                 .post('/api/users/login')
                 .send({ email: 'test@example.com', password: 'newpassword456' });
@@ -366,12 +380,13 @@ describe('Password Reset Flow', () => {
             await request(app)
                 .put('/api/users/updatePassword')
                 .send({
-                    userId: user._id.toString(),
+                    userId: user.id,
                     password: 'newpassword456',
                     token,
                 });
 
-            const updated = await User.findOne({ email: 'test@example.com' });
+            // Clearing tokens prevents reset links from being reused after a successful password change.
+            const updated = await findUserByEmail('test@example.com');
             expect(updated.passwordTokens).toEqual([]);
         });
 
@@ -379,7 +394,7 @@ describe('Password Reset Flow', () => {
             const res = await request(app)
                 .put('/api/users/updatePassword')
                 .send({
-                    userId: user._id.toString(),
+                    userId: user.id,
                     password: 'newpassword456',
                     token: 'invalidtoken',
                 });
@@ -391,7 +406,7 @@ describe('Password Reset Flow', () => {
             const res = await request(app)
                 .put('/api/users/updatePassword')
                 .send({
-                    userId: new mongoose.Types.ObjectId().toString(),
+                    userId: crypto.randomUUID(),
                     password: 'newpassword456',
                     token: user.passwordTokens[0],
                 });

@@ -10,6 +10,10 @@
     // Use Node.js module resolution strategy
     "moduleResolution": "node",
 
+    // TypeScript 6 warns that the legacy "node" resolver is deprecated;
+    // keep it during the CommonJS migration and silence that planned-removal warning.
+    "ignoreDeprecations": "6.0",
+
     // Include ES2022 library type definitions
     "lib": ["ES2022"],
 

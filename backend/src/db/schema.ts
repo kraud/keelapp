@@ -1,4 +1,4 @@
-import {
+const {
     pgTable,
     uuid,
     varchar,
@@ -11,8 +11,8 @@ import {
     primaryKey,
     uniqueIndex,
     index,
-} from 'drizzle-orm/pg-core';
-import { relations } from 'drizzle-orm';
+}: typeof import('drizzle-orm/pg-core') = require('drizzle-orm/pg-core/index.cjs');
+const { relations }: typeof import('drizzle-orm') = require('drizzle-orm/index.cjs');
 
 // ---------------------------------------------------------------------------
 // Helper: shared timestamp columns used on most tables

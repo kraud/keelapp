@@ -1,8 +1,9 @@
-import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 import * as schema from './schema';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
+
+const { drizzle }: typeof import('drizzle-orm/node-postgres') = require('drizzle-orm/node-postgres/index.cjs');
 
 // Load .env from the project root (two levels up from backend/src/db/)
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });

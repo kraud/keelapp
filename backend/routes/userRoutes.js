@@ -3,8 +3,8 @@ const router = express.Router()
 const {
     registerUser, loginUser, getMe, getUsersBy, updateUser, getUsernamesBy, getUserById,
     verifyUser, requestPasswordReset, updatePassword, getBasicUserMetrics
-} = require('../controllers/userController')
-const {protect} = require('../middleware/authMiddleware')
+} = require('../controllers/userController.ts')
+const {protect} = require('../middleware/authMiddleware.ts')
 
 router.post('/', registerUser)
 router.post('/login', loginUser)
