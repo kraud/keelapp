@@ -1,18 +1,35 @@
+/**
+ * Tags API — Integration Tests
+ *
+ * These tests verify the CRUD operations for tags and their many-to-many
+ * relationship with words (via tag_words). They have been migrated from
+ * Mongoose to Drizzle ORM on PostgreSQL.
+ *
+ * Migration note: The old test used Mongoose models directly (Word.create,
+ * Tag.findById, TagWord.find). The new test uses the Drizzle ORM instance
+ * (imported from ../src/db) to seed and assert on database state. This keeps
+ * the test implementations decoupled from any ORM choices in the controller.
+ */
+
 const request = require('supertest');
-const mongoose = require('mongoose');
+const { eq } = require('drizzle-orm/index.cjs');
 const app = require('../app');
-const db = require('./db');
-const User = require('../models/userModel');
-const Tag = require('../models/tagModel');
-const Word = require('../models/wordModel');
-const TagWord = require('../models/intermediary/tagWordModel');
+const testDb = require('./db');
+const { db, pool } = require('../src/db');
+const { tags, tagWords, words } = require('../src/db/schema');
 
 jest.mock('../utils/sendEmail', () => jest.fn().mockResolvedValue());
 
-beforeAll(() => db.connectDB());
-beforeEach(() => db.clearDB());
-afterAll(() => db.closeDB());
+beforeAll(() => testDb.connectDB());
+beforeEach(() => testDb.clearDB());
+afterAll(async () => {
+    await testDb.closeDB();
+    // Close the shared Drizzle pool so Jest does not hang on an open connection
+    await pool.end();
+});
 
+// Helper: register a user, log in, and return the auth token + user data.
+// The userController.ts response includes `_id` (legacy alias for the UUID) and `token`.
 const registerAndLogin = async () => {
     await request(app).post('/api/users').send({
         name: 'Tag User', email: 'tag@test.com', username: 'taguser', password: 'pass123',
@@ -40,18 +57,25 @@ describe('POST /api/tags - Create Tag', () => {
     });
 
     it('creates a tag with word associations', async () => {
-        const word = await Word.create({
-            user: userId, partOfSpeech: 'Noun',
-            translations: [{ language: 'EN', cases: [{ word: 'book', caseName: 'singularNominative' }] }],
-        });
+        // Seed a single word via Drizzle so the controller can reference it by id.
+        const [word] = await db.insert(words).values({
+            userId: userId,
+            partOfSpeech: 'Noun',
+        }).returning();
 
         const res = await request(app)
             .post('/api/tags').set('Authorization', `Bearer ${token}`)
-            .send({ author: userId, label: 'Nouns', public: 'Private', words: [{ _id: word._id }] });
+            .send({ author: userId, label: 'Nouns', public: 'Private', words: [{ _id: word.id }] });
 
         expect(res.statusCode).toBe(200);
-        const tagWords = await TagWord.find({ tagId: res.body._id });
-        expect(tagWords).toHaveLength(1);
+
+        // Verify the junction table (tag_words) contains exactly one row for this tag.
+        const tagWordsRows = await db
+            .select()
+            .from(tagWords)
+            .where(eq(tagWords.tagId, res.body._id));
+
+        expect(tagWordsRows).toHaveLength(1);
     });
 
     it('fails with 400 when label is missing', async () => {
@@ -76,8 +100,12 @@ describe('GET /api/tags/getTags - Get User Tags', () => {
         const data = await registerAndLogin();
         token = data.token;
         userId = data._id;
-        await Tag.create({ author: userId, label: 'First', public: 'Private' });
-        await Tag.create({ author: userId, label: 'Second', public: 'Public' });
+
+        // Seed two tags for the authenticated user.
+        await db.insert(tags).values([
+            { authorId: userId, label: 'First', public: 'Private' },
+            { authorId: userId, label: 'Second', public: 'Public' },
+        ]);
     });
 
     it('returns all tags authored by the user', async () => {
@@ -96,13 +124,24 @@ describe('DELETE /api/tags/:id - Delete Tag', () => {
         token = data.token;
         userId = data._id;
 
-        const word = await Word.create({
-            user: userId, partOfSpeech: 'Verb',
-            translations: [{ language: 'EN', cases: [{ word: 'go', caseName: 'infinitiveNonFiniteSimpleEN' }] }],
+        // Seed a word and tag, then link them via the junction table.
+        const [word] = await db.insert(words).values({
+            userId: userId,
+            partOfSpeech: 'Verb',
+        }).returning();
+
+        const [tag] = await db.insert(tags).values({
+            authorId: userId,
+            label: 'ToDelete',
+            public: 'Private',
+        }).returning();
+
+        tagId = tag.id;
+
+        await db.insert(tagWords).values({
+            tagId: tag.id,
+            wordId: word.id,
         });
-        const tag = await Tag.create({ author: userId, label: 'ToDelete', public: 'Private' });
-        tagId = tag._id;
-        await TagWord.create({ tagId: tag._id, wordId: word._id });
     });
 
     it('deletes tag and cleans up TagWord entries', async () => {
@@ -110,11 +149,20 @@ describe('DELETE /api/tags/:id - Delete Tag', () => {
             .delete(`/api/tags/${tagId}`).set('Authorization', `Bearer ${token}`);
         expect(res.statusCode).toBe(200);
 
-        expect(await Tag.findById(tagId)).toBeNull();
-        expect(await TagWord.find({ tagId })).toHaveLength(0);
+        // Confirm the tag row itself was removed.
+        const [foundTag] = await db.select().from(tags).where(eq(tags.id, tagId)).limit(1);
+        expect(foundTag).toBeUndefined();
+
+        // Confirm cascade deletion cleared the junction table for this tag.
+        const tagWordsRows = await db
+            .select()
+            .from(tagWords)
+            .where(eq(tagWords.tagId, tagId));
+        expect(tagWordsRows).toHaveLength(0);
     });
 
     it('fails with 401 when not the author', async () => {
+        // Register a second user to obtain a different auth token.
         await request(app).post('/api/users').send({
             name: 'Other', email: 'other@test.com', username: 'other', password: 'pass123',
         });
