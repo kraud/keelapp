@@ -26,4 +26,15 @@ module.exports = {
     },
 
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+
+    // drizzle-orm uses the "exports" field in its package.json with conditional
+    // subpath resolution. Jest 27 does not fully respect the "require" condition
+    // in the exports map, so subpath imports like 'drizzle-orm/pg-core' resolve
+    // to the ESM (.js) file instead of the CJS (.cjs) file. These explicit
+    // mappings ensure Jest loads the correct CJS version.
+    moduleNameMapper: {
+        '^drizzle-orm/pg-core$': '<rootDir>/node_modules/drizzle-orm/pg-core/index.cjs',
+        '^drizzle-orm/node-postgres$': '<rootDir>/node_modules/drizzle-orm/node-postgres/index.cjs',
+        '^drizzle-orm/node-postgres/migrator$': '<rootDir>/node_modules/drizzle-orm/node-postgres/migrator.cjs',
+    },
 };

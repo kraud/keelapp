@@ -12,9 +12,9 @@
  * Route usage is declared in ../routes/exerciseRoutes.js (still CJS).
  */
 
-import { and, eq, inArray, or, sql } from 'drizzle-orm';
-import { db } from '../src/db';
-import {
+const { and, eq, inArray, or, sql } = require('drizzle-orm');
+const { db } = require('../src/db');
+const {
     exercisePerformanceCases,
     exercisePerformances,
     tags,
@@ -24,12 +24,12 @@ import {
     userFollowingTags,
     users,
     words,
-} from '../src/db/schema';
-import {
+} = require('../src/db/schema');
+const {
     calculateAging,
     calculateNewPercentageOfKnowledge,
     findMatches,
-} from './exercisePerformanceController';
+} = require('./exercisePerformanceController');
 
 const { nounGroupedCategoriesMultiLanguage } = require('../utils/equivalentTranslations/multiLang/nouns');
 const { verbGroupedCategoriesMultiLanguage } = require('../utils/equivalentTranslations/multiLang/verbs');

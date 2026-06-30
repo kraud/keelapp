@@ -15,19 +15,19 @@
  * Route usage is declared in ../routes/wordRoutes.js (still CJS).
  */
 
-import { db } from '../src/db';
-import {
+const { db } = require('../src/db');
+const {
     tags,
     tagWords,
     translationCases,
     translations,
     words,
-} from '../src/db/schema';
+} = require('../src/db/schema');
 
 // Re-exported helper from the migrated tag controller.
 const { getWordsIdFromFollowedTagsByUserId } = require('./tagController.ts');
 
-const { and, eq, ilike, inArray, ne, not, or, sql }: typeof import('drizzle-orm') = require('drizzle-orm/index.cjs');
+const { and, eq, ilike, inArray, ne, not, or, sql }: typeof import('drizzle-orm') = require('drizzle-orm');
 const asyncHandler = require('express-async-handler');
 
 // ---------------------------------------------------------------------------

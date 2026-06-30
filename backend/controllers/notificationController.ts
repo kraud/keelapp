@@ -12,10 +12,10 @@
  * Route usage is declared in ../routes/notificationRoutes.js (still CJS).
  */
 
-import { db } from '../src/db';
-import { notifications, tags, users } from '../src/db/schema';
+const { db } = require('../src/db');
+const { notifications, tags, users } = require('../src/db/schema');
 
-const { and, eq, inArray, sql } = require('drizzle-orm/index.cjs');
+const { and, eq, inArray, sql } = require('drizzle-orm');
 const asyncHandler = require('express-async-handler');
 
 // ---------------------------------------------------------------------------

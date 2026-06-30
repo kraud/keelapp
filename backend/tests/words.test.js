@@ -17,7 +17,7 @@
 
 const crypto = require('crypto');
 const request = require('supertest');
-const { eq, inArray, sql } = require('drizzle-orm/index.cjs');
+const { eq, inArray, sql } = require('drizzle-orm');
 const app = require('../app');
 const testDb = require('./db');
 const { db, pool } = require('../src/db');

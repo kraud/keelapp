@@ -1,9 +1,9 @@
-import { Pool } from 'pg';
-import * as schema from './schema';
-import * as dotenv from 'dotenv';
-import * as path from 'path';
+const { Pool } = require('pg');
+const schema = require('./schema');
+const dotenv = require('dotenv');
+const path = require('path');
 
-const { drizzle }: typeof import('drizzle-orm/node-postgres') = require('drizzle-orm/node-postgres/index.cjs');
+const { drizzle }: typeof import('drizzle-orm/node-postgres') = require('drizzle-orm/node-postgres');
 
 // Load .env from the project root (two levels up from backend/src/db/)
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
@@ -26,10 +26,9 @@ if (!connectionString) {
 
 // Create a connection pool. Pooling is essential for production workloads and
 // also makes tests more efficient by reusing connections across test cases.
-export const pool = new Pool({ connectionString });
+const pool = new Pool({ connectionString });
 
 // Create the Drizzle ORM instance, passing the schema for the relational query API.
-export const db = drizzle(pool, { schema });
+const db = drizzle(pool, { schema });
 
-// Type exported for use in controllers and tests
-export type DbType = typeof db;
+module.exports = { pool, db };

@@ -197,10 +197,10 @@ To ensure zero downtime, maintain code quality, and keep tests passing throughou
 2. Apply migrations to the test database before running tests.
 3. Keep the test suite running as we migrate each endpoint to verify we do not break any existing functionality.
 
-### Phase 5: Incremental Code Migration
+### ✅ Phase 5: Incremental Code Migration
 We will migrate one controller and its associated models at a time, updating the Express routes and rewriting the logic in TypeScript.
 
-1. ✅ **User & Auth**:
+1. **User & Auth**:
    - Migrate `User` and `Token` models.
    - Rewrite `userController.js` and auth middleware in TypeScript.
    - Run `auth.test.js` and verify it passes.

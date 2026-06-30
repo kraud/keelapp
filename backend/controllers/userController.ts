@@ -1,10 +1,10 @@
-import bcrypt from 'bcryptjs';
-import crypto from 'crypto';
-import jwt from 'jsonwebtoken';
-import { db } from '../src/db';
-import { friendships, tokens, users, words, translations } from '../src/db/schema';
+const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
+const { db } = require('../src/db');
+const { friendships, tokens, users, words, translations } = require('../src/db/schema');
 
-const { and, eq, ilike, inArray, ne, or, sql }: typeof import('drizzle-orm') = require('drizzle-orm/index.cjs');
+const { and, eq, ilike, inArray, ne, or, sql }: typeof import('drizzle-orm') = require('drizzle-orm');
 const asyncHandler = require('express-async-handler');
 const sendMail = require('../utils/sendEmail');
 

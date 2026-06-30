@@ -12,6 +12,8 @@
     "test": "jest --forceExit --detectOpenHandles",
     "test:watch": "jest --watch --forceExit --detectOpenHandles",
     "test:coverage": "jest --coverage --forceExit --detectOpenHandles",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
     "db:studio": "drizzle-kit studio --config backend/drizzle.config.ts",
     "db:generate": "drizzle-kit generate --config backend/drizzle.config.ts",
     "db:migrate": "drizzle-kit migrate --config backend/drizzle.config.ts",

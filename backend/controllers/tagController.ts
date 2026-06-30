@@ -1,14 +1,14 @@
-import crypto from 'crypto';
-import { and, eq, ilike, inArray, or, sql } from 'drizzle-orm';
-import { db } from '../src/db';
-import {
+const crypto = require('crypto');
+const { and, eq, ilike, inArray, or, sql } = require('drizzle-orm');
+const { db } = require('../src/db');
+const {
     friendships,
     tags,
     tagWords,
     users,
     userFollowingTags,
     words,
-} from '../src/db/schema';
+} = require('../src/db/schema');
 
 const asyncHandler = require('express-async-handler');
 

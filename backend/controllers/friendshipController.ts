@@ -14,15 +14,15 @@
  * Route usage is declared in ../routes/friendshipRoutes.js (still CJS).
  */
 
-import { db } from '../src/db';
-import {
+const { db } = require('../src/db');
+const {
     friendshipPartnerships,
     friendships,
     notifications,
     users,
-} from '../src/db/schema';
+} = require('../src/db/schema');
 
-const { and, eq, inArray, or, sql }: typeof import('drizzle-orm') = require('drizzle-orm/index.cjs');
+const { and, eq, inArray, or, sql }: typeof import('drizzle-orm') = require('drizzle-orm');
 const asyncHandler = require('express-async-handler');
 
 // ---------------------------------------------------------------------------

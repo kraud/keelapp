@@ -10,9 +10,9 @@
  * called it but is no longer active.
  */
 
-import { count, eq, inArray, sql } from 'drizzle-orm';
-import { db } from '../src/db';
-import { translations, words } from '../src/db/schema';
+const { count, eq, inArray, sql } = require('drizzle-orm');
+const { db } = require('../src/db');
+const { translations, words } = require('../src/db/schema');
 
 interface BasicUserMetrics {
     translationsByLanguage: Array<{ language: string; count: number; type: string }>;

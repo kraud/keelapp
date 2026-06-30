@@ -11,8 +11,8 @@ const {
     primaryKey,
     uniqueIndex,
     index,
-}: typeof import('drizzle-orm/pg-core') = require('drizzle-orm/pg-core/index.cjs');
-const { relations }: typeof import('drizzle-orm') = require('drizzle-orm/index.cjs');
+}: typeof import('drizzle-orm/pg-core') = require('drizzle-orm/pg-core');
+const { relations }: typeof import('drizzle-orm') = require('drizzle-orm');
 
 // ---------------------------------------------------------------------------
 // Helper: shared timestamp columns used on most tables

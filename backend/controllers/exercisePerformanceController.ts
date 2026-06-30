@@ -10,10 +10,10 @@
  * Route usage is declared in ../routes/exerciseRoutes.js (still CJS).
  */
 
-import { db } from '../src/db';
-import { exercisePerformanceCases, exercisePerformances } from '../src/db/schema';
+const { db } = require('../src/db');
+const { exercisePerformanceCases, exercisePerformances } = require('../src/db/schema');
 
-const { and, eq, inArray, sql }: typeof import('drizzle-orm') = require('drizzle-orm/index.cjs');
+const { and, eq, inArray, sql }: typeof import('drizzle-orm') = require('drizzle-orm');
 const asyncHandler = require('express-async-handler');
 
 // ---------------------------------------------------------------------------

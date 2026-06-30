@@ -1,8 +1,8 @@
-import jwt from 'jsonwebtoken';
-import { db } from '../src/db';
-import { users } from '../src/db/schema';
+const jwt = require('jsonwebtoken');
+const { db } = require('../src/db');
+const { users } = require('../src/db/schema');
 
-const { eq }: typeof import('drizzle-orm') = require('drizzle-orm/index.cjs');
+const { eq }: typeof import('drizzle-orm') = require('drizzle-orm');
 const asyncHandler = require('express-async-handler');
 
 const userColumnsWithoutPassword = {
