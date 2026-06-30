@@ -11,7 +11,11 @@
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "test": "jest --forceExit --detectOpenHandles",
     "test:watch": "jest --watch --forceExit --detectOpenHandles",
-    "test:coverage": "jest --coverage --forceExit --detectOpenHandles"
+    "test:coverage": "jest --coverage --forceExit --detectOpenHandles",
+    "db:studio": "drizzle-kit studio --config backend/drizzle.config.ts",
+    "db:generate": "drizzle-kit generate --config backend/drizzle.config.ts",
+    "db:migrate": "drizzle-kit migrate --config backend/drizzle.config.ts",
+    "db:migrate:test": "NODE_ENV=test drizzle-kit migrate --config backend/drizzle.config.ts"
   },
   "author": "Kevin Raud",
   "license": "MIT",
@@ -32,6 +36,7 @@
     "colors": "^1.4.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
+    "drizzle-orm": "^0.45.2",
     "english-verbs-gerunds": "^3.3.0",
     "english-verbs-helper": "^3.3.0",
     "english-verbs-irregular": "^3.3.0",
@@ -46,6 +51,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.4.4",
     "nodemailer": "^6.9.14",
+    "pg": "^8.22.0",
     "react": "^18.3.1",
     "react-dom": "18.3.1",
     "react-hook-form": "7.52.0",
@@ -60,11 +66,22 @@
     "yup": "1.4.0"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^26.0.1",
+    "@types/nodemailer": "^8.0.1",
+    "@types/pg": "^8.20.0",
+    "@types/supertest": "^7.2.0",
     "concurrently": "^7.6.0",
+    "drizzle-kit": "^0.31.10",
     "jest": "^27.5.1",
     "mongodb-memory-server": "^11.1.0",
     "nodemon": "^2.0.19",
-    "supertest": "^7.2.2"
+    "supertest": "^7.2.2",
+    "ts-jest": "^29.4.11",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
   }
 }

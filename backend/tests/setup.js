@@ -1,3 +1,9 @@
+// Polyfill SlowBuffer for Node.js 24+ compatibility
+const buffer = require('buffer');
+if (!buffer.SlowBuffer) {
+    buffer.SlowBuffer = buffer.Buffer;
+}
+
 const jwt = require('jsonwebtoken');
 
 process.env.JWT_SECRET = 'test_secret';

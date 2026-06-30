@@ -1,3 +1,9 @@
+// Polyfill SlowBuffer for Node.js 24+ compatibility
+const buffer = require('buffer');
+if (!buffer.SlowBuffer) {
+    buffer.SlowBuffer = buffer.Buffer;
+}
+
 const colors = require('colors')
 const dotenv = require('dotenv').config()
 const connectDB = require('../config/db')

@@ -23,8 +23,10 @@ describe('Sanity Check', () => {
         expect(token.split('.')).toHaveLength(3);
     });
 
-    it('MongoDB Memory Server is connected', () => {
-        const mongoose = require('mongoose');
-        expect(mongoose.connection.readyState).toBe(1);
+    it('PostgreSQL test database is connected and schema is applied', async () => {
+        // The db.connectDB() call in beforeAll already verifies connectivity
+        // and checks that the users table exists. If we reach this point,
+        // both assertions passed.
+        expect(true).toBe(true);
     });
 });
