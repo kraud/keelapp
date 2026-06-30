@@ -1,15 +1,29 @@
+/**
+ * Exercises API — Integration Tests
+ *
+ * Migration notes (Mongoose → Drizzle):
+ *   - Word / ExercisePerformance models replaced with Drizzle queries.
+ *   - `Word.findOne({})` → `db.select().from(words).limit(1)`
+ *   - `Word.create({})` → use the POST /api/words endpoint
+ *   - `ExercisePerformance.create({})` → direct Drizzle insert
+ *   - `new mongoose.Types.ObjectId()` → plain UUID strings
+ */
+
 const request = require('supertest');
-const mongoose = require('mongoose');
+const { eq } = require('drizzle-orm/index.cjs');
 const app = require('../app');
-const db = require('./db');
-const Word = require('../models/wordModel');
-const ExercisePerformance = require('../models/exercisePerformanceModel');
+const testDb = require('./db');
+const { db, pool } = require('../src/db');
+const { exercisePerformances, translations, words } = require('../src/db/schema');
 
 jest.mock('../utils/sendEmail', () => jest.fn().mockResolvedValue());
 
-beforeAll(() => db.connectDB());
-beforeEach(() => db.clearDB());
-afterAll(() => db.closeDB());
+beforeAll(() => testDb.connectDB());
+beforeEach(() => testDb.clearDB());
+afterAll(async () => {
+    await testDb.closeDB();
+    await pool.end();
+});
 
 const registerAndLogin = async () => {
     await request(app).post('/api/users').send({
@@ -41,12 +55,11 @@ const seedWords = async (token) => {
 };
 
 describe('GET /api/exercises/getUserExercises - Exercise Generation', () => {
-    let token, userId;
+    let token;
 
     beforeEach(async () => {
         const data = await registerAndLogin();
         token = data.token;
-        userId = data._id;
         await seedWords(token);
     });
 
@@ -88,24 +101,25 @@ describe('GET /api/exercises/getUserExercises - Exercise Generation', () => {
 });
 
 describe('POST /api/exercises/saveTranslationPerformance - Performance Tracking', () => {
-    let token, userId;
+    let token;
 
     beforeEach(async () => {
         const data = await registerAndLogin();
         token = data.token;
-        userId = data._id;
         await seedWords(token);
     });
 
     it('creates a new performance entry on first save', async () => {
-        const word = await Word.findOne({});
+        const [word] = await db.select().from(words).limit(1);
+        const [trans] = await db.select().from(translations).limit(1);
+
         const res = await request(app)
             .post('/api/exercises/saveTranslationPerformance')
             .set('Authorization', `Bearer ${token}`)
             .send({
-                translationId: new mongoose.Types.ObjectId().toString(),
+                translationId: trans.id,
                 translationLanguage: 'Estonian',
-                word: word._id.toString(),
+                word: word.id,
                 caseName: 'infinitiveMaEE',
                 record: true,
             });
@@ -116,17 +130,18 @@ describe('POST /api/exercises/saveTranslationPerformance - Performance Tracking'
     });
 
     it('updates knowledge on subsequent saves', async () => {
-        const word = await Word.findOne({});
-        const tid = new mongoose.Types.ObjectId().toString();
+        const [word] = await db.select().from(words).limit(1);
+        const [trans] = await db.select().from(translations).limit(1);
+
         await request(app)
             .post('/api/exercises/saveTranslationPerformance')
             .set('Authorization', `Bearer ${token}`)
-            .send({ translationId: tid, translationLanguage: 'Estonian', word: word._id.toString(), caseName: 'infinitiveMaEE', record: true });
+            .send({ translationId: trans.id, translationLanguage: 'Estonian', word: word.id, caseName: 'infinitiveMaEE', record: true });
 
         const res = await request(app)
             .post('/api/exercises/saveTranslationPerformance')
             .set('Authorization', `Bearer ${token}`)
-            .send({ translationId: tid, translationLanguage: 'Estonian', word: word._id.toString(), caseName: 'infinitiveMaEE', record: true });
+            .send({ translationId: trans.id, translationLanguage: 'Estonian', word: word.id, caseName: 'infinitiveMaEE', record: true });
 
         expect(res.statusCode).toBe(200);
         expect(res.body.statsByCase[0].knowledge).toBeGreaterThan(0);
@@ -134,12 +149,13 @@ describe('POST /api/exercises/saveTranslationPerformance - Performance Tracking'
     });
 
     it('tracks wrong answers (record: false)', async () => {
-        const word = await Word.findOne({});
-        const tid = new mongoose.Types.ObjectId().toString();
+        const [word] = await db.select().from(words).limit(1);
+        const [trans] = await db.select().from(translations).limit(1);
+
         const res = await request(app)
             .post('/api/exercises/saveTranslationPerformance')
             .set('Authorization', `Bearer ${token}`)
-            .send({ translationId: tid, translationLanguage: 'Estonian', word: word._id.toString(), caseName: 'infinitiveMaEE', record: false });
+            .send({ translationId: trans.id, translationLanguage: 'Estonian', word: word.id, caseName: 'infinitiveMaEE', record: false });
 
         expect(res.statusCode).toBe(200);
         expect(res.body.statsByCase[0].record).toEqual([false]);
@@ -154,19 +170,34 @@ describe('POST /api/exercises/savePerformanceAction - Performance Modifiers', ()
         token = data.token;
         userId = data._id;
 
-        const word = await Word.create({
-            user: userId,
-            partOfSpeech: 'Verb',
-            translations: [{ language: 'EN', cases: [{ word: 'test', caseName: 'infinitiveNonFiniteSimpleEN' }] }],
-        });
+        // Create a word via the API (needs 2+ translations per controller validation)
+        const wordRes = await request(app)
+            .post('/api/words').set('Authorization', `Bearer ${token}`)
+            .send({
+                partOfSpeech: 'Verb',
+                translations: [
+                    { language: 'EN', cases: [{ word: 'test', caseName: 'infinitiveNonFiniteSimpleEN' }] },
+                    { language: 'ES', cases: [{ word: 'probar', caseName: 'infinitiveNonFiniteSimpleES' }] },
+                ],
+                tags: [],
+            });
+        const wordId = wordRes.body._id;
 
-        const perf = await ExercisePerformance.create({
-            user: userId, translationId: new mongoose.Types.ObjectId(),
-            word: word._id, statsByCase: [],
-            averageTranslationKnowledge: 50,
-            lastDateModifiedTranslation: new Date(),
-        });
-        performanceId = perf._id.toString();
+        // Fetch the translation that was created
+        const [trans] = await db.select().from(translations).where(eq(translations.wordId, wordId)).limit(1);
+
+        // Create a performance entry directly via Drizzle
+        const [perf] = await db
+            .insert(exercisePerformances)
+            .values({
+                userId,
+                wordId,
+                translationId: trans.id,
+                averageTranslationKnowledge: 50,
+                lastDateModifiedTranslation: new Date(),
+            })
+            .returning();
+        performanceId = perf.id;
     });
 
     it('marks a translation as Mastered', async () => {

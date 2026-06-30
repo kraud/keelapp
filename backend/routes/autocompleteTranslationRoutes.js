@@ -2,8 +2,8 @@ const express = require('express')
 const router = express.Router()
 const { getVerbES, getVerbDE, getNounDE,
     getNounGenderES, getVerbEN, getVerbEE, getNounEE, getAdjectiveEE
-} = require('../controllers/autocompleteTranslationController')
-const {protect} = require('../middleware/authMiddleware')
+} = require('../controllers/autocompleteTranslationController.ts')
+const {protect} = require('../middleware/authMiddleware.ts')
 
 router.get('/english/verb/:infinitiveVerb', protect, getVerbEN)
 

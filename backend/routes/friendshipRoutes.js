@@ -2,8 +2,8 @@ const express = require('express')
 const router = express.Router()
 const { createFriendship, updateFriendship, deleteFriendship, getUserFriendshipsByParticipantId,
     deleteFriendshipRequest, acceptFriendshipRequest
-} = require('../controllers/friendshipController')
-const {protect} = require('../middleware/authMiddleware')
+} = require('../controllers/friendshipController.ts')
+const {protect} = require('../middleware/authMiddleware.ts')
 
 router.get('/getFriendships', protect, getUserFriendshipsByParticipantId)
 router.post('/', protect, createFriendship)

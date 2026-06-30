@@ -16,8 +16,12 @@ Object {
   "clue": "move quickly on foot",
   "isCloned": false,
   "partOfSpeech": "Verb",
-  "tagWords": Array [
-    Object {},
+  "tags": Array [
+    Object {
+      "description": null,
+      "label": "Core Verbs",
+      "public": "Private",
+    },
   ],
   "translations": Array [
     Object {
@@ -69,9 +73,11 @@ Object {
 exports[`Data Snapshots - Migration Baseline records the shape of an ExercisePerformance document 1`] = `
 Object {
   "averageTranslationKnowledge": 25,
+  "performanceModifier": null,
+  "reviseCounter": null,
   "statsByCase": Array [
     Object {
-      "caseName": "infinitiveMaEE",
+      "caseName": "singularNimetavEE",
       "knowledge": 25,
       "record": Array [
         true,

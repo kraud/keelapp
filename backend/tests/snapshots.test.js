@@ -1,23 +1,50 @@
+/**
+ * Snapshot Tests — Migration Baseline (Drizzle ORM)
+ *
+ * These tests verify that the migrated controllers return response shapes
+ * consistent with the pre-migration baseline.  Each test creates domain
+ * objects and snapshots the *structure* (excluding dynamic fields) of the
+ * API response.
+ *
+ * Migration changes:
+ *   - `User.create()` / `Word.create()` / `Tag.create()` replaced with
+ *     Drizzle inserts + controller API calls.
+ *   - The word response now includes a `tags` array (resolved tag documents)
+ *     instead of the old `tagWords` junction array.
+ *   - The tag response now includes `wordCount` and resolved `author` info.
+ */
+
 const request = require('supertest');
-const mongoose = require('mongoose');
 const app = require('../app');
-const db = require('./db');
-const Tag = require('../models/tagModel');
-const Word = require('../models/wordModel');
-const User = require('../models/userModel');
+const testDb = require('./db');
+const { db, pool } = require('../src/db');
+const { users } = require('../src/db/schema');
 
 jest.mock('../utils/sendEmail', () => jest.fn().mockResolvedValue());
 
-beforeAll(() => db.connectDB());
-beforeEach(() => db.clearDB());
-afterAll(() => db.closeDB());
+beforeAll(() => testDb.connectDB());
+beforeEach(() => testDb.clearDB());
+afterAll(async () => {
+    await testDb.closeDB();
+    await pool.end();
+});
 
 const stripDynamic = (obj) => {
     if (Array.isArray(obj)) return obj.map(stripDynamic);
     if (obj && typeof obj === 'object') {
         const cleaned = {};
         for (const [k, v] of Object.entries(obj)) {
-            if (['_id', 'id', '__v', 'createdAt', 'updatedAt', 'lastDateModifiedTranslation', 'lastDate', 'user', 'author', 'translationId', 'word', 'originalCreator', '$__', '$isNew', '_doc', '$isValid'].includes(k)) continue;
+            if (
+                [
+                    '_id', 'id', '__v', 'createdAt', 'updatedAt',
+                    'lastDateModifiedTranslation', 'lastDate',
+                    'user', 'author', 'authorId',
+                    'translationId', 'word', 'wordId',
+                    'originalCreator', 'originalCreatorId',
+                    '$__', '$isNew', '_doc', '$isValid',
+                    'tagWords', 'userId', 'exercisePerformanceId',
+                ].includes(k)
+            ) continue;
             cleaned[k] = stripDynamic(v);
         }
         return cleaned;
@@ -29,18 +56,32 @@ describe('Data Snapshots - Migration Baseline', () => {
     let token, userId;
 
     beforeEach(async () => {
-        const user = await User.create({
-            name: 'Snapshot Tester',
-            email: 'snap@test.com',
-            username: 'snapuser',
-            password: '$2a$10$dummyhash',
-        });
-        userId = user._id.toString();
+        // Insert a user directly via Drizzle (avoids bcrypt hashing),
+        // then generate a JWT for authentication using the global helper.
+        const [user] = await db
+            .insert(users)
+            .values({
+                name: 'Snapshot Tester',
+                email: 'snap@test.com',
+                username: 'snapuser',
+                password: 'dummyhash',
+            })
+            .returning();
+        userId = user.id;
         token = global.signin(userId);
     });
 
     it('records the shape of a full Word with 3 languages', async () => {
-        const tag = await Tag.create({ author: userId, label: 'Core Verbs', public: 'Private' });
+        // Create a tag via the API first (needed as a word association).
+        const tagRes = await request(app)
+            .post('/api/tags')
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+                author: userId,
+                label: 'Core Verbs',
+                public: 'Private',
+            });
+        const tagId = tagRes.body._id;
 
         const res = await request(app)
             .post('/api/words')
@@ -74,7 +115,7 @@ describe('Data Snapshots - Migration Baseline', () => {
                     },
                 ],
                 clue: 'move quickly on foot',
-                tags: [{ _id: tag._id }],
+                tags: [{ _id: tagId }],
             });
 
         expect(res.statusCode).toBe(200);
@@ -82,23 +123,32 @@ describe('Data Snapshots - Migration Baseline', () => {
     });
 
     it('records the shape of an ExercisePerformance document', async () => {
-        const word = await Word.create({
-            user: userId,
-            partOfSpeech: 'Noun',
-            translations: [
-                { language: 'EN', cases: [{ word: 'book', caseName: 'singularNominative' }] },
-                { language: 'ES', cases: [{ word: 'libro', caseName: 'singularES' }] },
-            ],
-        });
+        // Create a word with an Estonian translation so we can reference a
+        // real translation ID (FK constraint in the exercise_performances table).
+        const wordRes = await request(app)
+            .post('/api/words')
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+                partOfSpeech: 'Noun',
+                translations: [
+                    { language: 'EN', cases: [{ word: 'book', caseName: 'singularNominative' }] },
+                    { language: 'Estonian', cases: [{ word: 'raamat', caseName: 'singularNimetavEE' }] },
+                ],
+                tags: [],
+            });
+        const wordId = wordRes.body._id;
+        const estonianTrans = wordRes.body.translations.find(
+            (t) => t.language === 'Estonian',
+        );
 
         const res = await request(app)
             .post('/api/exercises/saveTranslationPerformance')
             .set('Authorization', `Bearer ${token}`)
             .send({
-                translationId: new mongoose.Types.ObjectId().toString(),
+                translationId: estonianTrans._id,
                 translationLanguage: 'Estonian',
-                word: word._id.toString(),
-                caseName: 'infinitiveMaEE',
+                word: wordId,
+                caseName: 'singularNimetavEE',
                 record: true,
             });
 
@@ -107,14 +157,19 @@ describe('Data Snapshots - Migration Baseline', () => {
     });
 
     it('records the shape of a Tag with word associations', async () => {
-        const word = await Word.create({
-            user: userId,
-            partOfSpeech: 'Adjective',
-            translations: [
-                { language: 'EN', cases: [{ word: 'big', caseName: 'positive' }] },
-                { language: 'DE', cases: [{ word: 'groß', caseName: 'positive' }] },
-            ],
-        });
+        // Create a word via the API first.
+        const wordRes = await request(app)
+            .post('/api/words')
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+                partOfSpeech: 'Adjective',
+                translations: [
+                    { language: 'EN', cases: [{ word: 'big', caseName: 'positive' }] },
+                    { language: 'DE', cases: [{ word: 'groß', caseName: 'positive' }] },
+                ],
+                tags: [],
+            });
+        const wordId = wordRes.body._id;
 
         const res = await request(app)
             .post('/api/tags')
@@ -124,7 +179,7 @@ describe('Data Snapshots - Migration Baseline', () => {
                 label: 'Adjectives Pack',
                 public: 'Private',
                 description: 'Common adjectives',
-                words: [{ _id: word._id }],
+                words: [{ _id: wordId }],
             });
 
         expect(res.statusCode).toBe(200);
