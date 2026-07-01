@@ -17,12 +17,6 @@ const { db } = require('../src/db');
 const {
     exercisePerformanceCases,
     exercisePerformances,
-    tags,
-    tagWords,
-    translationCases,
-    translations,
-    userFollowingTags,
-    users,
     words,
 } = require('../src/db/schema');
 const {
@@ -37,6 +31,9 @@ const { nounGroupedCategoriesSingleLanguage } = require('../utils/equivalentTran
 const { verbGroupedCategoriesSingleLanguage } = require('../utils/equivalentTranslations/singleLang/verbs');
 const asyncHandler = require('express-async-handler');
 
+// Shared word-assembly helpers (translations, cases, tags).
+const { fetchWordsWithRelations } = require('../services/wordService');
+
 // Re-exported from tagController's Drizzle version
 const { getWordsIdFromFollowedTagsByUserId } = require('./tagController.ts');
 
@@ -44,21 +41,12 @@ const { getWordsIdFromFollowedTagsByUserId } = require('./tagController.ts');
 // TYPES
 // ---------------------------------------------------------------------------
 
-type WordRow = typeof words.$inferSelect;
-type TranslationRow = typeof translations.$inferSelect;
-type TranslationCaseRow = typeof translationCases.$inferSelect;
 type PerfRow = typeof exercisePerformances.$inferSelect;
 type CaseRow = typeof exercisePerformanceCases.$inferSelect;
 
 interface CaseEntry {
     caseName: string;
     word: string;
-}
-
-interface TranslationEntry {
-    _id: string;
-    language: string;
-    cases: CaseEntry[];
 }
 
 interface WordWithData {
@@ -68,7 +56,11 @@ interface WordWithData {
     clue: string | null;
     isCloned: boolean;
     originalCreatorId: string | null;
-    translations: TranslationEntry[];
+    translations: Array<{
+        _id: string;
+        language: string;
+        cases: Array<{ word: string; caseName: string }>;
+    }>;
     exercisePerformances: any[];
     createdAt: Date;
     updatedAt: Date;
@@ -91,60 +83,23 @@ function shuffleArray<T>(array: T[]): void {
 /**
  * Fetch words with their translations and cases, assembled into the old
  * Mongoose aggregate shape expected by the exercise-generation functions.
+ *
+ * Delegates to the shared fetchWordsWithRelations from wordService which
+ * eliminates the duplicate join logic that was previously inlined here.
+ * An empty exercisePerformances array is added to match the expected shape.
  */
 const fetchWordsWithData = async (
     wordIds: string[],
 ): Promise<WordWithData[]> => {
-    if (wordIds.length === 0) return [];
-
-    const wordRows = await db
-        .select()
-        .from(words)
-        .where(inArray(words.id, wordIds));
-
-    const transRows = await db
-        .select()
-        .from(translations)
-        .where(inArray(translations.wordId, wordIds));
-
-    const transIds = transRows.map((t) => t.id);
-    const caseRows = transIds.length > 0
-        ? await db
-            .select()
-            .from(translationCases)
-            .where(inArray(translationCases.translationId, transIds))
-        : [];
-
-    // Group cases by translationId
-    const casesByTransId = new Map<string, CaseEntry[]>();
-    for (const c of caseRows) {
-        const bucket = casesByTransId.get(c.translationId);
-        const entry: CaseEntry = { caseName: c.caseName, word: c.word };
-        if (bucket) bucket.push(entry);
-        else casesByTransId.set(c.translationId, [entry]);
-    }
-
-    // Group translations by wordId
-    const transByWordId = new Map<string, TranslationEntry[]>();
-    for (const t of transRows) {
-        const bucket = transByWordId.get(t.wordId);
-        const entry: TranslationEntry = {
-            _id: t.id,
-            language: t.language,
-            cases: casesByTransId.get(t.id) || [],
-        };
-        if (bucket) bucket.push(entry);
-        else transByWordId.set(t.wordId, [entry]);
-    }
-
-    return wordRows.map((w) => ({
-        _id: w.id,
-        user: w.userId,
+    const wordResponses = await fetchWordsWithRelations(wordIds);
+    return wordResponses.map((w) => ({
+        _id: w._id,
+        user: w.user,
         partOfSpeech: w.partOfSpeech,
         clue: w.clue,
         isCloned: w.isCloned,
-        originalCreatorId: w.originalCreatorId,
-        translations: transByWordId.get(w.id) || [],
+        originalCreatorId: w.originalCreator,
+        translations: w.translations,
         exercisePerformances: [],
         createdAt: w.createdAt,
         updatedAt: w.updatedAt,
