@@ -22,6 +22,8 @@ const {
   translationCases,
   translations,
   words,
+  exercisePerformances,
+  exercisePerformanceCases,
 } = require("../src/db/schema");
 
 // Re-exported helper from the migrated tag controller.
@@ -52,6 +54,46 @@ import type { WordResponse, AssembledTranslation } from '../services/wordService
 /** Minimal identifier used during filter-merging. */
 interface WordIdOnly {
   id: string;
+}
+
+// ---------------------------------------------------------------------------
+// Types for translation diffing (used by updateWord)
+// ---------------------------------------------------------------------------
+
+interface IncomingCase {
+  caseName: string;
+  word: string;
+}
+
+interface IncomingTranslation {
+  language: string;
+  cases: IncomingCase[];
+}
+
+interface StoredCase {
+  id: string;
+  translationId: string;
+  caseName: string;
+  word: string;
+}
+
+interface StoredTranslation {
+  id: string;
+  wordId: string;
+  language: string;
+  cases: StoredCase[];
+}
+
+interface CaseDiff {
+  casesToAdd: IncomingCase[];
+  casesToRemove: StoredCase[];
+  casesToUpdate: Array<{ stored: StoredCase; incoming: IncomingCase }>;
+}
+
+interface TranslationDiffResult {
+  same: Array<{ stored: StoredTranslation; incoming: IncomingTranslation; caseDiff: CaseDiff }>;
+  toAdd: IncomingTranslation[];
+  toRemove: StoredTranslation[];
 }
 // (fetchTranslationsMap, fetchTagsMap, assembleWord, fetchWordsWithRelations,
 //  and fetchWordWithRelations are now in backend/services/wordService.ts)
@@ -327,9 +369,11 @@ const simplifyWord = (word: WordResponse): Record<string, any> => {
  */
 const diffTagWords = async (
   wordId: string,
-  incomingTags: Array<{ _id: string }>,
+  incomingTags: Array<{ _id?: string; id?: string }>,
 ): Promise<{ toRemove: string[]; toAdd: string[] }> => {
-  const incomingIds = incomingTags.map((t) => t._id);
+  const incomingIds = incomingTags
+    .map((t) => t._id ?? t.id)
+    .filter((id): id is string => typeof id === 'string' && id.length > 0);
 
   const stored = await db
     .select({ tagId: tagWords.tagId })
@@ -342,6 +386,62 @@ const diffTagWords = async (
     toRemove: storedIds.filter((id) => !incomingIds.includes(id)),
     toAdd: incomingIds.filter((id) => !storedIds.includes(id)),
   };
+};
+
+/**
+ * Compare incoming translations (from request body) with currently stored
+ * translations for a word, matching by language.  Returns a diff describing
+ * which translations to keep (with case-level changes), add, or remove.
+ */
+const diffTranslations = (
+  incoming: IncomingTranslation[],
+  stored: StoredTranslation[],
+): TranslationDiffResult => {
+  const result: TranslationDiffResult = {
+    same: [],
+    toAdd: [],
+    toRemove: [],
+  };
+
+  for (const s of stored) {
+    const match = incoming.find((inc) => inc.language === s.language);
+    if (match) {
+      const casesToAdd: IncomingCase[] = [];
+      const casesToRemove: StoredCase[] = [];
+      const casesToUpdate: Array<{ stored: StoredCase; incoming: IncomingCase }> = [];
+
+      for (const sc of s.cases) {
+        const cm = match.cases.find((mc) => mc.caseName === sc.caseName);
+        if (!cm) {
+          casesToRemove.push(sc);
+        } else if (cm.word !== sc.word) {
+          casesToUpdate.push({ stored: sc, incoming: cm });
+        }
+      }
+
+      for (const mc of match.cases) {
+        if (!s.cases.find((sc) => sc.caseName === mc.caseName)) {
+          casesToAdd.push(mc);
+        }
+      }
+
+      result.same.push({
+        stored: s,
+        incoming: match,
+        caseDiff: { casesToAdd, casesToRemove, casesToUpdate },
+      });
+    } else {
+      result.toRemove.push(s);
+    }
+  }
+
+  for (const inc of incoming) {
+    if (!stored.find((s) => s.language === inc.language)) {
+      result.toAdd.push(inc);
+    }
+  }
+
+  return result;
 };
 
 // ===========================================================================
@@ -533,12 +633,14 @@ const setWord = asyncHandler(async (req: any, res: any) => {
   }
 
   // 4. Create tag-word associations if provided
-  const incomingTags: Array<{ _id: string }> = req.body.tags || [];
+  const incomingTags: Array<{ _id?: string; id?: string }> = req.body.tags || [];
   if (incomingTags.length > 0) {
     await db
       .insert(tagWords)
       .values(
-        incomingTags.map((tag) => ({ tagId: tag._id, wordId: newWord.id })),
+        incomingTags
+          .map((tag) => ({ tagId: tag._id ?? tag.id, wordId: newWord.id }))
+          .filter((item) => typeof item.tagId === 'string' && item.tagId.length > 0),
       );
   }
 
@@ -571,39 +673,140 @@ const updateWord = asyncHandler(async (req: any, res: any) => {
   }
 
   if (req.body.translations !== undefined) {
-    // Replace translations — delete existing + re-insert
-    await db
-      .delete(translationCases)
-      .where(
-        inArray(
-          translationCases.translationId,
-          db
-            .select({ id: translations.id })
-            .from(translations)
-            .where(eq(translations.wordId, req.params.id)),
-        ),
-      );
-    await db.delete(translations).where(eq(translations.wordId, req.params.id));
+    // Fetch stored translations with their cases
+    const storedTranslationRows = await db
+      .select({
+        translationId: translations.id,
+        translationLanguage: translations.language,
+        caseId: translationCases.id,
+        caseName: translationCases.caseName,
+        caseWord: translationCases.word,
+      })
+      .from(translations)
+      .leftJoin(translationCases, eq(translationCases.translationId, translations.id))
+      .where(eq(translations.wordId, req.params.id));
 
-    const newTranslations = await db
-      .insert(translations)
-      .values(
-        req.body.translations.map((t: any) => ({
+    const groupedMap = new Map<string, StoredTranslation>();
+    for (const r of storedTranslationRows) {
+      if (!groupedMap.has(r.translationId)) {
+        groupedMap.set(r.translationId, {
+          id: r.translationId,
           wordId: req.params.id,
-          language: t.language,
-        })),
-      )
-      .returning();
+          language: r.translationLanguage,
+          cases: [],
+        });
+      }
+      if (r.caseId) {
+        groupedMap.get(r.translationId)!.cases.push({
+          id: r.caseId,
+          translationId: r.translationId,
+          caseName: r.caseName!,
+          word: r.caseWord!,
+        });
+      }
+    }
+    const storedTranslations = Array.from(groupedMap.values());
 
-    if (newTranslations.length > 0) {
+    // Diff incoming vs stored
+    const diff = diffTranslations(req.body.translations, storedTranslations);
+
+    // --- Handle removed translations + their performance data ---
+    if (diff.toRemove.length > 0) {
+      const removedIds = diff.toRemove.map((t) => t.id);
+
+      // Delete performance records owned by this user for these translations
+      await db
+        .delete(exercisePerformances)
+        .where(
+          and(
+            inArray(exercisePerformances.translationId, removedIds),
+            eq(exercisePerformances.userId, req.user.id),
+          ),
+        );
+
+      // Delete the translations themselves (FK set-null handles other users' perf)
+      await db
+        .delete(translations)
+        .where(inArray(translations.id, removedIds));
+    }
+
+    // --- Handle kept translations (case-level diff) ---
+    for (const { stored: s, caseDiff } of diff.same) {
+      if (caseDiff.casesToRemove.length > 0) {
+        // Remove orphaned exercise performance cases
+        const [perf] = await db
+          .select()
+          .from(exercisePerformances)
+          .where(
+            and(
+              eq(exercisePerformances.translationId, s.id),
+              eq(exercisePerformances.userId, req.user.id),
+            ),
+          )
+          .limit(1);
+        if (perf) {
+          await db
+            .delete(exercisePerformanceCases)
+            .where(
+              and(
+                eq(exercisePerformanceCases.exercisePerformanceId, perf.id),
+                inArray(
+                  exercisePerformanceCases.caseName,
+                  caseDiff.casesToRemove.map((c) => c.caseName),
+                ),
+              ),
+            );
+        }
+
+        await db
+          .delete(translationCases)
+          .where(
+            inArray(
+              translationCases.id,
+              caseDiff.casesToRemove.map((c) => c.id),
+            ),
+          );
+      }
+
+      if (caseDiff.casesToUpdate.length > 0) {
+        for (const { stored: sc, incoming: ic } of caseDiff.casesToUpdate) {
+          await db
+            .update(translationCases)
+            .set({ word: ic.word })
+            .where(eq(translationCases.id, sc.id));
+        }
+      }
+
+      if (caseDiff.casesToAdd.length > 0) {
+        await db.insert(translationCases).values(
+          caseDiff.casesToAdd.map((c) => ({
+            translationId: s.id,
+            caseName: c.caseName,
+            word: c.word,
+          })),
+        );
+      }
+    }
+
+    // --- Handle new translations ---
+    if (diff.toAdd.length > 0) {
+      const newTranslations = await db
+        .insert(translations)
+        .values(
+          diff.toAdd.map((t) => ({
+            wordId: req.params.id,
+            language: t.language,
+          })),
+        )
+        .returning();
+
       const caseInserts: Array<{
         translationId: string;
         caseName: string;
         word: string;
       }> = [];
       for (let i = 0; i < newTranslations.length; i++) {
-        const tCases = req.body.translations[i].cases || [];
-        for (const c of tCases) {
+        for (const c of diff.toAdd[i].cases) {
           caseInserts.push({
             translationId: newTranslations[i].id,
             caseName: c.caseName,
@@ -618,7 +821,7 @@ const updateWord = asyncHandler(async (req: any, res: any) => {
   }
 
   // Diff tag associations and apply changes
-  const incomingTags: Array<{ _id: string }> = req.body.tags || [];
+  const incomingTags: Array<{ _id?: string; id?: string }> = req.body.tags || [];
   const { toRemove, toAdd } = await diffTagWords(req.params.id, incomingTags);
 
   if (toRemove.length > 0) {
@@ -643,13 +846,16 @@ const updateWord = asyncHandler(async (req: any, res: any) => {
   if (req.body.partOfSpeech !== undefined) wordUpdateFields.partOfSpeech = req.body.partOfSpeech;
   if (req.body.clue !== undefined) wordUpdateFields.clue = req.body.clue;
 
-  const [updatedWord] = await db
-    .update(words)
-    .set(wordUpdateFields)
-    .where(eq(words.id, req.params.id))
-    .returning();
+  const hasUpdates = Object.keys(wordUpdateFields).length > 0;
+  const updatedWordId = hasUpdates
+    ? (await db
+        .update(words)
+        .set(wordUpdateFields)
+        .where(eq(words.id, req.params.id))
+        .returning({ id: words.id }))[0].id
+    : req.params.id;
 
-  const assembled = await fetchWordWithRelations(updatedWord.id);
+  const assembled = await fetchWordWithRelations(updatedWordId);
   res.status(200).json(assembled);
 });
 

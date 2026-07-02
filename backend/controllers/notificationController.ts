@@ -32,8 +32,24 @@ type TagRow = typeof tags.$inferSelect;
  */
 interface NotificationAugmented extends Omit<NotificationRow, 'content'> {
     content: Record<string, any> | null;
-    notificationSender: { username: string } | null;
-    notificationTag: { label: string } | null;
+    notificationSender: { id: string; username: string } | null;
+    notificationTag: { id: string; label: string } | null;
+}
+
+/**
+ * Shape the frontend expects (NotificationData from interfaces.ts).
+ * DB column `id` → `_id`, `userId` → `user`.
+ */
+interface FrontendNotification {
+    _id: string;
+    user: string;
+    variant: string;
+    dismissed: boolean;
+    content: Record<string, any> | null;
+    notificationSender: { _id: string; username: string } | null;
+    notificationTag: { _id: string; label: string } | null;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 // ---------------------------------------------------------------------------
@@ -67,7 +83,7 @@ const resolveSenders = async (
     for (const n of notifications_) {
         const rid = n.content?.requesterId;
         if (rid && usernameMap.has(rid)) {
-            n.notificationSender = { username: usernameMap.get(rid)! };
+            n.notificationSender = { id: rid, username: usernameMap.get(rid)! };
         }
     }
 };
@@ -97,7 +113,7 @@ const resolveTags = async (
     for (const n of tagRequests) {
         const tid = n.content!.tagId as string;
         if (labelMap.has(tid)) {
-            n.notificationTag = { label: labelMap.get(tid)! };
+            n.notificationTag = { id: tid, label: labelMap.get(tid)! };
         }
     }
 };
@@ -186,6 +202,28 @@ const partitionAndSort = (
     return unread.concat(dismissed);
 };
 
+/**
+ * Transform a DB row (with camelCase `id`, `userId`) into the frontend shape
+ * (with `_id`, `user`) that NotificationData expects.
+ */
+const toFrontendNotification = (
+    row: NotificationAugmented,
+): FrontendNotification => ({
+    _id: row.id,
+    user: row.userId,
+    variant: row.variant,
+    dismissed: row.dismissed,
+    content: row.content,
+    notificationSender: row.notificationSender
+        ? { _id: row.notificationSender.id, username: row.notificationSender.username }
+        : null,
+    notificationTag: row.notificationTag
+        ? { _id: row.notificationTag.id, label: row.notificationTag.label }
+        : null,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+});
+
 // ===========================================================================
 // ENDPOINTS
 // ===========================================================================
@@ -196,7 +234,7 @@ const partitionAndSort = (
 const getNotificationsByUserId = asyncHandler(async (req: any, res: any) => {
     const requestQuery = { user: req.user.id };
     const data = await getNotificationDataByRequest(requestQuery);
-    const results = partitionAndSort(data);
+    const results = partitionAndSort(data).map(toFrontendNotification);
     res.status(200).json(results);
 });
 
@@ -207,7 +245,7 @@ const getNotificationsByUserIdWhereUserIsRequester = asyncHandler(async (req: an
     const data = await getNotificationDataByRequest({
         requesterId: req.user.id,
     });
-    const results = partitionAndSort(data);
+    const results = partitionAndSort(data).map(toFrontendNotification);
     res.status(200).json(results);
 });
 
@@ -238,7 +276,14 @@ const createNotification = asyncHandler(async (req: any, res: any) => {
         .values(notificationRows)
         .returning();
 
-    res.status(200).json(created);
+    const augmented: NotificationAugmented[] = created.map((row) => ({
+        ...row,
+        content: row.content as Record<string, any> | null,
+        notificationSender: null,
+        notificationTag: null,
+    }));
+
+    res.status(200).json(augmented.map(toFrontendNotification));
 });
 
 // @desc    Delete Notification
@@ -270,7 +315,14 @@ const deleteNotification = asyncHandler(async (req: any, res: any) => {
 
     await db.delete(notifications).where(eq(notifications.id, req.params.id));
 
-    res.status(200).json(notification);
+    const deletedRow: NotificationAugmented = {
+        ...notification,
+        content: notification.content as Record<string, any> | null,
+        notificationSender: null,
+        notificationTag: null,
+    };
+
+    res.status(200).json(toFrontendNotification(deletedRow));
 });
 
 // @desc    Update Notification
@@ -300,13 +352,29 @@ const updateNotification = asyncHandler(async (req: any, res: any) => {
         throw new Error('User not authorized');
     }
 
+    // Sanitize body: frontend sends `_id` and `user` but DB has `id` / `userId`
+    const {
+        _id: _ignoreId,
+        user,
+        ...rest
+    } = req.body;
+    const setData: Record<string, any> = { ...rest };
+    if (user !== undefined) setData.userId = user;
+
     const [updated] = await db
         .update(notifications)
-        .set(req.body)
+        .set(setData)
         .where(eq(notifications.id, req.params.id))
         .returning();
 
-    res.status(200).json(updated);
+    const updatedRow: NotificationAugmented = {
+        ...updated,
+        content: updated.content as Record<string, any> | null,
+        notificationSender: null,
+        notificationTag: null,
+    };
+
+    res.status(200).json(toFrontendNotification(updatedRow));
 });
 
 // ===========================================================================
