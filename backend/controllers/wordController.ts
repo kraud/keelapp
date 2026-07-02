@@ -570,53 +570,50 @@ const updateWord = asyncHandler(async (req: any, res: any) => {
     throw new Error("User not authorized");
   }
 
-  // The old implementation removed all existing translations + cases and
-  // re-inserted them (treating the array as immutable).  We do the same.
-  await db
-    .delete(translationCases)
-    .where(
-      inArray(
-        translationCases.translationId,
-        db
-          .select({ id: translations.id })
-          .from(translations)
-          .where(eq(translations.wordId, req.params.id)),
-      ),
-    );
-  await db.delete(translations).where(eq(translations.wordId, req.params.id));
+  if (req.body.translations !== undefined) {
+    // Replace translations — delete existing + re-insert
+    await db
+      .delete(translationCases)
+      .where(
+        inArray(
+          translationCases.translationId,
+          db
+            .select({ id: translations.id })
+            .from(translations)
+            .where(eq(translations.wordId, req.params.id)),
+        ),
+      );
+    await db.delete(translations).where(eq(translations.wordId, req.params.id));
 
-  // Re-insert translations
-  const newTranslations = req.body.translations
-    ? await db
-        .insert(translations)
-        .values(
-          req.body.translations.map((t: any) => ({
-            wordId: req.params.id,
-            language: t.language,
-          })),
-        )
-        .returning()
-    : [];
+    const newTranslations = await db
+      .insert(translations)
+      .values(
+        req.body.translations.map((t: any) => ({
+          wordId: req.params.id,
+          language: t.language,
+        })),
+      )
+      .returning();
 
-  // Re-insert cases
-  if (newTranslations.length > 0) {
-    const caseInserts: Array<{
-      translationId: string;
-      caseName: string;
-      word: string;
-    }> = [];
-    for (let i = 0; i < newTranslations.length; i++) {
-      const tCases = req.body.translations[i].cases || [];
-      for (const c of tCases) {
-        caseInserts.push({
-          translationId: newTranslations[i].id,
-          caseName: c.caseName,
-          word: c.word,
-        });
+    if (newTranslations.length > 0) {
+      const caseInserts: Array<{
+        translationId: string;
+        caseName: string;
+        word: string;
+      }> = [];
+      for (let i = 0; i < newTranslations.length; i++) {
+        const tCases = req.body.translations[i].cases || [];
+        for (const c of tCases) {
+          caseInserts.push({
+            translationId: newTranslations[i].id,
+            caseName: c.caseName,
+            word: c.word,
+          });
+        }
       }
-    }
-    if (caseInserts.length > 0) {
-      await db.insert(translationCases).values(caseInserts);
+      if (caseInserts.length > 0) {
+        await db.insert(translationCases).values(caseInserts);
+      }
     }
   }
 

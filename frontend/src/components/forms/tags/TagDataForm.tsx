@@ -402,8 +402,6 @@ export const TagDataForm = (props: TagDataFormProps) => {
             wordId: string;
           } & TranslationItem;
 
-          console.log("selectedWordItem", selectedWordItem);
-
           const wordDataToDisplay: WordChipDisplayData =
             getWordChipDataByLangInOrder(
               selectedWordItem,
