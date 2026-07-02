@@ -7,8 +7,8 @@ const {
     addExternalTag, checkIfTagLabelAvailable,
     addTagsInBulkToWords, followTag, getTagsFollowedByUser,
     deleteUserFollowingTag
-} = require('../controllers/tagController')
-const {protect} = require('../middleware/authMiddleware')
+} = require('../controllers/tagController.ts')
+const {protect} = require('../middleware/authMiddleware.ts')
 
 router.get('/getTags', protect, getUserTags)
 router.get('/getOtherUserTags', protect, getOtherUserTags)

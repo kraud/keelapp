@@ -128,7 +128,6 @@ function ResponsiveAppBar() {
                     break
                 }
                 case(t('header.review', {ns: 'common'})): {
-                    if(checkEnvironmentAndIterationToDisplay(3)){
                         if((user.languages).length > 1){
                             navigate('/review')
                         } else {
@@ -138,9 +137,6 @@ function ResponsiveAppBar() {
                                 onClickButton: () => navigate(`/user`)
                             })
                         }
-                    } else {
-                        toast.error(t('header.notImplemented', {ns: 'common'}))
-                    }
                     break
                 }
                 case(t('header.practice', {ns: 'common'})): {

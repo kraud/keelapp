@@ -2,8 +2,8 @@ const express = require('express')
 const router = express.Router()
 const { createNotification, updateNotification, deleteNotification, getNotificationsByUserId,
     getNotificationsByUserIdWhereUserIsRequester
-} = require('../controllers/notificationController')
-const {protect} = require('../middleware/authMiddleware')
+} = require('../controllers/notificationController.ts')
+const {protect} = require('../middleware/authMiddleware.ts')
 
 router.get('/getNotifications', protect, getNotificationsByUserId)
 router.get('/getRequesterNotifications', protect, getNotificationsByUserIdWhereUserIsRequester)

@@ -56,10 +56,6 @@ export const LaduLogo = (props: LadoLogoProps) => {
         ? logoURLs['icon'][props.variant][props.color]
         : logoURLs['logo'][props.direction][props.variant][props.color]
 
-    useEffect(() => {
-        console.log('logoURL:', relevantURL)
-    })
-
     return(
         <Grid
             container={true}

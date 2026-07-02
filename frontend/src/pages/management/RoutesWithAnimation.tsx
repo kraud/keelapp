@@ -64,14 +64,12 @@ export function RoutesWithAnimation(props: RoutesWithAnimationProps) {
                     <AddWord/>
                 }
             />
-            {(checkEnvironmentAndIterationToDisplay(3)) &&
-                <Route
-                    path='/review/:filtersURL?'
-                    element={
-                        <Review/>
-                    }
-                />
-            }
+            <Route
+                path='/review/:filtersURL?'
+                element={
+                    <Review/>
+                }
+            />
             <Route
                 path='/login'
                 element={
@@ -109,7 +107,7 @@ export function RoutesWithAnimation(props: RoutesWithAnimationProps) {
                     <Account/>
                 }
             />
-            <Route 
+            <Route
                 path="/user/:userId?/verify/:tokenId?"
                 element={
                     <VerificationUser/>

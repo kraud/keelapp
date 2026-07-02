@@ -237,5 +237,6 @@ module.exports = {
     saveTranslationPerformance,
     savePerformanceAction,
     calculateAging,
+    calculateNewPercentageOfKnowledge,
     findMatches,
 }

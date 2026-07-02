@@ -2,10 +2,9 @@ const express = require('express')
 const router = express.Router()
 const {
     getWords, setWord, updateWord, deleteWord, getWordsSimplified, getWordById, filterWordByAnyTranslation,
-    getWordDataByRequest, deleteManyWords
-} = require('../controllers/wordController')
-const {protect} = require('../middleware/authMiddleware')
-const {getWordsByFollowedTag} = require("../controllers/wordController");
+    getWordDataByRequest, getAllWordDataByWord, deleteManyWords, getWordsByFollowedTag
+} = require('../controllers/wordController.ts')
+const {protect} = require('../middleware/authMiddleware.ts')
 
 router.get('/', protect, getWords)
 
@@ -15,7 +14,7 @@ router.get('/simple', protect, getWordsSimplified)
 
 router.get('/searchWord', protect, filterWordByAnyTranslation)
 
-router.get('/getAllWordDataByWord', protect, getWordDataByRequest) // TODO: this should be removed? Double check
+router.get('/getAllWordDataByWord', protect, getAllWordDataByWord) // TODO: this should be removed? Double check
 
 router.get('/:id', protect, getWordById)
 
