@@ -225,8 +225,8 @@ const updateUser = asyncHandler(async (req: any, res: any) => {
   const [updatedUser] = await db
     .update(users)
     .set({
-      name,
-      username,
+      name: name ?? userData.name,
+      username: username ?? userData.username,
       languages: languages ?? userData.languages,
       uiLanguage: uiLanguage ?? userData.uiLanguage,
       nativeLanguage: nativeLanguage === undefined ? null : nativeLanguage,

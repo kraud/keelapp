@@ -575,14 +575,15 @@ const updateTag = asyncHandler(async (req: any, res: any) => {
     );
   }
 
+  const tagUpdateFields: Record<string, any> = {};
+  if (req.body.author !== undefined) tagUpdateFields.authorId = req.body.author;
+  if (req.body.label !== undefined) tagUpdateFields.label = req.body.label;
+  if (req.body.public !== undefined) tagUpdateFields.public = req.body.public;
+  if (req.body.description !== undefined) tagUpdateFields.description = req.body.description;
+
   const [updatedTag] = await db
     .update(tags)
-    .set({
-      authorId: req.body.author,
-      label: req.body.label,
-      public: req.body.public,
-      description: req.body.description,
-    })
+    .set(tagUpdateFields)
     .where(eq(tags.id, req.params.id))
     .returning();
 

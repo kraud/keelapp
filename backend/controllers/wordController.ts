@@ -637,14 +637,15 @@ const updateWord = asyncHandler(async (req: any, res: any) => {
       .values(toAdd.map((tagId) => ({ tagId, wordId: req.params.id })));
   }
 
-  // Update word fields
+  // Update word fields — only set fields that are explicitly provided
+  const wordUpdateFields: Record<string, any> = {};
+  if (req.body.user !== undefined) wordUpdateFields.userId = req.body.user;
+  if (req.body.partOfSpeech !== undefined) wordUpdateFields.partOfSpeech = req.body.partOfSpeech;
+  if (req.body.clue !== undefined) wordUpdateFields.clue = req.body.clue;
+
   const [updatedWord] = await db
     .update(words)
-    .set({
-      userId: req.body.user,
-      partOfSpeech: req.body.partOfSpeech,
-      clue: req.body.clue ?? null,
-    })
+    .set(wordUpdateFields)
     .where(eq(words.id, req.params.id))
     .returning();
 
