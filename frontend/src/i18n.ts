@@ -21,6 +21,13 @@ i18n
         fallbackNS: 'common',
         supportedLngs: ['en', 'es', 'de', 'ee'],
         nonExplicitSupportedLngs: true,
+        // Load translations using the language-only code, so a browser
+        // configured for a region (e.g. "en-GB") maps to the "en" folder
+        // instead of requesting /locales/en-GB/*.json, which does not exist
+        // and falls through to the dev-server proxy.
+        backend: {
+            load: 'languageOnly',
+        },
         // lng: (UILang!!) ? UILang :undefined, // Language to use (overrides language detection). If set to 'cimode' the output text will be the key
         interpolation: {
             escapeValue: false, // not needed for react as it escapes by default
